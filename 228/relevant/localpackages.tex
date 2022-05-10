@@ -1,0 +1,115 @@
+\usepackage{longtable}	%for multicolumn
+\usepackage{multicol}	%for multicolumn
+\usepackage{multirow}	%for multirow
+\usepackage[linguistics]{forest}	%for syntax trees
+\usepackage{cancel}	%draw X through characters
+	\newcommand{\xc}{\xcancel}
+\usepackage{rotating}	%rotate text (for phoneme charts)
+\usepackage{amsmath}
+\usepackage[shortcuts]{extdash} %to stop M-form (M\=/form breaking at the hyphen, but allowing other hyphented words to)
+\usepackage{hhline}
+\usepackage{subcaption}
+	\captionsetup[sub]{font=small}
+
+\usepackage{caption}						%to get captions for side-by-side tables/figures
+\usepackage{varwidth}						%Center caption that includes a \newline
+\DeclareCaptionFormat{CentreNewLine}{
+  \begin{varwidth}{\linewidth}
+    \centering
+    #1#2#3%
+  \end{varwidth}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                              %%%
+%%%     Table notes                              %%%
+%%%                                              %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{threeparttable}	%allows tables with tablenotes
+	\makeatletter
+	\g@addto@macro\TPT@defaults{\footnotesize}
+	\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                              %%%
+%%%     Embedding Sound Files                    %%%
+%%%                                              %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[playbutton=none,transparent=true]{media9}
+	\addmediapath{relevant/audio/MP3/Ch1}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/Ch3}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/Ch4}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/Ch5}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/Ch6}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/Ch7}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/Ch8}		%Location of sound files
+	\addmediapath{relevant/audio/MP3/ChA}		%Location of sound files
+		\newif\ifincludeexternalmedia
+%		\includeexternalmediatrue					%This line commented = Don't embed
+		\includeexternalmediafalse				%This line commented = embed
+
+\newcommand{\emb}[3]{
+	\ifincludeexternalmedia
+		\includemedia[addresource=#1,flashvars={source=#1 &autoPlay=true &hideBar=true}]{#2}{#3}
+	\else #2 \fi}
+%\newcommand{\spk}[1]{\hspace{-1mm}{$\!$}
+\newcommand{\spk}[1]{{$\!$}
+\begin{tikzpicture}[#1]
+   \draw[thick,rounded corners=0.1pt, fill=black] (0,0.0909) -- (0,0.1636) -- (0.0909,0.1636) -- (0.1818,0.2545) -- (0.1818,0) -- (0.0909,0.0909) -- cycle;
+   \draw[line width=0.65pt,line cap=round] (0.2182,0.0909) arc (-30:30:0.7273mm);
+   \draw[line width=0.65pt,line cap=round] (0.2545,0.0545) arc (-30:30:1.4545mm);
+   \draw[line width=0.65pt,line cap=round] (0.2909,0.0182) arc (-30:30:2.1818mm);
+%\end{tikzpicture}\hspace{-1mm}} %speaker symbol
+\end{tikzpicture}} %speaker symbol
+\newcommand{\apl}{APlayer.swf} %to embed sound file print {\emb{<file.mp3>}{\spk{}}{\apl}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%													%%%													%%%
+%%%	Autosegmental Diagrams	%%%	Autosegmental Diagrams	%%%
+%%% 												%%%                         %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{xytree}
+	\xyoption{tips}
+	\newcommand{\as}{\asrnode}
+	\newcommand{\exa}{\normalfont\ex\raisebox{\dimexpr-\totalheight+3.475ex\relax}}
+	\newcommand{\exia}{\normalfont\raisebox{\dimexpr-\totalheight+3.475ex\relax}}
+	%\newcommand{\exan}{\normalfont\ex\raisebox{\dimexpr-\totalheight+4.6825ex\relax}}
+	%\newcommand{\exian}{\normalfont\raisebox{\dimexpr-\totalheight+4.6825ex\relax}}
+	\newcommand{\sna}{\normalfont\sn\raisebox{\dimexpr-\totalheight+3.475ex\relax}}
+%	\newcommand{\ext}{\renewcommand{\arraystretch}{1.05}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                              %%%
+%%%           Examples                           %%%
+%%%                                              %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{chngcntr}
+%% to add additional information to the right of examples, uncomment the following line
+%\usepackage{langsci/styles/jambox}
+\usepackage{langsci/styles/langsci-optional}
+%\usepackage{langsci/styles/langsci-lgr}
+\usepackage{langsci/styles/langsci-glyphs}
+\usepackage{langsci/styles/langsci-gb4e}
+	\let\eachwordone=\itshape
+	\nosinglegloss
+	\judgewidth{α:}
+	\counterwithin{exx}{chapter}							% reset example counter every chapter
+	\renewcommand{\exp}[1]{\exi{{(\ref{#1}′)}}}	% the pre-defined gb4e \exp command has $'$ which provides a prime symbol of a different font/size.
+																							% For consistency with other uses of the prime in my book (which are consistently ′ not $'$
+																							% I have redefined this here.
+
+\usepackage{pst-node}
+		\newcommand{\bxA}[1]{\rnode{A}{\psframebox[linewidth=0.4pt]{#1}}}			%node-A with box
+		\newcommand{\bxB}[1]{\rnode{B}{\psframebox[linewidth=0.4pt]{#1}}}			%node-B with box
+		\newcommand{\bxX}[1]{\rnode{X}{\psframebox[linecolor=white,linewidth=0.4pt]{#1}}}			%node-B with box
+		\newcommand{\lk}{\ncbar[arm=5pt,angle=90,linewidth=0.4pt]{->}{A}{B}}	%draw arrow between A and B
+		\newcommand{\lks}{\ncbar[arm=5pt,angle=90,linewidth=0.4pt]{-}{A}{B}}	%draw arrow between A and B
+		\newcommand{\gp}{\hspace{0.32em}}	%space before gloss equivalent to gap greated by \psframebox
+
+\usepackage[english]{babel}
+
+\usepackage{pdfpages}
+\usepackage{halloweenmath}

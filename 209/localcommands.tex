@@ -1,0 +1,53 @@
+%add all your local new commands to this file
+
+\makeatletter
+\def\blx@maxline{77}
+\makeatother
+
+\renewcommand{\lsChapterFooterSize}{\footnotesize}
+
+%Commands from Conversion, to be deleted before publication
+\newcommand{\textstyleannotationreference}{}
+
+
+\pgfplotsset{% Change ybar style to behave like ybar stacked 
+/pgfplots/ybar legend/.style={
+/pgfplots/legend image code/.code={%
+\draw[##1,/tikz/.cd,bar width=3pt,yshift=-0.2em,bar shift=0pt]
+plot coordinates {(0cm,0.8em)};},
+}
+}
+
+\newcommand{\devauxcos}{%
+\draw[-{Triangle[]},gray] (xyz cs:x=-3) -- (0,0) -- (xyz cs:x=3);
+\draw[-{Triangle[]},gray] (xyz cs:y=-3) -- (0,0) -- (xyz cs:y=3);
+\draw[-{Triangle[]},gray] (xyz cs:z=3) -- (0,0) -- (xyz cs:z=-3);}
+
+% \tikzset{devauxdot/.style={fill,circle,minimum size=3pt}]}
+
+% Fix for microtype errors, adapted from https://tex.stackexchange.com/questions/373594/microtype-producing-dozens-of-unknown-slot-number-warnings#373607
+\makeatletter
+\def\MT@is@composite#1#2\relax{%
+  \ifx\\#2\\\else
+    \expandafter\def\expandafter\MT@char\expandafter{\csname\expandafter
+                    \string\csname\MT@encoding\endcsname
+                    \MT@detokenize@n{#1}-\MT@detokenize@n{#2}\endcsname}%
+    % 3 lines added:
+    \ifx\UnicodeEncodingName\@undefined\else
+      \expandafter\expandafter\expandafter\MT@is@uni@comp\MT@char\iffontchar\else\fi\relax
+    \fi
+    \expandafter\expandafter\expandafter\MT@is@letter\MT@char\relax\relax
+    \ifnum\MT@char@ < \z@
+      \ifMT@xunicode
+        \edef\MT@char{\MT@exp@two@c\MT@strip@prefix\meaning\MT@char>\relax}%
+          \expandafter\MT@exp@two@c\expandafter\MT@is@charx\expandafter
+            \MT@char\MT@charxstring\relax\relax\relax\relax\relax
+      \fi
+    \fi
+  \fi
+}
+% new:
+\def\MT@is@uni@comp#1\iffontchar#2\else#3\fi\relax{%
+  \ifx\\#2\\\else\edef\MT@char{\iffontchar#2\fi}\fi
+}
+\makeatother

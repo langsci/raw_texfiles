@@ -1,0 +1,82 @@
+\definecolor{lsDOIGray}{cmyk}{0,0,0,0.45}
+
+% keywords
+
+\newcommand{\keywords}[1]{\noindent\textbf{Keywords:} {#1}}
+
+% semantics macros
+
+\newcommand{\sib}[1]{$\llbracket${#1}$\rrbracket$} %puts text into interpretation brackets
+\newcommand{\stb}[1]{\ensuremath{\langle{#1}\rangle}} %puts stuff into semantic type brackets; necessary to use in the form $\st{}$
+\newcommand{\cnst}[1]{\textsf{\relsize{-1}\MakeUppercase{#1}}} %creates sans-serif small-caps, used for typesetting logical constants
+\newcommand{\cnstx}[1]{\textsf{\relsize{-.5}\MakeUppercase{#1}}} %creates sans-serif small-caps, used for typesetting logical constants
+
+\providecommand{\orcid}[1]{}
+\newcommand{\minsp}[1]{#1\hspace{-2pt}}
+
+
+\newcommand{\citeposst}[1]{\citeauthor{#1}'s (\citeyear{#1})} % produces Chomsky's (1995)
+\newcommand{\citeposstpg}[2]{\citeauthor{#1}'s (\citeyear[#2]{#1})} % produces Chomsky's (1995: page)
+\newcommand{\citepossalt}[1]{\citeauthor{#1}'s \citeyear{#1}} % produces Chomsky's 1995
+\newcommand{\citepossaltpg}[2]{\citeauthor{#1}'s \citeyear[#2]{#1}} % produces Chomsky's 1995: page
+
+%non-italics in examples in footnotes
+
+\renewcommand{\fnexfont}{\footnotesize\upshape}
+\renewcommand{\fnglossfont}{\footnotesize\upshape}
+\renewcommand{\fntransfont}{\footnotesize\upshape}
+\renewcommand{\fnexnrfont}{\fnexfont\upshape}
+
+
+
+\newcommand{\barplot}[5][]{%
+  \begin{tikzpicture}
+    \begin{axis}[
+        xlabel={#2},
+        ylabel={#3},
+        axis lines*=left,
+        width  = \textwidth,
+        height = .3\textheight,
+        nodes near coords,
+        xtick=data,
+        x tick label style={},
+        ymin=0,
+        symbolic x coords={#4},#1 %any additional parameters for the axis can be given in the optional argument
+        ]
+        \addplot+[ybar,lsRichGreen!80!black,fill=lsRichGreen] plot coordinates {
+            #5
+        };
+    \end{axis}
+  \end{tikzpicture}
+}
+
+
+\makeatletter\let\pgfmathModX=\pgfmathMod@
+\usepackage{pgfplots,pgfplotstable}%
+\let\pgfmathMod@=\pgfmathModX\makeatother
+\newcommand{\langsciplot}[2]{%% experimental
+        \pgfplotstablegetcolsof{#1.csv}
+        \pgfmathsetmacro{\langscicsvlength}{\pgfplotsretval-1}
+        \begin{tikzpicture}[trim axis right,trim axis left]
+            \begin{axis}[
+                    #2,
+                    xtick=data,
+                    axis lines*=left,
+                    nodes near coords,
+                    ymin=0,
+                    width=\textwidth]
+            \foreach \i in {0,...,\langscicsvlength} {
+                \addplot[
+                    /pgf/number format/read comma as period
+                    ] table [x index={0},y index={\i}] {#1.csv};
+            }
+            \end{axis}
+        \end{tikzpicture}
+}
+
+\newcommand{\citevolt}[1]{\citeauthor{#1} (\citeyear{#1} [this volume])}
+\newcommand{\citevolalt}[1]{\citealt{#1} [this volume]}
+\newcommand{\citevolp}[1]{(\citealt{#1} [this volume])}
+
+
+\newcommand{\fnref}[1]{Footnote~\ref{#1}}

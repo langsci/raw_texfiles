@@ -1,0 +1,18 @@
+% -*- coding: utf-8 -*-
+\begin{exo}\label{exo:6FC}
+Supposons que $\Xlo f(\prd{enfant})$, 
+\pagesolution{crg:6FC}
+où \vrb f est une variable de fonction de choix, soit la traduction de base que la grammaire attribue à l'indéfini \sicut{un enfant}.  Quel serait alors le \lterme\ de {\LO}, utilisant donc $\Xlo f(\prd{enfant})$, qui nous donnerait la même dénotation que le quantificateur généralisé $\Xlo \prd{Un}(\prd{enfant})$ ?  En quoi ce passage de la première traduction à la seconde n'est pas, techniquement, un \alien{type-shifting} ?
+\begin{solu}(p.~\pageref{exo:6FC})\label{crg:6FC}
+
+\sloppy
+$\Xlo f(\prd{enfant})$, de type \typ e, dénote un enfant particulier choisi par \vrb f. Appelons, provisoirement, cet enfant Fanny. Le quantificateur $\Xlo \prd{Un}(\prd{enfant})$ dénote l'ensemble de tous les ensembles qui contiennent au moins un enfant. 
+Nous pouvons déjà remarquer que $\Xlo\lambda P[P(f(\prd{enfant}))]$, même si c'est bien un quantificateur généralisé, n'est pas équivalent à $\Xlo \prd{Un}(\prd{enfant})$, puisque le premier dénote l'ensemble de tous les ensembles qui contiennent \Obj{Fanny}, alors que nous cherchons l'ensemble de tous les ensembles qui contiennent n'importe quel enfant.  Pour prendre en compte n'importe quel enfant, nous devons donc faire en sorte que \vrb f ne soit plus libre (afin que sa dénotation ne dépende plus fixement de l'assignation $g$ globale), et nous obtenons cela en quantifiant sur \vrb f.  Mais il ne faut pas se tromper : $\Xlo\forall f[P(f(\prd{enfant}))]$ est une formule qui est vraie ssi \vrb P est une propriété qui est commune à tous les enfants (car $\Xlo\forall f$ va nous faire parcourir toutes les façons de choisir un enfant dans la dénotation de \prd{enfant}).  C'est bien une quantification existentielle qu'il faut utiliser ici : $\Xlo\exists f[P(f(\prd{enfant}))]$ est vraie ssi \vrb P est une propriété satisfaite par au moins un enfant\footnote{NB : $\Xlo[P(\exists f\,f(\prd{enfant}))]$ et $\Xlo[P(\forall f\,f(\prd{enfant}))]$ sont des expressions mal formées de \LO, car $\Xlo f(\prd{enfant})$ n'est pas de type \typ t.}
+ ; et donc ce qui équivaut à $\Xlo \prd{Un}(\prd{enfant})$ est $\Xlo\lambda P\exists f[P(f(\prd{enfant}))]$. 
+
+\fussy
+
+L'opérateur qui nous ferait passer du terme $\Xlo f(\prd{enfant})$ au quantificateur généralisé devrait donc être le \lterme\ $\Xlo\lambda x\lambda P\exists f[P(x)]$.  Or cela semble présupposer que nous connaîtrions à l'avance le nom de la variable \vrb f de fonction de choix utilisée «dans \vrb x~», ce qui n'a pas de raison d'être.  Mais, en fait, la situation est encore plus grave car, formellement, dans ce \lterme, $\Xlo\exists f$ ne lie rien du tout, sémantiquement il ne sert à rien et en soi $\Xlo\lambda x\lambda P\exists f[P(x)]$ équivaut  à $\Xlo\lambda x\lambda P[P(x)]$\footnote{Sans compter que dans $\Xlo[\lambda x\lambda P\exists f[P(x)](f(\prd{enfant}))]$, nous n'aurions pas le droit d'effectuer la \breduc\ (alors que c'est précisément ce qu'il nous faudrait) car le \vrb f libre de l'argument ne doit pas se retrouver lié après réduction (déf.~\ref{d:breduc2} p.~\pageref{d:breduc2}).}. 
+Par conséquent, si nous admettons que les \alien{type-shifteurs} sont des opérateurs \emph{compositionnels} formalisables par des fonctions, alors le passage de $\Xlo f(\prd{enfant})$ au quantificateur généralisé n'est pas du \alien{type-shifting}.
+\end{solu}
+\end{exo}

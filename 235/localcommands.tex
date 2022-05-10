@@ -1,0 +1,62 @@
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author 
+\makeatother
+
+\renewcommand{\lsChapterFooterSize}{\footnotesize}
+
+\newcommand{\togglepaper}[1][0]{ 
+  \bibliography{../localbibliography}
+  \papernote{\scriptsize\normalfont
+    \theauthor.
+    \thetitle. 
+    To appear in: 
+    Christopher Lucas and Stefano Manfredi (eds.),  
+    Arabic and contact-induced language change
+    Berlin: Language Science Press. [preliminary page numbering]
+  }
+  \pagenumbering{roman}
+  \setcounter{chapter}{#1}
+  \addtocounter{chapter}{-1}
+}
+
+\newfontfamily\Parsifont[Script=Arabic]{ScheherazadeRegOT_Jazm.ttf} 
+\newcommand{\arabscript}[1]{\RL{\Parsifont #1}}
+\newcommand{\textarabic}[1]{{\arabicfont #1}}
+
+\newcommand{\textstylest}[1]{{\color{red}#1}}
+
+\patchcmd{\mkbibindexname}{\ifdefvoid{#3}{}{\MakeCapital{#3}
+}}{\ifdefvoid{#3}{}{#3 }}{}{\AtEndDocument{\typeout{mkbibindexname could
+not be patched.}}}
+
+%command for italic r with dot below with horizontal correction to put the dot in the prolongation of the vertical stroke
+%for some reason, the dot is larger than expected, so we explicitly reduce the font size (to \small)
+%for the time being, the font is set to an absolute value. To be more robust, a relative reduction would be better, but this might not be required right now
+\newcommand{\R}{r\kern-.05ex{\small{̣}}\kern.05ex}
+
+
+\DeclareLabeldate{%
+    \field{date}
+    \field{year}
+    \field{eventdate}
+    \field{origdate}
+    \field{urldate}
+    \field{pubstate}
+    \literal{nodate}
+}
+
+\renewbibmacro*{addendum+pubstate}{% Thanks to https://tex.stackexchange.com/a/154367 for the idea
+  \printfield{addendum}%
+  \iffieldequalstr{labeldatesource}{pubstate}{}
+  {\newunit\newblock\printfield{pubstate}}
+}
+
+\ExecuteBibliographyOptions{sorting=nycot} % Somehow biblatex does not accept this option if it is supplied only in the .bbx file. Further investigation recommended. FK
+\newfontfamily\arabicfont[Script=Arabic,ItalicFont=*,Scale=MatchLowercase,Path=\fontpath]{ScheherazadeRegOT_Jazm.ttf}
+\AdditionalFontImprint{SIL Scheherazade}
+% https://tex.stackexchange.com/questions/440461/sorting-biblatex-bibliography-by-last-name-beginning-with-al?rq=1
+\DeclareNosort{
+  % strip some diacritics when sorting names
+  \nosort{setnames}{\regexp{[\x{2bf}\x{2018}]}}
+}

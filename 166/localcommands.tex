@@ -1,0 +1,165 @@
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Footnote \ref{#1}} 
+
+\newenvironment{langscibars}{\begin{axis}[ybar,xtick=data, xticklabels from table={\mydata}{pos}, 
+        width  = \textwidth,
+	height = .3\textheight,
+    	nodes near coords, 
+	xtick=data,
+	x tick label style={},  
+	ymin=0,
+	cycle list name=langscicolors
+        ]}{\end{axis}}
+        
+\newcommand{\langscibar}[1]{\addplot+ table [x=i, y=#1] {\mydata};\addlegendentry{#1};}
+
+\newcommand{\langscidata}[1]{\pgfplotstableread{#1}\mydata;}
+
+% 
+% \makeatletter
+% \let\theauthor\@author %store in more accessible format
+% \makeatother 
+%  
+% \newcommand{\lsFirstAuthorFullName}{}%temporary, will be overwritten
+% \newcommand{\lsFirstAuthorFirstName}{}%temporary, will be overwritten
+% \newcommand{\lsFirstAuthorLastName}{}%temporary, will be overwritten
+% \newcommand{\lsFirstAuthorString}{\lsFirstAuthorLastName, \lsFirstAuthorFirstName} %can be customized in localmetadata.tex
+% \newcommand{\lsNonFirstAuthorsString}{}  %default, will be overwritten iff more than one author
+% \newcommand{\lsImpressionCitationAuthor}{\lsFirstAuthorString \lsNonFirstAuthorsString}
+% 
+% 
+% \renewcommand{\and}{NONLASTAND} %expand for easier checking. Might need to be undone later on
+% \renewcommand{\lastand}{LASTAND} %expand for easier checking
+% 
+% \IfSubStr{\theauthor}{NONLASTAND}{%2+authors
+%   \renewcommand{\lsFirstAuthorFullName}{\StrBefore{\theauthor}{\and }}
+%   \renewcommand{\lsFirstAuthorFirstName}{\StrBefore{\theauthor}{ }} 
+%   \renewcommand{\lsFirstAuthorLastName}{\StrBetween{\theauthor}{ }{\and }}
+%   \renewcommand{\lsNonFirstAuthorsString}{\and\StrBehind{\theauthor}{\and }} 
+%   }{%else
+%     \IfSubStr{\theauthor}{LASTAND}{%less than two authors, more than one
+%     \renewcommand{\lsFirstAuthorFullName}{\StrBefore{\theauthor}{\lastand }}
+%     \renewcommand{\lsFirstAuthorFirstName}{\StrBefore{\theauthor}{ }}
+%     \renewcommand{\lsFirstAuthorLastName}{\StrBetween{\theauthor}{ }{\lastand }}
+%     \renewcommand{\lsNonFirstAuthorsString}{\lastand\StrBehind{\theauthor}{\lastand }} 
+%     }{%else exactly one author
+%       \renewcommand{\lsFirstAuthorFirstName}{\StrBefore{\theauthor}{ }}
+%       \renewcommand{\lsFirstAuthorLastName}{\StrBehind{\theauthor}{ }}
+%       }
+%     }   
+
+% \tikzstyle{pie chart}=[
+%     chart,
+%     slice/.style={line cap=round, line join=round, very thick,draw=white},
+%     pie title/.style={font={\bf}},
+%     slice type/.style 2 args={
+%         ##1/.style={fill=##2},
+%         values of ##1/.style={}
+%     }
+% ]
+
+% \pgfdeclarelayer{background}
+% \pgfdeclarelayer{foreground}
+% \pgfsetlayers{background,main,foreground}
+
+
+%% Code from https://tex.stackexchange.com/a/451154
+\newif\ifOut
+%\Debugtrue
+\Outfalse
+\pgfkeys{/pgf/.cd,
+Move Out/.initial=1,
+Move Out=1,
+Minimum Angle/.initial=0}
+\newcounter{myslice}
+\makeatletter
+\renewcommand{\pgfpie@slice}[8]{\stepcounter{myslice}
+  \pgfmathparse{0.5*(#1)+0.5*(#2)}
+  \let\midangle\pgfmathresult
+
+  \path (#8) -- ++(\midangle:#5) coordinate(O);
+
+  \pgfmathparse{#7+#5}
+  \let\radius\pgfmathresult
+
+  \pgfmathsetmacro{\SwitchOff}{ifthenelse(#2-#1<\pgfkeysvalueof{/pgf/Minimum
+  Angle},1,0)}
+
+  % slice
+  \draw[line join=round, fill=#6, \style] (O) -- ++(#1:#7) arc (#1:#2:#7) -- cycle;
+
+  \pgfmathparse{min(((#2)-(#1)-10)/110*(-0.3),0)}
+  \let\temp\pgfmathresult
+  \pgfmathtruncatemacro{\itest}{ifthenelse(\pgfkeysvalueof{/pgf/Move Out}==1,1,0)}
+  \ifnum\itest=1
+  \pgfmathsetmacro\innerpos{((max(\temp,-0.5)+0.8)*#7)}
+  \else
+  \pgfmathsetmacro\innerpos{\pgfkeysvalueof{/pgf/Move Out}*#7*(1+0.2*sin(90*\themyslice))}
+  \fi
+  \ifthenelse{\equal{\pgfpie@text}{inside}}
+  {
+    % label and number together
+    \path (O) -- ++(\midangle:\innerpos) node
+    {\scalefont{#3}\shortstack{#4\\\beforenumber#3\afternumber}};
+  }
+  {
+    % label
+    \iflegend
+    \else
+    \path (O) -- ++ (\midangle:\radius)
+    node[inner sep=0, \pgfpie@text=\midangle:#4]{};
+    \fi
+
+    % number
+    \ifnum\SwitchOff=1
+    \else
+     \ifnum\itest=1
+      \path (O) -- ++(\midangle:\innerpos) node
+      {\scalefont{#3}\beforenumber#3\afternumber};
+     \else
+      \path (O) -- ++(\midangle:\innerpos)  node (pie-N-\themyslice)
+      {\scalefont{#3}\beforenumber#3\afternumber};
+      \draw[latex-] (\midangle:{0.85*#7}) -- (pie-N-\themyslice);
+     \fi
+    \fi
+  }
+}
+\makeatother
+
+% \newcommand{\pie}[3][]{
+%     \begin{scope}[#1]
+%     \pgfmathsetmacro{\curA}{90}
+%     \pgfmathsetmacro{\r}{1}
+%     \def\c{(0,0)}
+%     \node[pie title] at (90:1.3) {#2};
+%     \foreach \v/\s in{#3}{
+%         \pgfmathsetmacro{\deltaA}{\v/100*360}
+%         \pgfmathsetmacro{\nextA}{\curA + \deltaA}
+%         \pgfmathsetmacro{\midA}{(\curA+\nextA)/2}
+% 
+%         \path[slice,\s] \c
+%             -- +(\curA:\r)
+%             arc (\curA:\nextA:\r)
+%             -- cycle;
+%         \pgfmathsetmacro{\d}{max((\deltaA * -(.5/50) + 1) , .5)}
+% 
+%         \begin{pgfonlayer}{foreground}
+%         \path \c -- node[pos=\d,pie values,values of \s]{$\v\%$} +(\midA:\r);
+%         \end{pgfonlayer}
+%         \global\let\curA\nextA
+%     }
+%     \end{scope}}
+% 
+% \newcommand{\legend}[2][]{
+%     \begin{scope}[#1]
+%     \path
+%         \foreach \n/\s in {#2}
+%             {
+%                   ++(0,-10pt) node[\s,legend box] {} +(5pt,0) node[legend label] {\n}
+%             }
+%     ;
+%     \end{scope}
+% }
+
+
+\newcommand{\sourcebox}[1]{\parbox{.8\textwidth}{\tiny\raggedright#1}}

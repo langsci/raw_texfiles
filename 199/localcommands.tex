@@ -1,0 +1,124 @@
+% In text citations
+% \newcommand{\posscitet}[1]{\citeauthor{#1}'s (\citeyear{#1})}
+% \newcommand{\possciteauthor}[1]{\citeauthor{#1}'s}
+% \newcommand{\pgposscitet}[2]{\citeauthor{#1}'s (\citeyear{#1}:~#2)}
+% \newcommand{\secposscitet}[2]{\citeauthor{#1}'s (\citeyear{#1}:~$\S$#2)}
+% \newcommand{\pgcitealt}[2]{\citealt{#1}:~#2}
+% \newcommand{\seccitealt}[2]{\citealt{#1}:~$\S$#2}
+\renewcommand{\pgcitep}[2]{(\citealt{#1}:~#2)}
+% \newcommand{\seccitep}[2]{(\citealt{#1}:~$\S$#2)}
+% \newcommand{\pgcitet}[2]{\citeauthor{#1} (\citeyear{#1}:~#2)}
+% \newcommand{\seccitet}[2]{\citeauthor{#1} (\citeyear{#1}:~$\S$#2)}
+
+%End Bibliography Style macros-------------------------
+
+% Emacs binding of ^C^F^U for bold sans-serif style in 1919 ms.
+\renewcommand{\textup}[1]{\textbf{\textsf{#1}}}
+
+
+\newcommand{\movetoevenpage}{\newpage\ifthispageodd{\hbox{}\newpage}{}}
+\newcommand{\movetooddpage}{\newpage\ifthispageodd{}{\hbox{}\newpage}}
+
+% macro for unmarked footnote continued from previous page
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{\hspace*{-1.5em}#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\usepackage{paracol}
+\setlength\columnsep{2em}
+\setlength{\columnseprule}{1pt}
+\colseprulecolor{black}
+
+\newcounter{TextPageNo}
+\setcounter{TextPageNo}{2}
+
+\newcommand{\TextPage}[3][!*!,!]{%
+\newpage
+\ifthenelse{\equal{#1}{!*!,!}}
+{%\begin{center}
+\chead{\upshape--- \arabic{TextPageNo} ---}
+%\end{center}
+}
+{\ifthenelse{\equal{#1}{no}}{}{#1}}
+\stepcounter{TextPageNo}
+% % \setlength\parindent{2em}
+\begin{paracol}{2}
+\setcounter{footnote}{0}
+{\selectlanguage{french}
+  #2}
+\switchcolumn
+\setcounter{footnote}{0}
+{\selectlanguage{english}
+  #3}
+\end{paracol}
+}
+
+\newcommand{\LargerTextPage}[3][!*!,!]{%
+\newpage
+\ifthenelse{\equal{#1}{!*!,!}}
+{%\begin{center}
+\chead{\upshape--- \arabic{TextPageNo} ---}
+%\end{center}
+}
+{\ifthenelse{\equal{#1}{no}}{}{#1}}
+\stepcounter{TextPageNo}
+% % \setlength\parindent{2em}
+\begin{paracol}{2}
+\setcounter{footnote}{0}
+{\noindent\begin{minipage}[b]{\linewidth}
+\selectlanguage{french}
+  #2\end{minipage}}
+\switchcolumn
+\setcounter{footnote}{0}
+{\noindent\begin{minipage}[b]{\linewidth}
+\selectlanguage{english}
+  #3\end{minipage}}
+\end{paracol}
+}
+
+\newcommand{\FrenchPage}[2][!*!,!]{%
+\movetoevenpage %[{[THIS PAGE LEFT BLANK]}]
+\ifthenelse{\equal{#1}{!*!,!}}
+{\chead{\upshape%\begin{center}
+{--- \arabic{TextPageNo} ---}
+%\end{center}
+}}
+{\ifthenelse{\equal{#1}{no}}{}{#1}}
+\stepcounter{TextPageNo}
+\setcounter{footnote}{0}
+{\selectlanguage{french}
+  #2}
+}
+
+\newcommand{\EnglishPage}[2][!*!,!]{%
+\movetooddpage
+\ifthenelse{\equal{#1}{!*!,!}}
+{\chead{\upshape%\begin{center}
+{--- \arabic{TextPageNo} ---}
+%\end{center}
+}}
+{\ifthenelse{\equal{#1}{no}}{}{#1}}
+% \stepcounter{TextPageNo}
+\setcounter{footnote}{0}
+{\selectlanguage{english}
+  #2}
+}
+
+%% macros from lx.sty
+
+% These put the argument in 6-point, for diacritic use
+\def\sxsub  #1{{\lower3pt\hbox{\scriptsize #1}}}  
+\def\sxsuper #1{{\raise4pt\hbox{\scriptsize #1}}}
+
+%underlines its argument
+\def \und #1{$\underline{\hbox{#1}}$}
+
+\newcommand{\saussuresection}[2]{
+    \addcontentsline{toc}{section}{#1 #2}
+    \begin{center}
+      § #1. — \textbf{#2}.
+    \end{center}
+}

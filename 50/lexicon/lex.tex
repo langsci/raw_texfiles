@@ -1,0 +1,173 @@
+\chapter{Lexicon Adaptation}\label{ch:lex}
+
+\section{Introduction}
+
+Up to a basic experiment has been introduced and examined extensively.Also, a closer look has been taken at the categorization process and possible alternatives for this. And the last chapter investigated the influence of joint attention and feedback on the system. In this chapter different parameters that control the adapatation of the lexicon will be investigated.
+
+\p\index{creation probability}\index{learning rate}\index{word-form!adoption}
+Some parameters that may influence the lexicon adaptation are: {\em creation probability} $P_s$, {\em learning rate} $\eta$ and the {\em word-form adoption strategy} used by the hearer.
+
+The creation probability is used by the speaker and controls the rate of word-form creation when the speaker is not able to produce an utterance. It has been introduced to decrease the emergence of ambiguity \cite{steels:1996a}. It has been set to $P_s=0.02$ in the basic experiment. Section \ref{s:lex:Ps} presents an experiment where $P_s$ is varied.
+
+Learning rate $\eta$ controls the speed by which the association-, concept- and category scores are updated. It has most impact on the adaptation of the association score. In section \ref{s:lex:eta}, the results of varying $\eta$ are presented.
+
+In the basic experiment, the hearer can only adopt a new word-form when it receives an unknown word-form or one that completely mismatches the observed meanings. But when there is a mismatch in the topic of the speaker and the hearer, i.e. the hearer misinterpreted the speaker's communication, it may be fruitful to adopt the speaker's utterance, thus allowing the hearer to learn the right association. Furthermore, since the hearer considers all segments as a potential topic of a guessing game, to which segment should the hearer associate the received word-form? These questions are investigated in section \ref{s:lex:ass}. The chapter is finished with a short summary.
+
+
+\section{Word-form creation}\label{s:lex:Ps}
+\index{creation probability|(}
+
+This section presents the results of experiments where the creation probability $P_s$ is varied. The creation probability is used to control the word-form creation rate when the speaker could not produce an utterance for a distinctive concept. $P_s$ is varied between 0 and 1 with steps of 0.1. In the basic experiment $P_s$ was set to 0.02, a value that has been established while varying $P_s$ in an experiment prior to the current implementation. As will be shown, this value is very much out of date. Figure \ref{f:lex:p} shows the results of the experiments. As usual each experiment consists of 10 runs of 5,000 language games. 
+
+\begin{figure}
+\subfigure[CS]{\psfig{figure=lexicon//cs_p.eps,width=5.6cm}}
+\subfigure[DS]{\psfig{figure=lexicon//ds_p.eps,width=5.6cm}}\\
+\subfigure[S]{\psfig{figure=lexicon//spec_p.eps,width=5.6cm}}
+\subfigure[D]{\psfig{figure=lexicon//dist_p.eps,width=5.6cm}}\\
+\subfigure[C]{\psfig{figure=lexicon//cons_p.eps,width=5.6cm}}
+\subfigure[P]{\psfig{figure=lexicon//pars_p.eps,width=5.6cm}}
+\caption{The results of a series experiments where creation probability $P_s$ is varied from 0 to 1 with steps of 0.1.}
+\label{f:lex:p}
+\end{figure}
+
+\p
+It is trivial that the CS, S, D, C and P are 0 when $P_s=0$. When no word-forms are created no communication can take place. All mentioned measures are only calculated when linguistic communication took place. The DS is approximately 50 \% because only the speaker now performs a discrimination game and the DS is calculated as an average discriminative success per {\em langauge game}. Since the robots can in principle discriminate almost perfectly (see figure \ref{f:st:ds}, page \pageref{f:st:ds}), the DS is almost 50 \%. 
+
+The figure shows that there is hardly any difference in the experiments when $P_s$ is varied between 0.1 and 1. The DS and S are slightly increasing, as it appears monotonically. The CS also seems to be increasing, but it also shows some local minima and maxima. It seems that when $P_s=0.9$, the CS is highest, but when $P_s=0.4$, the CS is second best. There does not seem to be a relation. D, C and P seem to be indifferent for the variation of $P_s$. It is interesting to note that the differences of CS, DS and S between $P_s=0.9$ and $P_s=0.1$ have a significance of $p=0.0000$
+
+When $0.1 \leq P_s \leq 1.0$, then the system outperformes the basic experiment. Although distinctiveness, parsimony and consistency are more or less the same as in the basic experiment; the CS is about 5 - 9 \% higher, DS is 4 \% higher and S is approximately 0.09 higher. All these differences have $p$-values of $p=0.0000$.
+
+\begin{figure}
+\psfig{figure=lexicon//words.eps,width=11.6cm}
+\caption{The lexicon growth for different values of the creation probability $P_s$, which is varied from 0 to 1 with steps of 0.1.}
+\label{f:lex:words}
+\end{figure}
+
+It is interesting now to see how the number of words grow in the communication system. Figure \ref{f:lex:words} shows the growth of the number of word-forms that are used successfully in the experiments. It is clear that the number of word-forms grows faster when the creation probability increases. Recall that the number of word-forms in the basic experiment grew to only 8 word-forms. When $P_s=0.1$ this already increases to 25 word-forms, and when $P_s=1.0$ there emerge more than 80 word-forms. Remember that there are only 4 referents in the robots' environment!
+
+\index{referential!synonymy}The rate of referential synonymy thus increases very much, although this is not obvious from the concistency\footnote{Recall that consistency is weighted over the frequency of occurances of referent-word-form pairs.}. However, the robots do significantly better in learning to communitate than when $P_s=0.02$ as in the basic experiment. This may be a side effect of the fact optimize their lexicons for word-meaning associations rather than word-referent associations. When there are more word-forms, there is less need for representational polysemy and -synonymy.\index{representational!polysemy}\index{representational!synonymy} This migh very well influence the robot's ability to communicate just as coherent and specific as before, while improving the success rate. 
+\index{creation probability|)}
+
+\section{Varying the learning rate}\label{s:lex:eta}
+\index{learning rate|(}
+
+The adaptation scores are adapted using a walking average. These scores are adapted for the category scores, the concept scores and the association scores. The formula by which the scores are adapted is repeated here for clarity:
+
+\begin{eqnarray}
+\sigma = \eta \cdot \sigma' + (1-\eta)\cdot S
+\end{eqnarray}
+
+\n
+where $s$ is the score, $\eta$ is the learning rate and $S$ is the success factor. The type of score is dependent on the game being played and so is $S$. The category scores $\nu$ are updated after the discrimination game. All categories that relate to the topic are updated. If a category is an element of a concept, then $S=1$ and otherwise $S=0$. Distinctive concepts are updated after the naming game. $S=1$ if the concept is used in the naming game, and $S=0$ if the concepts are distinctive but not used in the communication. The association scores $\sigma$ are updated at the end of the language game. $S=1$ for the word-meaning association that has successfully been used in the language game. $S=0$ for those associations that are not used in such a successful game, but for which either the word-form or meaning matches the used word-meaning associations (hence for the polysemous associations). If there is a mismatch in the selected topics for both robots, $S=0$ for the used WM-association.
+
+In the basic experiment, the learning rate has been set to $\eta=0.99$. This score has been chosen to be this value based upon early experiments, which was before the current implementation has been finished. What would happen if $\eta$ is varied from 0 to 1 with intervals of 0.1? Figure \ref{f:lex:A} shows the results of these experiments.
+
+\begin{figure}
+\subfigure[CS]{\psfig{figure=lexicon//cs_A.eps,width=5.6cm}}
+\subfigure[DS]{\psfig{figure=lexicon//ds_A.eps,width=5.6cm}}\\
+\subfigure[S]{\psfig{figure=lexicon//spec_A.eps,width=5.6cm}}
+\subfigure[D]{\psfig{figure=lexicon//dist_A.eps,width=5.6cm}}\\
+\subfigure[C]{\psfig{figure=lexicon//cons_A.eps,width=5.6cm}}
+\subfigure[P]{\psfig{figure=lexicon//pars_A.eps,width=5.6cm}}
+\caption{The results of a series of experiments where the learning rate $\eta$ has been varied from 0 to 1 with intervals of 0.1.}
+\label{f:lex:A}
+\end{figure}
+
+\p
+The figure shows that the experiments where $\eta=0$ and $\eta=1$ perform very poor, poorer than in the basic experiment ($p=0.0000$ in both cases). If $\eta=0$, the scores are completely dependent from the previous language game where the element is used. When $\eta=1$ the scores are not updated at all. Obviously, taking only the last game into account, the robots cannot learn the communication system properly. Neither can it be learned when the scores are not updated. The CS when $\eta=1$ is about 5 \% lower than when $\eta=0$ ($p=0.0000$). Figure \ref{f:lex:csA0} shows that these communication systems no longer learn after game 500. That some games are successful is caused by the fact that WM-associations do get formed as normal and the rest is more or less coincidence.
+
+\begin{figure}
+\subfigure[$\eta=0$]{\psfig{figure=lexicon//csA0.eps,width=5.6cm}}
+\subfigure[$\eta=1$]{\psfig{figure=lexicon//csA1.eps,width=5.6cm}}
+\caption{The evolution of the communicative success when (a) $\eta=0$ and (b) $\eta=1$. It is clear that the communication system is not learned.}
+\label{f:lex:csA0}
+\end{figure}
+
+When $\eta=0.1$, the CS is higher than in the basic experiment ($p=0.0000$), but it is lower than when $0.2\leq\eta\leq0.9$ ($p=0.0000$ when compared to $\eta=0.2$). Furthermore, in this experiment the discriminative success and specificity are lower than when $0.2\leq\eta\leq0.9$ (again $p=0.0000$ when compared to $\eta=0.2$). Figure \ref{f:lex:csA01} shows however, that the communication is learned when $\eta=0.1$ as well as when $\eta=0.2$. It only takes longer. Strangly enough the DS when $\eta=0.1$ is lower than when $\eta=0.0$ or $\eta=0.2$.It is not understood why this is the case.
+
+\begin{figure}
+\subfigure[CS ($\eta=0.1$)]{\psfig{figure=lexicon//csA01.eps,width=5.6cm}}
+\subfigure[CS ($\eta=0.2$)]{\psfig{figure=lexicon//csA02.eps,width=5.6cm}}\\
+\subfigure[S ($\eta=0.1$)]{\psfig{figure=lexicon//specA01.eps,width=5.6cm}}
+\subfigure[S ($\eta=0.2$)]{\psfig{figure=lexicon//specA02.eps,width=5.6cm}}\\
+\subfigure[DS ($\eta=0.1$)]{\psfig{figure=lexicon//dsA01.eps,width=5.6cm}}
+\subfigure[DS ($\eta=0.2$)]{\psfig{figure=lexicon//dsA02.eps,width=5.6cm}}
+\caption{Comparing the CS, S and DS in the cases where $\eta=0.1$ and $\eta=0.2$.}
+\label{f:lex:csA01}
+\end{figure}
+
+ Figure \ref{f:lex:A} (a) shows that  when $0.2 \leq \eta \leq 0.9$ the CS seems to be increasing slightly. Differences, however are hardly significant. When comparing the case where $\eta=0.2$ with $\eta=0.9$, the difference has a significance of $p=0.0892$. Nevertheless, the increase really appears to be there. 
+
+It is surprising that the system develops more or less equally well when $\eta=0.2$ than when $\eta=0.9$. In the first case the last few interactions have much more influence on the selection than the complete history of interactions. When $\eta=0.9$ the vice versa is true. It is not clear why this is the case.
+
+\p
+The results of this section show that the difference between the weight with which past success influences the experiment is high. When the learning rate $\eta$ varies between 0.1 and 0.9 the success of the language games is higher than when $\eta=0.99$. In that case the system is too much based on the past. Interesting to see is that the robots can pretty well deal with a high strength regarding the last use of a particular element of the ontology or lexicon. However, when the extremes are reached (i.e. $\eta=0$ or $\eta=1$) the robots cannot learn a communication system. 
+\index{learning rate|)}
+
+\section{Adoption schemes}\label{s:lex:ass}
+\index{word-form!adoption|(}
+
+In this section experiments are presented where the hearer also adopts a word-form from the speaker when the language game ends in a mismatch between the robots' topics. In the basic experiment, the only adaptation that is done when such a case occurs is the lowering of the association scores of the used associations. This adaptation remains the same in the experiments presented here, but additionally the robots may adopt the word-form uttered by the speaker. This adoption is restrained by the same conditions as introduced in chapter \ref{ch:cm}.\index{adaptation}\index{score!association}
+
+\p
+In the experiments the selection of the segment (or topic) with which the word-form is adopted is varied. In the basic experiment the selection of the hearer's topic is done at random. The same is done in experiment R shown in table \ref{t:lex:ass}. It has been hypothesised, however, that when the hearer uses topic information. Topic information is provided by the speaker the lexicon adaptation is better controlled. In experiment T the robots adopt word-forms using this topic knowledge only in case of a mismatch. Topic knowledge is established by the joint attention mechanism of correspondence. In experiment TT, the robots use the topic information in every case when a word-form needs to be adopted. So, including the cases in which the basic experiment already adopted word-forms. This latter strategy is applied in the Talking Heads \cite{steels:2000}.\index{Talking Heads}
+
+\begin{table}
+\centering
+\begin{tabular}{||l|c|c|c||}
+\hline\hline
+        &       R                       &       T                      &       TT     \\\hline
+CS      &          0.416$\pm$      0.051&          0.415$\pm$      0.014&          0.398$\pm$      0.004\\\hline
+DS0     &          0.958$\pm$      0.001&          0.953$\pm$      0.002&          0.957$\pm$      0.001\\\hline
+DS1     &          0.958$\pm$      0.002&          0.953$\pm$      0.002&          0.959$\pm$      0.002\\\hline
+D0      &          0.960$\pm$      0.000&          0.956$\pm$      0.001&          0.959$\pm$      0.000\\\hline
+D1      &          0.960$\pm$      0.000&          0.956$\pm$      0.002&          0.960$\pm$      0.000\\\hline
+P0      &          0.837$\pm$      0.001&          0.826$\pm$      0.003&          0.831$\pm$      0.001\\\hline
+P1      &          0.836$\pm$      0.002&          0.825$\pm$      0.004&          0.828$\pm$      0.001\\\hline
+S0      &          0.705$\pm$      0.075&          0.660$\pm$      0.062&          0.669$\pm$      0.023\\\hline
+S1      &          0.711$\pm$      0.071&          0.659$\pm$      0.063&          0.683$\pm$      0.016\\\hline
+C0      &          0.825$\pm$      0.025&          0.833$\pm$      0.007&          0.825$\pm$      0.013\\\hline
+C1      &          0.825$\pm$      0.023&          0.834$\pm$      0.010&          0.838$\pm$      0.016\\\hline
+\hline
+\end{tabular}
+\caption{The results of the experiment where the robots also adopt word-forms in case of a mismatch in the language game. In experiment R the hearer's new topic is selected at random. Topic information is used in experiments T (only in case of mismatch) and TT (any time).}
+\label{t:lex:ass}
+\end{table}
+
+The results in table \ref{t:lex:ass} show that the communicative success is 5 to 6 \% higher than in the basic experiment. These differences are significant with $p$-values of $p=0.0040$, $p=0.0188$ and $p=0.0400$ for R, T and TT resp.\footnote{Note that only 9 runs of 5,000 language games have been run in experiment TT.}. In all cases the discriminative success is about 3 \% higher with a significance of $p=0.0000$ for all experiments.
+
+Consistency is about 0.01 higher, but these results are insignificant. Distinctiveness is nearly the same as in the basic experiment. The parsimony is approximately 0.02 lower; differences with significances of $p=0.0000$, $p=0.0504$ and $p=0.0400$ for R, T and TT resp.. The specificity is 0.10 to 0.17 points lower ($p=0.0004$, $p=0.0078$ and $p=0.0000$ resp.). So, although the communicative success increases in comparison to the basic experiment, the cost appears to be a higher level of referential polysemy. This is not really a surprise, since the robots now construct more WM associations with already existing word-forms. Thus representational polysemy increases, and appaerently also the referential polysemy.
+
+The above comparison is made in contrast to the basic experiment. But which scheme is doing best? When comparing the results with each other, the differences have a significance with $p$-values that are higher than $p=0.4894$. Hence no significant differences are observed.
+\index{word-form!adoption}
+
+\section{Summary}
+
+\begin{figure}
+\centering
+\subfigure[CS]{\psfig{figure=lexicon//cs.eps,width=5.6cm}}
+\subfigure[DS]{\psfig{figure=lexicon//ds.eps,width=5.6cm}}\\
+\subfigure[S]{\psfig{figure=lexicon//s.eps,width=5.6cm}}
+\subfigure[D]{\psfig{figure=lexicon//d.eps,width=5.6cm}}\\
+\subfigure[C]{\psfig{figure=lexicon//c.eps,width=5.6cm}}
+\subfigure[P]{\psfig{figure=lexicon//p.eps,width=5.6cm}}
+\caption{An overview of the results of this chapter, compared with the basic experiment B.}
+\label{f:lex:results}
+\end{figure}
+
+In this chapter two parameters and one adaptation method have been investigated. The creation probability $P_s$ and the learning rate $\eta$ have been varied between 0 and 1 with steps of 0.1. Additionally, the word-form adoption strategy has been varied. In this experiment the hearer was allowed to adopt a word-form everytime it did not understand the speaker. 
+
+The results of the experiments are summarized in figure \ref{f:lex:results}. This experiment shows only two parameter settings of the experiments varying $P_s$ and $\eta$. It is clear that all experiments outperform the basic experiment in terms of the communicative success. The DS seems to be related with CS, which is normal since it is a function of the language games. 
+
+Distinctiveness is more or less equal for all experiments and parsimony is equal to all experiments except those where the word-forms are adopted in all cases. In these experiments the parsimony is slightly lower. Allowing more WM associations seems to have effect on the parsimony. This can be explained when one realizes that in these experiments the robots have more meanings to select from, hence they increase the chance that more conceptual synonymy arises.
+
+The fact that the robots have more possible associations to select from is also reflected in the specificity. The robots have more association, so they have a larger chance to select different meanings belonging to a word-form, which in turn can relate to different referents. Hence more referential polysemy is the result.
+
+Specificity is also influenced by the different parameter settings of $P_s$ and $\eta$. The higher these values are, the higher the chance that word-forms are used to name only one referent. 
+
+In the case that $P_s$ is higher, is not surprising, since there are more word-forms to name the different meanings, thus decreasing representational polysemy. And since the different meanings are distinctive to a high degree, these word-forms refer to a unique referent more and more. A higher creation probability also yields a higher communicative success. The cost however of a higher creation probability is that there are more word-forms to name the same number of referents.
+
+In the case that $\eta$ increases, the increase of the specificity is more difficult to understand. Remember that when $\eta=0.1$ the results were more different compared to when $0.2 \leq \eta \leq 0.9$. When $\eta=0.1$, the association scores have a very short interaction history, which increases when $\eta$ increases. So, it is not very surprising that when $\eta$ is low, the system is hard to learn. Nevertheless, figure \ref{f:lex:csA01} showed that lexicon eventually is learned, but it takes longer. This longer learning period is the reason why the global averages are much lower.
+
+\p
+Now that a large number of methods and parameters have been investigated in the past five chapters, it is time to see whether the system can be optimized by combining the most interesting results in one experiment. This is done in the next chapter.

@@ -1,0 +1,189 @@
+\subsection{Default behavior} 
+
+The default behavior is arbitrary. In the experiments it is opted for the robots to explore the environment by moving forward and doing obstacle avoidance. The only real goal is to make contact with each other when they are relatively close to each other. When one of the robots detects the presence of the other robot, it will send a radio message to make contact. The second robot confirms the first robot if it receives the request. The first robot becomes the speaker, the second the hearer. The robots come in the default state when a language game is finished, which happens either when both robots completed their tasks for the physical behavior or when a robot fails to complete a (sub)task within a certain time.
+
+\p
+The default movement is easy to implement. There are three processes active: (1) \texttt{TowardsDefault}, (2) \texttt{TouchBasedObstacleAvoidance} and (3) \texttt{Taxis}. Process (1) causes the robot to have a tendency to drive in a forward direction. The second process let the robot react to collisions as sensed by the bumpers. If a bumper is activated, the motors are set to a value such that the movement of the robot will be in the opposite direction of its current movement. The third process \texttt{Taxis} may seem a little bit odd here, but remember section \ref{s:setup:robots} where the characteristics of the IR is discussed. Active obstacle avoidance is done on the robots using IR. When the modulation of the IR is on, which must be the case when the robot is doing active obstacle avoidance based on IR, the characteristics of the IR module is reversed. I.e. a robot can only emit IR with the modulation set to a percentage $> 1$ (usually it is set to $75$). If the modulation is set to a high value, the sensora read high values when they do not sense IR and they read low values when IR is sensed, which a robot can only detect of its own IR. Now consider the process of phototaxis as explained in section \ref{s:setup:pdl}. In phototaxis the process of \texttt{Taxis} lets the robot orient towards an IR source that is not its own. This can only be sensed, however, when its own IR is off and the modulation is set to $1$. So in the case the of active obstacle avoidance, the characteristics of the IR module is the reciprocal of the the characteristics of IR phototaxis. So, the behavior of the robot processing \texttt{Taxis} will cause the inverse behavior when the characteristics are reciprocal, i.e. the robot will move away from the IR source that is the reflection of its own IR off an obstacle.
+
+\begin{figure}
+\centerline{\psfig{figure=lang_games//pulses.eps,width=11.4cm}}
+\caption{This figure shows how the characteristics of the sensor readings change when a pulse-train is set to the emission and modulation of the IR (see text). The period of the pulse is 41 PDL cycles (appr. $1 s$), 20 cycles the IR is set to {\bf on}, 21 cycles to {\bf off}. It is observable that the relaxation period of after a switch takes approximately 10 PDL cycles. The graph is recorded while the robot moved in the direction of an IR source. This is observable in that the intensity of the \texttt{FrontIR} increases in the second half of a pulse towards the end (from approximately time 250). The other robot has a period of 51 PDL cycles, 30 on and 21 off.}
+\label{f:pulses}
+\end{figure}
+
+\p
+Now, how would a robot detect the presence of the other robot? This seems very straight forward, but there are some difficulties considering the simplistic setup of the robots. The only sensors the robots have are either bumpers or light sensors. Using bumpers will confuse the obstacles with the robots. So, there emain the light sensors. The only light sensor the robots carry, however, are the IR sources. One could consider other light sources, but this appeared not very straight forward with the resources available at the VUB AI Lab. But if a robot emits IR, it is not able to detect the IR of another robot (again remeber the discussion on the IR characteristics). The problem is solved by letting each robot emit pulses of IR of relative long duration ($0.5-0.75$ seconds) and out of phase - otherwise the robots may always emit IR simultaneously (see figure \ref{f:pulses}). Since it takes approximately $0.25 s$ to let IR signal relaxate to a noise value after the modulation has been set off (section \ref{s:setup:smbii}), a robot can only reliably detect the presence of another after this period of relaxation. The control of the pulsation is done by a process called \texttt{PulseIR}, detection is done by a process \texttt{Detect}.
+
+\p
+So, when the first robot detects the second robot it sends a radio message with a request for communication. When the second robot receives this message, it replies a confirmation and enters the first state of the hearer (H1). The speaker, who is still in the default state only enters the first speaker state (S1) when it receives the message ``\texttt{confirm}''. This, however may lead to the problem of concurrency. If the second robot detects the first robot between the time the first robot has sent its message ``\texttt{communicate}'' and the receipt of this message by the second robot, the system enters a deadlock. If both robots would not accept a request for communication after it made a request of its own, the robots get stuck. If, however, the robots both would accept the request and send a confirmation and enter the hearer's state, then there would be a deadlock as well. To get out of such a deadlock, there is a maximum time which a robot can spend in a certain state other than the default state.
+
+\begin{table}
+\begin{tabular}{||p{.5cm}|p{.5cm}|p{8.5cm}||}
+\hline\hline
+S & C & Contents\\\hline\hline
+\multirow{3}{1cm}{0} & I & Start experiment or LG finished\\\cline{2-3}
+ & P & \begin{itemize}
+\item TowardsDefault
+\item TBOA
+\item Taxis
+\item PulseIR
+\item Detect
+\end{itemize}\\\cline{2-3}
+ & F & \begin{itemize}
+\item Receive message ``\texttt{communicate}'' and send message ``texttt{confirm}'': goto H1 {\em or}
+\item Receive message ``\texttt{confirm}'': goto S1
+\end{itemize}\\\hline\hline
+\end{tabular}
+\caption{This table shows the structure of the default state (S 0) within the FSA. The conditions (C) of the states are the initial conditions (I), the processes activated (P) and the final conditions (F).}
+\label{t:s0}
+\end{table}
+
+\p
+Table \ref{t:s0} shows the contents of the default state 0. Each state in a FSA has an initial condition, the state itself (here the state itself declares which processes are active) and a set of final conditions. Throughout the section such states will be defined as shall be shown in subsequent tables. Each FSA is implemented in C as a \texttt{switch}. Within each \texttt{case} of the \texttt{switch} the processes are activated by what could be called a {\em motivational factor} (like in \cite{steels:1996c}). This motivational factor is a binary factor that controls the activation of the process involved. For instance \texttt{Taxis} has a motivational factor \texttt{MotivIRT}, which takes values of either $0$ or $1$. If the process \texttt{Taxis} of section \ref{s:setup:pdl} is redefined as follows:
+
+\p
+\begin{verbatim}
+void Taxis()
+{
+  Difference=value(RightFrontIR)-value(LeftFrontIR);
+  add_value(LeftMotor,C*F*(Difference-value(LeftMotor)));
+  add_value(RightMotor,-C*F(Difference-value(RightMotor)));
+}
+\end{verbatim}
+
+\p
+then the process is actually changing the motor values when \texttt{MotivIRT}$=1$, else it is not doing anything.
+
+
+\subsection{Getting Close to Each Other}
+
+The first `big' task of the robots in the language game after they have made contact is to get close to each other and align themselves such that they are facing each other. This is done for the reasons of determining a similar context. It is assumed that the closer the robots stand to each other, the better they are capable of observing the same things around them. Obviously, it would be best if they would be at exactly the same place, but this is physically not possible (at least not at one point in time) and is not usual in human communication either. In order to enable the robots to form something as a model of the other robot's internal state the robots are assumed to face each other at the beginning of the `visual' perception (see section \ref{s:lg:pointing}).
+
+\p
+So, how do the robots get close to each other? The idea is that first the speaker will search and align the hearer after which the hearer aligns the speaker\footnote{It is no coincidence that the speaker starts looking for the hearer, since the speaker is the robot that first spotted the hearer. This is found to work faster than the other way around.}. The hearer starts with standing still and emitting IR in the four surrounding directions. The speaker uses IR phototaxis to get close to the hearer\footnote{If a robot is using IR phototaxis, note that this robot has turned its IR off and modulation to $1$.}. When the intensity of the IR increases a certain threshold, the speaker stops and starts to align the IR source using \texttt{Taxis} in the next state. When the speaker enters the next state, the hearer does not change its state, since the speaker did not finish alignment yet. The alignment is finished when the difference \texttt{(value(LeftFrontIR)-value(RightFrontIR))} changes sign. If the speaker stops alignment, it sends a radio message ``\texttt{aligned}'' to the hearer, so that both robots can tranfer to the next state simultaneously (except for a small time delay due to the radio transmission). Now the speaker will stop moving and starts to emit IR in all directions. The hearer will turn off its IR and after the modulation has relaxated, the hearer will do \texttt{Taxis} to align the speaker. See table \ref{t:lg:getclose} for the structure of the states during the task of finding each other.
+
+\newpage
+\setlongtables
+\begin{longtable}{||p{.5cm}|p{.5cm}|p{8.5cm}||}
+\hline\hline
+S & C & Contents\\\hline\hline
+\hline\hline
+\endfirsthead
+\multicolumn{3}{l}{\small\slshape continued from previous page}
+\hline
+\endhead
+\hline
+\multicolumn{3}{r}{\small\slshape continued on next page}
+\endfoot
+\hline\hline
+\caption{The structure of the states of the FSA during the task of getting close to each other. Note that for one robot (speaker or hearer) the initial condition of a state is the final condition of the previous state.}
+\label{t:lg:getclose}
+\endlastfoot
+\centering
+\multirow{3}{1cm}{S1} & I & Received message ``\texttt{confirm}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=0$
+\item \texttt{Taxis}
+\item \texttt{TowardsDefault}
+\item \texttt{TBOA}
+\end{itemize}\\\cline{2-3}
+ & F & \texttt{value(FrontIR)>ThresholdIR}\\\hline
+\multirow{3}{1cm}{S2} & I & \texttt{value(FrontIR)>ThresholdIR}\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=0$
+\item \texttt{Taxis}
+\end{itemize}\\\cline{2-3}
+ & F & \texttt{(value(LeftFrontIR)-value(RightFrontIR))} changes sign and send message ``\texttt{aligned}''\\\hline
+\multirow{3}{1cm}{S3} & I & \texttt{(value(LeftFrontIR)-value(RightFrontIR))} changes signs and sent message ``\texttt{aligned}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=200$
+\item StopMotors
+\end{itemize}\\\cline{2-3}
+ & F & Received message ``\texttt{aligned}''\\\hline
+\hline\hline\hline
+\multirow{3}{1cm}{H1} & I & Received message ``\texttt{communicate}'' plus sent message ``\texttt{confirm}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=200$
+\item StopMotors
+\end{itemize}\\\cline{2-3}
+ & F & Received message ``\texttt{aligned}''\\\hline
+\multirow{3}{1cm}{H2} & I  & Received message ``\texttt{aligned}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=0$
+\item \texttt{Taxis}
+\end{itemize}\\\cline{2-3}
+ & F & \texttt{(value(LeftFrontIR)-value(RightFrontIR))} changes sign and send message ``\texttt{aligned}''\\
+\end{longtable}
+
+
+\p
+The processes and states the robots need to get through are not necessarily the same, although there is some similarity. The speaker however is going through three states, while the hearer only goes through two states. Before the processes started the speaker only detected the `vicinity' of the hearer, which could be even more than two meters. At the end the robots end up at close distance (about $20 cm$) and they are aligned with a deviation of $\pm 30^o$. In the table the values assigned to the IR emitters are given. If $IR$ is this variable, the emitters are updated in a process \texttt{emitIR} that is always active:
+
+\p
+\begin{verbatim}
+void emitIR()
+{
+  add_value(IRem0,(IR-value(IRem0)));
+  :
+  add_value(IRem3,(IR-value(IRem3)));
+}
+\end{verbatim}
+
+\subsection{Perception and Segmentation}
+
+
+
+The way this information is used to segment the percept is discussed below, but first the question how the physical process of perception is implemented. There are basically two  ways how this is done. In the first way, the robots rotate only (approximately) $360^o$. The start when facing each other. The robot that does the perception has its IR off while the other emits IR. The rotating robot accelerates to a default rotation speed. When it detects a significant peak of IR in the front again, i.e. the robot `sees' the other robot again, then the robot stops. To have reliable information about at which position a light source is detected (needed for instance for pointing) it is useful to have the assumption that the robot rotates with a constant velocity. This assumption, however, does not hold in this situation. Although a constant power is fed to the motor, they first have to accelerate. Therefore a second method is used in which the robots initially are placed back-to-back (see figure \ref{f:back2back}). Then they rotate $720^o$ and start the perception when the front of the robot passes the other robot and it stops when the front passes the other robot for the second time; then the robot stops rotating when its back faces the other robot.
+
+The second method was also introduced to increase the robustness of the language game. Since the robots use each other's IR to decide when to stop, the assumption that the robots' IR source is facing the other robot {\bf must} hold; otherwise, the robots might fail to stop in time. However, in the original setup where the robots rotate only once, the rotating robot commands itself to at the moment it detects the maximum of IR of its opponent. However, since the robot has a certain velocity it takes a while before the robot actually stops. Thus the assumption that the robots are aligned well does not necessarily hold. To overcome such a problem in the back-to-back case, an IR sensor is placed in a wide position right to the center, so this sensor will be activated before the back of the robot is facing the other robot.
+
+ Table \ref{t:lg:perception} shows the structure of the perception. It includes the segmentation as a process. The process of segmentation will be discussed afterwards.
+
+\newpage
+\setlongtables
+\begin{longtable}{||p{.5cm}|p{.5cm}|p{8.5cm}||}
+\hline\hline
+S & C & Contents\\\hline\hline
+\hline\hline
+\endfirsthead
+\multicolumn{3}{l}{\small\slshape continued from previous page}
+\hline
+\endhead
+\hline
+\multicolumn{3}{r}{\small\slshape continued on next page}
+\endfoot
+\hline\hline
+\caption{The structure of the states of the FSA during the task of perception.}
+\label{t:lg:perception}
+\endlastfoot
+\centering
+\multirow{3}{1cm}{S4} & I & Received message ``\texttt{aligned}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=0$
+\item Rotate
+\item Segment
+\end{itemize}\\\cline{2-3}
+ & F & \texttt{Timer}$>\Theta_T$, $\max$(\texttt{value(FrontIR)})$>\Theta_{IR}$ and sent message ``\texttt{perceived}''
+\footnote{$\Theta_T$ is the threshold for the minimal duration of a rotation, usually taken to be $0.5\cdot T_{Rot}$, where $T_{Rot}$ is the average time it takes to rotate $360^o$; $\Theta_{IR}$ is a threshold value for the IR sensor to discard noise values.\\
+ This condition is the case when the robots are aligned face-to-face, when they are aligned back-to-back \texttt{value(FrontIR)} must be replaced by \texttt{value(BackIR)} and $\Theta_T$ is $1.5\cdot T_{Rot}$}\\\hline
+\multirow{3}{1cm}{S4} & I & \texttt{Timer}$>\Theta_T$, $\max$(\texttt{value(FrontIR)})$>\Theta_{IR}$ and sent message ``\texttt{perceived}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=200$
+\item StopMotors
+\end{itemize}\\\cline{2-3}
+ & F & Received message ``\texttt{perceived}''\\\hline
+\multirow{3}{1cm}{H3} & I & \texttt{(value(LeftFrontIR)-value(RightFrontIR))} changes sign and send message ``\texttt{aligned}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=200$
+\item StopMotors
+\end{itemize}\\\cline{2-3}
+ & F & Received message ``\texttt{perceived}''\\\hline
+\multirow{3}{1cm}{S4} & I & Received message ``\texttt{perceived}''\\\cline{2-3}
+ & P & \begin{itemize}
+\item $IR=0$
+\item Rotate
+\item Segment
+\end{itemize}\\\cline{2-3}
+ & F & \texttt{Timer}$>\Theta_T$, $\max$\texttt{value(FrontIR)}$>\Theta_{IR}$ and sent message ``\texttt{perceived}''\\\hline
+\end{longtable}
+

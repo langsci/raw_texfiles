@@ -1,0 +1,32 @@
+
+\chapter{Learning operators}
+\label{a:learning}
+
+This appendix offers some insights into the implementation of the learning operators in the experments. The learning operators include diagnostics and repair strategies for learning and innovation, and consolidation or alignment strategies. The code presented here was written in Common Lisp and makes use of the Babel2 framework which uses object-oriented programming for implementing the learning operators.
+
+\section{Diagnostics}
+
+\subsection{Diagnosing missing links in the meaning}
+
+The most important diagnostic used in the experiments is detecting whether there are unresolved variable equalities left in the meaning. In other words, detecting whether the hearer will have to perform additional inferences in order to interpret an utterance correctly. 
+\\
+\\
+First the class of the diagnostic has to be defined. This diagnostic is a subclass of the class `process-diagnostic' which means that it will be used at the level of linguistic processing. The `process-diagnostic' class is itself a subclass of the bas class `diagnostic'.
+
+\begin{verbatim}
+(defclass detect-missing-links-problem (process-diagnostic)  ()  (:documentation "Detect whether inferences are needed."))
+\end{verbatim}
+
+Next, an initialization method is implemented which specifies that the diagnostic is called after the agent extracts the meanings from the semantic pole of the latest node in the reaction network. As learning situations, both a regular interpretation task and a re-entrance task apply:
+
+\newpage
+\begin{verbatim}
+(defmethod initialize-instance    :after ((diagnostic detect-missing-links-problem) &key)  (setf (slot-value diagnostic 'learning-situations)     '(re-entrance interpretation))  (setf (slot-value diagnostic 'trigger-processes) 
+    '(extract-meaning)))
+\end{verbatim}
+
+Even though the speaker knows the meaning that she wanted to express, she will act completely as if she was a hearer in the diagnostic. This means going back to the world model and unifying the parsed meaning with it.
+
+\begin{verbatim}
+(defmethod diagnose-process     ((diagnostic detect-missing-links-problem)     (task task)     (process t))  (let* ((extracted-meanings (get-extracted-meanings task))
+           (facts (get-context-facts		 (get-data (agent-data task) 'sensory-context)))	 (bindings (get-bindings extracted-meanings facts))	 (equalities (equalities? (first bindings))))    (cond      ;; If interpretation fails, or is ambiguous, or yields      ;; multiple equalities, report a too-complex-problem.      ((or (null bindings)	   (> (length bindings) 1)	   (> (length equalities) 1))       (make-instance 'too-complex-problem		      :task task))      ;; If there was one equality, report a problem.      ((= (length equalities) 1)       (let* ((current (current-structure task))	      (full-meaning 	       (substitute-bindings 		(first bindings) extracted-meanings))	      (equality (first equalities))	      (event-meaning (find-event-meaning current))	      (unmarked-role (loop for meaning in event-meaning				when (member (third meaning) equality)				return (first meaning)))	      (form (get-strings (get-top-unit (right-pole current)))))	 (make-instance 'missing-links-problem			:intended-or-guessed-meaning full-meaning			:unresolved-equalities equalities			:unmarked-role unmarked-role			:uncovered-form form			:task task)))      ;; In the other cases there is no problem to report.      (t       nil))))\end{verbatim}

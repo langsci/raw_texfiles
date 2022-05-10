@@ -1,0 +1,302 @@
+%add all your local new commands to this file
+% This is the NEWCOMMAND file
+% wide page for side by side figures, tables, etc
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newlength{\offsetpage}
+\setlength{\offsetpage}{0pt}
+\newenvironment{widepage}{%
+\begin{adjustwidth}{-\offsetpage}{-\offsetpage}%
+\addtolength{\textwidth}{2\offsetpage}%
+}%
+{\end{adjustwidth}}
+
+%%% 3C TABLE example table item 
+% \tabexe{(num)*}{QUE}{dia}{ENG}
+\newcommand{\tabexe}[4]{%
+\begin{tabularx}{\textwidth}{p{4.5ex}@{ }L@{ }L}%
+#1 &\Qyell{\textit{#2}}~\textsc{#3} & `#4'\\%
+\end{tabularx}\\%
+}%
+
+%%% 4C TABLE in chapter 3 only example item table 
+% \tabexev{(num)*}{que}{eng}{QUE}{dia}{ENG}
+\newcommand{\tabexev}[6]{%
+\begin{tabularx}{\textwidth}{p{2.75ex}p{9ex}@{ }p{9ex}L@{ }L}%
+#1 &\Qyell{\textit{#2}} &#3 &\Qyell{\textit{#4}}~\textsc{#5} & `#6'\\%
+&&&&\\[-2ex]%
+ \end{tabularx}\\%
+}%
+
+%%% 4C TABLE in chapter 3 only like \tabexev table with no dia suitable for small example
+% \tabexevnd{(num)*}{que}{eng}{QUE}{ENG}
+\newcommand{\tabexevnd}[5]{%
+\begin{tabularx}{\textwidth}{p{2.75ex}p{9ex}p{15ex}LL}%
+#1 &\Qyell{\textit{#2}} &#3 &\Qyell{\textit{#4}} & `#5'\\%
+&&&&\\[-2ex]%
+ \end{tabularx}\\%
+}%
+
+%%% 3C Table in chapter 4 only 3 column table
+% \tabexeiii{(num)*}{que}{eng}
+\newcommand{\tabexeiii}[3]{%
+\begin{tabularx}{\textwidth}{p{2.75ex}p{19ex}L}%
+#1 &\Qyell{\textit{#2}} & #3\\%
+&&\\[-2ex]%
+\end{tabularx}\\%
+}
+
+% EXAMPLE ENVIRONMENT
+\NewEnviron{example}{%
+%\needspace{18ex}
+\begin{adjustwidth}{0pt}{0pt}
+\setlength{\tabcolsep}{1ex}
+\vspace{2ex}
+\small%
+\begin{mdframed}[needspace=16ex,leftmargin=0pt,rightmargin=0pt,%
+innerleftmargin=0pt,innerrightmargin=0pt,%
+everyline=true,splittopskip=8ex,%
+rightline=false,leftline=false,%
+innertopmargin=2ex,%
+innerbottommargin=0ex,%
+frametitle={Examples: \currentname},frametitlefont=\normalfont,repeatframetitle=false,frametitlerule=true,
+secondextra={
+      \node[
+        overlay,
+        fill=white,
+        anchor=west,
+        font=\footnotesize,
+        inner xsep=3ex
+      ] at ([xshift=3ex]O|-P) {Examples: \currentname, cont.};
+      },middleextra={
+      \node[
+        overlay,
+        fill=white,
+        anchor=west,
+        font=\footnotesize,
+        inner xsep=3ex
+      ] at ([xshift=3ex]O|-P) {Examples: \currentname, cont.};
+      }]
+\BODY
+\end{mdframed}
+\end{adjustwidth}
+\vspace{2ex}}
+
+% EXAMPLE ENV WITH NO TITLE
+\NewEnviron{examplent}{%
+%\needspace{18ex}
+\begin{adjustwidth}{0pt}{0pt}
+\setlength{\tabcolsep}{1ex}
+\vspace{2ex}
+\small%
+\begin{mdframed}[needspace=16ex,leftmargin=0pt,rightmargin=0pt,innerbottommargin=0ex%
+innerleftmargin=0pt,innerrightmargin=0pt,%
+everyline=true,splittopskip=4ex,%
+rightline=false,leftline=false,%
+innertopmargin=2ex]
+\BODY
+\end{mdframed}
+\end{adjustwidth}
+\vspace{2ex}}
+
+% Rotate for table 6
+\newcommand{\tabrot}[1]{\begin{rotate}{50} #1 \end{rotate}}
+
+% FOR TABLE 11 ONLY
+\newcommand{\tabexecase}[4]{\Qyell{\phono{#1}}&#2&\Qyell{#3}& `#4'	\\}
+
+% FOR TABLE 30 only
+\newcommand{\tabexefour}[4]{
+\begin{tabularx}{\textwidth}{p{6ex}@{ }p{13ex}L@{ }L}
+\Qyell{\phono{#1}}&#2&\Qyell{\textit{#3}}&#4	\\%
+\end{tabularx}\\%
+}
+
+% For the list of names in chapter 1
+\newcommand{\tabnames}[2]{\begin{tabularx}{0.95\textwidth}{@{}p{\parindent}@{}p{0.25\textwidth}@{}p{\parindent}X}
+&\textit{#1}	&&#2	\\
+\end{tabularx}}
+\newcommand{\tabnamess}[2]{\begin{tabularx}{0.95\textwidth}{@{}p{2\parindent}@{}p{0.25\textwidth}X}
+&#1	&#2	\\
+\end{tabularx}}
+
+\newcounter{gloss}
+\makeatletter
+\@addtoreset{gloss}{section}
+\@addtoreset{gloss}{subsection}
+\@addtoreset{gloss}{subsubsection}
+\@addtoreset{gloss}{paragraph}
+\@addtoreset{gloss}{subparagraph}
+\makeatother
+
+% Glossed example table
+% OLD COMMAND
+\newcommand{\tabglo}[9]{\refstepcounter{gloss}%
+\vspace{1ex}
+\begin{widepage}
+\setlength{\tabcolsep}{1ex}
+\footnotesize
+\begin{tabularx}{\textwidth}{p{4.5ex}@{ }L}
+\ifthenelse{\equal{#2}{}}{{\small (\thegloss)}}{{\small (#2)}} & \textit{\small #3} \\
+& \begin{tabular}{*{#1}{@{}l@{\hspace{2ex}}}}
+   #4	\\% WORDS
+   #5	\\% GRAMMAR
+   \end{tabular}\\
+\ifthenelse{\equal{#6}{}}{}{& {\small #6}\\}	% ENGLISH
+%\ifthenelse{\equal{#7}{}}{}{& {\small #7}\\}	% SPANISH
+\ifthenelse{\equal{#8}{}}{}{& {(#8,~#9)}\\}	% AUDIO
+\end{tabularx}
+\end{widepage}
+\vspace{1ex}}
+
+% EXGLOEXE
+\newcommand{\exgloexe}[9]{\vspace{1ex}
+\begin{widepage}
+\setlength{\tabcolsep}{1ex}
+%\footnotesize
+\refstepcounter{gloss}
+\noexpandarg\StrCount{#4}{\breakhere}[\breakcount]
+\begin{tabularx}{\textwidth}{p{4.5ex}@{ }L@{\hspace{4ex}}}
+\ifthenelse{\equal{#1}{}}{{%\small 
+(\thegloss)}}{{%\small 
+(#1)}} & \textit{%\small 
+#3}~{%\small
+\textsc{#2}} \\
+& \begin{tabular}{*{13}{@{}l@{\hspace{2ex}}}}
+   #4	\ifthenelse{\equal{\breakcount}{0}}{}{\ifthenelse{\equal{\breakcount}{1}}{\\[-3.6em]}{\ifthenelse{\equal{\breakcount}{2}}{\\[-6.0em]}{\ifthenelse{\equal{\breakcount}{3}}{\\[-8.4em]}{}}}}\\% WORDS
+   #5	% GRAMMAR
+   \end{tabular}\\
+\end{tabularx}
+}
+
+% NEW COMMANDS
+\newcommand{\gloexe}[5]{\begin{widepage}
+\setlength{\tabcolsep}{1ex}
+%\footnotesize
+\refstepcounter{gloss}
+\begin{tabularx}{\textwidth}{p{4.5ex}@{ }L}
+\ifthenelse{\equal{#2}{}}{{%\small 
+(\thegloss)\ifthenelse{\equal{#1}{}}{}{\label{#1}}}}{{%\small 
+(#2)}} & \textit{%\small 
+#4}~{%\small
+\textsc{#3}} \\
+& #5\\
+\end{tabularx}
+}
+% MOR GLO PAIR
+\newcommand{\morglo}[2]{\begin{tabular}{@{}l@{}}#1\\#2   \end{tabular}\hspace{1.5ex}}
+% PAIR TO GLOTRAN TO CLOSE GLO EXE
+\newcommand{\glotran}[4]{
+\begin{tabularx}{\textwidth}{p{4.5ex}@{ }L@{\hspace{4ex}}}
+\ifthenelse{\equal{#1}{}}{}{& #1\\}	% ENGLISH
+%\ifthenelse{\equal{#2}{}}{}{& {\small #2}\\}	% SPANISH
+%\ifthenelse{\equal{#3}{}}{}{& {(#3,~#4)}\\}	% AUDIO
+\end{tabularx}
+\end{widepage}
+
+\null
+}
+
+\newcommand{\breakhere}{\\[1.2em]} % to break the line in gloss
+
+% Mini toc in chapter 1
+\newcommand{\minitoc}[2]{
+\begin{tabularx}{\textwidth}{@{ }p{10ex}@{ }L@{}p{3ex}@{ }}
+{\small\ref{#1}} & \hyperref[#1]{\small#2~\dotfill\phantom{x}}&{\small\pageref{#1}}\\
+\end{tabularx}
+}
+
+\newcommand{\minitoctab}[2]{
+\begin{tabularx}{\textwidth}{@{ }p{5ex}@{ }L@{}p{3ex}@{ }}
+{\small\ref{#1}} & \hyperref[#1]{\small#2~\dotfill\phantom{x}}&{\small\pageref{#1}}\\
+\end{tabularx}
+}
+
+% DEFINE COLOR and TEXT COLOR
+\newcommand{\Qyell}[1]{\textcolor{Black}{#1}}
+%\textcolor[rgb]{0.5,0.5,0.0}{#1}} original yellow
+\newcommand{\Qgreen}[1]{\textcolor{Green}{#1}}
+\newcommand{\Qblue}[1]{\textcolor{Blue}{#1}}
+\newcommand{\Qred}[1]{\textcolor{Red}{#1}}
+
+% SPANISH WORDS
+\newcommand{\spanish}[1]{\foreignlanguage{spanish}{\emph{#1}}}
+
+% phono (for Quechua words) and pb (underlined)
+\newcommand{\phono}[1]{\mbox{\textit{#1}}}
+\newcommand{\phononb}[1]{\textit{#1}}
+\newcommand{\pb}[1]{\underline{\smash{#1}}}
+\newcommand{\pbg}[1]{#1}
+
+% SMALL CAPS
+% general
+\newcommand{\lsc}[1]{\textsc{#1}}
+% others
+\newcommand{\ALL}{\textsc{all}}
+\newcommand{\ACH}{\textsc{ach}}
+\newcommand{\AH}{\textsc{ah}}
+\newcommand{\AMV}{\textsc{amv}}
+\newcommand{\MV}{\textsc{mv}}
+\newcommand{\CH}{\textsc{ch}}
+\newcommand{\LT}{\textsc{lt}}
+\newcommand{\PQ}{\textsc{pq}}
+\newcommand{\QB}{\textsc{qb}}
+\newcommand{\QI}{\textsc{qi}}
+\newcommand{\QII}{\textsc{qii}}
+\newcommand{\QIIA}{\textsc{qiia}}
+\newcommand{\QIIC}{\textsc{qiic}}
+\newcommand{\SYQ}{\textsc{syq}}
+\newcommand{\SP}{\textsc{sp}}
+
+% Subscript compact new command
+\newcommand{\tss}[1]{\textsubscript{#1}}
+
+%uo upper \o
+\newcommand{\uo}{\textup{\o}}
+
+% Abbrev.
+\newcommand{\Cons}{\emph{C.}}
+\newcommand{\Vowe}{\emph{V.}}
+\newcommand{\lit}{\emph{lit.}}
+\newcommand{\Sp}{\emph{Sp.}}
+\newcommand{\spkr}{\emph{Spkr}}
+\newcommand{\ie}{\emph{i.e.}}
+\newcommand{\cf}{\emph{cf.}}
+% others
+\newcommand{\pCpVpCp}{\textrm{(C)V(C)}}
+\newcommand{\CCV}{\textrm{CCV}}
+\newcommand{\VCC}{\textrm{VCC}}
+\newcommand{\VV}{\textrm{VV}}
+
+% ON OFF
+\newcommand{\onoff}[1]{#1}
+
+% Footnote in table
+\newcommand{\tabfoot}[1]{\textsuperscript{(#1)}}
+\newcommand{\tabfoottext}[2]{\textsuperscript{(#1)} &#2\\}
+
+% tikz color codes. for the peruvian languages map
+\definecolor{yaupink}{RGB}{245,191,255}
+\definecolor{yaulightgreen}{RGB}{188,255,189}
+\definecolor{yaudarkgreen}{RGB}{168,246,200}
+\definecolor{yausavannah}{RGB}{210,255,119}
+\definecolor{yaudarkviolet}{RGB}{136,0,151}
+\definecolor{yauorange}{RGB}{254,199,161}
+\definecolor{yaured}{RGB}{255,79,79}
+\definecolor{yaubrown}{RGB}{167,139,79}
+\definecolor{yauyellow}{RGB}{255,230,158}
+\definecolor{yauearth}{RGB}{229,229,145}
+\definecolor{yaurose}{RGB}{255,128,199}
+\definecolor{yaugrey}{RGB}{184,193,206}
+
+\renewcommand{\sc}{\scshape}
+\renewcommand{\it}{\itshape}
+\renewcommand{\rm}{\upshape}
+
+\newcommand{\updag}{$^{\dag}$}
+\newcommand{\glotrannq}{\glotran}
+\newcommand{\glotranexe}{?}
+
+\newcommand{\etc}{etc.}
+\newcommand{\eg}{e.\,g.\ }
+\newcommand{\tabnametitle}[1]{#1}
+\newcommand{\tabnametitles}[1]{#1}

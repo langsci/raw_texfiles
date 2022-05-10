@@ -1,0 +1,781 @@
+%% -*- coding:utf-8 -*-
+
+% general stuff for grammar theory is in localpackages.tex
+% everything that is specific to Chinese is in here.
+
+\usepackage{xeCJK}
+
+%\xeCJKsetup{AllowBreakBetweenPuncts=false}
+
+% this avoids a linebreak between dot and footnote: ....。\footnote
+\xeCJKsetup{CheckFullRight=true}
+\xeCJKsetup{NoBreakCS = { \footnote \footnotemark \nobreak \dotfootnote \colonfootnote
+    \commafootnote \bracketfootnotequote \bracketfootnote}}
+
+
+%\xeCJKsetup{PunctStyle=plain}
+%\xeCJKsetup{PunctStyle=kaiming}
+\xeCJKsetup{PunctStyle=CCT}
+
+
+%% below are added by Lulu for the Chinese version of the book
+\usepackage{zhnumber}
+% to type­set Chinese representations of numbers.  
+
+%\usepackage[UTF8, heading = true]{ctex}
+
+%\usepackage{titlesec}  
+\AtBeginDocument{
+
+% % for Chinese style of titles of chapters and sections.
+% \renewcommand{\partname}{第\thepart{}部分}  
+\def\thepart{\zhdig{part}}
+% %\pagenumbering {zhnum}
+% \renewcommand{\chaptername}{第\zhnum{chapter}章}  
+% \renewcommand{\appendixname}{附录}
+% \appto\appendix{
+% \renewcommand{\chaptername}{\appendixname\thechapter} 
+% }
+%\renewcommand{\chapterautorefname}{第\zhnum{chapter}章}%
+
+% for Chinese style of pages. 15.4.2019
+\def\reftextfaceafter{在\reftextvario{下}{后} 一页}%
+\def\reftextfacebefore{在\reftextvario{上}{前} 一页}%
+\def\reftextafter{在前一页}%
+\def\reftextbefore{在后一页}%
+\def\reftextcurrent{在这一页}%
+\def\reftextfaraway#1{在第~\pageref{#1}页}%
+\def\reftextpagerange#1#2{在第~\pageref{#1}--\pageref{#2}页}%
+\def\reftextlabelrange#1#2{从第\ref{#1}页到第~\ref{#2}页}%
+
+% The following would also change the chapter and section number in the heading. We do not want
+% this. 27.10.2016
+%\def\thechapter{\zhnum{chapter}}
+%\def\thesection{\zhnum{section}}
+
+%\lsBookLanguageChinese
+%\renewcommand{\lsBookLanguage}{chinese}
+
+%re\newcommand{\sectionname}{节}  
+\renewcommand{\figurename}{图}  
+\renewcommand{\tablename}{表}  
+%\renewcommand{\bibname}{参考文献}  
+\renewcommand{\contentsname}{目~~~~录}  
+\renewcommand{\listfigurename}{图~目~录}  
+\renewcommand{\listtablename}{表~目~录}  
+\renewcommand{\indexname}{索~引}  
+\renewcommand{\abstractname}{\Large{摘~要}}  
+\newcommand{\keywords}[1]{\\ \\ \textbf{关~键~词}：#1}  
+% \titleformat{\chapter}[block]{\center\Large\bf}{\chaptername}{20pt}{}  
+% \titleformat{\appendix}[block]{\center\Large\bf}{\appendixname}{20pt}{}  
+% \titleformat{\section}[block]{\large\bf}{\thesection}{10pt}{}  
+% \titleformat{\tableofcontents}[block]{\center\Large\bf}{\contensname}{20pt}{}  
+% \titleformat{\part}[block]{\center\Large\bf}{\partname}{20pt}{}  
+% \titleformat{\index}[block]{\center\Large\bf}{\indexname}{20pt}{}  
+}
+% for Chinese style of table of contents
+%\titlecontents{\chapter}
+
+
+% scrbook does the trick
+% \renewcaptionname{USenglish}{\contentsname}{目~~~~录}
+% % for Chinese style of titles of chapters and sections.
+% \renewcaptionname{USenglish}{\partname}{第\thepart{}部分}  
+% \def\thepart{\zhdig{part}}
+% %\pagenumbering {zhnum}
+% \renewcaptionname{USenglish}{\chaptername}{第\zhnum{chapter}章}  
+% \renewcaptionname{USenglish}{\appendixname}{附录}
+% \appto\appendix{
+% \renewcaptionname{USenglish}{\chaptername}{\appendixname\thechapter} 
+
+
+\renewcaptionname{USenglish}{\contentsname}{目~~~~录}
+\renewcaptionname{USenglish}{\appendixname}{附录}
+
+% https://tex.stackexchange.com/a/542570/18561
+
+\renewcommand*{\partformat}{第\zhdig{part}部分\hspace{20pt}}
+\renewcommand*{\partheadmidvskip}{}
+\renewcommand*{\chapterformat}{第\zhnum{chapter}章\hspace{20pt}}
+\renewcommand*{\raggedchapter}{\centering}
+\renewcommand*{\sectionformat}{\thesection\hspace{10pt}}
+%\renewcommand*{\appendixformat}{\appendixname\thechapter\hspace{10pt}}
+
+\appto\appendix{
+% \renewcommand{\chaptername}{\appendixname\thechapter}
+\def\thechapter{\Alph{chapter}} 
+}
+
+
+\addtokomafont{disposition}{\rmfamily}
+\setkomafont{partnumber}{\Large}
+\setkomafont{part}{\Large}
+\setkomafont{chapter}{\Large}
+\setkomafont{section}{\large}
+
+
+\usepackage{indentfirst}
+% In Chinese, each paragraph should be indented.
+\setlength{\parindent}{2em}
+% the indented space should be two characters.
+
+% The standard class has the following:
+% This does not work however, since we need indentation relative to the font size of the footnote
+% characters.
+
+%\deffootnote[1.5em]{1.5em}{\normalparindent}{\textsuperscript{\thefootnotemark}} 
+% changed to
+%\deffootnote[1.5em]{1.5em}{\chinesefootnoteparindent}{\textsuperscript{\thefootnotemark}}
+
+\newlength{\chinesefootnoteparindent}
+\setlength{\chinesefootnoteparindent}{1.5em}
+
+
+ 
+
+\newcommand{\fontpath}{./fonts/}
+
+% quotes should be in simkai（楷体）
+% simkai is MicroSoft
+%\newCJKfontfamily[\fontpath/halfish simkai]\simkai{KaiTi}[Mapping=tex-text,Ligatures=Common,Scale=MatchUppercase]
+
+% quotes should be in FZKTJW
+% Lulu Wang, 15.05.2020
+% FZKTJW.TTF by the FounderType, the url is as follows and the font is in the attached file.
+% https://www.foundertype.com/index.php/FindFont/searchFont?keyword=楷体
+%
+% The FounderType is created by a large group originated from Peking University. There are four types that are free for commercial publishing and personal designing. FZKTJW.TFF is one of these free types.
+\newCJKfontfamily[\fontpath/]\simkai{FZKai-Z03S}[Mapping=tex-text,Scale=MatchUppercase]
+
+% indentation of the whole quotation is 2em like the paragraph indentation
+% St. Mü. 22.04.2018
+\makeatletter
+\renewenvironment{quotation}
+			   {\list{}{\leftmargin2em\listparindent 2em%
+						%\itemindent    \listparindent
+						%\rightmargin   \leftmargin
+						\parsep        \z@ \@plus\p@}%
+				\item\relax\hspace{2em}}% 22.07.2019 added hspace. I guess this is a
+                                  % bad hack but it seems to work. St. Mü.
+			   {\endlist}
+\makeatother
+\AtBeginEnvironment{quotation}{\simkai}
+
+
+% this influences enumerate and itemize
+\RequirePackage{enumitem}
+\setlist{leftmargin=3em}
+
+
+%\usepackage{newunicodechar}
+%\newunicodechar{(}{（}
+
+
+
+% use Chinese parenthesis
+% https://tex.stackexchange.com/a/428832/18561
+\makeatletter
+\renewcommand*{\bibleftparen}{\unspace\blx@postpunct（}
+%\renewcommand*{\bibleftparen}{\blx@postpunct（}
+\renewcommand*{\bibrightparen}{\blx@postpunct）\unspace\midsentence}
+%\renewcommand*{\bibrightparen}{\blx@postpunct）\midsentence}
+
+% The new font seems to require the space after the closing bracket.
+\renewcommand*{\bibrightparen}{\blx@postpunct）\midsentence}
+
+
+\AtBeginDocument{
+\newindex{sbc}{scx}{scd}{术语索引（英汉对照）}
+}
+
+\newcommand{\footnoteindex@sbc}[2]{\index[sbc]{#2|infn{#1}}}
+% \newcommand{\isc}[1]{%
+%   \if@noftnote%
+%     \index[sbc]{#1}%
+%     \else%
+%     \edef\tempnumber{\thefootnote}%
+%     \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#1}%
+%     %\indexftn{#1}{\value{footnotemark}}%
+%   \fi%
+% }
+
+% index commands adapted to include both English and Chinese
+\makeatletter
+% Subject index
+\newcommand{\isce}[3][]{%
+  % PRO PRO -> just one item is entered
+  \ifthenelse{\equal{#2}{#3}}{%
+  \if@noftnote%
+    \index[sbj]{#2#1}%
+    \index[sbc]{#2#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2#1}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#2#1}%
+    %\indexftn{#1}{\value{footnotemark}}%
+  \fi%
+  }{%
+  % else #2 and #3 differ -> two items are entered
+  \if@noftnote%
+    \index[sbj]{#2\hspace{1em}#3#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2\hspace{1em}#3#1}%
+    %\indexftn{#1}{\value{footnotemark}}%
+  \fi%
+  \if@noftnote%
+    \index[sbc]{#3@#3\hspace{1em}#2#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#3@#3\hspace{1em}#2#1}%
+  \fi%
+  }%
+}
+
+% If you call the above command with an @ specification for sorting this causes havok, since the @
+% appears in the respective other language. So we have to pass it as a separate argument. I defined
+% a new command for this. St. Mü. 04.07.2020
+%\isce{theta-栅@$\theta$-栅}{theta-grid@$\theta$-grid}
+%\isceat[|(]{theta-栅}{$\theta$-栅}{theta-grid}{$\theta$-grid}
+\newcommand{\isceat}[5][]{%
+  % the case that the two items are identical does not appear
+  % else #2 and #3 differ -> two items are entered
+  \if@noftnote%
+    \index[sbj]{#2@#3\hspace{1em}#5#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2@#3\hspace{1em}#5#1}%
+    %\indexftn{#1}{\value{footnotemark}}%
+  \fi%
+  \if@noftnote%
+    \index[sbc]{#4@#5\hspace{1em}#3#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#4@#5\hspace{1em}#3#1}%
+  \fi%
+}
+
+\newcommand{\iscesub}[5][]{%
+  % if the subterms are equal eg relation!$\bigcirc$
+  \ifthenelse{\equal{#4}{#5}}{%
+  \if@noftnote%
+    \index[sbj]{#2\hspace{1em}#3!#4#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2\hspace{1em}#3!#4#1}%
+  \fi%
+  \if@noftnote%
+    \index[sbc]{#3@#3\hspace{1em}#2!#5@#5#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#3@#3\hspace{1em}#2!#5@#5#1}%
+  \fi%
+  }{%
+  % if they are not equal print them
+  \if@noftnote%
+    \index[sbj]{#2\hspace{1em}#3!#4\hspace{1em}#5#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2\hspace{1em}#3!#4\hspace{1em}#5#1}%
+  \fi%
+  \if@noftnote%
+    \index[sbc]{#3@#3\hspace{1em}#2!#5@#5\hspace{1em}#4#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#3@#3\hspace{1em}#2!#5@#5\hspace{1em}#4#1}%
+  \fi%
+  }%
+}
+
+\newcommand{\iscesubsee}[6]{%
+%  \index[sbj]{#1\hspace{1em}#3|see{#2\hspace{1em}#4}}%
+%  \index[sbc]{#3\hspace{1em}#1|see{#4\hspace{1em}#2}}%
+}
+
+\newcommand{\iscesubat}[7][]{%
+  % the case that the two items are identical does not appear
+  % if they are not equal print them
+  \if@noftnote
+    \index[sbj]{#2\hspace{1em}#3!#4@#5\hspace{1em}#7#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2\hspace{1em}#3!#4@#5\hspace{1em}#7#1}%
+  \fi%
+  \if@noftnote
+    \index[sbc]{#3@#3\hspace{1em}#2!#6@#7\hspace{1em}#5#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#3@#3\hspace{1em}#2!#6@#7\hspace{1em}#5#1}%
+  \fi%
+}
+
+
+
+\newcommand{\iscesubsub}[7][]{%
+ % if the subterms are equal eg category!functional!AgrO
+  \ifthenelse{\equal{#6}{#7}}{%
+  \if@noftnote
+    \index[sbj]{#2\hspace{1em}#3!#4\hspace{1em}#5!#6#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2\hspace{1em}#3!#4\hspace{1em}#5!#6#1}%
+  \fi%
+  \if@noftnote
+    \index[sbc]{#3@#3\hspace{1em}#2!#5@#5\hspace{1em}#4!#6#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#3@#3\hspace{1em}#2!#5@#5\hspace{1em}#4!#6#1}%
+  \fi%
+  }{%
+  % else they are non-equal
+  \if@noftnote
+    \index[sbj]{#2\hspace{1em}#3!#4\hspace{1em}#5!#6\hspace{1em}#7#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbj\expandafter{\tempnumber}{#2\hspace{1em}#3!#4\hspace{1em}#5!#6\hspace{1em}#7#1}%
+  \fi%
+  \if@noftnote
+    \index[sbc]{#3@#3\hspace{1em}#2!#5@#5\hspace{1em}#4!#7@#7\hspace{1em}#6#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@sbc\expandafter{\tempnumber}{#3@#3\hspace{1em}#2!#5@#5\hspace{1em}#4!#7@#7\hspace{1em}#6#1}%
+  \fi%
+  }%
+}
+
+\newcommand{\iscesee}[4]{%
+  \index[sbj]{#1\hspace{1em}#3|see{#2\hspace{1em}#4}}%
+  \index[sbc]{#3@#3\hspace{1em}#1|see{#4\hspace{1em}#2}}%
+}
+
+
+% Language index
+\newcommand{\ilce}[3][]{%
+  \if@noftnote
+    \index[lan]{#2\hspace{1em}#3#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@lan\expandafter{\tempnumber}{#2\hspace{1em}#3#1}%
+  \fi%
+  \if@noftnote
+    \index[lane]{#3\hspace{1em}#2#1}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@lane\expandafter{\tempnumber}{#3\hspace{1em}#2#1}%
+  \fi%
+}
+\newcommand{\ilcesub}[4]{%
+  \if@noftnote
+    \index[lan]{#1\hspace{1em}#2!#3\hspace{1em}#4}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@lan\expandafter{\tempnumber}{#1\hspace{1em}#2!#3\hspace{1em}#4}%
+  \fi%
+  \if@noftnote
+    \index[lane]{#2\hspace{1em}#1!#4\hspace{1em}#3}%
+    \else%
+    \edef\tempnumber{\thefootnote}%
+    \expandafter\footnoteindex@lane\expandafter{\tempnumber}{#2\hspace{1em}#1!#4\hspace{1em}#3}%
+  \fi%
+}
+\makeatother
+
+\newcommand{\isfeat}[1]{\iscesub{特征}{feature}{\textsc{#1}}{\textsc{#1}}}
+\newcommand{\isrel}[1]{\iscesub{关系}{relation}{#1}{#1}}
+\newcommand{\istype}[1]{\iscesub{类型}{type}{\textit{#1}}{\textit{#1}}}
+
+\newcommand{\iw}[1]{}
+
+
+\renewcommand{\see}[2]{见\hspace{1em} #1}
+
+\makeatletter
+\renewcommand{\lsImpressumCitationText}{
+  \onlyAuthor
+  \renewcommand{\newlineCover}{}
+  \renewcommand{\newlineSpine}{}
+  {\lsImpressionCitationAuthor}\if\lsEditorSuffix\empty\else\ \lsEditorSuffix\fi. %
+  {\lsYear}. %
+  \@title\if\@subtitle\empty\else: \@subtitle\fi\ %
+  （\lsSeriesTitle~\lsSeriesNumber）. %
+  柏林：语言科学出版社.
+%  Berlin: Language Science Press.
+}
+\makeatother
+
+%\newcommand{\lsSeriesTitle}{Textbooks in Language Sciences}
+\AtBeginDocument{
+\renewcommand{\lsSeriesTitle}{语言科学系列教材}
+}
+
+% well that comma is wrong
+% unfortunately this does not help here, since we load localmetadata before localpackages-chinese
+% \renewcommand{\AdditionalFontImprint}[1]{
+%   \edef\fontstemp{\lsAdditionalFontsImprint}
+%   \renewcommand{\lsAdditionalFontsImprint}{\fontstemp \ \ #1}
+% }
+
+
+\renewcommand{\githubtext}{源代码可获取自 \href{https://www.github.com/langsci/\lsID}{www.github.com/langsci/\lsID}}
+\renewcommand{\paperhivetext}{合作阅读：\href{https://paperhive.org/documents/remote?type=langsci&id=\lsID}{paperhive.org/documents/remote?type=langsci\&id=\lsID}}
+%\renewcommand{\githubtext}{Source code available from \href{https://www.github.com/langsci/\lsID}{www.github.com/langsci/\lsID}}
+%\renewcommand{\paperhivetext}{Collaborative~reading:~\href{https://paperhive.org/documents/remote?type=langsci&id=\lsID}{paperhive.org/documents/remote?type=langsci\&id=\lsID}}
+
+\makeatletter
+\renewcommand{\lsImpressum}{
+\thispagestyle{empty}
+\raggedright
+
+\lsImpressumCitationText
+
+\vfill
+
+本书可在以下网址获取： \\
+%This title can be downloaded at:\\
+\url{\lsURL}
+
+© \lsYear, \iflsCollection the authors\else\@author\fi
+
+\newcommand{\ccby}{CC-BY}
+\newcommand{\ccbynd}{CC-BY-ND}
+\ifx\lsCopyright\ccby
+本书的发表采用知识共享署名4.0许可协议（CC BY 4.0）授权：
+%Published under the Creative Commons Attribution 4.0 Licence (CC BY 4.0):
+http://creativecommons.org/licenses/by/4.0/ \includegraphics[height=.75em]{ccby.pdf}
+\else
+\ifx\lsCopyright\ccbynd
+本书的发表采用知识共享署名—禁止演绎4.0许可协议（CC BY-ND 4.0）授权：
+%Published under the Creative Commons Attribution-NoDerivatives 4.0 Licence (CC BY-ND 4.0):
+http://creativecommons.org/licenses/by-nd/4.0/ \includegraphics[height=.75em]{ccbynd.pdf}
+\else
+Published under the Creative Commons Attribution-ShareAlike 4.0 Licence (CC BY-SA 4.0):
+http://creativecommons.org/licenses/by-sa/4.0/ \includegraphics[height=.75em]{ccbysa.pdf}
+\fi
+\fi
+
+{\lsImpressumExtra}
+
+\ifx\lsSeries\sidl
+Indexed in EBSCO\smallskip
+\fi
+
+
+
+\begin{tabular}{@{}l@{~}l}
+ISBN: &
+\IfStrEq{\lsISBNdigital}{000-0-000000-00-0}{%no digital ISBN, issue warning
+  \color{red}no digital ISBN
+}{%digital ISBN present, write ISBN
+  \lsISBNdigital~（完整电子版）
+%  \lsISBNdigital~(Digital)
+}
+\\
+\IfStrEq{\lsISBNhardcover}{000-0-000000-00-0}{ %hardcover ISBN not present
+}{%hardcover ISBN present, write ISBN
+  &\lsISBNhardcover~（精装）\\
+%  &\lsISBNhardcover~(Hardcover)\\
+}
+
+\IfStrEq{\lsISBNsoftcover}{000-0-000000-00-0}{ %softcover ISBN not present
+  \IfStrEq{\lsISBNhardcover}{000-0-000000-00-0}{ %neither hardcover nor softcover, issue warning
+    \color{red} no print ISBNs!
+  }{%hardcover present, no warning
+  }
+}{%only softcover present, write ISBN
+  &\lsISBNsoftcover~（简装）\\
+%  &\lsISBNsoftcover~(Softcover)\\
+}
+\end{tabular}
+
+\IfStrEq{\lsISSNprint}{??}   % \IfStrEq from xstring
+  {}
+  {ISSN (print): \lsISSNprint\\
+   ISSN (electronic): \lsISSNelectronic\\}
+\IfStrEq{\lsISSN}{??}
+  {}
+  {ISSN: \lsISSN}
+
+
+\IfStrEq{\lsBookDOI}{??}
+  {{\color{red} no DOI}}
+  {DOI: \href{https://doi.org/\lsBookDOI}{\nolinkurl{\lsBookDOI}}}\\
+\IfStrEq{\lsID}{000}{\color{red} ID not assigned!}{%
+\githubtext\\
+\paperhivetext
+}%
+\bigskip
+
+封面设计： 
+%Cover and concept of design:
+Ulrike Harbort \\
+\if\@translator\empty\else
+译者：
+%Translator:
+\@translator \\
+\fi
+\if\@typesetter\empty\else
+排版：
+%Typesetting:
+\@typesetter \\
+\fi
+\if\@illustrator\empty\else
+插图：
+%\\Illustration:
+\@illustrator \\
+\fi
+\if\@proofreader\empty\else
+校对：
+%Proofreading:
+\begin{tabular}[t]{@{}l@{}}\@proofreader \\
+\end{tabular}\\
+\fi
+\if\@openreviewer\empty\else
+公开评审：
+%Open reviewing:
+\@openreviewer \\
+\fi
+字体：
+\begin{tabular}[t]{@{}l@{}}
+Source Serif Pro \ \ Arimo \ \ DejaVu Sans Mono\lsAdditionalFontsImprint\\
+\end{tabular}\\
+%Fonts: Libertinus, Arimo, DejaVu Sans Mono\lsAdditionalFontsImprint\\
+排版软件：\XeLaTeX
+%Typesetting software: \XeLaTeX
+
+\bigskip
+
+\publisherstreetaddress\\
+\publisherurl
+
+\vfill
+
+本书由柏林自由大学存储和编目 \\[3ex]
+%Storage and cataloguing done by \storageinstitution\\[3ex]
+
+\includestoragelogo\\[3ex]
+
+
+% \vfill
+
+% \noindent
+% \lsp has no responsibility for the persistence or accuracy of URLs for
+% external or third-party Internet websites referred to in this
+% publication, and does not guarantee that any content on such websites
+% is, or will remain, accurate or appropriate.
+}
+\makeatother
+
+
+
+\newcommand{\mytrans}[1]{\trans\quotetrans{#1}}
+
+% use Chinese single quotes and adjust the kerning
+\newcommand{\quotetrans}[1]{‘#1’}
+\xeCJKsetkern{。}{’}{0.2em}
+
+% The following does not work since we have trnaslations ending in question marks or without punctuation
+%\newcommand{\quotetrans}[1]{`#1\hspace{-0.2em}'}
+
+
+
+% use a less heavy variant of Libertine: Display font
+  %% \setmainfont[
+  %%         Ligatures={TeX,Common},
+  %%         Path=\fontpath,
+  %%         PunctuationSpace=0,
+  %%         Numbers={Proportional},
+  %%         BoldFont = LinLibertine_RZ.otf ,
+  %%         ItalicFont = LinLibertine_RI.otf ,
+  %%         BoldItalicFont = LinLibertine_RZI.otf,
+  %%         BoldSlantedFont = LinLibertine_RZ.otf,
+  %%         SlantedFont    = LinLibertine_R.otf,
+  %%         SlantedFeatures = {FakeSlant=0.25},
+  %%         BoldSlantedFeatures = {FakeSlant=0.25},
+  %%         SmallCapsFeatures = {FakeSlant=0,Numbers=OldStyle},
+  %%         ]{LinLibertine_DR.otf} 
+
+
+
+%\setCJKmainfont{LinLibertine_R.otf}
+
+
+\makeatletter
+\newlength\fake@f
+\newlength\fake@c
+\def\fakesc#1{%
+  \begingroup%
+  \xdef\fake@name{\csname\curr@fontshape/\f@size\endcsname}%
+  \fontsize{\fontdimen8\fake@name}{\baselineskip}\selectfont%
+  \uppercase{#1}%
+  \endgroup%
+}
+\makeatother
+
+
+
+%\setmainfont{SourceHanSerifSC-ExtraLight}\setCJKmainfont{SourceHanSerifSC-ExtraLight}  %\let\textsc\fakesc
+%\setmainfont{SourceHanSerifSC-Light}\setCJKmainfont{SourceHanSerifSC-Light}  %\let\textsc\fakesc
+%\setmainfont{SourceHanSerifSC-Medium}\setCJKmainfont{SourceHanSerifSC-Medium}  %\let\textsc\fakesc
+
+
+%\setmainfont{cmunrm.otf}
+
+%\setmainfont{SimSun}\setCJKmainfont{SimSun}
+
+%\setCJKmainfont{SourceHanSerifSC-ExtraLight} zu dünn
+
+%\setCJKmainfont{SourceHanSerifSC-Light} zu dünn
+
+%\setCJKmainfont{SourceHanSerifSC-Medium}  nicht schön ???
+
+
+%\setCJKmainfont[Scale=MatchUppercase]{SourceHanSerifSC-Regular}
+
+% a font for Latin script that matches the font for Chinese
+%
+%\setmainfont{SourceSerifPro-Regular}\setCJKmainfont[Scale=MatchUppercase]{SourceHanSerifSC-Regular}
+
+% Download fonts at: https://github.com/adobe-fonts/source-han-serif
+% https://github.com/adobe-fonts/source-serif-pro
+
+\setmainfont[BoldFont={SourceSerifPro-Bold},
+             Path=\fontpath, 
+             ItalicFont={SourceSerifPro-LightIt},
+             BoldItalicFont={SourceSerifPro-BoldIt},
+%             SmallCapsFont={SourceHanSerifSC-Light}  % if this is specified here, glosses come out this way too
+%             SmallCapsFont={SourceHanSerifSC-Heavy}
+             ]{SourceSerifPro-Light}
+\setCJKmainfont[Scale=MatchUppercase,
+%                SmallCapsFont={SourceHanSerifSC-Light},  % preference 1
+%               SmallCapsFont={SourceHanSerifSC-Heavy},
+%               SmallCapsFont={SourceHanSerifSC-SemiBold}, % preference 2
+                SmallCapsFont={FZHTJW},
+                ItalicFont={FZKTJW},                      % same as for quotes
+                Path=\fontpath]{SourceHanSerifSC-Regular}
+
+\newcommand{\passive}{被}
+\newcommand{\passivepst}{\passive.\textsc{pst}}
+\newcommand{\passiveprs}{\passive.\textsc{prs}}
+\newcommand{\passiveimp}{\passive.\textsc{imp}}
+
+
+% loaded in langscibook.cls
+% \usepackage{amsthm}
+
+\newcommand{\rot}[1]{{\color{lsRed}#1}}
+
+\makeatletter
+\def\thmheadprinciple#1#2#3{%
+  \thmname{#1}\thmnumber{\@ifnotempty{#1}{ }\@upn{#2}}%
+  \thmnote{ {\the\thm@notefont（#3）}}}
+\makeatother
+
+\newtheoremstyle{cn-bracket}% Name
+  {}% space above
+  {}% space below
+  {}%\itshape}% body font
+  {}% indent
+  {\bfseries}% head font
+  {}% punctuation after head
+  { }% space after head (has to be space or dimension!)
+  {\thmheadprinciple{#1}{#2}{#3}}% head spec
+
+\newtheoremstyle{cn-bracket-break}% Name
+  {}% space above
+  {}% space below
+  {}%\itshape}% body font
+  {}% indent
+  {\bfseries}% head font
+  {}% punctuation after head
+  {\newline}% space after head (has to be space or dimension!)
+  {\thmheadprinciple{#1}{#2}{#3}}% head spec
+
+
+\theoremstyle{cn-bracket}
+
+% should be in a different style, but the style without break is not defined yet.
+\newtheorem{principle}{原则}
+
+\theoremstyle{cn-bracket-break}
+
+% principle-break uses the same counter as principle
+\newtheorem{principle-break}[principle]{原则}
+\newtheorem{schema}{模式}
+%\newtheorem{schema}{Schema}
+
+% since all the theories are different, we start counting from scratch for every chapter.
+% Thanks to Antonio MyP for pointing this out.
+
+\makeatletter
+\@addtoreset{principle}{chapter}
+\@addtoreset{schema}{chapter}
+\makeatother
+
+
+
+%{\theoremstyle{break}
+%\newtheorem{principle-break}[principle]{原则}
+%}
+
+
+% \usepackage{theorem}
+
+% \newtheorem{principle}{Principle}
+
+% {\theoremstyle{break}
+% \newtheorem{schema}{Schema}
+% \newtheorem{principle-break}[principle]{Principle}
+% }
+ 
+
+
+
+% \usepackage{ntheorem}
+
+% \makeatletter
+% \newtheoremstyle{plain-brackets}%
+%    {\item[\hskip\labelsep \theorem@headerfont ##1\ ##2\theorem@separator]}%
+%    {\item[\hskip\labelsep \theorem@headerfont ##1\ ##2\ {[##3]}\theorem@separator]}
+
+% % \newtheoremstyle{break-brackets}%
+% %   {\item[\rlap{\vbox{\hbox{\hskip\labelsep \theorem@headerfont
+% %           ##1\ ##2\theorem@separator}\hbox{\strut}}}]}%
+% %   {\item[\rlap{\vbox{\hbox{\hskip\labelsep \theorem@headerfont
+% %           ##1\ ##2\ {[##3]}\theorem@separator}\hbox{\strut}}}]}
+% \makeatother
+
+% % \theoremstyle{plain-brackets}
+% % \newtheorem{principle-break}{tralelalaPrinciple}
+
+% %\theoremstyle{break-brackets}
+% %\newtheorem{principleB}{Principle}
+
+
+% \theoremstyle{plain-brackets}
+
+% \newtheorem{principle-break}{Principle}
+% \newtheorem{schema}{Schema}
+
+
+\newcommand{\cndash}{\rule{0.2em}{0pt}\rule[0.35em]{1.6em}{0.05em}\rule{0.2em}{0pt}}
+
+\newcommand{\defart}{\textsc{da}\xspace}
+\newcommand{\idefart}{\textsc{ia}\xspace}
+
+
+%。
+\newcommand{\dotfootnote}[1]{\hspace{-.3em}\footnote{#1}}
+%，
+\newcommand{\commafootnote}[1]{\hspace{-.3em}\footnote{#1}}
+%：
+\newcommand{\colonfootnote}[1]{\hspace{-.2em}\footnote{#1}}
+\newcommand{\bracketfootnote}[1]{\hspace{-.2em}\footnote{#1}}
+\newcommand{\bracketfootnotequote}[1]{\hspace{-.1em}\footnote{#1}}
+
+
+% https://stackoverflow.com/a/2785740/2660362
+% To be able to have the subtitle in the chapter heading in phrasal.tex but get a different contentsline
+\newcommand{\nocontentsline}[3]{}
+\newcommand{\tocless}[2]{\bgroup\let\addcontentsline=\nocontentsline#1{#2}\egroup}
+
+

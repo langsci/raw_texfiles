@@ -1,0 +1,148 @@
+\renewcommand{\lsCoverTitleFont}[1]{\sffamily\addfontfeatures{Scale=MatchUppercase}\fontsize{42pt}{16.8mm}\selectfont #1}
+\renewcommand{\lsBackTitleFont}{\sffamily\addfontfeatures{Scale=MatchUppercase}\fontsize{22pt}{10mm}\selectfont}
+\renewcommand{\lsCoverSubTitleFont}{\sffamily\addfontfeatures{Scale=MatchUppercase}\fontsize{22pt}{10mm}\selectfont}
+
+\patchcmd{\mkbibindexname}{\ifdefvoid{#3}{}{\MakeCapital{#3} }}{\ifdefvoid{#3}{}{#3 }}{}{\AtEndDocument{\typeout{mkbibindexname could not be patched.}}}
+
+% Font size in Paper Footer
+\renewcommand{\lsChapterFooterSize}{\scriptsize}
+
+\newcommand{\mc}[1]{\textsc{#1}}	% morpheme glossing as small caps: does not clash with fontspec
+\def\Id#1{\vskip-.cm\hskip.01cm\vtop{#1}} % for controlling where the example breaks onto the next line
+
+
+\setlength{\emergencystretch}{2pt}
+\newcolumntype{s}{>{\hsize=.5\hsize}X}
+\newcolumntype{m}{>{\hsize=.25\hsize}X}
+
+\newcommand*{\glossify}[1]{\textsc{\MakeLowercase{#1}}}
+
+%makes subscripts
+\newcommand{\sub}[1]{\textsubscript{#1}}
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture]\node(#1){};}
+
+%draws normal arrow
+\newcommand*{\DrawArrow}[3][]{%
+	\begin{tikzpicture}[overlay,remember picture, >=latex']
+	\draw[rounded corners, -latex,<-,semithick,#1]  (#2) -- ++(0,-1.2em) coordinate (a) -- 
+	($(a-|#3)$) -- (#3);
+	\end{tikzpicture}%
+}
+
+%draws dashed arrow
+\newcommand*{\DrawXArrow}[3][]{%
+    % #1 = draw options
+    % #2 = left point
+    % #3 = right point
+    \begin{tikzpicture}[overlay,remember picture,>=latex']%
+       % \draw [-latex, #1] ($(#2)+(0.1em,0.5ex)$) to ($(#3)+(0,0.5ex)$);
+		\draw[rounded corners, -latex,<-,semithick,#1]  (#2) -- ++(0,-1.2em)coordinate (a) -- 
+		node[fill=white,inner sep=0pt]%[font=\footnotesize]
+		{\ding{56}}
+		($(a-|#3)$) -- (#3);
+    \end{tikzpicture}%
+}% 
+
+\newcommand*{\DrawArrowok}[4][]{%
+	% #1 = draw options
+	% #2 = left point
+	% #3 = right point
+	\begin{tikzpicture}[overlay,remember picture, >=latex']
+	% \draw [-latex, #1] ($(#2)+(0.1em,0.5ex)$) to ($(#3)+(0,0.5ex)$);
+	\draw[rounded corners, -latex,<-,semithick,#1]  (#2) -- ++(0,-1.2em)coordinate (a) -- 
+	%node[below,font=\footnotesize]{#4} 
+	node[midway,fill=white,inner sep=0pt,font=\normalsize]{#4}
+	($(a-|#3)$) -- (#3);
+	\end{tikzpicture}%
+}% 
+
+\newcommand*{\DrawLXArrow}[3][]{%
+	% #1 = draw options
+	% #2 = left point
+	% #3 = right point
+	\begin{tikzpicture}[overlay,remember picture,>=latex']
+	% \draw [-latex, #1] ($(#2)+(0.1em,0.5ex)$) to ($(#3)+(0,0.5ex)$);
+	\draw[rounded corners, -latex,<-,semithick,#1]  (#2) -- ++(0,-1.8em)coordinate (a) -- 
+	node[fill=white,inner sep=0pt]%[font=\footnotesize]
+	{\ding{56}}
+	($(a-|#3)$) -- (#3);
+	\end{tikzpicture}%
+}% 
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees,calc}
+\usetikzlibrary{decorations.text}
+
+ 
+\newcommand{\all}[1]{\ensuremath{\forall #1}}
+
+\newcommand{\bari}{\sout{\i}} 
+
+\let\oldemptyset\emptyset
+\let\emptyset\varnothing
+ 
+
+
+\usetikzlibrary{calc,positioning,tikzmark}
+
+%hyman
+\newcommand{\higr}[1]{{\color{red}#1}}
+ 
+ 
+\definecolor{lsDOIGray}{cmyk}{0,0,0,0.45}
+
+%newkirk
+\newcommand{\ix}[1]{\ensuremath{_{#1}}}   % ix =index; in text-semantics mode, allows upright subscript indices with non-math mode text 
+\newenvironment{context}{\medskip\par\noindent%
+			{\bfseries\sffamily Context: }% 
+			}%open environment
+			{\par}%close environment
+\newcommand{\den}[1]{\ensuremath{\llbracket}\,{#1}\,\ensuremath{\rrbracket}}
+\newcommand{\type}[1]{\ensuremath{\langle{#1}\rangle}} % Type brackets for type-theory 	 ... \type{e,\type{s,t}}
+\newcommand{\denol}[1]{\den{\textit{#1}}} % Denotation with object language
+\newcommand{\set}[1]{\ensuremath{\{~ #1 ~\}}} % Encloses a set (easier to see in source)
+
+\def\denotes#1{$\lbrack\!\lbrack${#1\/}$\rbrack\!\rbrack$}      % denotes
+\newcommand{\citeNP}{\citealt}
+
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author 
+\makeatother
+
+
+\newcommand{\togglepaper}[1][0]{ 
+  \bibliography{../localbibliography}
+  \papernote{\scriptsize\normalfont
+    \theauthor.
+    \thetitle. 
+    To appear in: 
+    Samson Lotven,   Silvina Bongiovanni,   Phillip Weirich,   Robert Botne \&  Samuel Gyasi Obeng (eds.),  
+    African linguistics across the disciplines: Selected papers from the 48th Annual Conference on African Linguistics 
+    Berlin: Language Science Press. [preliminary page numbering]
+  }
+  \pagenumbering{roman}
+  \setcounter{chapter}{#1}
+  \addtocounter{chapter}{-1}
+}
+\newcommand{\Z}{ʒ}
+\newcommand{\D}{ɖ}
+\newcommand{\ny}{ɲ}
+\newcommand{\R}{ɾ}
+
+\newcommand{\á}{\'{ã}}
+\newcommand{\É}{\'{\~{ε}}}
+\newcommand{\È}{\`{\~{ε}}}
+\newcommand{\í}{\'{\~{i}}}
+\newcommand{\ì}{\`{\~{i}}}
+\renewcommand{\O}{ɔ}
+\newcommand{\Ó}{\'{\~{ɔ}}}
+\newcommand{\Ò}{\`{\~{ɔ}}}
+\newcommand{\ú}{\'{ũ}}
+\newcommand{\ù}{\`{ũ}}
+% % % \newcommand{\nolistbreak}{%
+% % %   \let\oldpar\par\def\par{\oldpar\nobreak}% Any \par issues a \nobreak
+% % %   \@nobreaktrue% Don't break with first \item
+% % % }
+\newcommand{\NUM}{{\textsc{num}}}
+\makeatletter
+\makeatletter

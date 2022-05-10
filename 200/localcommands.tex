@@ -1,0 +1,78 @@
+%add all your local new commands to this file
+
+\newcommand{\smiley}{:)}
+
+\renewbibmacro*{index:name}[5]{%
+  \usebibmacro{index:entry}{#1}
+    {\iffieldundef{usera}{}{\thefield{usera}\actualoperator}\mkbibindexname{#2}{#3}{#4}{#5}}}
+
+% \newcommand{\noop}[1]{}
+
+\makeatletter
+\def\blx@maxline{77}
+\makeatother
+
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Appendix \ref{#1}}
+\newcommand{\regel}[1]{#1}
+\newcommand{\vernacular}[1]{\emph{#1}}
+\newcommand{\gloss}[1]{#1}
+
+%MY COMMANDS
+
+\newcommand{\den}[1]{$\llbracket$#1$\rrbracket$}                %for the denotation symbol
+
+\newcommand{\predica}[2]{\text{\textsc{#1}(\textit{#2})}}    %for predicates and arguments in logical notation (inside math mode)
+
+
+\newcommand{\n}{\noindent}                                      %for paragraphs without indentation
+
+\newcommand{\gvaz}{^{\varnothing}}                                %assignment vazio
+
+\newcommand{\gone}[2]{^{\scriptsize\left[%
+		\begin{array}{@{}c@{\ }l@{\ }l@{}}%
+			#1 & \rightarrow& \text{#2} \\
+		\end{array}\right]}}                                            %assignments com 1 número
+
+\newcommand{\gtwo}[4]{^{\scriptsize\left[%
+		\begin{array}{@{}c@{\ }l@{\ }l@{}}%
+			#1 & \rightarrow& \text{#2} \\
+			#3 & \rightarrow & \text{#4} \\
+		\end{array}\right]}}                                            %assignments com 2 números
+
+\qtreecenterfalse
+
+%%%%%%%%%%%%%
+%%%%%%%%%%%%%
+
+\newlength{\arrowht}
+\setlength{\arrowht}{-2.5ex}% <-- changed
+\newcommand*\exdepthstrut{{\vrule height 0.75\arrowht depth -0.25\arrowht width 0pt}}% <-- changed
+\newcommand\tikzmark[1]{\tikz[remember picture, baseline=(#1.base)] \node[anchor=base,inner sep=0pt, outer sep=0pt] (#1) {#1\exdepthstrut};}
+
+
+% This code from http://tex.stackexchange.com/q/55068/2693
+\tikzset{
+	ncbar angle/.initial=90,
+	ncbar/.style={
+		to path=(\tikztostart)
+		-- ($(\tikztostart)!#1!\pgfkeysvalueof{/tikz/ncbar angle}:(\tikztotarget)$)
+		-- ($(\tikztotarget)!($(\tikztostart)!#1!\pgfkeysvalueof{/tikz/ncbar angle}:(\tikztotarget)$)!\pgfkeysvalueof{/tikz/ncbar angle}:(\tikztostart)$)
+		-- (\tikztotarget)
+	},
+	ncbar/.default=\arrowht,% <-- changed
+}
+% Thanks to Paul Gessler and Percusse for code improvement here
+\newcommand{\arrowtop}[2]{\begin{tikzpicture}[remember picture,overlay]
+	\draw[->,shorten >=1ex,shorten <=1ex] ([yshift=1.25ex] #1.south) to [ncbar] ([yshift=1.25ex] #2.south);% <-- changed
+	\end{tikzpicture}
+}
+
+\newcommand{\arrowbottom}[2]{\begin{tikzpicture}[remember picture,overlay]
+	\draw[<-,shorten >=1ex,shorten <=1ex] ([yshift=1.25ex] #1.south) to [ncbar] ([xshift=1.75ex,yshift=1.25ex] #2.south);% <-- changed
+	\end{tikzpicture}
+}
+
+%%%%%%%%%%%%%
+%%%%%%%%%%%%%
+

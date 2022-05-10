@@ -1,0 +1,544 @@
+\chapter{The Cognitive Model}\label{ch:cm}
+
+\section{Grounded Language Games}
+
+Up to now the physical setup and implementation of the robots have been explained. So, every reader is now assumed to be familiar with the body, the situation and the behavioral part of the system. The only part of the implementation that still needs to be presented are the cognitive models that implement the conceptualization process and the lexicon formation. The conceptualization model is based on the discrimination game model proposed by \cite{steels:1996b} and the lexicon formation is based on the naming game model \cite{steels:1996a}. This chapter explains both models as they are evolved during this research.
+
+\p
+The previous chapter explained the interaction of the robots with their environment and each other. The interaction and segmentation as has been discussed form the contour of the physically grounded symbol system. Especially the segmentation is an important ingredient of the solution of the symbol grounding problem: it forms the first step towards invariance. Invariance returns in the cognitive processes during the selection of elements. The three recognized problems in the symbol grounding problem {\em iconization}, {\em discrimination} and {\em identification} \cite{harnad:1990} are cognitively modeled. Discrimination is modeled by the discrimination games, whereas the naming games model identification.
+
+\index{Wittgenstein, Ludwig}
+Philosophically the meaning of meaning is not very clear, e.g. \cite{putnam:1975}. Meaning can be used to denote a relation between several levels in a cognitive system. \citeN{wittgenstein:1958} suggested that the meaning of a language game depends on the use of the game, for instance the naming of distinctions or giving instructions. When somebody points to a pot of salt, while saying ``salt'', this can mean two things. When it is said instructively, it can mean the naming of the item, and when it is said demanding, it may mean ``give me the salt, please''. Meaning can  be defined as a relation between a word and concept that is inside an agent's brain, and conceptual meaning is a relation between concept and some (real-world) phenomenon. And even then, meaning can have many shapes. It may, for instance be an identification, an affordance or a discrimination of an observation. 
+
+\index{discrimination!game}
+In this thesis meaning will be used at three levels: (1) concept - real-world phenomena, (2) word - concept, and (3) word - real-world phenomena. At the conceptual level (1) meaning is modeled by {\em discrimination games}. As the name suggests this meaning some symbolic representation that discriminates one segment from another. At the lexical level (2) meaning is no more than an association of a word-form and a concept, called a {\em word-meaning association}. A concept can be associated with several word-forms, but vice-versa a word-form can also be associated with more than one concept. At the language level (3) the meaning of a conversation depends on its use, in this case this is {\em naming}. As in the pragmatic paradigm, the meaning of, say a word-form should be taken in contrast to the context in which it is used. The context are of course the referents that a robot was able to perceive and segment. The contrast is provided by the discrimination game, but the meaning of the language use is there actually only when the language game is successful. Closing the structural coupling of a language with success is than what \citeN{harnad:1990} called {\em identification}.
+\index{symbol grounding problem!identification}
+
+\p
+So, how does a system of concept- and languageless robots originate a meaningful ontology and lexicon at these three levels? Two models have been proposed to solve this problem. At level (1) there are discrimination games \cite{steels:1996b}. At level (2) there is the naming game model \cite{steels:1996a}. Coupling the two models in a grounded experiment provides level (3). Luc \citeN{steels:1997a} argued that language and meaning co-evolve. This co-evolution has been implemented first in \cite{steelsvogt:1997}. 
+
+\index{structural coupling}
+\index{semiotic landscape}
+As mentioned in chapter \ref{ch:theory}, the meaning of an observation (or interaction) in relation to a conceptual category, a lexical element and a communication act could be viewed as a structural coupling \cite{maturanavarela:1992}. The emergence of such a coupling arises in a hybrid complex of steps. It starts with the perceptual interaction, second is the segmentation, third there is the categorization, then there is lexical association, communication and finally there is the coupling with a feedback loop. This coupling can be visualized by a {\em semiotic landscape} as proposed by \cite{steels:2000}, see figure \ref{f:cm:semiotic}.
+
+\begin{figure}
+\psfig{figure=discr_games//semiotic1.eps,width=11.4cm}
+\caption{The semiotic landscape of a language game can be viewed as a structural coupling. In this landscape, there are two squares, each representing an agent. The left square represents the speaker and the right one the hearer. The speaker perceives a topic, resulting in a perception. The perception is conceptualized yielding a meaning. This meaning is then verbalized by the speaker and when the hearer receives the utterance, it tries to interpret this. The interpretation results in a meaning which can be applied to a perception. According to this perception, the hearer acts to identify the referent, which should be the same as the topic and thus completing the coupling. When at some point something goes wrong, the agent can adapt their memory. The errors are signaled by a back propagation of a feedback loop. The figure is taken from (Steels 1999).\index{semiotic landscape}}
+\label{f:cm:semiotic}
+\end{figure}
+
+Symbolically, the meaning can be grasped at different levels depending on the application. In this case the levels include: the categorization level, conceptualization level and the lexicalization level. In more complex systems where there is grammar, semantics can also be grasped in the grammatical structure of an expression. Furthermore, if the task is not communication, but for instance navigation or self-localization, even other levels may be identified, see e.g. \cite{KroBunVlaMot99,taninolfi:1998}.
+
+Both models of categorization and lexicon formation are based on the same principles of interaction, adaptation and self-organization. Where evolution of categories is individual to an agent, the lexicon formation is a cultural evolution. Self-organization establishes as a result of the generation of categorical or lexical elements and the selection of those elements that appeared to be successful in the past. Although the basis of the discrimination games are similar to the model proposed in \cite{steels:1996b}, the method for representing the categories has changed significantly. Instead of using a binary tree for the representation a prototype model has been proposed. This is to investigate a different and possibly more plausible model of the discrimination game. 
+
+\p
+The discrimination game model is presented in the next section. Several naming game models are considered and have been introduced in several papers \cite{steels:1996a,steelskaplan:1998,vogt:1998c}. The models that are used in this thesis will be introduced in section \ref{s:cm:ng}. Finally, the last section discusses how the two models are coupled together and thus how structural couplings arise. The coupling of the two models is thought to be a key issue in bootstrapping a coherent system.
+
+\section{Categorization}\label{s:cm:dg}
+\index{categorization|see{discrimination!game}}
+
+\subsection{Discrimination Games}
+\index{discrimination!game|(}
+
+The model of the discrimination games was first proposed in \cite{steels:1996b}. The basis of the model has not changed since, but the implementation and precise details have been adjusted ever since. The first robot implementation of the model can be found in \cite{steelsvogt:1997} and \cite{vogt:1998a}. The model is built on the same foundations of evolution as the naming game model. It is exploits a selectionist mechanism of generation and selection and results in an organization of categories that has the properties of a dynamical system.
+
+
+\p
+Chapter \ref{ch:lg} discussed the perception and segmentation already in detail. So, assume that the agent has observed some regions of interest $R_m=\{{\bf s}_{m,0},\ldots,{\bf s}_{m,N-1}\}$ for $N$ sensors. Each sensor $i$ reads a time series for region $R_m$ ${\bf s}_{m,i}=\{\tau_{m,i,0},\ldots,\tau_{m,i,l}\}$, where $l$ is the length of the series. \index{sensory!channel}Applying a sensory channel function to a region results in a segment $s_m=\{f_0,\ldots,f_{N-1}\}$\footnote{In the current application, the number of sensors $N$ is equal to the number of sensory channels. As mentioned in the previous chapter, this does not need to be so.}. \index{feature}A segment is a set of features $f_i=sc_i$-$V_i$, where $V_i=f_i({\bf s}_{m,i})$. \index{context}The context $C$ is defined as the set of segmented regions (or segments for short) the robot perceived: $C=\{s_1,\ldots,s_n\}$.
+
+
+\p
+\index{ontology!of categories}\index{attribute}\index{category}Let $O=\{c_1,\ldots,c_M\}$ be the ontology of categories of the robot\footnote{Recall that the categorization is an individual process, hence reference is made to {\em the} robot.}, where $c_k=(sc_{i,k},attr_k,\nu_k)$ is some relation from sensory channel $sc_{i,k} \in SC$ with one or more attributes $attr_k$ and a score $\nu_k$. The use of the term sensory channel $sc_{i,k}$ in this definition should not be confused with the function defined earlier, its use is to indicate the relation of $c_k$ with the features that are derived with sensory channel $sc_i$. Category $c_k$ can only be related to a feature that has been calculated with sensory channel $sc_i$; it cannot be related to any other sensory channel. 
+
+The category set $O$ may be empty and initially it is. New elements can be added to $O$ according to rules as they will be defined later.
+
+Each segment $s_j$ can be categorized by a set of categories $\Lambda^{s_j} \subseteq O$\footnote{Note the difference between category set $O$, which is part of the robot's ontology (or long term memory), and the set of categories $\Lambda^{s_j}$, which is the categorization of a segment (hence part of the short term memory).}. This set may be empty, but it may also yield several categories, depending on both the segment and the covering mechanism. How $\Lambda^{s_j}$ is constructed depends on the definition of the attributes, which determine how a segment is related to a category. The attributes will be defined in subsequent subsections. For the moment assume that $\Lambda^{s_j}$ is just a set of categories.\index{set of!categories}
+
+\index{set of!concepts}Now a set of concepts of segment $s_j$ can be defined as follows:
+
+\begin{eqnarray}
+\Gamma^{s_j}=&\{\Gamma^{s_j}_p \mid (\Gamma^{s_j}_p \subseteq \Lambda^{s_j}) \wedge \forall (c_k, c_l \in \Gamma^{s_j}_p, k \neq l) : (sc_k \neq sc_l) \}
+\end{eqnarray}
+
+\n
+This means that concepts are subsets of categories of the segment. Each concept is a set of at least one category. If the concept has more than one category, then the different categories should relate to different sensory channels. Obviously each concept differs from other concepts. Note that the union of all concepts of a segment is equal to the set of categories for that segment, i.e. $\bigcup_p \Gamma^{s_j}_p = \Lambda^{s_j}$. If a segment has only one category, then the set of concepts has only one element and this concept is the category, i.e. $\mid\Lambda^{s_j}\mid=1 \Leftrightarrow \mid\Gamma^{s_j}\mid=1 \Leftrightarrow \Gamma^{s_j}= \{\Gamma^{s_j}_1\} = \{\Lambda^{s_j}\}$.
+
+\p
+In a discrimination game the aim is to find distinctive concepts of a segment $s_j$. The set of distinctive concepts $D^{s_j}$ is defined as:\index{set of!distinctive concepts}
+
+\begin{eqnarray}
+D^{s_j}=\{\Gamma^{s_j}_{p} \in \Gamma^{s_j} \mid \forall (s \in C\setminus\{s_j\}):(\neg \exists \Gamma^{s}_q\in\Gamma^{s}: (\Gamma^{s_j}_p=\Gamma^{s}_q))\}
+\end{eqnarray}
+
+\n
+So, a concept $\Gamma^{s_j}_p$ is distinctive if and only if there is no other segment $s$ in the context that has a concept $\Gamma^{s}_q$ for which $\Gamma^{s_j}_p=\Gamma^s_q$. 
+
+\p
+The discrimination game is a success if $D^{s_j} \neq \emptyset$. In this case several things may be done:
+
+\begin{enumerate}
+\item If the discrimination game is used as part of a language game, the set can be used in the naming part of the language game. According to the outcome of the language game, some of the scores that are part of the attributes, which may vary per experiment, may be updated. If the distinctive concept is associated with a lexical entry (i.e. with a word-form) this concept becomes part of the agent's {\em ontology}.\index{ontology}\index{naming game}
+\item The categories of the concept may adapt to the observation, so that the concepts evolve dynamically and adaptive towards the observations of the robot.
+\item \index{adaptation}Individual category scores and concept scores may be adapted, see e.g. section \ref{s:cm:scores}.
+\end{enumerate}
+
+\n
+If the discrimination game is a failure, i.e. $D^{s_j}=\emptyset$, then the ontology of categories $O$ must be adapted. For this, depending on the methods for representing categories, one or more new categories may be invented. Details of some of these methods are discussed in the next section.
+
+\begin{figure}
+\centerline{\psfig{figure=discr_games//schema_dg.eps,width=11.4cm}}
+\caption{A schematic overview of the discrimination games. Perceiving, pre-processing and segmenting a real-world scene results in a set of segments. Each segment is a sub-symbolic description of interesting regions in the visual field. The sub-symbolic representation becomes symbolic by a hybrid of actions: categorization, conceptualization and discrimination. The resultant distinctive concepts are used in the naming game. The ontology of categories is adapted according to the outcome of the discrimination game and may use the set of segments as a guidance.}
+\label{f:cm:dg}
+\end{figure}
+
+\index{conceptualization|see{discrimination!game}}
+\index{discrimination}
+\p
+In this section the formal model of the discrimination games has been introduced. A schematic overview of this model is shown in figure \ref{f:cm:dg}. In relation to the symbol grounding problem, the processes of segmentation and categorization is taken to be comparable with iconization. Discrimination is, naturally, modeled with discrimination. The whole process from perception until conceptualization consists of the the following processes: perception, pre-processing, segmentation, categorization, conceptualization, discrimination and adaptation. All these processes can be modified and tested by variants of the general model as presented. We now will discuss some of the variants that have been investigated, which concentrate on the categorization and adaptation.
+
+\subsection{Binary Tree Method}\label{s:cm:binary}
+\index{binary tree|(}
+\index{binary tree!method|see{binary tree}}
+\index{Steels, Luc}
+
+\begin{figure}
+\centerline{\psfig{figure=discr_games//binary_tree.eps,width=11.4cm}}
+\caption{Categories represented as binary trees. Every sensory channel (like WL, ML and IR) is associated with a category tree. The root node of the tree is sensitive to whole range of the sensory channel ($[0,1]$) in this example. The tree is incrementally constructed during the evolution of discrimination games. Every time the discrimination game fails, two new categories are constructed by splitting one category.}
+\label{f:cm:binary_tree}
+\end{figure}
+
+In the original paper by Luc Steels the categories were constructed as a binary tree \cite{steels:1996b}. The root of such a tree is sensitive to the complete range of a sensory channel. The children nodes of the root are sensitive to the upper half and lower half of a sensory channel. Each of these children nodes could in turn be expanded by two children, each sensitive to one half of the range of the parent node, etc. (see fig. \ref{f:cm:binary_tree}). Every node that has children is said to be {\em refined}.
+
+This method was also applied in the first implementation of the robotic language games \cite{steelsvogt:1997,vogt:1998a} and has been reimplemented in a later version of the experiment. See chapter \ref{ch:cat} for a discussion of the results.
+
+More concretely the method is a variant of the model where the $attr_k$ of category $c_k$ is defined more precisely. The attribute of the category is defined in this method as an interval: $attr_k=\langle v_{k,0},v_{k,1}]$, where $v_{k,0}$ is the lower bound and $v_{k,1}$ the upper bound of the category's sensitivity. The category $c_k$ can now be defined as $c_k=(sc_{i,k},\langle v_{k,0},v_{k,1}],\nu_k)$. A segment $s_j=\{f_0,\ldots,f_{N-1}\}$ can now be related to a set of categories $\Lambda^{s_j}=\{c_0,\ldots,c_M\}$:\index{set of!categories}\index{attribute}\index{category}
+
+\begin{eqnarray}
+\Lambda^{s_j}=&\{c_k=(sc_{i,k},\langle v_{k,0},v_{k,1}],\nu_k)\; \mid (c_k \in O) \wedge\\
+& \exists (f_i=sc_i\mbox{-}V_i \in s_j): (v_{k,0} < V_i \leq v_{k,1})\} \nonumber
+\end{eqnarray}
+
+\p
+So, in words the category set consists of categories for which each feature value of the segment is in the interval of the category. Note that when a feature $f_i$ with value $V_i=0$ and category $c_k$ has a lower bound of $v_{k,0}=0$, then this feature falls inside category $c_k$.
+
+\index{topic}If a discrimination game fails in finding distinctive categories for the topic $t$, then the robot may construct a new category. This happens according to the following rules:
+
+\begin{itemize}
+\item {\bf If} there are still sensory channels for which no category has been introduced, then select from these channels one arbitrary sensory channel $sc_i$ for which $L \leq V_i \leq U$ if $sc_i$-$V_i \in t$, where $L$ is the lower-bound of the sensory channel's range and $U$ its upper bound (usually $L=0$ and $U=1$). Add to the ontology $O$ the new category $c=(sc_i,\langle L,U],\nu)$, where $U$ is the upper bound of the sensory channel's range (usually $U=1$) and the category score $\nu=0$.
+\item {\bf Else} choose an arbitrary category $c_k \in \Lambda^t$ that is not refined yet. The refinement of $c_k=(sc_{i,k},\langle v_{k,0},v_{k,1}],\nu)$ yields two new categories $c'=(sc_i,\langle v_{k,0},v_{k,\frac{1}{2}}],\nu')$ and $c''=(sc_i,\langle v_{k,\frac{1}{2}},v_{k,1}],\nu'')$, where $v_{k,\frac{1}{2}}=v_{k,0}+\frac{1}{2}\cdot(v_{k,1}-v_{k,0})$ and $\nu'=\nu''=0$. These categories are then added to the ontology $O$.
+\end{itemize}
+
+This way the ontology grows through constructing binary trees which refine the sensory channels, see figure \ref{f:cm:binary_tree}.
+
+The method of incorporating binary trees has both its advantages and its disadvantages. First, the categories a robot can construct are similar in that all the robots construct a binary tree dividing the sensory space similarly. Only differences between two individuals may be which branches it constructed. This type of representation makes comparisons of the ontology of categories and lexicon easier. Secondly, it makes a search through the category trees easier than in the prototype method (which will be discussed in the next section). The main disadvantage is that it seems biologically and psychologically less plausible.
+
+\todo{uitleggen, ...}
+\index{binary tree|)}
+
+\subsection{The Prototype Method}\label{s:cm:proto}
+\index{prototype!method|(}
+\index{prototype|(}
+
+The main core of the categories in the experiments reported in this thesis use what we might call {\em prototypes}. The categorization model that uses prototypes as the representation of categories could be called the {\em prototype method} \cite{dejongvogt:1998} and \cite{vogt:1998c}.
+
+The prototype method uses a different representation of categories than in the binary tree method. \index{Rosch, Eleanor}It is influenced by the prototype theory introduced by Eleanor Rosch and her colleagues \cite{rosch:1976}. Instead of discrete representations like binary trees, prototypes are centered around dynamically changing points in the sensory channel space. Prototypes are coupled to the environment of observations and to evolve towards a statistical tendency.
+
+So how are prototypes represented in the model? The aim was to keep the concept of hierarchical layering of categories, so that agents still could generalize and specialize over the categories. Another goal was to preserve the idea that the categories were grounded from observations and thus represent past experiences of the agent. 
+
+\begin{figure}
+\centering
+\subfigure[]{\psfig{figure=discr_games//proto1.eps,width=5.6cm}}
+\subfigure[]{\psfig{figure=discr_games//proto2.eps,width=5.6cm}}
+\caption{The figures (a), (b) and (c) each correspond to a sensory channel. These figures show the structure and selection of hierarchical prototypes. On the right-hand side of the arrows the hierarchical structures are shown. From left to right each layer can hide more prototypes, shown here as dots (compare each prototype with a node of the binary tree shown in the previous section).
+Suppose that a robot observed a segment with the following features $\{$WL-0.725, ML-0.65, IR-0.10$\}$. Then each feature (shown on the left-hand side of each figure) can be related to the categories that are shown as black dots on the right-hand side. At each layer the prototype that has its value closest to the observation is selected (their names are listed the bottom of each figure). If the discrimination game fails, a new prototype may be introduced as shown in figure (a). A layer with free space is chosen and a new prototype is added with the same value as the observation. This process is constrained by some rules, see the text for details.}
+\label{f:cm:prototree}
+\end{figure}
+
+\index{prototype!hierarchy of -}Figure \ref{f:cm:prototree} shows a schematic hierarchy of prototypes grouped in sensory channels. The figure also shows how observations can be categorized and how new categories can be generated. A {\em hierarchy of prototypes} is a layered structure that consists of a (possibly) increasing amount of categories\footnote{The terms prototypes and categories will often be used as synonyms. In fact, a prototype in this application is a category.}. The amount of prototypes $N(\lambda)$ on layer $\lambda$ is constrained by the following rule: $N(\lambda)={N_0}^\lambda$, where $N_0$ is the order with which the hierarchy can grow. Furthermore, it is assumed that no two categories can have the same value at the same layer.
+
+\p
+\index{attribute}
+More formally, we can define a prototype $c_k$ by filling in the attributes $attr_k$ as the tuple $attr_k = (v_k, \lambda_k)$, where $v_k$ is the value of the category and $\lambda_k$ is its hierarchical layer, so the category can be defined as: $c_k = (sc_{i,k}, v_k, \lambda_k, \nu_k)$. Let $d_{i,k}=|V_i-v_k|$ be the absolute distance between value $V_i$ of feature $f_i$ and value $v_k$ of category $c_k$, then a segment $s_j=\{f_0,\ldots,f_{N-1}\}$ can now be related to a set of categories $\Lambda^{s_j}=\{c_0,\ldots,c_M\}$:\index{set of!categories}
+
+\begin{eqnarray}
+\Lambda^{s_j}=&\{c_k=(sc_{i,k},v_k,\lambda_k,\nu_k)\; \mid (c_k \in O) \wedge (\forall (f_i=sc_i\mbox{-}V_i \in s_j):\\ \nonumber
+& \forall (c_k,c_l \in O \wedge k \neq l \wedge \lambda_k = \lambda_l): (d_{i,k} \leq d_{i,l}))\}
+\label{e:cm:proto}
+\end{eqnarray}
+
+
+When a discrimination game fails, a new category will be introduced:
+
+\begin{itemize}
+\item {\bf If} there are still sensory channels for which no category has been introduced, then select from these channels one arbitrary sensory channel $sc_i$. Add to the ontology $O$ the new category $c=(sc_i,v,\lambda,\nu)$, where $v=V_i$ is the observed value of $sc_i$, layer $\lambda=0$ and the category score $\nu=0$.
+\item {\bf Else} choose an arbitrary sensory channel $sc_i$. Find for this sensory channel the first layer $\lambda$ for which $N'(\lambda) < N_0^\lambda$ and $\neg \exists c = (sc_i,v,\lambda,\nu): v=V_i$. Then add category $c'=(sc_i,V_i,\lambda,\nu)$ to ontology $O$ with $\nu=0$.
+\end{itemize}
+
+If a discrimination game succeeds, one distinctive concept $\Gamma^t_p \in \Gamma^t$ may be selected for use in the communication. If the language game is successful, the categories of the used concept are adapted. As mentioned above, categories may be adapted in several ways. One possible adaptation may be that prototypes shift into the direction of the actual perception of a segment, thus facilitating what might be compared to a {\em prototype effect} \cite{rosch:1978}.\index{prototype!effect}\index{Rosch, Eleanor} The value $v$ of a prototypical category $c=(sc_i,v,\lambda,\nu) \in \Gamma^t_p$ shifts towards the perception of segment $t$ as follows:
+
+\begin{eqnarray}
+v'=v+\epsilon \cdot (V_i-v)
+\label{e:cm:shift}
+\end{eqnarray}
+
+\p
+where $V_i$ is the value of sensory channel $i$ of segment $t$, $v'$ is the new value. Step-size $\epsilon$ can be varied, but is taken to be $0.1$ throughout the experiments.
+\index{prototype|)}
+\index{prototype!method|)}
+
+\subsection{Conjunctions Of Categories}
+\index{category!conjunction of -|(}
+
+In his work \citeN{steels:1996b} concepts may be formed with every possible configuration of categories as has been presented in chapter \ref{ch:cm} as well. This method works well, but is very time consuming. Therefore a more simple search system has been proposed. In the Talking Heads for example, the speaker stops searching for solutions when a good word-meaning association has been found \cite{steels:2000}. So, when the speaker found finds a proper WM association it stops the discrimination game, otherwise it continues. The hearer uses a similar scheme. This scheme was also used in \cite{vogt:1998b}, where it has been found that the robots usually conceptualize with sets of size one. 
+
+\index{invariance}
+\index{saliency}
+To filter out invariant properties of a categorization \citeN{steels:2000} uses saliency on the sensory channels as a criterion for category selection. Saliency is calculated by looking at which sensory channels have most salient features. As the distribution in the sensory channel space will show in chapter \ref{ch:cat}, this does not necessary mean that the best categories will be selected. This is because other sensory channels than the one that has feature value 1 might just as well be most salient\footnote{Recall that having a feature value of 1 is the most invariant property of the perception of a segment.}. Therefore the choice has been made to use conjunctions to filter out he invariant properties.
+
+The current implementation uses conjunctions of categories, but suppose the robots have categorized each segment at every hierarchical layer for all sensory channels, the robots may reach a depth of 5 or 6 layers. With 4 sensory channels, there are then $6^4=1296$ possibilities for each segment (when all possible configurations are allowed, there are $7^4=2401$ possibilities). A discrimination game can yield many concept sets. Suppose that one category can do the job, then there are $6^3=216$ possible concepts. When exhaustive search method is used, all these concepts should be used to search the lexicon etc.. Obviously this is computationally inefficient. Therefore, the current implementation only allows concepts at one hierarchical layer. So each segment is conceptualized with at most 6 concepts, each of 4 categories that are active at the same hierarchical layer.
+\index{category!conjunction of -|)}
+
+\subsection{Scores}
+\index{score|(}
+The categories are all listed together with a score $\nu_k$. This score is used to keep track of the effectiveness to discriminate of category $c_k$. It is updated after a discrimination game as follows:
+
+\begin{eqnarray}
+\nu_k'=\eta \cdot \nu_k + (1-\eta) \cdot S
+\label{e:cm:featurescore}
+\end{eqnarray}
+
+\n
+where
+\[
+S = \left \{ \begin{array}{ll} 1 & \mbox{if } c_k \in D^{s_j}\\
+ 0 & \mbox{otherwise}
+\end{array}
+\right. \]
+
+\index{score!category}
+\index{score!meaning}
+\index{score!feature}
+\index{score!concept}
+\index{score!depth}
+\index{score!set-size}
+Besides the category score, a meaning score is used in most experiments. The meaning score $\mu_{\Gamma}$ for distinctive feature set (or meaning) $\Gamma$ takes four different parameters into account: (1) The average feature score $\nu_{\Gamma}$ of the feature scores $\nu$ of features that constitute the meaning, see eq. \ref{e:cm:featurescore}. (2) A concept score $\phi_{\Gamma}$ for the distinctive concept set $\Gamma$ in relation to the effectiveness in the lexicon. (3) A depth score $\kappa_{\Gamma}$ that indicates the average depth of the distinctive feature set in the features' hierarchy. And (4) a set-size score $\chi_{\Gamma}$ indicating the size of the distinctive feature set. All scores are bounded between 0 and 1. 
+
+The concept score is calculated as follows:
+
+\begin{eqnarray}
+\displaystyle
+\phi_{\Gamma}=\eta \cdot \phi'_{\Gamma} + (1-\eta) \cdot S
+\end{eqnarray}
+\noindent
+where
+\[
+\left \{
+\begin{array}{rl}
+S=1 & \mbox{ if } \Gamma \mbox{ is used in the expression}\\
+S=0 & \mbox{ if } \Gamma \mbox{ is not used in the expression}
+\end{array}
+\right.
+\label{eta}
+\]
+
+\noindent
+and $\phi'_{\Gamma}$ is the original value. This parameter is calculated at the end of every language game. Depth value $\kappa_{\Gamma}$ is calculated as follows:
+
+\begin{eqnarray}
+\displaystyle
+\kappa_{\Gamma}=\frac{1}{5} \cdot (5 - \beta)
+\end{eqnarray}
+
+\noindent
+where $\beta$ is the average depth in the hierarchy. $\kappa_{\Gamma}$ is larger when the categories are closer to the top layer of the hierarchy. Set-size score $\chi_{\Gamma}$ is defined as:
+
+\begin{eqnarray}
+\displaystyle
+\chi_{\Gamma}=\frac{1}{|\Gamma|}
+\end{eqnarray}
+
+\noindent
+The larger the concept-size, the smaller is $\chi_{\Gamma}$. The latter two scores implement a preference for most general categories, conform \cite{steels:1996b}. These two latter measures are instantly calculated when needed.
+
+We can now define the meaning score $\mu_\Gamma$ as:
+
+\begin{eqnarray}
+\displaystyle
+\mu_{\Gamma}=\frac{1}{4}\cdot (\nu_{\Gamma}+\phi_{\Gamma}+\kappa_{\Gamma}+\chi_{\Gamma})
+\end{eqnarray}
+\index{score!meaning}
+
+\noindent
+The value $\mu_{\Gamma}$ is normalized in order to have a value between 0 and 1.
+\index{score|)}
+
+\subsection{Summary}
+
+This section presented the categorization model by which the first two steps of the grounding problem is tackled. The categorization is based on the discrimination game model that tries to identify symbolic representations that relate to the topic, but not to any other segment that has been observed in the language game situation.
+
+Two methods have been introduced to define the structure of the symbolic representations. The methods implement a binary tree and a hierarchy of prototypes. There are other methods that use the discrimination game successfully. The adaptive subspace method developed by Edwin De Jong \cite{dejongvogt:1998,dejong:2000} and another prototype method developed by Fr\'ed\'eric \citeN{kaplan:2000}. It will be shown in chapter \ref{ch:cat} that the representation does not influence the grounding process very much. This implies that the strength of the categorization lies in the model of the discrimination model.
+\index{adaptive subspace method}
+
+Past effectiveness of categories and concepts are stored in scores that can be used to select the categories and concepts. How this is done will be explained below. The next section introduces the naming game model.
+
+\section{Lexicon Formation}\label{s:cm:ng}
+
+\index{Steels, Luc}\index{topic}\index{naming game|(}
+The lexicon formation is based on the naming game model introduced by Luc \citeN{steels:1996a}. The naming game implements the communication between two agents that try to name the meaning of the referents they perceived in their environment. One of the agents plays the role of the speaker and chooses a topic from the segments that constitute the context. It searches its lexicon for an element of which the meaning matches the meaning of the topic. The associated word-form is `uttered' and in turn, the hearer tries to understand the utterance. The hearer does so by searching its own lexicon for an element of which the word-form matches the utterance. If there exist such an element, the hearer compares the associated meaning(s) with the meaning of the topic. If there is a match and both the speaker and the hearer named the same topic, the naming game is successful. Otherwise there is a failure. According to the outcome of the game the lexicon will be adapted. In the original naming game model the speaker informed the hearer what the topic was prior to the communication. In later models the hearer was less reliably informed about the topic, or even not at all. Then the hearer's aim was to guess the topic using the information it received. This type of game has been called the {\em guessing game} \cite{steelskaplan:1999}.\index{guessing game}
+
+\p
+So, each agent builds up a lexicon. How does the lexicon look like? It consists of elements of word-meaning associations. Each word-meaning association {\bf WM} is a tuple of a word-form $F$, a meaning $\Gamma_p$, an association score $\sigma$ and possibly a counter of use $u$ and success $s$. So, the lexicon $L$ can be defined as:\index{lexicon}\index{word-meaning association}
+
+\begin{eqnarray}
+L=\{{\bf \mbox{WM}}_0, \ldots, {\bf \mbox{WM}}_N\}
+\end{eqnarray}
+
+\noindent
+where $N=0,1,2,\ldots,M$, bounded by $M<\infty$ and word-meaning ${\bf \mbox{WM}}_i=(F_i,\Gamma_{p,i},\sigma_i[,u_i,s_i])$. Initially $L=\emptyset$, so $N=0$. The lexicon is constructed during the experiment. The word-form $F$ is an arbitrary string of characters. \index{word-form}
+
+\p
+The adaptation of the lexicon is done by word-invention, word-adoption (both in which new {\bf WM} associations are constructed) and the adaptation of scores. During the experiment where thousands of games are being played the word-meaning associations that have been successful in the past (i.e. their scores are high) tend to be used more often than non successful word-meaning associations. This way a more or less coherent communication system emerges. How the process of selection and adaption is implemented will be explained in the remainder of this section.
+
+
+\subsection{The Speaker's Production}\label{s:cm:production}
+\index{production|(}\index{topic}
+
+When the speaker categorized the topic $t$, which yielded a nonempty set of distinctive concepts $D^t$, the speaker will try to name one of these concepts. Which concept is selected may depend on several criteria and the selection method used. One method has been implemented that could be called a {\em lazy search method}.
+
+\p
+In this method the speaker orders the concepts in linear order of decreasing meaning score $\mu$. Then it tries to encode these meanings one by one until a matching association has been found.
+
+When tying to encode $\Gamma^t_k$, the speaker selects that word-meaning association ${\bf \mbox{WM}}_i \in L$ for which:
+
+\begin{eqnarray}
+\Gamma_{i}=\Gamma^t_k\nonumber
+\end{eqnarray}
+\noindent
+{\em and}
+\begin{eqnarray}
+\sigma_i = \max_{\forall j:\Gamma_{j}=\Gamma^t_k} (\sigma_j)
+\label{e:select}
+\end{eqnarray}
+
+\noindent
+Or in words: The speaker selects that word-meaning association for which the meaning matches the selected meaning and for which the association score is highest. Note that one word-form can be associated with more than one meaning, but one meaning can also be associated with more than one word-form. Thus the lexicon can both hide ambiguity as synonymy.
+\index{production|)}
+
+\subsection{The Hearer's Understanding}\label{s:cm:understanding}
+\index{understanding|(}\index{topic}
+
+The hearer's understanding is more complex. It first of all depends on what knowledge the hearer receives about the topic prior to the linguistic communication\footnote{Recall that the linguistic communication is the transfer of the word-form from the speaker to the hearer. If this would happen on-board of the robot, the radio-link would be the medium. Since the cognition is processed off-board, the medium is the PC. All communication by which no word-form is transfered, is called non-linguistic communication. Establishing joint attention, for instance is non-linguistic communication. And so is the communication that the robots need to use for synchronizing their states during the execution of a language game.}. 
+
+\index{feedback}
+\index{directive feedback|see{feedback}}
+\index{disambiguation}
+\index{joint attention|(}
+In order to establish joint attention, some sort of pointing needs to be used. When no pointing or the like is used, a language learner has no other means to identify the referent than the language that is used. But is still needs to learn this language. As will be shown, directive feedback can overcome this problem. In the early period of a word-form may be associated with  many possible meanings before an effective association emerges. Until that period the word-form has to be disambiguated. Selection criteria models the disambiguation using a matrix in which more than one hypothesis can be considered by the hearer. Disambiguation can be achieved either by the establishment of joint attention prior to communication or by directive feedback on the outcome of the linguistic interaction. Since it is not clear yet how humans establish joint attention, it is assumed that the robots can do this. How they do this is left as an open question.
+
+Three basic principles of joint attention have been explored: (1) correspondence and (2) cross-correlation and (3) no joint attention. Method (1) reduces to the naming game model described in \cite{steels:1996a} and is like the method used in \cite{steelsvogt:1997}. Method (2) implements the naming game that has been proposed in \cite{steelskaplan:1998} and has been explored in \cite{vogt:1998b,vogt:1998c}. Methods (1) and (2) will be applied in what will be called the ostensive language game. Method (1) is used in the so-called observational language game. Method (3) has been first explored in \cite{vogt:1998c} and has been called the {\em guessing game} \cite{steelskaplan:1999}.\index{guessing game}
+
+All three principles of topic knowledge can be defined using a scheme in which the hearer constructs a decision matrix of the word-meaning associations that matches the received word-form (see table \ref{t:matrix}). In every row there is one word-meaning association. The first column indicates to which segment the association belongs. The second column lists the meaning of the associations that matches one of the distinctive concepts found by the relevant segment. \index{score!topic}The third column indicates the likelihood that the relevant segment is the topic, the so-called {\em topic score} $\varepsilon$. $\varepsilon$ is calculated depending on the method used as will be explained below. Note that only those segments for which the topic score is larger than zero. The fourth column gives the meaning scores $\mu$ of the meaning. Column five gives the association score $\sigma$ and the final column gives the sum $\Sigma$ of columns three, four and five.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{||c|c|c|c|c|c||}
+\hline \hline
+$S$ & $\Gamma$ & $\varepsilon$ & $\mu$ & $\sigma$ & $\Sigma$\\
+\hline \hline
+$s1$ & $\Gamma^{s1}_1$ & 0.1 & 0.11 & 0.04 & 0.25\\
+\cline{2-6}
+& $\Gamma^{s1}_2$ & 0.1 & 0.00 & 0.31 & 0.41\\
+\hline
+$s2$ & $\Gamma^{s2}_1$ & 0.7 & 0.47 & 0.95 & 2.12\\
+\cline{2-6}
+& $\Gamma^{s2}_2$ & 0.7 & 0.53 & 0.76 & 1.99\\
+\hline
+$s3$ & $\Gamma^{s3}_1$ & 0.6 & 0.60 & 0.25 & 1.45\\
+\cline{2-6}
+& $\Gamma^{s3}_2$ & 0.6 & 0.05 & 0.34 & 0.99\\
+\cline{2-6}
+& $\Gamma^{s3}_3$ & 0.6 & 0.45 & 0.10 & 1.15\\
+\hline \hline
+\end{tabular}
+\caption{A possible decision matrix of the hearer. The matrix is an example produced to clarify the decision process; it is not taken from an actual experiment.}
+\label{t:matrix}
+\end{center}
+\end{table}
+
+The hearer selects the word-meaning association for which the sum $\Sigma$ is maximum. The segment that belongs to this association is taken to be the topic.
+
+The different principles of joint attention are modeled by different methods for calculating the topic score $\varepsilon_s$ for segment $s$. This is done as follows:
+
+\begin{description}
+\item {\bf Correspondence}:\index{correspondence}\index{correspondence!criterion|see{correspondence}}
+\begin{eqnarray}\varepsilon_s = \left \{ \begin{array}{rl}
+1 & \mbox{if}\;\mbox{SC}_s=\mbox{SC}_t\\
+0 & \mbox{otherwise}
+\end{array}
+\right.
+\end{eqnarray}
+
+\noindent
+where $\mbox{SC}_s$ is the sensory channel that has highest intensity for segment $s$ and $\mbox{SC}_r$ is the sensory channel that should have the highest intensity when detecting the topic $t$.
+
+Of course this method for calculating the topic score is very unlikely to exist in nature. Agents usually are not capable inspecting the internal state of other agents. However, to increase the reliability of the topic information, establishing joint attention here is simulated by {\em internal inspection}.
+
+\item {\bf Cross-correlation}:\index{cross-correlation}\index{cross-correlation!criterion|see{cross-correlation}} The system calculates the cross-correlation between each segment $s_h$ of the hearer and the speaker's topic $t_s$:
+
+\begin{eqnarray}
+\displaystyle
+C_{s_h,t_s}=\frac{\sum_{i=0}^{N-1} V_{t_s,i} \cdot V_{s_h,i}}
+{\sqrt{\sum_{i=0}^{N-1} V^2_{t_s,i} \cdot \sum_{i=0}^{N-1} V^2_{s_h,i}}}
+\label{e:correlation}
+\end{eqnarray}
+
+\noindent
+where $V_{s,i}$ is the value of feature $f_i$ of segment $s$. The topic score for segment $s$ is now defined as:
+
+\begin{eqnarray}
+\varepsilon_s=C_{s,t_s}
+\end{eqnarray}
+
+\noindent
+Like the correspondence method, this method is also unlikely to exist in nature, but it allows that there may be more than one possible topic, since $\varepsilon>0$ when there is some correlation.
+
+\item {\bf No joint attention}:
+\begin{eqnarray}
+\forall i,j: \varepsilon_i=\varepsilon_j=\mbox{Constant}>0
+\end{eqnarray}
+\end{description}
+
+\noindent
+Note that item (1) does not exactly reduce to the method introduced in \cite{steels:1996a}. This happens only when the meaning score $\mu_k=0$ for all word-meaning associations ${\bf \mbox{WM}}_k$.
+
+\p
+So, the hearer looks for a word-meaning association that best fits the expressed word-form. Now the naming game can be evaluated on its success. This evaluation will serve as the extremely important feedback of the language (and naming) game.
+\index{understanding|)}\index{joint attention|)}
+
+\subsection{Feedback}\label{s:cm:feedback}
+\index{feedback|(}
+
+It seems obvious that an agent has to know whether the language game it is participating is successful in order to learn a language: it needs {\em feedback}. How the feedback is accomplished is an important issue. Is the feedback directed or not, only positive or is it negative as well? Remember that the system is autonomous and no intervention of the experimenter is required or even allowed. The robots have to provide the feedback themselves, or the feedback has to be found in the environment. Technically, implementing feedback is also an important issue. One attempt has been made to implement this by means of physical pointing \cite{steelsvogt:1997,vogt:1998b}. Since this method did not work well, the technical problems have been set aside and providing feedback has been simulated assuming the robots can do it properly. The same argument has been used to simulate joint attention.
+
+\p
+Feedback has been implemented by means of correspondence and cross-correlation. These both methods work similar to the methods explained used for joint attention. Both methods are used to provide feedback in the ostensive language game and the guessing game. The observational language game does not use such feedback. The feedback of the observational game exists in the evaluation of the use for a word-meaning pair. Since this method is fundamentally different from the other methods, it will be presented along with the experiments in chapter \ref{ch:feed}.
+
+\begin{description}
+\item {\bf Correspondence}\index{correspondence}
+The language game is successful when the confidential factor $\epsilon=1$.
+ 
+\begin{eqnarray}\epsilon_h = \left \{ \begin{array}{rl}
+1 & \mbox{if}\;\mbox{SC}_h=\mbox{SC}_s\\
+0 & \mbox{otherwise}
+\end{array}
+\right.
+\end{eqnarray}
+
+\noindent
+where $\mbox{SC}_s$ is the sensory channel that has highest intensity for the hearer's topic and $\mbox{SC}_s$ is the sensory channel that has highest intensity of the speaker.
+\item {\bf Cross-correlation}\index{cross-correlation} The cross-correlation between the speaker's topic and the hearer's topic is calculated. If $\epsilon \geq \Theta_F$, the language game is a success. So, $\epsilon$ is calculated as:
+
+\begin{eqnarray}
+\displaystyle
+\epsilon=\frac{\sum_{i=0}^{N-1} V_{t_s,i} \cdot V_{t_h,i}}
+{\sqrt{\sum_{i=0}^{N-1} V^2_{t_s,i} \cdot \sum_{i=0}^{N-1} V^2_{t_h,i}}}
+\end{eqnarray}
+
+\noindent
+where $V_{t,i}$ is the value of feature $f_i$ of segment $t$. The threshold is set at $\Theta_F=0.75$.
+\end{description}
+
+The lexicon is adapted according to the outcome of the game as will be explained hereafter.
+\index{feedback|)}
+
+\subsection{Adaptation}
+\index{adaptation|(}
+
+There are several possible outcomes of a language game. The game can already fail during categorization. This will put pressure to the agent to increase its repertoire of categories as explained in section \ref{s:cm:dg}. Another failure could be due to the fact that the speaker does not have a word-form association matched to category to be named. In this case the agent can invent a new word-form to associate with the category. If the hearer does not understand the speaker, this means that it does not have a proper word-meaning association. The expressed word-form can be adopted and associated with one or more categories. When there is a mismatch in reference and when the language game was a success, the association scores are updated.
+
+\begin{description}
+\item {\bf No lexical entry speaker:} In this case, the speaker may invent a new word-form as an arbitrary string of characters. It does so with a creation probability $P_s$ that is kept low to slow down the word-form creation rate, which decreases ambiguity.\index{creation probability}\index{word-form!creation}
+
+\item {\bf No lexical entry hearer:} The hearer now may adopt the word-form from the hearer to associate it with a segment of which it has a certain likelihood (the topic score $\varepsilon_t$) that this segment may be the topic. This is the case when \index{score!topic}\index{word-form!adoption}
+
+\begin{eqnarray}
+\varepsilon_t = \max_S (\varepsilon)
+\label{e:adopt}
+\end{eqnarray}
+
+\noindent
+If there are more than one segments for which eq. \ref{e:adopt} holds, then one segment is selected at random. The meaning of the selected segment is then associated with a adoption probability $P_h$, which has been to $P_h=1$ throughout the experiments.
+
+\item {\bf Mismatch in reference:}\index{mismatch in reference} In the case that both robots selected a WM association, but when the topics did not coincide, at least according to their own evaluation, the robots decrease the {\em association score} $\sigma_{\mbox{WM}}$ of the used association $\mbox{WM}$:\index{score!association}
+
+\begin{eqnarray}
+\sigma := \eta \cdot \sigma
+\label{e:cm:adapt1}
+\end{eqnarray}
+
+\n
+where $\eta$ is the {\em learning rate}.\index{learning rate} In some experiments the hearer also adopts the word-form with another segment.\index{word-form!adoption}
+
+\item {\bf Communicative success:}\index{communicative success} In the case that the language game was successful, the used association is strengthened while association scores of other WM associations are laterally inhibited. If $\mbox{WM}' = (F',\Gamma',\sigma') \in L$ and $\mbox{WM} = (F,\Gamma,\sigma) \in L$ are WM associations, where $\mbox{WM}'$ are the possible word-meanings to be adapted and $\mbox{WM}$ is the association used in the communication. The scores are updated as a walking average:\index{score!association}
+
+\begin{eqnarray}
+\sigma := \eta \cdot \sigma + (1 - \eta) \cdot S
+\label{e:cm:adapt2}
+\end{eqnarray}
+
+\n
+where
+
+\begin{eqnarray}
+S = \left \{ \begin{array}{rl} 1 & \mbox{if}\; \mbox{WM}' = \mbox{WM} \nonumber\\
+0 & \mbox{if}\; (\mbox{WM}' \neq \mbox{WM}) \wedge ((F' = F) \vee (\Gamma' = \Gamma))\nonumber \end{array} \right.
+\end{eqnarray}
+
+\end{description}
+
+The adaptation scheme thus allows generation and selection. Generation is part of the adaptation, whereas the selection is influenced by the excitation and inhibition of the association scores. The seemingly effective associations are excited and the ineffective ones are inhibited. The ontology is spread through the community of speakers by the word-adoption of the hearer, thus implementing cultural evolution.
+\index{adaptation|)}
+\index{naming game|)}
+
+\section{Coupling Categorization and Naming}\label{s:coupling}
+
+\index{structural coupling|(}
+The preceding part of this chapter presented the conceptualization and lexicalization in detail. In principle the categorization could serve other problems than language acquisition. For example in a robot-task like landmark navigation. In this work, however, the categorization is coupled to the naming game to serve lexicon acquisition. Depending on the type of language game (e.g. guessing, ostensive or observational game) the method for categorization and selection of concepts may vary. In section \ref{s:cm:production} the selection process for the speaker is explained and section \ref{s:cm:understanding} explains the hearer's selection. Feedback is coupled with both the communication and some external factors that indicate the effectiveness of the game. The first steps in the coupling process however, is made in the agent's perception and segmentation.
+
+\begin{figure}
+\psfig{figure=discr_games//coupling.eps,width=11.4cm}
+\caption{A schematic view of the structural coupling in the language game. See the text for details.}
+\label{f:coupling}
+\end{figure}
+
+\p
+Figure \ref{f:coupling} shows a schematic view of the complete structural coupling of a language game. Above the division line is the speaker and the hearer is shown below. The speaker observes a referent (R). Note that it normally detects more, but for clarity only one referent is drawn. Perception ({\it P}) results in some signal or {\em percept} (P) that corresponds to the detection of R. Segmentation ({\it S}) reduces the amount of sensory data in a relatively low dimensional description of the perceived signal.
+
+Each observed segment (S) is categorized ({\it C}) yielding a set of categories ($\Lambda$). The next step in the process is the conceptualization ({\it C'}) of these categories, which results in a set of concepts ($\Gamma$). $\Gamma$ consists of all possible configurations of categories that are in $\Lambda$, with the exception of those configurations that bear more than one category of to a particular sensory channel. Each concept is shown in a rectangular box that represents a matrix representation in relation to $\Lambda$.  Note that in the experiments there are actually four sensory channels, where there are only three shown. Furthermore, note that not all possible configurations are shown due to space limitations. Discrimination ({\it D}) compares all the concepts of $\Gamma$ with all the concepts conceptualized for other segments in the context (and which are not shown in the figure). Those concepts that are unique to the segment of the topic are listed in the set of distinctive concepts (D).
+
+The speaker then tries to lexicalize the distinctive concepts by looking for associations with word-forms in the lexicon (L). Depending on the method used for selection, the speaker selects that association that fits best the selection criteria. The selected meaning and association are shown in bold and the selected lexical element is shaded. Finally this word-form is 'uttered' ({\it U}) by the speaker.
+
+\p
+The bottom half of figure \ref{f:coupling} shows how the hearer constructs a coupling between the speaker's utterance and its own perception. More or less parallel to the speaker the hearer perceives the referents, segments the percepts, categorizes and conceptualizes these percepts. Note that the figure shows the perception and conceptualization of two referents, whereas for the speaker only one is shown. This is done to indicate that the hearer may consider more segments to be the topic\footnote{The reader may notice that the percept of the upper referent the hearer perceives is the same as the speaker's percept. Obviously this is not the case in a real situation (see section \ref{s:lg:perception}).}.
+
+When the hearer receives the utterance, it tries to discriminate each observed segment. This is done, because the discrimination takes a lot of computation time and there is no need to discriminate when there is no linguistic communication. 
+
+When the hearer was able to discriminate (i.e. $D \neq \emptyset$), then it tries to decode the received word-form. It searches its lexicon (which typically is different than the speaker's lexicon) for associated meanings (M). These meanings may coincide with some of the distinctive concepts the hearer conceptualized, but this is not alway the case (see the rightmost meaning). Note that the meanings have the same structure as the concepts and actually they are the same. The matching ({\it M}) meaning with the highest score according to the rules explained in section \ref{s:cm:understanding}, determines the topic that the hearer {\em identifies}. The structural coupling becomes complete by the feedback that the system provides. Identification is finished when the language game is successful.\index{symbol grounding problem!identification}
+
+\p
+Although for clarifying reasons figure \ref{f:coupling} shows copies of the conceptual structures, these are not necessarily there. The concepts in $\Gamma$ that are distinctive and have associations in $L$ could be activated by excitatory connections. Thus making the copy of $D$ redundant (figure \ref{f:cm:excitation} (a)). In addition, the conceptualization of $\Lambda$ into $\Gamma$ can also be established inside $\Lambda$. $\Lambda$ is then a set of structures of the long term memory that are activated through categorization. And when discrimination and activation of lexical associations are coming from the same structure $\Lambda$, the coupling within one agent may look like shown in figure \ref{f:cm:excitation}. This figure shows many similarities with a neuronal structure. However, the growth and selection of connections are much more plastic than most contemporary neural network architectures.
+
+\begin{figure}[t]
+\subfigure[]{\psfig{figure=discr_games//excitation.eps,width=11.4cm}}
+\end{figure}
+\begin{figure}
+\subfigure[]{\psfig{figure=discr_games//excitation1.eps,width=11.4cm}}
+\caption{Reducing the copies made in figure \ref{f:coupling} makes the coupling more direct as they are shown in the semiotic diagram. Figure (a) skips the distinctive concepts and (b) skips also the set of concepts (only the upper half is shown). This way the connections are more direct and thus more biologically plausible. In case (b) it should be noted that the possible necessity of more dimensional associations could be regulated by thresholding the association scores.}
+\label{f:cm:excitation}
+\end{figure}
+
+So, putting together rather simple mechanisms as introduced in the last two chapters, a complex system may emerge that can use a symbolic communication system as structural couplings between two agents and their environment. The coupling is complete only within the context in which the language game is situated and when the language game is successful. All three recognized issues of the symbol grounding problem (iconization, discrimination and identification) are now modeled. The agents construct symbolic representations for analog signals they perceive. The discrimination game obviously solves the problem of discrimination. Identification is only solved when the language game is successful. If either discrimination or identification fails, the agent(s) can adapt their ontology so, they may be successful in the future.\index{symbol grounding problem}
+
+\p
+Now raises the long expected question: Are the experiments successful? Before the results are presented, the answer is given. Yes, the experiments are successful, but only to a certain extend. The forthcoming six chapters report on the experimental results. The first one introduces the analysis of what will be called the basic experiment.
+\index{structural coupling|)}

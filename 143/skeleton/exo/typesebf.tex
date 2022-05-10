@@ -1,0 +1,172 @@
+% -*- coding: utf-8 -*-
+\begin{exo}
+\label{exo:types:ebf}
+%% Les constantes:
+%% $\prd{manger} \in \CON_{\type{e,\type{e,t}}}$, $\prd{croire} \in \ME_{\type{\type{s,t},\type{e,t}}}$
+
+On se donne les variables suivantes : 
+$\vrb x, \vrb y \in \VAR_{\mathrm{e}}$, $\vrb \phi \in \VAR_{\mathrm{t}}$, $\vrb P \in \VAR_{\type{e,t}}$, 
+\newline
+$\vrb Q \in \VAR_{\type{e,\type{e,t}}}$, $\vrb K \in
+\VAR_{\type{\type{s,t},\type{e,t}}}$, $\vrb S \in \VAR_{\type{s,\type{e,t}}}$.
+ 
+Dites si les expressions suivantes sont bien formées, et si oui quel
+est leur type.  On considère que la règle de suppression des crochets
+s'est appliquée quand c'était utile.
+
+\begin{multicols}{2}
+\begin{enumerate}
+\item \(\Xlo\lambda x\, Q(x,y)\)
+\item \(\Xlo\lambda Q \exists x\, Q(x,y)\)
+\item \(\Xlo[\lambda x\, Q(x,y)(y)]\)
+\item \(\Xlo\peut\lambda x\, P(x)\)
+\item \(\Xlo\lambda P\, P\)
+\item \(\Xlo[\lambda P\, P(x)(y)]\)
+\item \(\Xlo\lambda x [\Extn S(x)]\)
+\item \(\Xlo\lambda x\, \Extn [S(x)]\)
+\item \(\Xlo[\lambda x\, \Extn S(x)]\)
+\item \(\Xlo K(\Intn [\lambda x\, P(x)(y)])\)
+\item \(\Xlo\lambda \phi\, K(x,\Intn \phi)\)
+\item \(\Xlo\lambda \phi \lambda x \, K(x,\Intn \phi)\)
+\item \(\Xlo\lambda x \lambda \phi \, K(x,\Intn \phi)\)
+\item \(\Xlo\lambda K \lambda \phi\, K(x,\Intn \phi)\)
+\item \(\Xlo\lambda K \lambda \phi\, \Intn [[K(\Intn \phi)](x)]\)
+\item \(\Xlo\lambda K \lambda \phi\, [\Intn [K(\Intn \phi)](x)]\)
+\item \(\Xlo\lambda x [P(x) \wedge Q(x)]\)
+\item \(\Xlo\lambda y\lambda x  [P(x) \wedge Q(x,y)](x)\)
+\item \(\Xlo[\lambda Q\, Q(x,y)(\lambda x\, P)]\)
+\item \(\Xlo\lambda y\, Q(\atoi x\, P(x),y)\)
+\end{enumerate}
+\end{multicols}
+
+\begin{solu} (p. \pageref{exo:types:ebf})
+
+Rappel des types :\\
+$\vrb x, \vrb y \in \VAR_{\mathrm{e}}$, $\vrb \phi \in \VAR_{\mathrm{t}}$, $\vrb P \in
+\VAR_{\type{e,t}}$, $\vrb Q \in \VAR_{\type{e,\type{e,t}}}$, $\vrb K \in
+\VAR_{\type{\type{s,t},\type{e,t}}}$, $\vrb S \in \VAR_{\type{s,\type{e,t}}}$.\\
+Les règles syntaxiques utilisées ci-dessous sont celles de la définition \ref{RSyn:ltype}, p.~\pageref{RSyn:ltype}.
+
+\sloppy
+\begin{enumerate}
+\item  \(\Xlo\lambda x\, Q(x,y)\)\\
+$\Xlo Q(x,y)$ est de type \typ{t} car $\vrb Q \in \VAR_{\type{e,\type{e,t}}}$ et
+  a ses deux arguments de type \typ{e} ; donc \(\Xlo\lambda x\, Q(x,y)\)
+  est de type \type{e,t} (\RSyn\ref{SynTlamb}).
+
+\item \(\Xlo\lambda Q \exists x\, Q(x,y)\)\\
+$\Xlo Q(x,y)$ est de type \typ{t}, donc $\Xlo\exists x\, Q(x,y)$ aussi
+  (\RSyn\ref{SynTQ}) et   \(\Xlo\lambda Q \exists x\, Q(x,y)\) est de type
+  \type{\type{e,\type{e,t}},t}  (\RSyn\ref{SynTlamb}).
+
+\item \(\Xlo[\lambda x\, Q(x,y)(y)]\)\\
+$\Xlo Q(x,y)$ est de type \typ{t}, donc $\Xlo\lambda x\, Q(x,y)$ est de type
+  \type{e,t} (\RSyn\ref{SynTlamb}) et donc \(\Xlo[\lambda x\, Q(x,y)(y)]\)
+  est de type \typ{t} (\RSyn\ref{SynTApp}).\\  {NB : on voit bien que
+  les crochets sont importants pour retrouver le bon ordre de
+  composition de l'expression. }
+
+\item \(\Xlo\peut\lambda x\, P(x)\)\\
+$\Xlo P(x)$ est de type \typ{t} car $\vrb P  \in \VAR_{\type{e,t}}$
+  (\RSyn\ref{SynTApp}), donc $\Xlo\lambda x\, P(x)$ est de type
+  \type{e,t} ; or d'après (\RSyn\ref{SynTMod}) {\Xlo\peut} ne peut
+  s'accoler qu'à une expression de type \typ{t} ; donc l'expression
+  n'est pas bien formée.
+
+
+\item \(\Xlo\lambda P\, P\)\\
+$\vrb P$ est de type \type{e,t}, donc $\Xlo\lambda P\, P$ est de type
+  \type{\type{e,t},\type{e,t}}, en vertu de (\RSyn\ref{SynTlamb}).
+
+
+\item \(\Xlo[\lambda P\, P(x)(y)]\)\\
+Ici l'expression est ambiguë quant à la suppression d'une paire de
+crochets\footnote{Ce qui devrait laisser deviner d'emblée qu'elle n'est pas
+bien formée, puisqu'on n'a pas le droit de supprimer des crochets
+en rendant une expression ambiguë.} : on peut supposer qu'elle est la
+simplification soit de \(\Xlo[\lambda P [P(x)](y)]\), soit de \(\Xlo[[\lambda
+  P\, P(x)](y)]\) ; dans les deux cas elle est mal formée.  Dans le
+premier cas, $\Xlo P(x)$ est de type \typ{t}, $\Xlo\lambda P [P(x)]$ est de type
+\type{\type{e,t},t} et ne peut donc pas se combiner avec $\vrb y$ de type
+\typ{e}.  Dans le second cas, $\Xlo\lambda P\, P$ est de type
+\type{\type{e,t},\type{e,t}} et ne peut donc pas se combiner avec $\vrb x$.
+
+\item \(\Xlo\lambda x [\Extn S(x)]\)\\
+$\Xlo\Extn S$ est de type \type{e,t} (\RSyn\ref{SynTExt}) car $\vrb S$ est de
+  type \type{s,\type{e,t}} ; donc $\Xlo[\Extn S(x)]$ est de type \typ{t} et
+  \(\Xlo\lambda x [\Extn S(x)]\) de type \type{e,t}.
+
+\item \(\Xlo\lambda x\, \Extn [S(x)]\)\\
+Cette expression est mal formée, car $\vrb S$ ne peut pas se combiner
+directement avec $\vrb x$.
+
+\item \(\Xlo[\lambda x\, \Extn S(x)]\)\\
+$\Xlo\Extn S$ est de type \type{e,t}, donc $\Xlo\lambda x\, \Extn S$ est de
+  type \type{e,\type{e,t}} et \(\Xlo[\lambda x\, \Extn S(x)]\) est de type
+  \type{e,t}. 
+
+\item \(\Xlo K(\Intn [\lambda x\, P(x)(y)])\)\\
+Quelle que soit la manière d'analyser $\Xlo[\lambda x\, P(x)(y)]$ on
+trouvera le type \typ{t} pour cette sous-expression.  En effet $\Xlo P(x)$
+est de type \typ t, $\Xlo\lambda x\, P(x)$  de type \type{e,t} et donc
+$\Xlo[\lambda x\, P(x)(y)]$ de type \typ t ; ou bien $\Xlo\lambda x\, P$ est de
+type \type{e,\type{e,t}} et $\Xlo\lambda x\, P(x)$ est de type
+\type{e,t}.  Ensuite $\Xlo\Intn[\lambda x\,P(x)(y)]$ est de type
+\type{s,t} (\RSyn\ref{SynTInt}), et donc \(\Xlo K(\Intn [\lambda x\,
+  P(x)(y)])\) est de type \type{e,t}, car $\vrb K$ est de type
+  \type{\type{s,t},\type{e,t}}. 
+
+\item \(\Xlo\lambda \phi\, K(x,\Intn \phi)\)\\
+$\vrb \phi$ est de type \typ t, donc $\Xlo\Intn \phi$ est de type \type{s,t}, et
+  $\Xlo K(x,\Intn \phi)$ est de type \typ t, car c'est la simplification de
+  $\Xlo[[K(\Intn \phi)](x)]$ ; donc \(\Xlo\lambda \phi\, K(x,\Intn \phi)\) est de type
+  \type{t,t}. 
+
+
+\item \(\Xlo\lambda \phi \lambda x \, K(x,\Intn \phi)\)\\
+$\Xlo\lambda x\, K(x,\Intn \phi)$ est de type \type{e,t}, donc \(\Xlo\lambda \phi \lambda x \, K(x,\Intn \phi)\) est de type \type{t,\type{e,t}}.
+
+\item \(\Xlo\lambda x \lambda \phi \, K(x,\Intn \phi)\)\\
+$\Xlo\lambda \phi \, K(x,\Intn \phi)$ est de type \type{t,t}, donc \(\Xlo\lambda x   \lambda \phi \, K(x,\Intn \phi)\) est de type \type{e,\type{t,t}}.
+
+\item \(\Xlo\lambda K \lambda \phi\, K(x,\Intn \phi)\)\\
+$\Xlo\lambda \phi \, K(x,\Intn \phi)$ est de type \type{t,t}, donc \(\Xlo\lambda K
+  \lambda \phi\, K(x,\Intn \phi)\) est de type
+  \type{\type{\type{s,t},\type{e,t}},\type{t,t}}. 
+
+\item \(\Xlo\lambda K \lambda \phi\, \Intn [[K(\Intn \phi)](x)]\)\\
+$\Xlo\Intn \phi$ est de type \type{s,t},\\ donc $\Xlo[K(\Intn \phi)]$ est de type   \type{e,t},\\ donc $\Xlo[[K(\Intn \phi)](x)]$ est de type \typ t,\\ donc $\Xlo\Intn[[K(\Intn \phi)](x)]$ est de type \type{s,t},\\ donc $\Xlo\lambda \phi\,\Intn [[K(\Intn \phi)](x)]$ est de type \type{t,\type{s,t}}, \\et \(\Xlo\lambda K \lambda \phi\, \Intn [[K(\Intn \phi)](x)]\) de type   \type{\type{\type{s,t},\type{e,t}},\type{t,\type{s,t}}}.
+
+\largerpage[-1]
+
+\item \(\Xlo\lambda K \lambda \phi\, [\Intn [K(\Intn \phi)](x)]\)\\
+$\Xlo[K(\Intn \phi)]$ est de type \type{e,t}, donc $\Xlo\Intn [K(\Intn \phi)]$ est   de type \type{s,\type{e,t}} et cela ne peut pas se combiner avec
+  $\vrb x$.  L'expression est donc mal formée.
+
+\item \(\Xlo\lambda x [P(x) \wedge Q(x)]\)\\
+$\Xlo P(x)$ est de type \typ t, $\Xlo Q(x)$ est de type \type{e,t} (car $\vrb Q$ est   de type \type{e,\type{e,t}}) ; $\Xlo\wedge$ ne peut donc pas les combiner
+  car il ne coordonne que des expressions de type \typ t   (\RSyn\ref{SynTConn}). L'expression est mal formée.
+
+\item \(\Xlo\lambda y\lambda x  [P(x) \wedge Q(x,y)](x)\)\\
+$\Xlo Q(x,y)$ est de type \typ t, donc $\Xlo[P(x) \wedge Q(x,y)]$ est de type
+  \typ t, $\Xlo\lambda x  [P(x) \wedge Q(x,y)]$ est de type \type{e,t},
+  $\Xlo\lambda y\lambda x  [P(x) \wedge Q(x,y)]$ de type \type{e,\type{e,t}}
+  et \(\Xlo\lambda y\lambda x  [P(x) \wedge Q(x,y)](x)\) de type \type{e,t}.
+
+
+\item \(\Xlo[\lambda Q\, Q(x,y)(\lambda x\, P)]\)\\
+$\Xlo Q(x,y)$ est de type \typ t, donc $\Xlo\lambda Q\, Q(x,y)$ est de type
+  \type{\type{e,\type{e,t}},t} ; et $\Xlo\lambda x\, P$ est de type
+  \type{e,\type{e,t}}, donc \(\Xlo[\lambda Q\, Q(x,y)(\lambda x\, P)]\)
+  est de type \typ t.
+
+\item \(\Xlo\lambda y\, Q(\atoi x\, P(x),y)\)\\
+$\Xlo P(x)$ est de type \typ t, donc $\Xlo\atoi x\, P(x)$ est de type \typ e
+  (\RSyn\ref{SynTQ}), donc $\Xlo Q(\atoi x\, P(x),y)$ est de type \typ t,
+  et \(\Xlo\lambda y\, Q(\atoi x\, P(x),y)\) est de type \type{e,t}.
+
+\end{enumerate}
+\fussy
+\end{solu}
+
+\end{exo}

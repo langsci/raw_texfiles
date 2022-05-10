@@ -1,0 +1,567 @@
+\documentclass[output=paper,
+modfonts
+]{langscibook} 
+
+\usepackage{pifont}    %for pointing hand
+\usepackage{rotating}  
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+
+\input{localpackages.tex}
+
+\input{localcommands.tex}
+
+\bibliography{LingBib}
+
+\title{Variable Word-Final Vowel Deletion and Reduction in Gurmancema: A Maximum Entropy Model} 
+
+\author{%
+ Maggie Baird\affiliation{Dartmouth College}
+}
+%\chapterDOI{} %will be filled in at production
+
+% \epigram{}
+
+\abstract{
+Gurmancema (Gur, Burkina Faso) displays an overall dispreference for word-final tense vowels phrase-medially. On the surface, there is vowel reduction and vowel deletion, which vary both across and within phonological contexts. This work will provide an overview of the complex data patterns and describe a weighted constraint approach to the data patterns using a Maximum Entropy Harmonic Grammar. Weighted constraints are preferred to ranked constraints due to variability in the data and to account for cases of constraint ganging, including superadditivity. 
+}
+
+\begin{document}
+
+\pagestyle{myheadings}
+\markright{Variable Behavior of Final Vowels in Gurmancema}
+\markleft{Maggie Baird}
+
+\maketitle
+\section{Introduction} 
+
+Gurmancema (ISO 639-3:gux), also known as Gulmancema, Gourmanchema, or Gourmanché, is a Gur language spoken in Burkina Faso, Togo, Benin, and Niger. It has approximately 1 million speakers across this region (Simons \& Fennig 2017). Primarily a spoken language, there is much dialectal variation across speakers in different villages and areas. Gurmancema is an SVO language with three tones (H, M, L). 
+
+Gurmancema has a five vowel system /a, e, i, o, u/. In this paper, I take these five phonemic vowels to be [+tense] and the allophone [ə] to be [-tense]\footnote{The feature [tense] is used for convenience to distinguish peripheral vowels from the central vowel [ə] and is not meant to make theoretical claims about the [tense] status of these vowels. The markedness constraints \textsc{Ident}[tense] has a weight of 0 in the model and does not change the analysis.}.  /aː, iː, uː/ are phonemic in Gurmancema and contrast with /a, i, u/. There are conflicting accounts of whether the long vowels /eː, oː/ are also phonemic. \footnote{For grammars containing phoneme inventories and justifications, see Chantoux (1968) and Naba 
+(1994)}
+There is also debate over which diphthongs are phonemic in the language. My 
+analysis only makes reference to short, word-final monophthongs, so I remain 
+agnostic.
+
+Table 1 shows the consonant inventory of Gurmancema for the dialect of study in this paper. 
+
+\begin{center} Table 1: \textit{Consonant Inventory of Gurmancema} \\
+\vspace{5mm}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{ |c | c| c | c | c | c | c |}
+\hline
+  & Labial & Alveolar & Palatal & Velar & Labiolvelar & Glottal\\ 
+ \hline
+ Stop & p, b & t, d & c, ɟ & k, g & k͡p, g͡b & \\
+ \hline
+ Fricative & f & s &  &  &  & h\\
+ \hline
+ Nasal & m & n & ɲ & ŋ & ŋ͡m & \\
+ \hline
+ Liquid &  & l &  &  & & \\
+ \hline
+ Tap &  & ɾ  &  &  &  & \\
+ \hline
+ Glide & w & & j & &  & \\
+ \hline
+\end{tabular}
+\end{center}
+
+
+Section 2 of this paper describes the complex data patterns in question in this study. In Section 3, I will discuss previous work in Gurmancema and on similar patterns 
+of vowel deletion. Section 4 describes the 
+data collection and analysis process. Section 5 presents a constraint-based analysis of 
+a few illustrative phonological environments. In Section 6, I will summarize my findings. 
+
+\section{Data Presentation} \label{data}
+In Gurmancema, word-final vowels in verbs and nouns are often deleted or reduced to [ə] in phrase-medial position. The surface representation of these vowels depends on many factors, including the sound that follows them. For example, in cases of vowel hiatus, the word-final vowel of the first word is always deleted, shown in (\ref{vowels}):
+
+\ea \label{vowels}
+\gll /súnd-i à=bób=à/ \hspace{0.5cm} [súnd àbóbà]\\
+forget-\textsc{asp} \textsc{cl.pl}=jug=\textsc{cl.pl}\\
+\glt `forgets jugs'
+\z
+
+The behavior of the word-final vowel also depends on the sound that precedes it. For example, the vowels /a, i, o/ all reduce to [ə] when preceded by an obstruent, shown in (\ref{obs}):
+  
+\ea \label{obs}
+\begin{enumerate}
+\item[(a)]
+\gll /kì=bé=ga pwá/  \hspace{0.5cm} [kìbégə pwá] \\
+ \textsc{cl.sg}=child=\textsc{cl.sg} hit\\
+\glt `child hits'
+
+\item[(b)]
+\gll /ti=k͡pén=dì pwá/ \hspace{0.5cm} [tik͡ṕendə̀ pwá]\\
+\textsc{cl.sg}=sauce=\textsc{cl.sg} hit\\
+\glt `sauce hits'
+
+\item[(c)]
+\gll /o=ŋumb=o pwá/ \hspace{0.4cm} [oŋumbə pwá]\\
+\textsc{cl.sg}=donkey=\textsc{cl.sg} hit\\
+\glt `donkey hits'
+
+\end{enumerate}
+\z
+
+As can be seen, many factors come together to influence the surface representation of underlying vowels, not just what sound precedes or follows the vowel. Different vowels behave differently in the same context. /i/ reduces to [ə] when preceded by an approximant (\ref{approx}a), but /a/ will surface as [a] in the same immediate phonological environment (\ref{approx}b). 
+
+\ea \label{approx}
+\begin{enumerate}
+\item[(a)]
+\gll /da=lì pwá/ \hspace{0.8cm} [dalə̀ pwá]\\
+friend=\textsc{cl.Ss} hit\\
+\glt `friend hits'
+
+\item[(b)]
+\gll /a=bé=la pwá/ \hspace{0.5cm} [abéla pwá]\\
+\textsc{cl.pl}=child=\textsc{cl.pl} hit\\
+\glt `children hit'
+
+\end{enumerate}
+\z
+
+To complicate matters, certain patterns in Gurmancema are categorical, while others are variable. In (\ref{obs}), I showed that /a, i, o/ categorically reduce to [ə] when preceded by obstruents, but the vowel /u/ shows a variable pattern. The percentages and token counts are from the sample included in this paper, which consists of data elicited from one speaker. 
+
+\ea \label{u}
+\begin{enumerate}
+\item[(a)]
+\gll /bú=tí=bu k͡pá/  \hspace{0.6cm} [bútíbu k͡pá] (67\%, n=3) \\
+ \textsc{cl.sg}=tree=\textsc{cl.sg} kill \hspace{0.5cm} [bútíbə k͡pá] (33\%, n=3)\\ 
+\glt `tree kills'
+
+\item[(b)]
+\gll /kú=dá=gu k͡pá/  \hspace{0.5cm} [kúdágu k͡pá] (67\%, n=3) \\
+ \textsc{cl.sg}=wood=\textsc{cl.sg} kill \hspace{0.5cm} [kúdágə k͡pá] (33\%, n=3)\\ 
+\glt `wood kills'
+
+\end{enumerate}
+\z
+
+As these examples show, this is a case of token variation, where the same word can be pronounced differently on different occasions with no change in meaning. 
+
+Word-final vowels preceded by the bilabial nasal also show a variable pattern, which is not only predictable by the CV combination, but also takes into account the first consonant of the next word. When the next word begins with a bilabial consonant, the vowel varies between reduction and deletion, but when the consonant has a different place of articulation, the vowel is much more likely to reduce. 
+
+\ea \label{m}
+\begin{enumerate}
+\item[(a)]
+\gll /mí=ɟe=má pwá/ \hspace{0.5cm} [míɟem pwá] (67\% n=6)\\
+ \textsc{cl.sg}=food=\textsc{cl.sg} hit  \hspace{0.5cm} [míɟemə́ pwá] (33\%, n=6)\\ 
+\glt `food hits'
+
+\item[(b)] 
+\gll /mí=ɟe=má k͡pá/ \hspace{.5cm} [míɟemə́ k͡pá] (88\%, n=32)\\
+\textsc{cl.sg}=food=\textsc{cl.sg} kill \hspace{0.5cm} [míɟem k͡pá] (12\%, n=32)\\
+\glt `food kills'
+
+\end{enumerate}
+\z
+
+(\ref{sum}) lays out the general data patterns presented above:
+
+\ea \label{sum}
+
+V + \# + V \hfill deletion of the first vowel \newline
+Obstruent + /a, i, o/ + \# + C \hfill reduction of the vowel\newline
+Obstruent + /u/ + \# + C \hfill variation between reduction and deletion\newline
+Non-Nasal Sonorant + /i/ + \# + C \hfill reduction of the vowel\newline
+Non-Nasal Sonorant + /a/ + \# + C \hfill no reduction or deletion\newline
+/m/ + /a, i, o/ + \# + Non-Bilabial C \hfill reduction of the vowel\newline
+/m/ + /a, i, o/ + \# + Bilabial C \hfill variation between deletion and reduction\newline
+
+\z
+
+There are several environments which are not included in this analysis. /e/-final words are morphologically distinct and involve a different set of constraints than is presented below. Other environments, such as non-nasal sonorant + /o, u/, and /m/ + /u/ are missing from a lack of data. 
+
+In this paper, I will walk through a constraint-based analysis that models all of these patterns and also accounts for the variation. Vowel reduction and deletion has been noted in the literature of Gurmancema, but never fully analyzed including variation. The model incorporates 13 constraints and necessitates supperadditivity (Albright, Margi \& Michaels 2008, Green \& Davis 2014) to account for the patterns in the most economical way. 
+
+
+
+\section{Previous Work} 
+
+In the literature on Gurmancema, there is not a complete account of vowel deletion and variation. Naba (1994) notes that three authors have touched on issues of reduced vowels from a phonotactic perspective, but they all have different analyses. He says that too little attention has been paid to elision, apocope, and assimilation and that the description and analysis of these phenomena are very important for tonal and morphological reasons.
+
+The only work focusing specifically on vowel deletion and reduction is Rialland (1980, 2001). She labels the process “vowel punctuation and deletion,'' arguing that there are weak and strong forms of words.  Strong forms occur at the ends of phrases, where word-final vowels are maintained. In weak position, or phrase-medially, she argues that vowels are deleted and an epenthetic [i] is inserted to prevent illicit consonant clusters. She argues that these processes do not affect monosyllabic words. In Rialland (2001), she elaborates that monosyllabic words are slightly lengthened. Her paper does not attempt a constraint-based analysis - I will argue that these frameworks are better suited to representing the data than rule-based phonology. 
+	
+Across Niger-Congo languages, vowel elision is also common as a repair for vowel hiatus. Across word boundaries, the first vowel is always deleted (Casali 1997), which holds true for Gurmancema. Although this is one aspect of the vowel-deletion process in Gurmancema, vowels do not only delete in hiatus contexts in Gurmancema, as can be seen in the examples in (\ref{m}). There is no process analagous to the word-final vowel reduction in Gurmancema that I could find in the Niger-Congo literature. 
+ 
+\section{Data Collection and Analysis}
+
+All of the data in this paper are based on the speech of a 37-year-old female 
+speaker from the village of Mahadaga, currently living in France. All data were elicited in summer 2016. I designed an elicitation plan with the aim of obtaining every possible CV\#C combination in the language across Subject-Verb and Verb-Object boundaries. I also elicited data in other syntactic conditions, such as relative clauses and Adjective-Noun pairings, but this paper will focus solely on the Subject-Verb and Verb-Object interfaces. There were restrictions on phonemic distribution, however, as Gurmancema has multiple noun classes, marked by proclitics and enclitics.  Nouns only begin and end with certain sounds, with a few exceptions. I created an elicitation plan that included 26 nouns used as subjects, with 25 different CV endings. I elicited 20 transitive verbs and 4 intransitive verbs with each of the subjects. Verbs had to vary with both the initial consonant and the final CV, and I attempted to include as many environments as possible at both edges. 
+
+This study aims to provide a phonological analysis grounded in acoustic phonetics rather than perception. The informing data were not field notes, but rather the database of acoustic measurements. I tagged every word-final vowel (n=3855) in my Gurmancema sample for important values: the vowel (a, e, i, o, u), the preceding phoneme, the following phoneme, the role in the sentence (S, V, O), the surface form (maintained, reduced, deleted), whether it was followed by a pause, the length of the vowel in seconds (3 decimal points), and F1, F2, and 
+F3. All phonetic measurements were made in Praat (Boersma 1996) by hand. Given the large amount of attributes I was tracking, I did not find a script that I thought would be more efficient than taking measurements by hand. I took formant measurements at the middle of the vowel in the most stable portion of the formants. There is a possibility for human error and measurement variation, but taking formant measurements by hand allowed me to evaluate any problematic data points individually. Formant measurements were taken for a total of 3855 vowels, including diphthongs (n=200) and phrase-final vowels (n=1297), which were not included in the final 
+analysis. Phrase-final vowels were not included as the reduction and deletion processes do not apply at the end of phrases. I also did not analyze any pre-pausal data from slow speech. The goal of this study was to model naturalistic speech and not have any confounding effects from pauses. 
+
+I used formant measurements to determine whether a vowel was maintained or reduced. I took a sample of canonically maintained vowels and took mutually exclusive ranges in F1 and F2 to determine whether the more ambiguous cases were maintained or reduced. The results of my phonetic analysis show that there is one central reduced vowel [ə], which can be seen in Figure 1. Although schwa does seem to overlap with the vowels /o/ and /u/, none of the cases where [ə] is that far back and high are underlyingly /o/ and /u/. These are cases of reduced /i/ and /a/.
+
+\pagebreak
+
+\begin{center} 
+\includegraphics[width=\linewidth]{ACAL_Vowel_plot.png}
+  Note: Ellipses mark 2 standard deviations from mean formant values of each vowel
+  \end{center}
+ 
+
+Throughout the analysis, the term “prevocalic consonant” refers to the consonant that is in penultimate position of the given word (ie. the onset of the final syllable). The term “following consonant” refers to the first consonant of the following word. 
+
+For example, in the phrase /kìbéga pwá/ 'child hits', the prevocalic consonant is /g/ and the following consonant is 'p'. 
+
+In general, there are three surface forms for vowels. If a vowel surfaces the same in the output and the input, I will refer to it as “maintained.” If a vowel surfaces as [ə], I will refer to it as “reduced.” If a vowel is deleted, I refer to it as “deleted.”
+
+\section{Constraint-Based Analysis}
+In this section, I will explain the model I used to analyze the data. 
+
+\subsection{Maximum Entropy Harmonic Grammar}
+
+Due to the complex and variable nature of the process, these data are well-suited to a constraint-based analysis. A major component of the complexity in the Gurmancema data is the free variation, which necessitates a stochastic constraint-based model. In this paper, I use Maximum Entropy Harmonic Grammar (MaxEnt), which captures patterns of variation (Goldwater \& Johnson 2003, Hayes \& Wilson 2008). 
+	 
+In MaxEnt, each candidate receives as score, which is calculated the same way as Harmony in traditional HG, by summing the weights of violations incurred. The calculation of the score h(\textit{x}) is as follows: 
+
+\ea
+h(\textit{x}) = $\sum_{\textit{i}=1}^{\textit{N}}$ ${w_i}{C_i}(x)$
+
+\z
+
+${w_i}$ is the weight of the \textit{i}th constraint, ${C_i}(x)$ is the number of times \textit{x} violates the \textit{i}th constraint, and the sum is the summation over all constraints in the model.  
+
+The MaxEnt grammar tool (Wilson, Hayes, and George 2009) optimizes all of the constraints and assigns each of them weights that can most closely match the observed probabilities of each candidate. Essentially, the probability of any given candidate is calculated from its score in comparison to the scores of all the candidates. For example, if each of two candidates have a score of 1, they will have a probability each of 0.5, so they will each be selected 50\% of the time by speakers as they are equally well-formed.
+
+The probability P(\textit{x}) is calculated as follows based on all the possible forms in Ω:
+
+\ea
+
+P(\textit{x}) = exp(-h(\textit{x}))/Z, where \newline
+
+Z = $\sum_{y\in \varOmega}$ exp(-h(\textit{y}))
+\z
+
+The base of the natural logarithm \textit{e} is raised to the negative of the score, and the probability is calculated over all possible forms. 
+
+\subsection{Fitting the Model}
+
+I split my data into unique CV\#C combinations, and entered each with its observed probabilities into the learner. The model input consists of an set of constraints, an underlying form, and several (usually 2--6) plausible output candidates, each with observed probability computed from my phonetic analysis. In total, I entered 364 unique tableaux into the MaxEnt Grammar Tool, with standard settings. The model generates weights for each of the constraints that yield the probabilities closest to the observed probabilities. In total, the model required 13 constraints to model the patterns observed in the data. 
+
+\subsection{Initial Constraints}
+In this section, I will present the initial constraints that are the minimum set to account for the simplest data patterns. As I go through the different patterns in more detail, I will describe and add any other necessary constraints. A full list of constraints and their final weights can be found in section (\ref{fulllist}). 
+
+Other models for reduction and deletion often attribute vowel reduction and deletion to prosodic motivators. In Gurmancema, it is the word-final position that is targeted for reduction and deletion regardless of tone or stress (which does not appear to be a salient prosodic feature of the language). For this reason, the constraint I am using to explain this pattern is simply a markedness constraint targeting word-final tense vowels in the language. All data in this paper are phrase-medial, so each constraint is assumed to be phrase-bounded. 
+
+The overall dispreference for word-final tense vowels is captured by the 
+markedness constraint \textsc{NoFinalTenseVowel}:
+
+\ea
+\textsc{NoFinalTenseVowel} (*[+tns]\#): Assign a violation for every word-final 	tense vowel
+\z
+
+The repairs triggered to satisfy *[+tns]\#, either by reducing a word-final vowel or deleting it, come with faithfulness violations. By reducing a vowel from any of the phonemic vowels to [ə], the vowel changes the feature [+tense] to [-tense]. This change violates the \textsc{Ident}(tense) constraint, which penalizes changes in the feature [tense] from the input to the output. In the final model, however, this constraint did not ever influence a winning candidate, so it is omitted from the rest of the paper.
+
+Reducing a vowel changes other features, so reduction is penalized through more specific constraints, described in 
+(\ref{faithful}).
+
+
+\ea \label{faithful}
+\begin{enumerate}
+
+\item[(a)]
+\textsc{Ident-IO(Low)} (\textsc{Ident}(lo)): Assign a violation for every segment that does not surface with the same value for [low] in the input and the output.
+
+\item[(b)]\textsc{Ident-IO [Labial]} (\textsc{Ident}(lab)): Assign a violation for every segment that 	does not surface with the same value for [labial] in the input and output.
+
+\item[(c)] \textsc{Ident-IO [High]} (\textsc{Ident}(hi)):  Assign a violation for every segment that does 	not surface with the same value for [high] in the input and the output. 
+ 
+ \end{enumerate}
+\z 
+
+ \textsc{Ident}(lo) penalizes /a/ when it raises to [ə], but does not target any other underlying vowels. \textsc{Ident}(hi) penalizes /i/ and /u/ when they lower to [ə], and \textsc{Ident}(lab) penalizes /u/ and /o/ when they reduce. As described in (\ref{data}), these vowels behave differently in the same surrounding contexts, which is why 3 different \textsc{Ident} constraints are necessary rather than the general \textsc{Ident}(tense) constraint. 
+ 
+The faithfulness that penalizes vowel deletion is \textsc{Max}(V), described below:
+  
+\ea
+\textsc{Maximize(Vowel)} (\textsc{Max(V)}): Assign a violation for every vowel in the input 	that does not surface in the output. 
+\z
+
+Constraints that interact with subsets of the data more specifically will be 
+presented in the following sections. 
+
+\subsection{Vowel Hiatus Resolution}
+
+Gurmancema has a vowel hiatus resolution process similar to other Niger-Congo languages (Casali 1997). 
+The markedness constraint that motivates the hiatus resolution is as follows:
+
+\ea
+ (*V.V): Assign a violation for every sequence of vowels across a syllable 	boundary. 
+\z
+  
+  Vowel hiatus in Gurmancema is always resolved by deleting the first vowel, or 
+  the word-final vowel. A tableau showing an example is shown in Table 2.
+  
+\pagebreak  
+\begin{center}Table 2: \textit{Tableau for /di\#a/ with sample phrase ‘forgets jugs’, n=10}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|} 
+\hline
+ & & & & & & & \\
+  & & & & & & &\\
+ & & & & & & & \\
+{\textipa{}} & \hspace*{0.1cm}  p  \hspace*{0.2cm} & \hspace*{0.1cm}  p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *V.V \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns]\# \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max} (V) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (hi) \end{rotate} \hspace{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /súndi àbóbà/ & obs & pred & score & 9.34 & 6.14 & 3.62 & 2.99 \\
+\hline  \hline  \textipa{a. [súndi àbóbà]} & 0 & \textasciitilde 0 & 15.44 & 1 & 1 & 0 & 0 \\
+\hline   \textipa{b. [súndə àbóbà]} & 0 & \textasciitilde 0 & 12.63 & 1 & 0 & 0 & 1 \\
+\hline   \textipa{c. [súnd àbóbà]} & 1 & \textasciitilde 1 & 3.62 & 0 & 0 & 1 & 0 \\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+In the tableau in Table 2, candidate (a) has a vowel sequence and a word-final tense vowel, so it violates *V.V and [+tns]\#, incurring a score of 9.34+6.14, totaling 15.44. Candidate (b) violates *V.V and \textsc{Ident}(hi), incurring a score of 9.34+2.99, totaling 12.63. Candidate (c) only violates \textsc{Max}(V), incurring a score of 3.62. This is the lowest score by a significant amount, so the model predicts candidate (c) will surface approximately 100\% of the time, which is what was observed. 
+Vowel hiatus resolution is entirely regular and predictable in Gurmancema, with 
+the word-final vowel always being deleted.
+
+\subsection{Prevocalic Obstruents}
+Consonant clusters beginning with obstruents are highly marked in Gurmancema, 
+leading to a preference for reduction over deletion when word-final vowels are preceded by an obstruent. In other words, word-final vowels are dispreferred, but when deletion would lead to an illicit consonant cluster, reduction is the preferred fix. The vowels /a, i, o/ reduce when preceded by an obstruent over 90\% of the time. The vowel /e/ is not addressed in this paper, as in the dataset it is always part of root material, which behaves differently from affixal/clitic material. The vowel /u/, however, shows variation when preceded by an obstruent. To start to account for this data, a new constraint is needed, penalizing consonant clusters beginning with obstruents. This is not a general *CC constraint, because not all consonant clusters are equally marked in Gurmancema (see (\ref{data})). 
+
+\ea \label{tc}
+*[-sonorant][+consonantal] (*TC): Assign a violation for every
+	[-sonorant][+consonantal] consonant cluster in the output. 
+\z
+
+Table 3 shows an example of reduction of a vowel following an obstruent. The tableau shows observed data for all /Ta\#C/, meaning all environments of an obstruent followed by /a/ followed by a consonant. 
+
+\begin{center}Table 3: \textit{Tableau for /Ta\#C/ with sample phrase ‘child loses’, n=88}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|} 
+\hline
+ & & & & & & & \\
+  & & & & & & &\\
+ & & & & & & & \\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns]\# \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *TC \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max} (V) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (lo) \end{rotate} \hspace{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /kìbéga bìáni/ & obs & pred & score & 6.14 & 4.55 & 3.62 & 3.52 \\
+\hline  \hline  \textipa{a. [kìbéga bìáni]} & .05 & \textasciitilde .07 & 6.14 & 1 & 0 & 0 & 0 \\
+\hline   \textipa{b. [kìbégə bìáni]} & .91 & \textasciitilde .92 & 3.52 & 0 & 0 & 0 & 1 \\
+\hline   \textipa{c. [kìbég bìáni]} & .04 & \textasciitilde .01 & 8.17 & 0 & 1 & 1 & 0 \\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+
+Word-final /i/ and /o/ behave very similarly to word-final /a/ when preceded by 
+an obstruent, but /u/ behaves slightly different. Reducing /u/ violates both 
+\textsc{Ident}(hi) as well as \textsc{Ident}(round), so the reduced candidate 
+has more penalties than the other word-final vowels. This leads to a case of 
+ganging, where the violation of two lower constraints is strong enough to overpower one stronger constraint, leading to variation. While violating either \textsc{Ident}(high) or \textsc{Ident}(labial) produces patterns similar to those seen in Table 2, violating both means almost double the penalty for that candidate, making reduction a significantly worse choice for /u/ than the other vowels. The ganging and variation is 
+illustrated in Table 4. 
+\pagebreak
+\begin{center}Table 4: \textit{Tableau for /Tu\#C/ with sample phrase ‘tree wants’, n=141}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|c|} 
+\hline
+ & & & & & & & & \\
+  & & & & & & & &\\
+ & & & & & & &&  \\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns]\# \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *TC \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max} (V) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (lab) \end{rotate} \hspace{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (hi) \end{rotate} \hspace*{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /bútíbu bwà/ & obs & pred & score & 6.14 & 4.55 & 3.62 & 3.62 & 2.99 \\
+\hline  \hline  \textipa{a. [bútíbu bwà]} & .69 & \textasciitilde .57 & 6.14 & 1 & 0 & 0 & 0 & 0\\
+\hline   \textipa{b. [bútíbə bwà]} & .31 & \textasciitilde .35 & 6.61 & 0 & 0 & 0 & 1 & 1 \\
+\hline   \textipa{c. [bútíb bwà]} & 0 & \textasciitilde .08 & 8.17 & 0 & 1 & 1 & 0 & 0\\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+The model is very accurate in predicting the distribution for maintenance (a) and reduction (b), but the predictions are slightly off, leading to an over-prediction of deletion (c), which was not observed. This is a result of the model being more general. The goal of this analysis was to account for the data with the simplest set of phonological constraints rather than overfitting the model by tailoring constraints to small subsets of data. *TC does not have a higher weight due to the few exceptional cases where TC consonant clusters occur as a result of deletion. \textsc{Max}(V), the only other constraint violated by (c), does not have a higher weight due to cases of vowel deletion elsewhere in the data. 
+
+\subsection{Prevocalic Approximants}
+
+Prevocalic approximants behave similarly to prevocalic obstruents overall due to a similar markedness constraint on consonant clusters beginning with approximants, parallel to (\ref{tc}). 
+
+\ea	*[+approximant][+consonantal] (*RC): Assign a violation for every consonant 
+	cluster beginning with an approximant. 
+\z
+
+The reason we need two constraints *TC and *RC rather than a general *CC constraint is because consonant clusters beginning with nasals are permissible in Gurmancema. This markedness constraint leads to reduction, as with the constraint *TC. 
+
+
+There were no cases of word-final /e/, /u/, or /o/ preceded by an approximant. Word-final /a/ preceded by approximants behaves differently from /i/, 
+however, always surfacing as a maintained [a]. The vowel /a/ reduces in other cases, such as after obstruents (see Table 2), so this is not a result of constraints preventing /a/ from reducing. There is nothing morphologically unique about the words that exhibit this pattern, and it is very consistent. To account for this pattern, a new solution is necessary. The first ingredient in the solution is the following constraint: 
+\ea
+*[+approximant][-tense] (*R[ə]): Assign a violation for every approximant in 	the output followed by a [-tense] vowel
+\z
+
+From a data perspective, it is clear that this pattern refers to both the input and the output, where having a reduced vowel after an approximant is marked, but worse when the vowel derives from /a/ as opposed to /i/. The candidate where an approximant is followed by /a/ and the /a/ reduces violates \textsc{Ident}[low] as well as *R[ə]. However, the violation of these two constraints is not strong enough to predict the correct forms. Both would need low weights to allow reduction in other environments, and their combined penalty is not enough to prevent /a/ from reducing. Thus, *R[ə] and \textsc{Ident}(lo) on their own motivate variation across the language in cases where there should not be any. In other words, ganging alone is not sufficient to make the correct predictions. 
+	
+The only way to add more weight to this combination is to use constraint conjunction, where a candidate incurs a violation if and only if it violates each of two constraints included in the conjunction. The conjoined constraint has a separate weight that is added to a candidate’s Harmony. It may seem that Harmonic Grammar relieves the need for conjoined constraints, but this is not always the case. Superadditivity, the conjoining of constraints in a weighted model, was developed to capture cases not easily captured by simple additive constraints (Albright, Margi \& Michaels 2008, Green \& Davis 2014). Smolensky (2006) argues that superadditivity in an HG context is necessary for local violations across a specific domain. In the case of Gurmancema, the constraints both refer to the onset and nucleus of one syllable. The pattern in these data was highly specific and very regular, so the learner needs more specific grammatical tools to model it correctly, but with constraint conjunction, this is possible with ingredients already in the model. 
+
+The addition of the conjoined constraint *R[ə] \& \textsc{Ident}(lo) correctly predicts the data distribution. Although many superadditive models only use superadditivity for conjoining markedness constraints (Albright et al. 2008), there is also precedent for using faithfulness constraints in a superadditive manner (Green and Davis 2014). Nevertheless, there is some debate about whether markedness and faithfulness constraints can be conjoined (Moreton \& Smolensky 2002). Conjoined constraints are intended only to be used for patterns in local domains. According to Moreton \& Smolensky (2002), as the domain of markedness is the output while faithfulness necessarily refers to the input, it is not clear whether such conjunctions can be truly considered local. In this case, the only way to represent the data was to conjoin a faithfulness and a markedness constraint (*R[ə] \& \textsc{Ident}(lo)). 
+
+Tableaux showing the different behaviors of /a/ and /i/ preceded by /ɾ/ are shown in Table 5 
+
+\begin{center}Table 5: \textit{Tableau for /Ri\#C/ with sample phrase ‘hair covers’, n=192}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|c|c|} 
+\hline
+  & & & & & & & & &\\
+ & & & & & & & & &\\
+ & & & & & & & & & \\
+  & & & & & & & & & \\
+ & & & & & & &  & & \\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *R[ə] \& \textsc{Ident}(lo)\end{rotate} \hspace*{0.1cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns]\# \end{rotate} \hspace*{0.2cm} &  \hspace*{0.1cm} \begin{rotate}{90} *RC \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max} (V) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (hi) \end{rotate} \hspace{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *R[ə]\# \end{rotate} \hspace*{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /tìyúɾi ŋóagéni/ & obs & pred & score & 8.13 & 6.14 & 6.04 & 3.62 & 2.99 & 0 \\
+\hline  \hline  \textipa{a. [tìyúɾi ŋóagéni]} & .05 & \textasciitilde .04 & 6.14 & 0 &1 & 0 & 0 & 0 & 0 \\
+\hline   \textipa{b. [tìyúɾə ŋóagéni]} & .91 & \textasciitilde .96 & 2.99 & 0 & 0&0 & 0 & 1 & 1 \\
+\hline   \textipa{c. [tìyúɾ ŋóagéni]} & .04 & \textasciitilde 0 & 9.66 & 0 &0& 1 & 1 & 0 & 0\\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+\pagebreak
+
+\begin{center}Table 6: \textit{Tableau for /Ra\#C/ with sample phrase ‘children sell’, n=160}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|c|c|} 
+\hline
+ & & & & & & & & &\\
+ & & & & & & & & &\\
+ & & & & & & & & & \\
+  & & & & & & & & &\\
+ & & & & & & & & &\\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *R[ə] \& \textsc{Ident}(lo)\end{rotate} \hspace*{0.1cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns\#] \end{rotate} \hspace*{0.1cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc *RC \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max}(V)\end{rotate} \hspace{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (lo) \end{rotate} \hspace*{0.2cm} & \hspace*{0.2cm} \begin{rotate}{90} *R[ə]\end{rotate} \hspace*{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /abéla kúaɾi/ & obs & pred & score & 8.13 & 6.14 & 6.04 & 3.62 & 3.52 & 0\\
+\hline  \hline  \textipa{a. [abéla kúaɾi]} & 1 & \textasciitilde .97 & 6.14 & 0 & 1 & 0 & 0 & 0 & 0\\
+\hline   \textipa{b. [abélə kúaɾi]} & 0 & \textasciitilde 0 & 11.65 & 1 & 0 & 0 & 0 & 1 & 1\\
+\hline   \textipa{c. [abél kúaɾi]} & 0 & \textasciitilde .03 & 9.66 & 0 & 0 & 1 & 1 & 0 & 0\\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+Without the use of superadditivity, the model predicts variation in this environment which showed categorical behavior. An example tableau is shown below. 
+
+
+\begin{center}Table 7: \textit{Tableau for /Ra\#C/ with sample phrase ‘children sell’, n=160 without superadditivity}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|c|} 
+\hline
+ & & & & & & & & \\
+  & & & & & & & &\\
+ & & & & & & & &\\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *RC \end{rotate} \hspace*{0.1cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc *[+tns\#]  \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (lo)\end{rotate} \hspace{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *R[ə] \end{rotate} \hspace*{0.2cm} & \hspace*{0.2cm} \begin{rotate}{90} \textsc{Max}(V) \end{rotate} \hspace*{0.2cm}\\[.5ex]
+
+
+
+\hline   \textipa{} /abéla kúaɾi/ & obs & pred & score & 9.83 & 9.64 & 7.84 & 3.37 & 3.33\\
+\hline  \hline  \textipa{a. [abéla kúaɾi]} & 1 & \textasciitilde .81 & 9.64  & 0 & 1 & 0 & 0 & 0\\
+\hline   \textipa{b. [abélə kúaɾi]} & 0 & \textasciitilde .17 & 11.21  & 0 & 0 & 1 & 1 & 0\\
+\hline   \textipa{c. [abél kúaɾi]} & 0 & \textasciitilde .02 & 13.16 &  1 & 0 & 0 & 0 & 1\\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+This set of constraints still captures general patterns, but as it predicts variation where there is none, it does not satisfactorily capture the data. Moreover, under this representation, several other environments have inaccuracies, with the model errors in prediction of 20\% in multiple cases. 
+
+\subsection{Prevocalic Nasals}
+
+When /m/ is in penultimate position, it typically triggers reduction in the final vowel. This is counter-intuitive, as there is no markedness constraint against consonant clusters beginning with nasals. Consonant clusters beginning with nasals are in fact common in Gurmancema, occurring both within words and across word boundaries. Gurmancema, however, has strong nasal place assimilation, meaning consonant clusters with different places of articulation are highly marked. The markedness constraint is described below:
+
+\ea
+*[+nasal, +$a$place][-$a$place] (\textsc{NasalAssimilation}): Assign a violation for every 	consonant cluster beginning with a nasal where the second consonant has a 	different place than the nasal.
+\z
+
+\textsc{Nasal Assimilation} prevents the consonant clusters with mismatched place but \textsc{Ident}(lab) prevents /m/ from assimilating to the following consonant. In the context of final vowel deletion, this situation leads to a strong preference for vowel reduction to avoid creating such a mismatched cluster.  In the cases where the vowel after /m/ does delete, however, the nasal retains its bilabial place due to \textsc{Ident}(lab). This does result in cases where there is no nasal place assimilation, which is rare in Gurmancema, but predicted correctly with the constraints in this model. 
+A tableau illustrating all the constraints for prevocalic /m/ is presented 
+below. 
+\pagebreak
+
+\begin{center}Table 8: \textit{Tableau for /mi\#C/ with sample phrase ‘elephants eat’, n=44}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|c|} 
+\hline
+ & & & & & & & & \\
+  & & & & & & & &\\
+ & & & & & & & &  \\
+  & & & & & & & &\\
+ & & & & & & & &  \\
+  & & & & & & & &  \\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns]\# \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max}(V) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (lab) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (hi) \end{rotate} \hspace{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Nasal Assimilation} \end{rotate} \hspace*{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /ilúomì dá/ & obs & pred & score & 6.14 & 3.62 & 3.62 & 2.99 & 2.55 \\
+\hline  \hline  \textipa{a. [ilúomì dá]} & .07 & \textasciitilde .04 & 6.14 & 1 & 0 & 0 & 0 & 0\\
+\hline   \textipa{b. [ilúomə̀ dá]} & .91 & \textasciitilde .91 & 2.99 & 0 & 0 & 0 & 1 & 0 \\
+\hline   \textipa{c. [ilúom dá]} & .02 & \textasciitilde .04 & 6.17 & 0 & 1 & 0 & 0 & 1\\
+\hline   \textipa{d. [ilúon dá]} & 0 & \textasciitilde .01 & 7.24 & 0 & 1 & 1 & 0 & 0\\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+In cases where the next consonant is also bilabial, the vowel is more likely to delete because it only violates \textsc{Max}(V), rather than \textsc{Max}(V) as well as either \textsc{NasalAssimilation} or \textsc{Ident}(lab). 
+
+\begin{center}Table 9: \textit{Tableau for /ma\#C/ with sample phrase ‘food hits’, n=6}
+\renewcommand*\arraystretch{1.2}
+\vspace{1.0cm} \scalebox{1}[1]{}{\begin{tabular}[t]{|l||c|c|c|c|c|c|c|c|} 
+\hline
+& & & & & & & & \\
+ & & & & & & & & \\
+  & & & & & & & &\\
+ & & & & & & & &  \\
+  & & & & & & & &\\
+ & & & & & & & &  \\
+{\textipa{}} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} p  \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{45} \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} *[+tns]\# \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Max}(V) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (lab) \end{rotate} \hspace*{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Ident} (low) \end{rotate} \hspace{0.2cm} & \hspace*{0.1cm} \begin{rotate}{90} \textsc{Nasal Assimilation} \end{rotate} \hspace*{0.2cm}\\[.5ex]
+
+\hline   \textipa{} /míɟemá pwá/ & obs & pred & score & 6.14 & 3.62 & 3.52 & 2.99 & 2.55 \\
+\hline  \hline  \textipa{a. [míɟemá pwá]} & 0 & \textasciitilde .04 & 6.14 & 1 & 0 & 0 & 0 & 0\\
+\hline   \textipa{b. [míɟemə́ pwá]} & .33 & \textasciitilde .50 & 3.52 & 0 & 0 & 0 & 1 & 0 \\
+\hline   \textipa{c. [míɟem pwá]} & .67 & \textasciitilde .46 & 3.62 & 0 & 1 & 0 & 0 & 1\\
+\hline \end{tabular}} \renewcommand*\arraystretch{1} \end{center}
+
+While there may be greater deviation between observed and predicted probabilities in this case, the sample size for this environment was considerably smaller than for other environments modeled, given its specificity.
+
+\subsection {List of Constraints} \label{fulllist}
+
+In the preceding subsections, I have presented tableaux with only the relevant constraints. In order to understand the complete analysis, I have provided a full list of constraints and their weights, in order from highest to lowest weights. 
+
+\ea
+
+	*V.V: 9.34 \newline
+	\textsc{Ident}(lo) \& *R[ə]: 8.13 \newline
+	*[+tns]\#: 6.14 \newline
+	*RC: 6.04\newline
+	\textsc{Dep}(C): 5.79\newline
+	*TC: 4.55\newline
+	\textsc{Ident}(lab): 3.62\newline
+	\textsc{Max}(V): 3.62\newline
+	\textsc{Ident}(lo): 3.52\newline
+	\textsc{Ident}(hi): 2.99\newline
+	\textsc{Nasal Assimilation}: 2.55\newline
+	\textsc{Ident}(tns): 0\newline
+	*R[ə]: 0\newline
+\z
+
+\section{Conclusion}
+
+This paper provides the first full account of word-final vowel reduction and deletion in Gurmancema in a constraint-based model. These data are very complex and have been largely left unanalyzed in the small literature on this language. Unlike in other cases of vowel reduction and deletion, the patterns are not entirely motivated by stress patterns or vowel hiatus resolution. These data can only be represented by looking at a number of phonological factors.  
+	
+A Harmonic Grammar model was necessary to account for cases of constraint ganging, and a MaxEnt version of HG was used to predict the variation found in certain parts of the data. The model necessitated the addition of superadditive conjoined constraints to represent highly specific yet regular patterns. These superadditive constraints included conjoined Faithfulness and Markedness constraints as opposed to simply conjoined Markedness constraints. Although this goes against traditional theories of conjoined constraints, these constraints were motivated by the complexity of the data. It was also more natural to conjoin pre-existing constraints rather than invent new and highly specific constraints to account for the data.   
+
+This model accounts for the purely categorical patterns in Gurmancema, such as vowel hiatus resolution, as well as variable patterns. This paper does not include a full representation of all the complexity in Gurmancema, however. There is much room for future work in Gurmancema. In particular, the interaction of this process with tone and syntax remain. 
+
+\section*{Abbreviations}
+All glosses used are standard from the Leipzig glossing conventions. \\
+The marker \textsc{Cl} is a noun class marker. All nouns in Gurmancema have a 
+pro- and enclitic that mark noun class. These are not further analyzed 
+morphologically here. 
+
+\section*{Acknowledgements}
+
+I would like to thank the editors of this volume as well as two anonymous reviewers for their feedback. I would also like to thank Laura McPherson and James Stanford for their feedback throughout this paper. Thank you to my consultant Lamoudi Labesse, as well as Marc Sepama and the 
+students in Linguistics 35. I am extremely grateful for the financial support of the Stamps Family Charitable Foundation through the Dartmouth Center for the Advancement of 
+Learning, without which this work would not have been possible. 
+
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+\nocite{AlbrightMagri}
+\nocite{Boersma96}
+\nocite{Casali97}
+\nocite{Chantoux}
+\nocite{GoldwaterJohnson03}
+\nocite{GreenDavis14}
+\nocite{HayesWilson08}
+\nocite{MoretonSmolensky02}
+\nocite{Naba}
+\nocite{Rialland80}
+\nocite{Rialland01}
+\nocite{Ethnologue}
+\nocite{Smolensky06}
+\nocite{WilsonHayesGeorge08}
+
+\end{document}

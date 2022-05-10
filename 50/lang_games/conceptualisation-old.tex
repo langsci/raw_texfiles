@@ -1,0 +1,256 @@
+Conceptualisation is modelled by so-called discrimination games \cite{steels:1996b}. The basis of the model has not changed since its first introduction in 1996, but the implementation and precise details have been adjusted ever since. The first robot implementation of the model can be found in \cite{steelsvogt:1997} and \cite{vogt:1998a}. The model exploits a selectionist mechanism of generation and selection. This results in the self-organisation of representations and has the properties of a dynamical system.
+
+Different methods of categorisation and representation have been developed: the {\em binary tree method} \cite{steels:1996b}, the {\em prototype method} \cite{dejongvogt:1998,vogt:1998b} and the {\em adaptive subspace method} \cite{dejongvogt:1998,dejong:2000}. The first two methods are investigated in this thesis and shall be explained in this section. However, before the two methods are presented, a generic model of the discrimination games is introduced.
+
+
+\subsubsection{Discrimination Games}
+
+\p
+In a discrimination game the aim of a robot is to conceptualise a topic $t \in Cxt$. Note that a discrimination game is played by an individual robot. The topic is a segment. The robot discriminates the topic (1) by finding categories that cover the segment, and (2) by selecting those sets of categories (or representations for short) that distinguish the topic from all other segments in the context. Depending on the outcome of the game, the robot's ontology is adapted.
+
+The model is described more formally by introducing the following definitions:
+
+\begin{description}
+\item[Category] Categories are the basic elements of the robots' long term memory that concerns meaning. A category $c_k=\langle sc_{i,k},attr_k,\nu_k\rangle$ consists of a reference to sensory channel $sc_{i,k}$, a number of attributes $attr_k$ and a score $\nu_k$.\index{category}
+\begin{itemize}
+\item $sc_{i,k}$ refers to sensory channel $sc_i$, which means that category $c_k$ is only sensitive for features coming from $sc_i$.
+\item The attributes $attr_k$ are defined depending on how a feature is categorised, which is dependent on the method implemented. The attributes are defined more concretely when the different methods are introduced.
+\item Score $\nu_k$ is a value between 0 and 1 indicating the past effectiveness of the category.
+\end{itemize}
+
+\item[Ontology] The ontology is the set of categories that an agent has in its long term memory: $O=\{c_0,\ldots,c_m\}$. At the start of an experiment $O=\emptyset$, it is gradually constructed when the agents invent new categories. How this is done depends on the method used.\index{ontology}
+
+\item[Categorisation] Categorisation is the process in which a features of a segment are related to the categories. This relation is defined by the category's attributes. The notation of the categorisation of feature $f$ with category $c$ is: $f \rightarrow c$.\index{categorisation}
+
+\item[Category set] A category set $CAT_S \subseteq O$ is the set of categories that results from the categorisation of segment $S=\{f_0,\ldots,f_N\}$. Or more formally:
+
+\begin{eqnarray}
+CAT_S = \{c_k \in O | f_i \rightarrow c_k, f_i \in S\}
+\end{eqnarray}
+
+\item[Representation] A representation $C_S \subseteq CAT_S$ of segment $S$ is a set of categories for which the categories are sensitive to different sensory channels. More formally:
+
+\begin{eqnarray}
+C_S = \{c_k \in CAT_S | \forall (c_k \neq c_l): sc_{k,i} \neq sc_{l,j} \}
+\end{eqnarray}
+
+\n
+where $0 \leq i,j < N$ and $N$ is the number of sensory channels. Note that $\bigcup C_S = CAT_S$. $C_S$ may consist of one up to $N$ categories.
+
+\item[Representation set] The representation set $CON_S$ is the set of representations $C_S$ of segment $S$ as defined above: 
+
+\begin{eqnarray}
+CON_S = \{C_S\}
+\end{eqnarray}
+
+\item[Conceptualisation] Conceptualisation of segment $S$ is the construction of the concept set $CON_S$.
+
+\item[Distinctive concept set] The distinctive concept set $DCS_t \subseteq CON_t$ for topic (or segment) $t$ is the set of concepts $C_t \in CON_t$ that distinguish $t$ from the other segments in the context $Cxt$. In other words: $DCS_t$ is the set of concepts that are unique to segment $t$ in contrast to the concepts of the other segments in $Cxt$. More formally:
+
+\begin{eqnarray}
+DCS_t = \{C_t \in CON_t \mid \forall (S \in Cxt \backslash \{t\}):\\ 
+(\neg \exists C_S \in CON_S:(C_S=C_t))\}\nonumber
+\end{eqnarray}
+
+\item[Discrimination] Discrimination of topic $t$ is the process of constructing the distinctive concept set $DCS_t$.
+
+\item[Meaning] The meaning $M_t = \langle DC_t,\rho_{M_t} \rangle$ with $DC_t \in DCS_t$ of segment $t$ is a distinctive concept paired with a concept score $\rho$. For some specified reason $M_t$ is selected to stand for the segment in a particular situation. The selection criterion (or criteria) may depend on the task for which it is used. In a language game this may simply be the fact that $M_t$ is the only meaning that matches a form-meaning association.
+
+\item[Discrimination game] The whole process from categorisation until the selection of the meaning (or if one prefers until the conceptualisation) is called the discrimination game.
+\end{description}
+
+\n
+The goal of the discrimination game is to find a representation $M_t$ for some topic $t\in Cxt$. If such $M_t$ is found the discrimination game is successful. Then the representation relates to the perception of a referent and is thus (indirectly) the representation of this referent. However, sometimes $DCS_t$ is empty, for example if it does not have a category that categorises some feature of $t$. In that case, the discrimination game is a failure and the ontology needs to be adapted so that the robot may be successful in a future game. How the ontology is adapted depends on the method that is used. This will be explained below.
+
+When the discrimination is a success, i.e. $DCS_t \neq \emptyset$, the category scores $\nu_k$ of categories $c_k \in C_t \in CON_t$ are adapted as follows:
+
+\begin{eqnarray}
+\nu_k = \eta \cdot \nu_k + (1-\eta)\cdot X
+\end{eqnarray}
+
+\n
+where $\eta$ is a learning rate and
+
+\begin{eqnarray}
+X = \left \{ \begin{array}{rl}
+1 & \mbox{if } c_k \in DCS_t\\
+0 & \mbox{if } c_k \in CON_t \backslash DCS_t
+\end{array}\right. \nonumber
+\end{eqnarray}
+
+\n
+So, $\nu_k$ is increased when category $c_k$ is part of a distinctive representation. If it is part of a representation of $t$ that is not distinctive, $\nu_k$ is lowered. Thus a record is made of the effectiveness of the category.
+
+The effectiveness of representation $M_t$ is recorded in the representation score $\rho_{M_t}$. A representation is effective when it is used in a language game for naming the topic. Hence $\rho_{M_t}$ is updated according to:
+
+\begin{eqnarray}
+\rho_k = \eta \cdot \rho_k + (1-\eta)\cdot X
+\end{eqnarray}
+
+\n
+where $\eta$ is the learning rate and
+
+\begin{eqnarray}
+X = \left \{ \begin{array}{rl}
+1 & \mbox{if used in the language game}\\
+0 & \mbox{otherwise}
+\end{array}\right. \nonumber
+\end{eqnarray}
+
+Other adaptations of $O$ when the discrimination game is successful may depend on the method that is used as will be shown when explaining the prototype method.
+
+\begin{figure}
+\centerline{\psfig{figure=lang_games//dg.eps,width=12cm}}
+\caption{A schematic overview of the discrimination game. See the text for details.}
+\label{f:cm:dg}
+\end{figure}
+
+\p
+In this section the formal model of the discrimination games has been introduced. A schematic overview of this model is shown in figure \ref{f:cm:dg}. In relation to the symbol grounding problem, the processes of perception and segmentation comparable to iconicity. Discrimination is, naturally, modelled with the discrimination game. However, a part of the discrimination in Harnad's sense is already done during the perception. There the different regions of interest are defined. The next two sections describe the two variants that are applied in the discrimination games, namely the binary tree method and the prototype method.
+
+\subsubsection{Binary Tree Method}\label{s:cm:binary}
+\index{binary tree|(}
+\index{binary tree!method|see{binary tree}}
+\index{Steels, Luc}
+
+\begin{figure}[t]
+\centerline{\psfig{figure=discr_games//binary_tree.eps,width=13cm}}
+\caption{Categories represented as binary trees. Every sensory channel (like WL, ML and IR) is associated with a category tree. The root node of the tree is sensitive to whole range of the sensory channel. The tree is incrementally constructed during the evolution of discrimination games. Every time the discrimination game fails, two new categories may be constructed by splitting one category.}
+\label{f:cm:binary_tree}
+\end{figure}
+
+In the original paper by Luc Steels the categories were constructed as a binary tree \cite{steels:1996b}. The root of such a tree is sensitive to the complete range of a sensory channel. The children nodes of the root are sensitive to the upper half and lower half of a sensory channel. Each of these children nodes could in turn be expanded by two children, each sensitive to one half of the range of the parent node, etc. (see fig. \ref{f:cm:binary_tree}). Every node that has children is said to be {\em refined}.
+
+This method was also applied in the first implementation of the robotic language games \cite{steelsvogt:1997,vogt:1998a} and has been re-implemented in a later version of the experiment. See chapter \ref{ch:cat} for a discussion of the results.
+
+More concretely the method is a variant of the discrimination game model described above where the $attr_k$ of category $c_k$ is defined more precisely. The attribute of the category is defined in this method as an interval: $attr_k=\langle v_{k,0},v_{k,1}]$, where $v_{k,0}$ is the lower bound and $v_{k,1}$ the upper bound of the category's sensitivity. The category $c_k$ can now be defined as $c_k=\langle sc_{i,k},\langle v_{k,0},v_{k,1}],\nu_k\rangle$. A segment $S=\{f_0,\ldots,f_{N-1}\}$ can now be categorised with category set $CAT_S=\{c_0,\ldots,c_M\}$:\index{category set}\index{attribute}\index{category}
+
+\begin{eqnarray}
+CAT_S=&\{c_k=(sc_{i,k},\langle v_{k,0},v_{k,1}],\nu_k)\; \mid (c_k \in O) \wedge\\
+& \exists (f_i=sc_i\mbox{-}V_i \in S): (v_{k,0} < V_i \leq v_{k,1})\} \nonumber
+\end{eqnarray}
+
+\p
+So, in words the category set consists of categories for which each feature value of the segment is in the interval of the category. Note that when a feature $f_i$ with value $V_i=0$ and category $c_k$ has a lower bound of $v_{k,0}=0$, then this feature falls inside category $c_k$.
+
+\index{topic}If a discrimination game fails in finding distinctive categories for the topic $t$, then the robot may construct a new category. This happens according to the following rules:
+
+\begin{itemize}
+\item {\bf If} there are still sensory channels for which no category has been introduced, then select from these channels one arbitrary sensory channel $sc_i$ for which $L \leq V_i \leq U$ if $sc_i$-$V_i \in t$, where $L$ is the lower-bound of the sensory channel's range and $U$ its upper bound (usually $L=0$ and $U=1$). Add to the ontology $O$ the new category $c=\langle sc_i,\langle L,U],\nu \rangle$, where $U$ is the upper bound of the sensory channel's range (usually $U=1$) and the category score $\nu=0$.
+\item {\bf Else} choose an arbitrary category $c_k \in CAT_t$ that is not refined yet. The refinement of $c_k=\langle sc_{i,k},\langle v_{k,0},v_{k,1}],\nu \rangle$ yields two new categories $c'=\langle sc_i,\langle v_{k,0},v_{k,\frac{1}{2}}],\nu'\rangle$ and $c''=\langle sc_i,\langle v_{k,\frac{1}{2}},v_{k,1}],\nu''\rangle$, where $v_{k,\frac{1}{2}}=v_{k,0}+\frac{1}{2}\cdot(v_{k,1}-v_{k,0})$ and $\nu'=\nu''=0$. These categories are then added to the ontology $O$.
+\end{itemize}
+
+This way the ontology grows through constructing binary trees which refine the sensory channels, see figure \ref{f:cm:binary_tree}. If a category is at the top node of a sensory channel, this category has general information about this sensory channel. The category that is refined is more specialised. Thus representation can be more general or more specialised as a result of hierarchical organisation.
+
+\index{binary tree|)}
+
+The method of incorporating {\em binary} trees has both its advantages and its disadvantages. One advantage is that the categories a robot can construct are similar for all the robots. The only differences between two individuals may be which branches it constructed. This type of representation makes comparisons of the ontology of categories and lexicon easier. Another advantage is that it makes a search through the category trees easier than in the prototype method (which will be discussed in the next section). The main disadvantage is that it seems biologically and psychologically less plausible.
+
+\begin{quote}
+The natural mechanisms of connectionist learning and superpositional storage immediately yield a system which will extract the {\em statistical central tendency} of the exemplars. \cite[p. 16]{a.clark:1993}
+\end{quote}
+
+\n
+Such storage are often called {\em prototypes}. Prototypes are usually characterised by typical members of a category. For instance, \index{prototype!effect}\index{Rosch, Eleanor} psychologist Eleanor\citeN{rosch:1978} showed empirically that categorisation typically revealed what she called a {\em prototype effect}. Subjects who tried to categorise different perceptions, were faster in categorising the central members of a category than the non-central members. 
+
+The notion of a prototype is widely accepted among the cognitive scientist. To quote Paul M. \citeN[p. 122]{p.m.churchland:1989}:
+
+\begin{quote}
+``Various theorist have independently found motive to introduce such a notion in a number of cognitive fields: they have been called `paradigms' and `exemplars' in the philosophy of science \cite{kuhn:1962}, `stereotypes' in semantics \cite{putnam:1975}, `frames' \cite{minsky:1981} and `scripts' \cite{schank:1977} in AI research, and finally `prototypes' in psychology \cite{rosch:1976} and linguistics \cite{lakoff:1987}.
+\end{quote}
+
+So, it appears to be more likely that categories are represented prototypical. 
+\subsubsection{The Prototype Method}\label{s:cm:proto}\label{s:cm:prototype}
+\index{prototype!method|(}
+\index{prototype|(}
+
+In most experiments reported in this thesis the categories are constructed as prototypes. The model that uses prototypes as the representation of categories could be called the {\em prototype method} \cite{dejongvogt:1998} and \cite{vogt:1998c}.
+
+Instead of discrete representations like binary trees, prototypes are centred around dynamically changing points in the feature space. Prototypes are coupled to the environment of observations and evolve towards a statistical tendency of these observations.
+
+So how are prototypes represented in the model? The aim was to keep the representation of hierarchical layering of categories, so that agents still could generalise and specialise over the categories, like is the case in the binary tree method. Another goal was to preserve the idea that the categories were grounded from observations and thus represent past experiences of the agent. 
+
+\begin{figure}[t]
+\centering
+\subfigure[]{\psfig{figure=discr_games//proto1.eps,width=6cm}}
+\subfigure[]{\psfig{figure=discr_games//proto2.eps,width=6cm}}
+\caption{The figures (a) and (b) each correspond to a sensory channel. These figures show the structure and selection of hierarchical prototypes. On the right-hand side of the arrows the hierarchical structures are shown. From left to right each layer can hide more prototypes, shown here as dots (compare each prototype with a node of the binary tree shown in the previous section).
+Suppose that a robot observed a segment with the following features $\{$WL-0.725, ML-0.65$\}$. Then each feature (shown on the left-hand side of each figure) can be related to the categories that are shown as black dots on the right-hand side. At each layer the prototype that has its value closest to the observation is selected (their names are listed the bottom of each figure). If the discrimination game fails, a new prototype may be introduced as shown in figure (a). A layer with free space (WL-4) is chosen and a new prototype is added with the same value as the observation. Thus creating the prototypical category WL-4-0.75. This process is constrained by some rules, see the text for details.}
+\label{f:cm:prototree}
+\end{figure}
+
+\index{prototype!hierarchy of -}Figure \ref{f:cm:prototree} shows a schematic hierarchy of prototypes grouped in sensory channels. The figure also shows how observations can be categorised and how new categories can be generated. A {\em hierarchy of prototypes} is a layered structure that consists of a (possibly) increasing amount of categories\footnote{The terms prototypes and categories will often be used as synonyms. In fact, a prototype in this application is a category.}. The amount of prototypes $N(\lambda)$ on layer $\lambda$ is constrained by the following rule: $N(\lambda)\leq {N_0}^\lambda$, where $N_0$ is the order with which the hierarchy can grow. Furthermore, it is assumed that no two categories can have the same value at the same layer.
+
+\p
+\index{attribute}
+More formally, we can define a prototype $c_k$ by filling in the attributes $attr_k$ as the tuple $attr_k = (v_k, \lambda_k)$, where $v_k$ is the value of the category and $\lambda_k$ is its hierarchical layer, so the category can be defined as: $c_k = (sc_{i,k}, v_k, \lambda_k, \nu_k)$. Let $d_{i,k}=|V_i-v_k|$ be the absolute distance between value $V_i$ of feature $f_i$ and value $v_k$ of category $c_k$, then a segment $S=\{f_0,\ldots,f_{N-1}\}$ can be categorised as follows:\index{set of!categories}
+
+\begin{eqnarray}
+CAT_S=&\{c_k=(sc_{i,k},v_k,\lambda_k,\nu_k)\; \mid (c_k \in O) \wedge (\forall (f_i=sc_i\mbox{-}V_i \in S):\\ \nonumber
+& \forall (c_k,c_l \in O \wedge k \neq l \wedge \lambda_k = \lambda_l): (d_{i,k} \leq d_{i,l}))\}
+\label{e:cm:proto}
+\end{eqnarray}
+
+
+When a discrimination game fails, a new category will be introduced:
+
+\begin{itemize}
+\item {\bf If} there are still sensory channels for which no category has been introduced, then select from these channels one arbitrary sensory channel $sc_i$. Add to the ontology $O$ the new category $c=(sc_i,v,\lambda,\nu)$, where $v=V_i$ is the observed value of $sc_i$, layer $\lambda=0$ and the category score $\nu=0$.
+\item {\bf Else} choose an arbitrary sensory channel $sc_i$. Find for this sensory channel the first layer $\lambda$ for which $N(\lambda) < N_0^\lambda$ and $\neg \exists c = (sc_i,v,\lambda,\nu): v=V_i$. Then add category $c'=(sc_i,V_i,\lambda,\nu)$ to ontology $O$ with $\nu=0$.
+\end{itemize}
+
+If a discrimination game succeeds, one distinctive representation (the representation) may be selected for use in the communication. If the language game is successful, the categories of the representation are adapted. As mentioned before, categories may be adapted in several ways. One possible adaptation may be the adaptation of scores. Another (additional) adaptation may be that prototypes shift into the direction of the actual perception of a segment. Thus facilitating what might be compared to a {\em prototype effect} \cite{rosch:1978}.\index{prototype!effect}\index{Rosch, Eleanor} The value $v$ of a prototypical category $c=(sc_i,v,\lambda,\nu) \in M_t$ shifts towards the perception of segment $t$ as follows:
+
+\begin{eqnarray}
+v'=v+\delta \cdot (V_i-v)
+\label{e:cm:shift}
+\end{eqnarray}
+
+\p
+where $V_i$ is the value of sensory channel $i$ of segment $t$, $v'$ is the new value. Step-size $\delta$ can be varied, but is taken to be $0.1$ throughout the experiments.
+\index{prototype|)}
+\index{prototype!method|)}
+
+\subsubsection{Conjunctions Of Categories}
+\index{category!conjunction of -|(}
+
+In his work \citeN{steels:1996b} representations may be formed with every possible configuration of categories as has been presented above. This method works well, but is very time consuming. Therefore a more simple search system has been proposed. This new mechanism is to assure that the invariant property is found. I.e. the representations of a segment always has that category which categorises the feature with value 1.
+
+\index{invariance}
+\index{saliency}
+To filter out invariant properties of a categorisation \citeN{steels:2000} uses the notion of {\em saliency} on the sensory channels as a criterion for category selection. Saliency is calculated by looking for that sensory channel, which has the most salient feature. This method seems to work well for the Talking Heads, but as the distribution in the feature space will show in chapter \ref{ch:basic}, this does not necessary mean that the best categories will be selected. This is because other sensory channels than the one that has feature value 1 might just as well be most salient. Therefore the choice has been made to use conjunctions to filter out he invariant properties.
+
+\p
+The current implementation uses conjunctions of categories. Suppose the robots have categorised each segment at every hierarchical layer for all sensory channels. And suppose that the robots has 4 sensory channels and 6 layers. When all possible configurations are allowed (including single sized representations), there are $7^4=2401$ possible configurations, or representations. When the robots only take conjunctions into consideration, there are $6^4=1296$ possible configuration. 
+
+A discrimination game can yield many distinctive representation sets. This is logical, because when one of its categories is distinctive on its own, so are all other configurations with this category as a member. This makes $6^3=216$ possible representations. When an exhaustive search method is used, all these representations should be used to search the lexicon etc. Obviously this is computationally inefficient. Therefore, the current implementation only allows representations with categories that are at the same hierarchical layer. So each segment is conceptualised with at most 6 representations.
+\index{category!conjunction of -|)}
+
+\subsubsection{Scores}
+\index{score|(}
+
+As mentioned, each category has a category score $\nu$ to indicate its effectiveness, and so has each representation a representation score $\rho$. However, there is another score that helps selecting the representation $M\subseteq DCS$, namely the {\em depth score} $\kappa_M$:
+\index{score!category}
+\index{score!representation}
+\index{score!representation}
+\index{score!depth}
+
+\begin{eqnarray}
+\displaystyle
+\kappa_M=1 - \frac{\lambda}{5}
+\end{eqnarray}
+
+\noindent
+where $\lambda$ is the hierarchical layer of the categories in $M$. $\kappa_{\Gamma}$ is larger when the categories are closer to the top layer of the hierarchy. This score implements a preference for the most general representation, conform \cite{steels:1996b}. 
+
+Each representation will now be associated with a representation score $\mu_M$:
+
+\begin{eqnarray}
+\displaystyle
+\mu_M=\frac{1}{3}\cdot (\nu_M+\rho_M+\kappa_M)
+\end{eqnarray}
+\index{score!representation}
+
+\noindent
+The value $\mu_{\Gamma}$ is normalised in order to have a value between 0 and 1. $\nu_M$ is the average category score of categories $c\in M$.
+\index{score|)}

@@ -1,0 +1,94 @@
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Footnote \ref{#1}}
+
+\newenvironment{langscibars}{\begin{axis}[ybar,xtick=data, xticklabels from table={\mydata}{pos},
+        width  = \textwidth,
+	height = .3\textheight,
+    	nodes near coords,
+	xtick=data,
+	x tick label style={},
+	ymin=0,
+	cycle list name=langscicolors
+        ]}{\end{axis}}
+
+\newcommand{\langscibar}[1]{\addplot+ table [x=i, y=#1] {\mydata};\addlegendentry{#1};}
+
+\newcommand{\langscidata}[1]{\pgfplotstableread{#1}\mydata;}
+
+\renewcommand{\lsChapterFooterSize}{\footnotesize}
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\makeatother
+
+\newcommand{\togglepaper}[1][0]{
+%   \bibliography{../localbibliography}
+  \papernote{\scriptsize\normalfont
+    \theauthor.
+    \thetitle.
+    To appear in:
+    Change Volume Editor \& in localcommands.tex
+    Change volume title in localcommands.tex
+    Berlin: Language Science Press. [preliminary page numbering]
+  }
+  \pagenumbering{roman}
+  \setcounter{chapter}{#1}
+  \addtocounter{chapter}{-1}
+  \WarningsOff[microtype]
+    \WarningFilter{microtype}{Unknown slot}
+    \WarningFilter{scrbook}{package incompatibility}
+  }
+
+\usetikzlibrary{shapes.arrows,shadows}
+
+% \tikzfading[name=arrowfading, top color=transparent!0, bottom color=transparent!95]
+% \tikzset{arrowfill/.style={top color=white, bottom color=white}}
+\tikzset{arrowstyle/.style={draw=black, thick, single arrow, minimum height=#1, single arrow,
+single arrow head extend=.1cm}}
+
+\newcommand{\tikzfancyarrow}[1][1cm]{\tikz[baseline=-0.5ex]\node [arrowstyle=#1]{} ;}
+
+\providecommand{\LastRefSteppedCounter}{}
+
+\DeclareNewSectionCommand
+  [
+    counterwithin = chapter,
+    afterskip = 2.3ex plus .2ex,
+    beforeskip = -3.5ex plus -1ex minus -.2ex,
+    indent = 0pt,
+    font = \usekomafont{section},
+    level = 1,
+    tocindent = 1.5em,
+    toclevel = 1,
+    tocnumwidth = 2.3em,
+    tocstyle = section,
+    style = section
+  ]
+  {appendixsection}
+
+\renewcommand*\theappendixsection{\Alph{appendixsection}}
+\renewcommand*{\appendixsectionformat}{\appendixname~\theappendixsection\autodot\enskip}
+\renewcommand*{\appendixsectionmarkformat}{\appendixname~\theappendixsection\autodot\enskip}
+
+\DeclareNewSectionCommand
+  [
+    counterwithin = appendixsection,
+    afterskip = 1.5ex plus .2ex,
+    beforeskip = -3.25ex plus -1ex minus -.2ex,
+    indent = 0pt,
+    font = \usekomafont{subsection},
+    level = 2,
+    tocindent = 3.8em,
+    toclevel = 2,
+    tocnumwidth = 3.2em,
+    tocstyle = section,
+    style = section
+  ]
+  {appendixsubsection}
+
+\pgfplotscreateplotcyclelist{langsci}{
+   RdYlBu-A,every mark/.append style={fill=RdYlBu-A!80!black},mark=*\\
+   RdYlBu-F!60!black,every mark/.append style={fill=RdYlBu-F!80!black},mark=otimes*\\
+   RdYlBu-L,every mark/.append style={fill=RdYlBu-L!80!black},mark=diamond*\\
+}

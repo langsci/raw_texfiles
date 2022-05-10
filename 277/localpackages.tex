@@ -1,0 +1,140 @@
+% add all extra packages you need to load to this file
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{tabulary}
+\usepackage{amsmath}
+\usepackage{multicol}
+\usepackage{tabto}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                              %%%
+%%%           Examples                           %%%
+%%%                                              %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% remove the percentage signs in the following lines
+% if your book makes use of linguistic examples
+\usepackage{langsci-gb4e}
+\usepackage{langsci-optional}
+\usepackage{langsci-lgr}
+%% if you want the source line of examples to be in italics, uncomment the following line
+% \def\exfont{\it}
+
+\usepackage[autostyle=true]{csquotes}
+
+\usepackage{enumitem}
+\usetikzlibrary{matrix}
+
+% polyglossia
+% \usepackage{polyglossia}
+% \setmainlanguage[variant=british]{english}
+% \setotherlanguage{italian}
+
+\makeatletter
+\let\pgfmathModX=\pgfmathMod@
+\usepackage{pgfplots,pgfplotstable}%
+\let\pgfmathMod@=\pgfmathModX
+\makeatother
+\usepgfplotslibrary{colorbrewer}
+
+\usepackage{subcaption}
+
+
+\usepackage{cleveref}
+%\crefname{section}{§}{§§}
+%\Crefname{section}{§}{§§}
+\crefformat{section}{§#2#1#3}
+\crefrangeformat{section}{§§#3#1#4--#5#2#6}
+\crefmultiformat{section}{§§#2#1#3}%
+    { and #2#1#3}{, #2#1#3}{ and #2#1#3}
+\usepackage{relsize}
+
+%% glosses per chapter (using bib2gls)
+\usepackage[record,nopostdot,section]{glossaries-extra}
+\usepackage{glossary-inline}
+\usepackage{glossary-mcols}
+
+\GlsXtrRecordCounter{chapter}
+
+\GlsXtrLoadResources[
+  src = {styles/glosses}, % entries in glosses.bib
+]
+
+\newcommand{\printchapterglossary}[2][]{%
+    \printunsrtglossary*[nonumberlist,title={Abbreviations},#1]{%
+    \renewcommand{\printunsrtglossaryhandler}[1]{%
+     \glsxtrfieldxifinlist{##1}{record.chapter}{\thechapter}
+     {\glsxtrunsrtdo{##1}}%
+     {}%
+    }%
+  }%
+}
+
+\input{styles/gloss-commands}
+\glsdisablehyper % don't link to (wrong) list of abbreviations
+\glstocfalse % don't add to TOC
+
+\makeatletter
+\newglossarystyle{langsci}{%
+    \setglossarystyle{mcolalttree} % mcolalttree introduces empty first line
+    % remove empty line
+    % from https://tex.stackexchange.com/questions/385883/delete-empty-line-in-glossaries
+    \renewenvironment{theglossary}%
+    {%
+        \begin{multicols}{2}%
+            \raggedright
+            \def\@gls@prevlevel{-1}%
+%           \mbox{}\par
+        }%
+        {\par\end{multicols}}%
+}
+\makeatother
+
+\setglossarypreamble{\vspace*{-\baselineskip}} % remove empty line
+\glssetwidest{\hspace{1.3cm}} % set width
+\renewcommand*{\glsnamefont}[1]{\normalfont{#1}} % remove boldface
+\setglossarystyle{langsci}
+
+% Use pubstate
+
+%% add "to appear" as a proper pubstate, including capitalisation
+
+\NewBibliographyString{toappear}
+\DefineBibliographyStrings{english}{%
+    toappear = {to appear},
+}
+
+\DeclareSourcemap{%
+    \maps[datatype=bibtex]{%
+        \map[overwrite=true]{% Notice the overwrite: replace one field with another
+            \step[fieldsource=pubstate]
+            \step[fieldset=year, origfieldval]
+        }
+    }
+}
+
+%% but don't print pubstate in the bibliography apart from the year
+
+\AtEveryBibitem{%
+    \clearfield{pubstate}%
+}
+
+% Julio
+% % \usepackage{paralist}
+\usepackage{multirow}
+\usepackage{pifont}
+
+\usepackage{soul}
+\DeclareRobustCommand{\greybox}[1]{{\sethlcolor{lightgray}\hl{#1}}}
+
+% don't include the crossref'd biblatex entry
+\ExecuteBibliographyOptions{mincrossrefs=99}
+
+% % Inculding verse package without clashes with hyperref
+% % https://tex.stackexchange.com/a/239231
+\let\orignewcommand\newcommand  % store the original \newcommand
+\let\newcommand\providecommand  % make \newcommand behave like \providecommand
+\RequirePackage{verse}
+\let\newcommand\orignewcommand  % use the original `\newcommand` in future
+\makeatletter
+% Use the original definition from verse.sty
+\renewcommand*{\theHpoemline}{\arabic{verse@envctr}.\arabic{poemline}}
+\makeatother

@@ -1,0 +1,134 @@
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Footnote \ref{#1}}
+\newcommand{\regel}[1]{#1}
+\newcommand{\vernacular}[1]{\emph{#1}}
+\newcommand{\gloss}[1]{#1}
+
+\newcommand{\turnmarker}{~}
+\newcommand{\turnA}{\renewcommand{\turnmarker}{\hspace*{-3mm}\raisebox{-0mm}{▶}}}
+\newcommand{\turnB}{\renewcommand{\turnmarker}{\hspace*{-3mm}\raisebox{-0mm}{▷}}}
+\newcommand{\turnC}{\renewcommand{\turnmarker}{\hspace*{-5mm}\raisebox{-0mm}{▶▷}}}
+\newcommand{\resetturn}{\renewcommand{\turnmarker}{}}
+
+\newlength{\transindent}
+\setlength{\transindent}{2mm}
+
+\newcommand{\setturnmarker}[1]{%
+\ifthenelse{\equal{#1}{style=firstfoc}}{\turnA}{%
+    \ifthenelse{\equal{#1}{style=secondfoc}}{\turnB}{%        
+        \ifthenelse{\equal{#1}{style=thirdfoc}}{\turnC}{\resetturn}%
+        }%
+    }%
+}
+
+\newenvironment{mdframed}[1][]{%
+\setturnmarker{#1}%
+\noindent %
+
+}{%
+\resetturn%
+\newline%
+}%
+
+\newenvironment{mdframedkendrick}[1][]{%no newline at end
+\setturnmarker{#1}%
+\noindent%
+
+}{% 
+\resetturn%
+}%
+
+\newenvironment{mdframednoverticalspace}[1][]{%used to suppress strange extra vertical space
+\noindent%
+\setturnmarker{#1}%
+}{% 
+\resetturn%
+}%
+
+
+\newcommand{\transheader}[2]{\ea\label{#1}#2\z\vspace*{-.7\baselineskip}}
+
+\newcommand{\transmeta}[3]{%
+\hspace*{\transindent}% 
+\parbox[b]{0mm}{\turnmarker}
+#1%
+\parbox[b]{4mm}{#1  {#2}\vphantom{fj}}%
+\parbox[b]{8mm}{#1\scshape  {#3} \vphantom{fj}}%
+}
+
+
+\newcommand{\minipagetrail}{\vspace*{-1.9\baselineskip}{}\,\vphantom{fj}}
+
+\newenvironment{transbox}[3][\footnotesize]{%
+\setstretch{0.7}
+
+\noindent
+\transmeta{#1}{#2}{#3}
+\begin{minipage}[t]{11cm}#1\minipagetrail}
+{\end{minipage}}
+
+
+\newenvironment{transboxnv}[3][\footnotesize]{%
+\setstretch{0.7}
+\medskip\noindent
+\transmeta{#1}{#2}{#3}
+\begin{minipage}[t]{11cm}#1\minipagetrail}
+{\end{minipage}}
+
+
+
+\newcommand{\emptytransbox}[3][\footnotesize]{%
+\begin{transbox}[#1]{#2}{~}\ttfamily#3\end{transbox}%
+}
+
+
+\newcommand{\emptytransboxnv}[3][\footnotesize]{%
+\begin{transboxnv}[#1]{#2}{~}\ttfamily#3\end{transboxnv}%
+}
+
+\newcommand{\xtransbox}[4][\footnotesize]{%
+\begin{transbox}[#1]{#2}{#3}\ttfamily#4\end{transbox}
+}
+
+
+
+
+\newcommand{\citealtv}[1]{\citeauthor{#1} \citeyear*{#1} [this volume]}
+
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author 
+\makeatother
+
+\newcommand{\togglepaper}[1][0]{ 
+%   \bibliography{../localbibliography}
+  \papernote{\scriptsize\normalfont
+    \theauthor.
+    \thetitle. 
+    To appear in: 
+    Change Volume Editor \& in localcommands.tex 
+    Change volume title in localcommands.tex
+    Berlin: Language Science Press. [preliminary page numbering]
+  }
+  \pagenumbering{roman}
+  \setcounter{chapter}{#1}
+  \addtocounter{chapter}{-1}
+}
+\newcommand{\orcid}[1]{}
+
+\newcommand{\extref}[1]{Extract \ref{#1}}
+
+
+\newcommand{\fig}{\ttfamily ◩}
+
+% control spaces for verbatim
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=1pt \partopsep=0pt }
+\makeatother
+
+
+\newcommand{\nvbar}[1]{#1\% & {\color{gray}\rule{#1mm}{.66em}}}
+
+

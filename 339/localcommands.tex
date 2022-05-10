@@ -1,0 +1,36 @@
+\newcommand*{\orcid}{}
+
+\examplesroman % added by Radek; OSL doesn't use italics for example line
+
+\AtBeginDocument{\nogltOffset} %added by Radek; removes extra spacing before trans line in examples
+
+\newcommand{\minsp}[1]{#1\hspace{-2pt}} %example of use: \-2{(} (produces a bracket followed by reduced horizontal space by 2pt)
+
+\newcommand{\citeposst}[1]{\citeauthor{#1}'s (\citeyear{#1})} % produces Chomsky's (1995) %Radek comment
+
+\newcommand{\citepossst}[1]{\citeauthor{#1}' (\citeyear{#1})} % produces Hans' (1995) %Eberhard comment.
+
+%fix no boldface while also giving the opportunity to mark stuff in language examples without changing all the textit, too.
+\let\oldtextbf\textbf
+\renewcommand{\textbf}[1]{\textit{#1}}
+
+%Trying to fix language examples in footnotes - it worked. I am looking around if it broke anything else.
+%requires \usepackage{etoolbox}
+%see https://tex.stackexchange.com/questions/375400/gb4e-examples-numbering-in-footnotes-continuously
+
+% \makeatletter
+% \patchcmd{\@footnotetext}{\setcounter{fnx}{0}}{\renewcommand{\thexnumi}{\roman{xnumi}}}{}{}
+% \apptocmd{\@footnotetext}{
+%     \@noftnotetrue
+%     \renewcommand{\thexnumi}{\arabic{xnumi}}%
+% }{}{}
+% \makeatother
+
+%making references to table rows in chapter 15 (T16.X2 and X3)
+%new counter that counts items in column type N (see below)
+
+\newcounter{rowcntr}[chapter] 
+\renewcommand{\therowcntr}{I\thechapter.\arabic{rowcntr}}
+
+% A new columntype to apply automatic stepping
+\newcolumntype{N}{>{\refstepcounter{rowcntr}\therowcntr}l}

@@ -1,0 +1,83 @@
+\newcommand{\hitiebold}[2]{%% A hotfix to produce the 
+\mbox{#1}%
+\raisebox{.4mm}{\normalfont%
+͡%
+}%
+\mbox{#2}%
+}
+
+% \newcommand{\noop}[1]{}
+\newcommand{\sqt}[1]{`#1'}
+\newcommand{\refex}[1]{(\ref{#1})}
+\newcommand{\reftab}[1]{\tabref{#1}}
+\newcommand{\refsec}[1]{\sectref{#1}}
+\newcommand{\dqt}[1]{``#1''}
+
+%VALERIE: code to make example in italics
+\renewcommand{\exfont}{\itshape}
+%---------------------------------------
+
+%VALERIE: code to properly show Angela's examples
+
+%\newcounter{TranscriptLineCounter}[xnumi] % Line counter resets when there is a new gb4e environment.
+%
+%\newenvironment{Transcript}[2]{%
+%\let\oldexfont\exfont% save current exfont
+%\renewcommand{\exfont}{\upshape}
+%\ea
+%\stepcounter{TranscriptLineCounter}%Start with 1, not 0
+%\begin{tabbing}
+%00 \= #1: \= \hspace{1em} \= #2 \kill}
+%{\end{tabbing}
+%\z
+%\let\exfont\oldexfont% reset exfont to previous user setting
+%}
+%
+%\newcommand{\TLine}[3][]{%
+%\ifnum\value{TranscriptLineCounter}<10 0\fi\arabic{TranscriptLineCounter} \> \def\temp{#2}\ifx\temp\empty\else#2:\fi \> #1 \> \begin{minipage}[t]{\linewidth}#3\end{minipage}%
+%\stepcounter{TranscriptLineCounter}%
+%}
+%---------------------------------------
+
+%VALERIE: REVISED code to properly show Angela's examples
+
+\newcounter{TranscriptLineCounter}[xnumi] % Line counter resets when there is a new gb4e environment.
+\newlength{\TranscriptGlossLength}% Lengths to determine the width of the last column
+\newlength{\TCollectedLength}% A temp length that collects variable widths
+
+\newenvironment{Transcript}[3][{>}{>}]{%
+\let\oldexfont\exfont% save current exfont
+\renewcommand{\exfont}{\upshape}
+\ea
+\settowidth{\TCollectedLength}{00 #2: #1 }
+\setlength{\TranscriptGlossLength}{\linewidth - \TCollectedLength}
+\stepcounter{TranscriptLineCounter}%Start with 1, not 0
+\begin{tabbing}
+00 \= #2: \= #1 \= #3 \kill}
+{\end{tabbing}%
+\z%
+\let\exfont\oldexfont% reset exfont to previous user setting
+}
+
+\newcommand{\TLine}[3][]{%
+\ifnum\value{TranscriptLineCounter}<10 0\fi\arabic{TranscriptLineCounter} \> \def\temp{#2}\ifx\temp\empty\else#2:\fi \> #1 \> \begin{minipage}[t]{\TranscriptGlossLength}#3\end{minipage}%
+\stepcounter{TranscriptLineCounter}%
+}
+%---------------------------------------
+%valerie
+\newcommand{\faVenus}{♀} 
+\newcommand{\faMars}{♂}
+
+\newcommand{\aREF}[1]{(A\ref{#1})}
+\newcommand*{\mailtolink}[1]{\href{mailto:#1}{<#1>}}
+
+\makeatletter
+\def\appendixexe{%
+    \ifnum\value{equation}>98 \exewidth{(235)}\else\fi%
+    \@ifnextchar [{\@appendixexe}{\@appendixexe[\@exwidth]}}
+\let\@appendixexe\@exe
+\patchcmd\@appendixexe{(\thexnumi)}{(A\thexnumi)}{}{} % Altering of Linguistic Examples (n) -> (An).
+\def\endappendixexe{\if@noftnote\setcounter{equation}{\value{xnumi}}%
+                   \else\setcounter{fnx}{\value{xnumi}}%
+                        \reset@counters\@xrecfalse\fi\end{list}}
+\makeatother

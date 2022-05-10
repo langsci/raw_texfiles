@@ -1,0 +1,96 @@
+% -*- coding: utf-8 -*-
+\begin{exo}[Suppression des crochets]
+\label{exo:types:crochets}
+Dans les formules suivantes, sachant que \prd{aimer} est un prédicat à 
+\pagesolution{crg:types:crochets}%
+deux arguments, supprimez les crochets à chaque fois que
+c'est possible, en appliquant la règle de
+simplification.
+
+%On considère que $x,y,z \in \ME_{\mathrm{e}}$, $\prd{aimer} \in \ME_{\type{e,\type{e,t}}}$
+\addtolength{\multicolsep}{-9pt}
+\begin{multicols}{2}
+\begin{enumerate}
+\item \(\Xlo[[\prd{aimer}(x)](y)]\)
+\item \(\Xlo\lambda x [[\prd{aimer}(x)](y)]\)
+\item \(\Xlo[\lambda x [\prd{aimer}(x)](y)]\)
+\item \(\Xlo\peut[[\prd{aimer}(x)](y)]\)
+\item \(\Xlo[\Intn[\prd{aimer}(x)](y)]\)
+\item \(\Xlo\Intn[[\prd{aimer}(x)](y)]\)
+\item \(\Xlo[\lambda x [[\prd{aimer}(y)](x)](z)]\)
+\item \(\Xlo\lambda x [\lambda y [\prd{aimer}(y)](x)]\)
+\end{enumerate}
+\end{multicols}
+\begin{solu} (p.~\pageref{exo:types:crochets})\label{crg:types:crochets}
+
+L'important est de vérifier que la suppression des crochets (convention \ref{c:suppr[]}, p.~\pageref{c:suppr[]}) ne crée
+pas d'ambiguïté.
+
+\sloppy
+\begin{enumerate}
+\item \(\Xlo[[\prd{aimer}(x)](y)]\).
+%
+$\prd{aimer}$ est une fonction qui reçoit l'argument $\vrb x$, et comme
+  $\prd{aimer}$ est un prédicat à deux arguments
+%% de  type \type{e,\type{e,t}}, 
+$\Xlo[\prd{aimer}(x)]$ est encore une fonction qui reçoit
+  l'argument $\vrb y$.  Nous pouvons donc simplifier en $\Xlo\prd{aimer}(x)(y)$ puis en $\Xlo\prd{aimer}(y,x)$.
+
+\item \(\Xlo\lambda x [[\prd{aimer}(x)](y)]\).
+%
+Pour les mêmes raisons, cela se simplifie en 
+$\Xlo\lambda x\,\prd{aimer}(y,x)$. 
+
+\item \(\Xlo[\lambda x [\prd{aimer}(x)](y)]\).  $\prd{aimer}$ est une
+  fonction qui reçoit l'argument $\vrb x$.  Nous pouvons donc déjà
+  simplifier en \(\Xlo[\lambda x\, \prd{aimer}(x)(y)]\).  Notons que
+  $\Xlo\prd{aimer}(x)$ est encore une fonction (elle n'attend plus que
+  son <<~second~>> argument).  Mais maintenant il faut faire
+  attention: car \(\Xlo\lambda x\, \prd{aimer}(x)\) est aussi une
+  fonction, et elle est différente de $\Xlo\prd{aimer}(x)$.  Si nous
+  supprimons les crochets extérieurs, nous risquons de ne plus savoir à
+  laquelle de ces deux fonctions $\vrb y$ est appliqué.  Dans
+  l'exemple, $\vrb y$ est appliqué à \(\Xlo\lambda x\,
+  \prd{aimer}(x)\), nous le savons grâce aux crochets extérieurs.
+  Remarque: si $\vrb y$ était appliqué à $\Xlo\prd{aimer}(x)$, nous
+  devrions écrire: $\Xlo\lambda x [\prd{aimer}(x)(y)]$ (ou par
+  simplification $\Xlo\lambda x\,\prd{aimer}(y,x)$).
+
+%% Pour illustrer, remplaçons $\prd{aimer}$ par la constante \prd{regarder}.
+%% $\prd{regarder}(x)$ représente <<~regarde $x$~>>, ou <<~le$_{x}$
+%% regarde~>>.  C'est une fonction car ça attend encore un sujet.  En
+%% revanche $\lambda x\, \prd{regarder}(x)$ représente <<~regarde~>>,
+%% c'est une fonction à deux arguments. 
+%% \prd{aimer}uant à \([\lambda x\,\prd{regarder}(x)(y)]\) sera $\beta$-réduit en
+%% \(\prd{regarder}(y)\); ça représente donc <<~le$_{y}$
+%% regarde~>>. Enfin $\lambda x\,\prd{regarder}(y,x)$  représente
+%% <<~il$_{y}$ regarde~>>, qui est une fonction car ça attend un GN objet.
+
+\item \(\Xlo\peut[[\prd{aimer}(x)](y)]\).  Se simplifie en 
+$\Xlo\peut\prd{aimer}(y,x)$.
+
+\item \(\Xlo[\Intn[\prd{aimer}(x)](y)]\). Ne peut se simplifier qu'en
+  \(\Xlo\Intn[\prd{aimer}(x)](y)\).  En effet \(\Xlo\Intn
+  \prd{aimer}(x)(y)\) serait ambigu: nous ne saurions pas si $\Xlo\Intn$
+  porte sur $\prd{aimer}$ ou $\Xlo\prd{aimer}(x)$ ou
+  $\Xlo\prd{aimer}(x)(y)$.  Ici nous savons qu'il porte sur
+  $\Xlo\prd{aimer}(x)$.
+
+\item \(\Xlo\Intn[[\prd{aimer}(x)](y)]\).  Se simplifie en
+  $\Xlo\Intn[\prd{aimer}(y,x)]$.
+
+\item \(\Xlo[\lambda x [[\prd{aimer}(y)](x)](z)]\). Nous savons que nous pouvons
+  simplifier $\Xlo[[\prd{aimer}(y)](x)]$ en $\Xlo\prd{aimer}(y,x)$.  Nous avons donc
+  \(\Xlo[\lambda x\, \prd{aimer}(x,y) (z)]\).  Il vaut mieux garder les
+  crochets extérieurs pour bien indiquer que $\vrb z$ est appliqué à
+  $\Xlo\lambda x\, \prd{aimer}(x,y)$.
+
+\item \(\Xlo\lambda x [\lambda y [\prd{aimer}(y)](x)]\).  Se simplifie
+  uniquement en 
+  \(\Xlo\lambda x [\lambda y\,\prd{aimer}(y)(x)]\) (à la rigueur).  
+%Remarque: par   $\beta$-réduction, on obtiendra $\lambda x\, \prd{aimer}(x)$.
+\end{enumerate}
+
+\fussy
+\end{solu}
+\end{exo}

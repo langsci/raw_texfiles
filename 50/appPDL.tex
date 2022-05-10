@@ -1,0 +1,845 @@
+\chapter{PDL code}\label{a:pdl}
+
+In this appendix the {\scshape pdfl} program that runs on the physical part of the robots is presented. Its purpose is to sketch how the behaviour-based cognitive architecture presented in \chapref{ch:lg} can be implemented in {\scshape pdl}.
+
+The language game scenario that the program implements has partly been introduced in \chapref{ch:lg}. The scenario is extended with the part in which the robots can find each other autonomously, as discussed in more detail in \citet{steelsvogt:1997} and \citet{vogt:1997}.
+
+
+The program is adapted such that there is more readability than the original program. This means that some debug facilities are left out, as well as some by-passes, which have been made to solve some not yet understood peculiarities of the robots' behaviours. In addition, although no actual implementation has been made in {\scshape pdl}, it is sketched how the cognitive part of the language game may be implemented in {\scshape pdl}. This sketch, however, leaves away the critical parts of the segmentation, discrimination and naming processes.
+
+
+{\scshape pdl} has been introduced in \chapref{ch:robots}. {\scshape pdl} is implemented in {\scshape ansi~c}. Part of the code is in {\scshape c}, but it should be readable also for non-{\scshape c} programmers. Remarks are given between \texttt{/*} and \texttt{*/} or behind a double slash: \texttt{//}. {\scshape pdl} processes are defined as functions, which are usually preceded by a \texttt{void}.
+
+\begin{lstlisting}
+/* Here are some include files with libraries for PDL, SMBII and C.
+   Also some definitions and declarations are present.
+   These are all left out for clarity.
+*/
+
+
+#define NoPulse 25
+#define Relax 15
+
+const float ON=200.0f,
+  OFF=1.0f;
+
+/*PDL declarations of quantities. 
+  The network is constructed at the end of the program.
+*/
+
+quantity Identity;
+quantity LFBumper, RFBumper, LBBumper, RBBumper;
+         //Left- and Right- Front and Back Bumpers
+quantity L0,L1,L2,L3; //The white light sensors.
+quantity LeftIR, FrontIR, RightIR;
+quantity LM, RM;//Left- and Right Motors
+quantity IREm0,IREm1,IREm2,IREm3;//IR emitters
+
+/*Basic behavior processes
+
+  Touch Based Obsacle Avoidance (TBOA) */
+
+void touch_based_obstacle_avoidance(){
+  int T,DL=1,DR=1;	
+  
+/*If both front bumpers are active one of the directions to turn
+  is randomly chosen. The appropriate direction DL(eft) or DR(ight)
+  is set to 0. */
+
+  if ((value(LFBumper))&&(value(RFBumper))){
+    T=random(2);
+    if (T)
+      DL=0;
+    else
+      DR=0;
+  }
+
+/*If LFBumper and MotTBOA (motivation for obstacle avoidance
+  are active, then LM:=-Retract and RM:=-LargeRetract
+  For the RFBumper it is the other way around*/
+
+  add_value(LM, 
+    -DL*value(LFBumper)*MotTBOA*(Retract+value(LM)));
+  add_value(RM, 
+    -DL*value(LFBumper)*MotTBOA*(LargeRetract+value(RM)));
+
+  add_value(LM, 
+    -DR*value(RFBumper)*MotTBOA*(LargeRetract+value(LM)));
+  add_value(RM, 
+    -DR*value(RFBumper)*MotTBOA*(Retract+value(RM)));
+  
+/*If one of the back-bumpers is pressed and its motivation (MotTBOA) 
+  is on, the motor-values are set to the default speed DS.*/
+
+  add_value(LM, value(LBBumper)*MotTBOA*(DS-value(LM)));
+  add_value(RM, value(LBBumper)*MotTBOA*(DS-value(RM)));
+
+  add_value(LM, value(RBBumper)*MotTBOA*(DS-value(LM)));
+  add_value(RM, value(RBBumper)*MotTBOA*(DS-value(RM)));
+
+}
+
+/*Rotation with RotateSpeed in direction of MotRot.
+  If MotRot=1, then robot turns right. 
+  If MotRot=-1, then robot turns left.*/
+
+void rotate(void){
+  add_value(LM,MotRot*(RotateSpeed-value(LM)));
+  add_value(RM,-MotRot*(RotateSpeed+value(RM)));
+}
+
+
+/*Active IR Obstacle Avoidance (AOA) and IR-taxis
+  Since the IR modulation for AOA is the inverse of IR-taxis, 
+  the same process is used. So, if MotIRT=1, then IR-taxis is
+  applied, and if MotIRT=-1, AOA is applied.
+
+  The IR modulation is regulated in the IR emission module ...
+    
+  inv_sigmoid dampens the difference between the left and right IR, 
+  so that large differences in IR don't give too large differences 
+  in motorvalues.
+*/
+
+float inv_sigmoid(float x){
+  float Alpha=2.5,Beta=0.3;
+  return (1/(1+exp(Alpha*(x-Beta))));
+}
+
+void IRTaxis(void){
+  float F=inv_sigmoid(abs((value(RightIR)-value(LeftIR)))/255.0);
+  add_value(LM,0.1*F*MotIRT*(value(RightIR)-value(LeftIR)));
+  add_value(RM,-0.1*F*MotIRT*(value(RightIR)-value(LeftIR)));
+}
+
+/*When MotFW is on, the robot will try to accelerate towards default speed.
+  The motor-values increase asymptotically towards this DS.*/
+
+void towards_default(void){ 	
+  add_value(LM,MotFW*(DS-value(LM))/20.0);
+  add_value(RM,MotFW*(DS-value(RM))/20.0);
+}	
+
+/*If MotStop=1, the motor-values become zero.*/
+
+void stopMotors(void){	
+  add_value(LM,-MotStop*value(LM));
+  add_value(RM,-MotStop*value(RM));
+}
+
+/*Pulsing the IR. During their default behavior the robots emit pulses
+  of IR so that the robots can detect each other's presence.*/
+
+void pulse_IR(void){
+  if (PulseIR){
+    if ((Timer%(Pulse+NoPulse))>Pulse)
+      IR=ON;
+    else
+      IR=OFF;
+  }
+}
+
+/*Emitting the IR. The modulation of the IR is set to 1 
+  if the IR=1 (this means the IR is OFF), then the robot 
+  can detect other IR sources.
+  If the IR > 1, the modulation is set to 95, so the robot 
+  can AND emit IR AND detect its own IR.
+*/
+
+void emitIR(void){	
+  if (IR>1)
+    SMB2IRModDc(95);
+  else
+    SMB2IRModDc(1);
+  add_value(IREm0,(IR-value(IREm0)));
+  add_value(IREm1,(IR-value(IREm1)));
+  add_value(IREm2,(IR-value(IREm2)));
+  add_value(IREm3,(IR-value(IREm3)));
+}
+
+
+/*Sending radio messages.
+
+  The 0 gives the reliability bit (i.e. unreliable transmission)
+  receipient is the identity of the receiving robot.
+  strlngth is the length of the message in bytes.
+  out_buffer is the message to be send. This is specified where
+  necessary.*/
+
+void send_message(void){
+  if (SEND){
+    radio_link_tx(0,receipient,strlngth,(unsigned char *)out_buffer);
+    SEND=0;
+  }
+}
+
+/*timing increments the Timer and evaluates whether or not the
+  robot is in a particular state too long. If so, the robot will
+  stop its current behavior and will return to the default state.
+*/
+
+void timing(void){
+  Timer++;
+  if ((Timer>MaxTime)&&((StateHearer)||(StateSpeaker))){
+    StateSpeaker=0;
+    StateHearer=0;
+    Timer=0;
+  }
+}
+
+/*Reading radio linked messages */
+
+void read_message(void){
+  int i;
+  Expression=0;
+  while (radio_link_rx((unsigned char *)in_buffer)){
+    message_length=(int)in_buffer[0];
+    who_from=(int)in_buffer[1];
+    for (i=1;i<=message_length;i++)
+      message[i-1]=(char)in_buffer[i+1];
+    Expression=1;
+  }
+}
+
+/*Segmentation: In the actual implementation, the sensor-data is
+  transmitted to a radio base station, connected to a PC. 
+  How the segmentation is done is discussed extensively in chapter 3.
+  The actual segmentation takes place off-line and the implementation 
+  details are left out here for readability reasons.
+*/
+
+void segmentation(){
+  if (SEGMENTATION){
+    /*Read and process values of quantities L0, L1, L2 and L3.
+      This process includes sensing and featue extraction.
+      For each segment found, the feature values are calculated,
+      the segment is added to the context and NrOfSegments is 
+      incremented.
+    */
+  }
+}
+
+/*The processes discrimination_game, production, understanding and
+  feedbackadaptation are all processed off-board. They are given 
+  for completeness, however the implementation details are left out. 
+  For the details, see chapter 4.
+*/
+
+void discrimination_game(){
+  if (DG){
+    set_of_concepts=discriminate(Topic);
+    Discriminated=1;
+    DG=0;
+  }
+}
+
+void production(){
+  if (Produce){
+    Utterance=production(Topic);
+    Produced=1;
+    Produce=0;
+  }
+}
+
+void understanding(){
+  if (Decode){
+    Association=decode(Utterance);
+    Decoded=1;
+    Decode=0;
+  }
+}
+
+void feedbackadaptation(){
+  if (FeedbackAdaptate){
+    Feedback=interpret(Association);
+    adapt_lexicon(Association);
+    Adapted=1;
+    FeedbackAdaptate=0;
+  }
+}
+
+/*So far (for now) the cognitive processes, which are mentioned for
+  completeness. The code continues with on-board processing.
+
+  maximize() detects a maximum in the IR flow of the front IR sensor.
+  Note that it is a function and not a process.*/
+
+int maximize(){
+  int N=0;
+  float diff;
+  diff=value(FrontIR)-PreviousIR;
+  
+  if ((diff<=0)&&(Previous>0)&&
+      (value(FrontIR)>IRClose))
+    N=1;
+  Previous=diff;
+  PreviousIR=value(FrontIR);
+  return N;
+}
+
+/*speaker() implements the finite state automaton of the speaker.
+
+  Each state is divided in a set op actions and final conditions.
+  The actions are executed by the basic behaviors or processes as 
+  defined above.
+
+  The basic behaviors are activated by setting the motivations to 
+  their appropriate values. The motivations are specified with MotXX, 
+  where XX refers to the particular behavior.
+
+  For reasons of clarity not all motivations are continously given.
+  Unless otherwise specified, all motivations are initially set to 0.
+  After changes, when a motivation is not given, its values is as
+  last specified.
+
+  The final conditions of one state are either the pre-conditions of
+  the next state, or the pre-condition of state 0 in which the 
+  default_behavior process (see below) take over. The latter type of
+  final condition is modeled by MaxTime and the process timing.
+  
+  MaxTime specifies how long a robot may remain in a particular state.
+
+*/
+
+void speaker(void){
+  int i,j,m,Flag;
+  switch(StateSpeaker){	
+  case 0:{/*Default state. See default_behavior().*/
+    break;
+  }
+  case 1:{
+    /*Waiting for confirmation and after the IR-switch has been 
+      relaxed, the speaker can determine in which direction to 
+      turn. Orienting towards the hearer helps finding it.*/
+    //Actions.
+    MotStop=1;
+    IR=OFF;
+    MotTBOA=1;
+    
+    if (Expression)
+      if (strcmp(message[0],"confirm")==0)
+        Confirm=1;
+   
+    //Final conditions
+    MaxTime=RotationTime;
+    if ((Timer>Relax)&&(Confirm)){
+      if (value(LeftIR)>value(RightIR))
+        MotRot=-1; /*Turning left*/
+      else
+        MotRot=1;  /*Turning right*/
+      StateSpeaker=2;
+      Timer=0;
+    }
+    break;
+  }
+  case 2:{/*Initial orientation*/
+    //Actions
+    IR=OFF;
+    MotStop=0;
+    MotTBOA=0; /*If robot rotates, obstacle avoidance is nasty side-effect*/
+
+    //Final conditions
+    if (Timer>(RotationTime-1)){
+      /*If robot has not found other robot yet, 
+        keep searching using taxis in next state.
+        Since the MaxTime in this state is
+        RotationTime, the transition has to be made
+        before, otherwise the state will be 
+        timed-out by the process `timing'*/
+      StateSpeaker=2;
+      Timer=0;
+    }
+    if (maximize()){
+      if (value(FrontIR)<IRCloseEnough)
+        StateSpeaker=3;/*Distance to hearer is too big.*/
+      else
+        StateSpeaker=4;/*Distance to hearer is ok.*/
+      MotStop=1;/*Setting motor-values to 0.*/
+      Timer=0;
+    }
+    break;
+  }
+  case 3:{/*Get closer to the hearer by using IR taxis.*/
+    //Actions
+    MotFW=1;
+    MotIRT=1;
+    MotStop=0;
+    MotRot=0;
+    IR=OFF;
+    MotTBOA=1;
+
+    //Final condition
+    MaxTime=SearchTime;
+    if (value(FrontIR)>IRCloseEnough){
+      StateSpeaker=4;
+      Timer=0;
+    }
+    break;
+  }
+  case 4:{/*Final alignment back-to-back*/
+    //Actions
+    MotFW=0;
+    MotIRT=0;
+    MotStop=0;
+    MotTBOA=0;
+    MotRot=1;
+    IR=OFF;
+
+    //Final conditions
+    MaxTime=RotationTime;
+
+    /*If the robot detects enough IR with its LeftBackIR sensor,
+      it stops. It stands still approximately when it is facing
+      the opponent robot backwards.
+      Using taxis would be more sophistigated, but takes longer and
+      is more error-prone.
+      Since the hearer must transfer to the next state simultaneously, 
+      the speaker also sends a message.*/
+
+    if (value(LeftBackIR)>IRCloseEnough){
+      StateSpeaker=5;
+      strcpy(out_buffer,"aligned");
+      SEND=1;
+      Timer=0;
+    }
+    break;
+  }
+  case 5:{/*The hearer does its alignment. The speaker waits while 
+            emitting IR.*/
+    //Actions
+    MotStop=1;
+    MotRot=0;
+    IR=ON;
+    MotTBOA=1;
+    
+    //Final condition
+    MaxTime=2*RotationTime;
+    if ((Expression)&&(strcmp(message,"aligned")==0)){
+      /*There is a message saying the hearer aligned successfully.
+        The speaker can start the sensing.*/
+      MotStop=1;
+      StateSpeaker=6;
+      Timer=0;
+    }
+    break;
+  }
+  case 6:{/*The speaker does its sensing, segmentation and feature
+            extraction. 
+            Here starts the process as described in the book.*/
+    //Actions
+    MotStop=0;
+    MotRot=1;
+    IR=0.0f;
+    MotTBOA=0;
+
+    SEGMENTATION=1;
+
+    //Final condition
+    MaxTime=2.5*RotationTime;
+
+    /*After a particular time, the speaker stops rotating when it
+      again detects the IR with its LeftBack sensor.*/
+
+    if ((Timer>(1.75*RotationTime))&&
+        (value(LeftBack)>IRCloseEnough)){
+      StateSpeaker=7;
+      strcpy(out_buffer,"perceived");
+      SEND=1;//This way the hearer transits state as well.
+      Timer=0;
+    }
+    break;
+  }
+  case 7:{/*Now the hearer does its sensing, segmentation and
+            feature extraction.*/
+    //Actions
+    MotStop=1;
+    MotRot=0;
+    IR=ON;
+    MotTBOA=1;
+
+    //Final conditions
+    MaxTime=3*RotationTime;
+
+    /*Hearer finished sensing. The cognitive part can start.*/
+
+    if ((Expression)&&(strcmp(message,"perceived")==0)){
+      StateSpeaker=8;
+      Timer=0;
+    }
+    break;
+  }
+  case 8:{/*The rest of the speaker's FSA is how it would look like
+            if the cognitive part is processed on-board.
+            For clarity the details are left out. See chapters 3 and 4 
+            for details.*/
+    //Actions
+    MotStop=1;
+
+    if (!Discriminated){
+      Topic=random(NrOfSegments);
+      DG=1;
+    }
+    else{//Final condition
+      Discriminated=0;
+      if (NrOfConcepts>0)
+        StateSpeaker=9; /*Discimination game was success.*/
+      else{/*Discimination game was a failure.
+             Language game ends in failure.
+             Ontology adapted during discrimination game.*/
+        StateSpeaker=0;
+        strcpy(out_buffer,"failure");
+        SEND=1;
+        LG++;
+      }
+      Timer=0;
+    }
+    break;
+  }
+  case 9:{/*The speaker's word-form production.*/
+    //Actions
+    MotStop=1;
+
+    if (!Produced)
+      Produce=1;
+    else{//Final condition
+      Produced=0;
+      if (strcmp(Utterance,"nil")){
+        strcpy(out_buffer,Utterance);
+        /*The speaker produced an meaningful utterance*/
+        StateSpeaker=10;
+      }
+      else{/*The speaker could not produce an utterance.
+             Adaptation (word-creation) has already been 
+             done during production.*/
+        strcpy(out_buffer,"failure");
+        StateSpeaker=0;
+        LG++;
+      }
+      SEND=1;
+    }
+    break;  
+  }
+  case 10:{/*Feedback and Adaptation.*/
+    //Actions
+    MotStop=1;
+    if (Expression){
+      /*Hearer provided feedback, which needs to be interpreted.
+        After that the lexicon can be adapted.*/
+      FeedbackAdaptate=1;
+    }
+    
+    //Final condition
+    if (Adapted){
+      StateSpeaker=0;
+      LG++;
+      Adapted=0;
+    }
+    break;
+  }
+  }
+}
+
+/*hearer() implements the finite state automaton of the hearer.*/
+
+void hearer(void){
+  int i,j,Flag;
+  switch(StateHearer){
+  case 0:{/*Default state. See default_behavior().*/
+    break;
+  }
+  case 1:{/*Hearer starts waiting until speaker aligned.*/
+    //Actions
+    MotStop=1;
+    MotTBOA=1;
+    IR=ON;
+
+    //Final conditions
+    MaxTime=AlignTime;
+    if ((Expression)&&(strcmp(message[0],"aligned")==0)){
+      StateHearer=2;
+      Timer=0;
+    }
+    break;
+  }
+  case 2:{/*The hearer has to wait for the IR to relaxate.
+            Otherwise the robot cannot detect IR of the other.*/
+    //Actions
+    MotStop=1;
+    MotTBOA=1;
+    IR=OFF;
+
+    //Final condition
+    if (Timer>Relax){
+      Timer=0;
+      StateHearer=3;
+    }
+    break;
+  }
+  case 3:{/*Rotation for alignment.*/
+    //Actions
+    MotRot=1;
+    MotStop=0;
+    MotTBOA=0;
+    IR=OFF;
+
+    //Final conditions
+    MaxTime=RotationTime;
+    if (value(LeftBackIR)>IRCloseEnough){
+      StateHearer=4;
+      strcpy(message,"aligned");
+      SEND=1;//The speaker has to transit state as well.
+      Timer=0;
+    }
+    break;
+  }
+  case 4:{/*The speaker does its sensing, segmentation and
+            feature extraction; the hearer waits.*/
+    //Actions
+    MotStop=1;
+    MotRot=0;
+    MotTBOA=1;
+    IR=ON;
+
+    //Final conditions
+    MaxTime=3*RotationTime;
+    if ((Expression)&&(strcmp(message,"perceived")==0)){
+      StateHearer=5;
+      Timer=0;
+    }
+    break;
+  }
+  case 5:{/*The hearer does its sensing, segmentation and
+            feature extraction.*/
+    //Actions
+    MotStop=1;
+    MotRot=1;
+    IR=OFF;
+    MotTBOA=0;
+    SEGMENTATION=1;
+
+    //Final conditions
+    MaxTime=2.5*RotationTime;
+    if ((Timer>(1.75*RotationTime))&&
+        (value(LeftBack)>IRCloseEnough)){
+      StateHearer=6;
+      strcpy(out_buffer,"perceived");
+      SEND=1;//The speaker has to transit state as well.
+      Timer=0;
+    }
+    break;
+  }
+  case 6:{/*The hearer plays discrimination games for each segment
+            in its context.*/
+    //Actions
+    MotStop=1;
+
+    if (Topic<NrOfSegments){
+      Topic++;
+      DG=1;
+    }
+    else{//Final condition
+      StateHearer=7;
+      Timer=0;
+    }
+    break;
+  }
+  case 7:{/*The hearer waits for the speaker's utterance.*/
+    //Actions
+    MotStop=1;
+    
+    //Final conditions
+    MaxTime=ProductionTime;
+    if (Expression){
+      if (strcmp(message,"failure")){
+        /*The speaker produced an utterance.*/
+        strcpy(Utterance,message);
+        StateHearer=8;
+      }
+      else{/*The speaker failed either to produce or discriminate
+             hence the language game fails and is finished for the hearer.*/
+        StateHearer=0;
+        LG++;
+      }
+      Timer=0;
+    }
+    break;
+  }
+  case 8:{/*The hearer tries to understand the speaker's utterance.*/
+    //Actions
+    MotStop=1;
+
+    if (!Decoded)
+      Decode=1;
+    else{//Final condition
+      Decoded=0;
+      StateHearer=9;
+    }
+    
+    break;
+  }
+  case 9:{/*Feedback and adaptation.*/
+    //Actions
+    //No physical actions are specified.
+
+    if (!Adapted)
+      FeedbackAdaptate=1;
+    else{//Final condition
+      Adapted=0;
+      strcpy(out_buffer,Feedback);
+      StateHearer=0;
+      LG++;
+    }
+    break;
+  }
+  }
+}
+
+/*default_behavior describes the robots' behavior when they are 
+  exploring their environment 'arbitrary' in order to find each
+  other.
+  When one robot finds another contact is made, and the robots 
+  enter the first state in either the speaker- or hearer mode.
+*/
+
+void default_behavior(void)
+{	
+  if ((!StateSpeaker)&&(!StateHearer)){
+    //Actions
+    MotStop=0;
+    MotFW=1;
+    MotIRT=-1;/*Inverse IR-taxis is Active Obstacle Avoidance*/
+    MotRot=0;
+    Pulse=1;/*The robots pulse IR to detect each other.*/
+    MotTBOA=1;
+
+    //Final conditions
+    if ((value(FrontIR)>Threshold)&&
+        ((Timer%(Pulse+NoPulse)>(Pulse+Relax)))){
+      /*The robot is sure it does not detect reflected IR of itself*/
+      strcpy(message,"communicate");
+      SEND=1;
+      StateSpeaker=1;
+    }
+    if ((Expression)&&(strcmp(message,"communicate")==0)){
+      strcpy(message,"confirm");
+      SEND=1;
+      StateHearer=1;
+      Timer=0;
+    }
+  }
+} 
+
+/* Initializing the robot and some of its variables */
+
+void initialize(void)
+{
+  if (Init>0){
+    if (value(Identity)==1){
+      //Each robot has its own identity, which is automatically detected.
+      Pulse=25;
+      //Some other initializations.
+    }
+    else{
+      //Each robot has its own identity, which is automatically detected.
+      Pulse=25;
+      //Some other initializations.
+    }	
+    StateSpeaker=0;
+    StateHearer=0;
+    //Some other initializations.
+    Init++;
+  }
+}
+
+/*The main program of PDL. Here the PDL network is initialized,
+  defined and constructed.
+*/
+
+void main(void){
+
+  printf("Starting Execution\n\r");
+  init_pdl();
+
+  /*Quantities are added to the network.
+    Each quantity has a name, an upper value,
+    a lower value and an initial value.
+  */
+     
+  //Sensors:
+  Identity = add_quantity("Identity", 1.0,0.0,0.0);
+  LFBumper = add_quantity("LeftFrontBumper", 1.0,0.0,1.0);
+  RFBumper = add_quantity("RightFrontBumper", 1.0,0.0,1.0);
+  LBBumper = add_quantity("LeftBackBumper", 1.0,0.0,1.0);
+  RBBumper = add_quantity("RightBackBumper", 1.0,0.0,1.0);
+  L0 = add_quantity("WhiteLight0",255.0,0.0,0.0);
+  L1 = add_quantity("WhiteLight1",255.0,0.0,0.0);
+  L2 = add_quantity("WhiteLight2",255.0,0.0,0.0);
+  L3 = add_quantity("WhiteLight3",255.0,0.0,0.0);
+  LeftIR = add_quantity("LeftIR",255.0,0.0,0.0);
+  FrontIR = add_quantity("FrontIR",255.0,0.0,0.0);
+  RightIR = add_quantity("RightIR",255.0,0.0,0.0);
+  LeftBackIR = add_quantity("LeftBackIR",255.0,0.0,0.0);
+
+  //Actuators:
+  LM = add_quantity("LeftMotor",100.0,-100.0,0.0);
+  RM = add_quantity("RightMotor",100.0,-100.0,0.0);  
+  IREm0 = add_quantity("IREm0",200.0,0.0,0.0);
+  IREm1 = add_quantity("IREm1",200.0,0.0,0.0);
+  IREm2 = add_quantity("IREm2",200.0,0.0,0.0);
+  IREm3 = add_quantity("IREm3",200.0,0.0,0.0);
+
+  //Connections with the SMBII are made.
+
+  connect_sensor(SID_BIN1, LFBumper);
+  connect_sensor(SID_BIN2, RFBumper);
+  connect_sensor(SID_BIN3, LBBumper);
+  connect_sensor(SID_BIN7, RBBumper);
+  connect_sensor(SID_BIN4, Identity);
+
+  connect_sensor(SID_AN0,L0);
+  connect_sensor(SID_AN1,L1);
+  connect_sensor(SID_AN2,L2);
+  connect_sensor(SID_AN3,L3);
+  
+  connect_sensor(SID_IR1,LeftIR);
+  connect_sensor(SID_IR2,FrontIR);
+  connect_sensor(SID_IR3,RightIR);
+  connect_sensor(SID_IR4,LeftBackIR);
+  
+  connect_actuator(AID_MOTOR2,RM);
+  connect_actuator(AID_MOTOR1,LM);
+  
+  connect_actuator(AID_IREM0,IREm0);
+  connect_actuator(AID_IREM1,IREm1);
+  connect_actuator(AID_IREM2,IREm2);
+  connect_actuator(AID_IREM3,IREm3);
+
+  //Processes are added to the network.
+
+  add_process("initialize",initialize);
+  add_process("touch_based_obstacle_avoidance",
+	      touch_based_obstacle_avoidance);
+  add_process("rotate",rotate);
+  add_process("IRTaxis",IRTaxis);
+  add_process("towards_default",towards_default);
+  add_process("stopMotors",stopMotors);
+  add_process("emitIR",emitIR);
+  add_process("read_message",read_message);
+  add_process("send_message",send_message);
+  add_process("timing",timing);
+  add_process("segmentation",segmentation);
+  add_process("discrimination_game",discrimination_game);
+  add_process("production",production);
+  add_process("understanding",understanding);
+  add_process("feedbackadaptation",feedbackadaptation);
+  add_process("speaker",speaker);
+  add_process("hearer",hearer);
+  add_process("default_behavior",default_behavior);
+
+  /*The PDL program is run. This program is implemented as
+    an infinite loop.*/
+
+  run_pdl(-1L);
+
+}
+\end{lstlisting}

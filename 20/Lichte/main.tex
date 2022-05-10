@@ -1,0 +1,259 @@
+\documentclass[ number=1
+			   ,series=eotms
+			   ,output=short    % long|short|inprep              
+			   %,blackandwhite
+			   %,smallfont
+			   ,newtxmath
+ 			   %,draftmode
+         ,bibtex 
+			  ]{LSP/langsci}                                   
+ 
+\usepackage{LSP/lsp-styles/avm}
+\avmfont{\sc} 
+\avmvalfont{\it}
+
+\usepackage{ragged2e}
+
+\usepackage{linguex}
+\renewcommand{\firstrefdash}{}   % fuer linguex: kein Minuszeichen in den Beispiellabel
+%\usepackage{vaucanson-g} 
+\usepackage{pst-node,color,graphics}
+\usepackage{tikz,tikz-qtree}
+\usepackage[inference]{semantic} % fuer CCG 
+\usepackage{packages/ccg}
+\usepackage{forest}
+
+\usepackage{latexsym,amsmath,amssymb,wasysym}  
+%\usepackage{ifsym}  	% fuer das Blitzsymbol  
+\usepackage{marvosym}	% fuer das Blitzsymbol
+\usepackage{arydshln}	% Definitions of horizontal and vertical dashed lines for the array and tabular environment.
+
+\usepackage{ulem}  	% ulem für Durchstreichungen, Unterstreichungen etc.
+\normalem			% Macht eine Änderung von ulem an \emph rückgängig.
+
+\usepackage{epigraph}	% fuer Motto-Zitate
+\usepackage{rotating}
+\usepackage{ifdraft}
+\usepackage{url}
+
+\usepackage{multirow}
+
+%\usepackage[printonlyused]{acronym}
+\usepackage{acronym}
+
+\usepackage{polyglossia}
+\setdefaultlanguage[babelshorthands=true,spelling=new]{german}
+\DeclareTextSymbol{\glq}{\encodingdefault}{"201A}
+\DeclareTextSymbol{\grq}{\encodingdefault}{"2018}
+\DeclareTextSymbol{\glqq}{\encodingdefault}{"201E}
+\DeclareTextSymbol{\grqq}{\encodingdefault}{"201C}
+
+\renewcommand{\lsSubjectIndexTitle}{Sachregister}
+\renewcommand{\lsNameIndexTitle}{Autorenregister}
+
+\usepackage{bookmark}
+
+%%%%%%%%%%%%%%%%%%%%%%
+%   TIKZ SETTINGS    % 
+%%%%%%%%%%%%%%%%%%%%%%
+
+\tikzset{every tree node/.style={align=center,anchor=north}}	% to allow linebreaks
+\usetikzlibrary{calc} % for positioning arrows with ($(t.center)-(1,0)$)
+\usetikzlibrary{shapes,decorations}
+\usetikzlibrary{backgrounds,fit}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usetikzlibrary{positioning}
+\usetikzlibrary{automata}
+
+% Define box and box title style (see http://www.texample.net/tikz/examples/boxes-with-text-and-math/)
+\tikzstyle{mybox} = [draw=gray, very thick,
+    rectangle, rounded corners, inner sep=10pt, inner ysep=17pt,yshift=3pt]
+\tikzstyle{fancytitle} =[draw=gray, very thick, fill=white,
+    rectangle, rounded corners, inner sep=5pt, inner ysep=5pt]
+    
+\tikzset{
+    %Define standard arrow tip
+    >=stealth',
+    %Define style for boxes
+    box/.style={
+           rectangle,
+           rounded corners,
+           draw=black, very thick,
+           text width=10em,
+           minimum height=2em,
+           text centered},
+    % Define arrow style
+    arrow/.style={
+           ->,
+           thick,
+           	shorten <=2pt,
+           shorten >=2pt,}
+}
+
+\newcommand\centertikz[1]{\tikz[baseline=(current bounding box.center)]{#1}}
+
+\forestset{
+    sn edges/.style={for tree={parent anchor=south, child anchor=north}},
+    red subtree/.style={for tree={text=red},for descendants={edge=red}}}
+
+%%%%%%%%%%%%%%%%%%%%%%
+%   TODONOTES        % 
+%%%%%%%%%%%%%%%%%%%%%%
+ 
+\usepackage{soul}   % for text highlighting
+\usepackage[textsize=scriptsize,textwidth=2cm]{todonotes}
+\newcommand{\todoregion}[2]{\hl{#1}\todo{#2}}    
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\dotted}[0]{\makedash{2pt}}
+\avmfont{\sc} \avmvalfont{\rm} 
+\newenvironment{avmnode}[1] { 
+	\avmoptions{} 
+	\avmvskip{.1ex}
+	\avmfont{\sc} \avmvalfont{\rm}
+	\hspace{-5mm}
+	\begin{tabular}{c}
+	#1 \\[-2.5ex]
+	\begin{avm}
+	\avml
+	}
+	%%%
+	{
+	\avmr
+        \end{avm}\\[-0,5ex] 
+	\end{tabular}
+}
+\newcommand{\svar}[1]
+   {\setbox2=\hbox{$\scriptstyle #1$}\lower.2ex\vbox{\hrule
+     \hbox{\vrule\kern1.25pt 
+     \vbox{\kern1.25pt\box2\kern1.25pt}\kern1.25pt\vrule}\hrule}}
+\newcommand{\tododiss}{
+   \vspace{2ex}
+    
+   \ldots TODO \ldots 
+    
+   \vspace{1ex} 
+   }
+\newcommand{\circled}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
+\newlength{\stmueTmp} 
+\newcommand*{\hspaceThisNegative}[1]{\settowidth{\stmueTmp}{#1}\hspace*{-\stmueTmp}}
+%\renewcommand{\refdash}{}   % fuer linguex: kein Minuszeichen in den Beispiellabel
+
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Korollar}
+\newtheorem{axiom}{Axiom}
+\newtheorem{idealisierung}{Idealisierung}  
+
+\newcommand{\fnex}[1]{
+  \setlength{\Exlabelsep}{0.8em}% for linguex examples
+  \setlength{\SubExleftmargin}{1.4em}% for linguex examples
+  \parbox{\linewidth-1.5em}{#1}}
+
+\newcommand{\subnom}{$_{\mathit{nom}}$}
+\newcommand{\subacc}{$_{\mathit{acc}}$}
+\newcommand{\subdat}{$_{\mathit{dat}}$}
+\newcommand{\subelse}[1]{$_{\mathit{#1}}$}
+
+\newcommand{\scrind}{\ensuremath{\mathsf{SCR}^{\mathit{ind}}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                                                      
+ 
+\title{Syntax \newlineCover und Valenz}
+\subtitle{Zur Modellierung kohärenter und elliptischer Strukturen mit Baumadjunktionsgrammatiken}  
+\author{Timm Lichte}
+\renewcommand{\lsISBNdigital}{978-3-944675-51-0}
+\renewcommand{\lsISBNhardcover}{978-3-944675-62-6}
+\renewcommand{\lsISBNsoftcover}{978-3-944675-63-3}
+%\dedication{Change dedication in localmetadata.tex}
+\typesetter{Timm Lichte, Sebastian Nordhoff}
+\proofreader{Armin Buch, Constantin Freitag, Martin Haspelmath, Sebastian Nordhoff, Daniela Schröder, Aviva Shimelman, Charlotte van Tongeren}
+\BackTitle{Syntax und Valenz} % Change if BackTitle != Title
+\BackBody{%
+So unterschiedlich die etablierten Syntaxmodelle auch sein mögen, sie alle haben gemeinsam, dass sie eng mit lexikalischen Valenzeigenschaften verzahnt sind: Valenztheoretisch fundierte Kategorien wie Valenzträger, Ergänzung und Angabe spielen in ihnen zentrale, klar differenzierte Rollen.
+%%%
+Das vorliegende Buch hat den Zweck, diesen gemeinhin ausgeblendeten Konsens aufzugreifen, hinsichtlich seiner Grundlagen und Auswirkungen zu untersuchen und schließlich auch in Frage zu stellen. Der empirische Schwerpunkt wird dabei auf kohärenten Konstruktionen und Ellipsen im Deutschen liegen, während auf der Theorieseite die Familie der Baumadjunktionsgrammatiken (TAG) im Vordergrund steht. TAG ist bisher vor allem für seine besonderen computerlinguistischen Eigenschaften bekannt; dieses Buch zeigt anhand zahlreicher Analysen, dass TAG auch valenztheoretisch heraussticht und den Weg zu empirisch neutraleren Syntaxmodellen weist.
+}
+
+%\addbibresource{literatur.bib} % biblatex
+ 
+\let\sc\scshape 
+\let\bf\bfseries
+\let\rm\upshape 
+\let\tt\ttfamily
+\let\it\itshape
+         
+\begin{document}               
+                                                                                                            
+\maketitle
+
+\frontmatter
+
+\currentpdfbookmark{Inhaltsverzeichnis}{name} % adds a PDF bookmark
+\tableofcontents
+
+
+\include{vorwort}
+
+\include{acronyme}
+
+\mainmatter      
+        
+\include{01-einfuehrung}
+
+\part{Valenzbegriff und Valenzphänomene} 
+\include{02-valenz}
+\include{03-kohaerenz}
+\include{04-ellipse}    
+
+\part{Syntax mit Valenz}
+\include{05-tag}
+\include{06-tag-kohaerenz}
+\include{07-ttmctag-kohaerenz}  
+\include{08-tag-ellipse}  
+
+\part{Syntax ohne Valenz} 
+\include{09-syntax-ohne-valenz}
+
+
+\bookmarksetup{startatroot}
+\include{10-schluss}
+
+\backmatter
+
+
+
+%\addcontentsline{toc}{chapter}{Literaturverzeichnis} 
+\bibliography{literatur} % bibtex
+%\printbibliography % biblatex
+
+%\addcontentsline{toc}{chapter}{Index} 
+
+\newpage
+\phantomsection%this allows hyperlink in ToC to work
+\addcontentsline{toc}{chapter}{Autorenregister}
+\ohead{Autorenregister} 
+\printindex 
+  
+% % \phantomsection%this allows hyperlink in ToC to work
+% % \addcontentsline{toc}{section}{Language index}
+% % \ohead{Language index} 
+% % \printindex[lan]
+
+\newpage
+\phantomsection%this allows hyperlink in ToC to work
+\addcontentsline{toc}{chapter}{Sachregister}
+\ohead{Sachregister}
+\input{index_see}
+\begin{sloppypar} 
+\begin{RaggedRight}
+\printindex[sbj] 
+\end{RaggedRight}
+\end{sloppypar} 
+
+                              
+\end{document}
+      

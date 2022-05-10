@@ -1,0 +1,73 @@
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Footnote \ref{#1}} 
+
+\setcounter{tocdepth}{5}
+\DeclareNewTOC[%
+  owner=\jobname,
+  listname={List of languages},
+]{tocappendix}
+\deftocheading{tocappendix}{}
+
+\newlist{appendixdesc}{description}{1}
+\setlist[appendixdesc]{leftmargin=*,font=\normalfont,nosep,listparindent=\parindent}
+
+\newenvironment{langscibars}{\begin{axis}[ybar,xtick=data, xticklabels from table={\mydata}{pos}, 
+        width  = \textwidth,
+	height = .3\textheight,
+    	nodes near coords, 
+	xtick=data,
+	x tick label style={},  
+	ymin=0,
+	cycle list name=langscicolors
+        ]}{\end{axis}}
+        
+\newcommand{\langscibar}[1]{\addplot+ table [x=i, y=#1] {\mydata};\addlegendentry{#1};}
+
+\newcommand{\langscidata}[1]{\pgfplotstableread{#1}\mydata;}
+
+\newcommand{\etriple}[3]{\ili{#1} (\textit{#2}; #3)\\}
+\newcommand{\appendixtriple}[3]{\il{#1@\textit{#1}}#1 (\textit{#2}; #3)\\}
+
+\pgfplotsset{
+    easterdaystacked/.style={
+        ybar stacked,
+        ylabel={\%},
+        xtick=data,
+        axis lines*=left,
+        ymin=0,
+        scaled y ticks=false,
+        colormap/Greys-5,
+        cycle list={{Greys-D},{Greys-F},{Greys-I},{Greys-M}},
+        ticklabel style={font=\footnotesize},
+        legend style={font=\footnotesize,anchor=north},
+        legend pos=outer north east,
+        legend cell align=left,
+        legend columns=1,
+        reverse legend=true,
+        width=.6\textwidth,
+        height=5cm,
+        enlarge x limits={0.2},
+        bar width=1cm,
+        },
+    easterdayline/.style={
+        sharp plot,
+        ylabel={\%},
+        xtick=data,
+        xticklabels={S,MC,C,HC},
+        axis lines*=left,
+        ymin=0,
+        cycle list name=mark list,
+        legend style={font=\footnotesize,anchor=north},
+        legend pos=outer north east,
+        legend cell align=left,
+        legend columns=1,
+        width=.6\textwidth,
+        height=5cm,
+    }
+}
+
+\newcolumntype{I}{>{\raggedright\arraybackslash\hangindent=.5em}X}
+
+\newfontfamily\DejaVuSerif[Path=\fontpath]{DejaVuSerif.ttf}
+\newlist{Coding}{description}{1}
+\setlist[Coding]{font=\normalfont, leftmargin=*, style=sameline, nosep}

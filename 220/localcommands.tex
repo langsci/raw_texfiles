@@ -1,0 +1,117 @@
+% \newcommand{\citeapo}[1]{\citeauthor{#1}' (\citeyear*{#1})}
+
+ 
+\newcommand{\lspxcol}{}
+\newenvironment{langscibars}[1][]{\begin{axis}[ybar,xtick=data, xticklabels from table={\mydata}{\lspxcol}, 
+        width  = \textwidth,
+	height = .3\textheight,
+    	nodes near coords, 
+	xtick=data,
+	x tick label style={},  
+	ymin=0,
+	cycle list name=langscicolors,
+	#1
+        ]}{\end{axis}}
+        
+\newcommand{\langscibar}[1]{\addplot+ table [x=i, y=#1] {\mydata};\addlegendentry{#1};}
+
+\newcommand{\langscidata}[1]{\pgfplotstableread{#1}\mydata;}
+ 
+% \newcounter{lsConnectTempGroup}
+% % \NewDocumentCommand\ConnectTail{m O{\thelsConnectTempGroup}}{%read: mandatory arg #1, optional argument #2 with the current group counter as its default value.
+%     \edef\lsConnectTempPosition{#2}%\edef expands the argument, which means reading the current value of the counter.
+%     {\tikz[remember picture,
+%            anchor=base, baseline,
+%            inner xsep=0pt, 
+%            inner ysep=-.5ex]\node (ConnectTempTail\lsConnectTempPosition) {\strut{}#1};}%\strut for baseline
+% }
+% \NewDocumentCommand\ConnectHead{s O{1ex} m O{\thelsConnectTempGroup} s}{%read: star #1, optional argument (distance of arrow from text= std. one x-height), mand. arg. (node text), optional argument #2, the group specifier
+%     \edef\lsConnectTempPosition{#4}%
+%     \stepcounter{lsConnectTempGroup}%We have a match, let's update the group counter   
+%     {\tikz[remember picture,
+%            anchor=base, baseline, 
+%            inner xsep=0pt, 
+%            inner ysep=-.5ex] \node (ConnectTempHead\lsConnectTempPosition) {\strut{}#3};%
+%      \tikz[remember picture] \draw[% we have a tail and a head, let's bring them together
+%                                 \IfBooleanTF#1{{Triangle[]}-}{-{Triangle[]}},% Check if the starred version is used. The starred version is right->left, the normal version left->right
+%                                 overlay,dashed] (ConnectTempTail\lsConnectTempPosition.south) -- ++(0,-#2) -| (ConnectTempHead\lsConnectTempPosition.south);%
+%     }\IfBooleanTF#5{\vspace{#2}}{}%
+% }
+% 
+% \NewDocumentCommand\NodeConnectHead{O{-{Triangle[]}} O{1ex} m O{\thelsConnectTempGroup} m s}{%read: star #1, optional argument (distance of arrow from text= std. one x-height), mand. arg. (node text), optional argument #2, the group specifier
+%     \edef\lsConnectTempPosition{#4}%
+%     \stepcounter{lsConnectTempGroup}%We have a match, let's update the group counter   
+%     {\tikz[remember picture,
+%            anchor=base, baseline, 
+%            inner xsep=0pt, 
+%            inner ysep=-.5ex] \node (ConnectTempHead\lsConnectTempPosition) {\strut{}#3};%
+%      \tikz[remember picture] \draw[% we have a tail and a head, let's bring them together
+%                                 #1,overlay] (ConnectTempTail\lsConnectTempPosition.south) -- ++(0,-#2) -| node[near start,fill=white] {#5} (ConnectTempHead\lsConnectTempPosition.south);%
+%     }\IfBooleanTF#6{\vspace{#2}}{}% Automatically make space below 
+% } 
+
+
+% Some commands and definitions.
+\newcommand{\secn}[1]{Section~\ref{#1}}
+\newcommand{\tbl}[1]{Table~\ref{#1}}
+\newcommand{\fig}[1]{Fig.~\ref{#1}}
+\newcommand{\sect}[1]{\setcounter{equation}{0}\section{#1}}
+% \newcommand{\fatcit}[2]{(\citeNP{#1}: {#2})} % (Croft 1990: 24)
+% \newcommand{\fatcitNP}[2]{\citeNP{#1}: {#2}} % Croft 1990: 24
+% \newcommand{\fatcitA}[2]{\citeANP{#1} (\citeyearNP{#1}: {#2})}%Croft (1990: 24)
+\newcommand{\fatcit}[2]{\citep[#2]{#1}} % (Croft 1990: 24)
+\newcommand{\fatcitNP}[2]{\citealt[#2]{#1}} % Croft 1990: 24
+\newcommand{\fatcitA}[2]{\citet[#2]{#1}}%Croft (1990: 24)
+
+
+\newcommand{\mr}[1]{$\rm {#1}$}
+\newcounter{lang} 
+\newcommand{\exn}[2]{
+\vspace{-.1cm}
+\begin{tabular}{*{#1}{l}} #2
+\end{tabular}}
+\newcommand{\exNG}[2]{
+  \ea
+  {\label{#1}} #2
+  \z
+}
+
+\newcommand{\trad}[1]{ 
+  \begin{quote} #1
+  \end{quote}
+}
+\newcommand{\refP}[1]{(\ref{#1})}
+\newcounter{app}
+\setcounter{app}{0}
+\newcommand{\app}[2]{
+  \begin{quote}
+  \refstepcounter{app}{\label{#1}}
+  {\bf \large \arabic{app}}{\hspace{.5cm}}
+  {\bf \large #2}
+  \end{quote}
+  \addtocontents{toc}
+  {\protect\contentsline{section}{\theapp{\hspace{.5cm} #2}}{\thepage}}
+}
+ 
+
+\newcommand{\acm}[1]{\'\=#1}
+% \newcommand{\textsubbar}[1]{#1̱ }
+% \newcommand{\textsubdot}[1]{\d{#1}}
+% \newcommand{\textsubarch}[1]{̯#1}
+
+\newcommand{\missingcaption}{{\color{red} Please provide a caption}}
+
+% \newcommand{\biberror}[1]{{\color{red}#1}}
+
+\newcommand{\citegenv}[1]{\citeauthor{#1}'s (\citeyear{#1} [this volume])}
+\newcommand{\citealtv}[1]{\citeauthor{#1} \citeyear*{#1} [this volume]}
+% \newcommand{\citepv}[1]{(\citeauthor{#1} \citeyear*{#1} [this volume])}
+
+\newfontfamily\cn[Mapping=tex-text,Ligatures=Common,Scale=MatchUppercase]{AR PL UMing CN}
+\newcommand{\zh}[1]{{\cn #1}}
+\XeTeXlinebreaklocale 'zh'  
+\XeTeXlinebreakskip = 0pt plus 1pt
+\AdditionalFontImprint{UMing}
+
+\newcommand{\ilit}[1]{#1\il{#1}}
+\newcommand{\isit}[1]{#1\is{#1}}

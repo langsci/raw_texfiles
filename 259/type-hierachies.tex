@@ -1,0 +1,1917 @@
+\documentclass[output=book
+		,modfonts
+		,nonflat
+	        ,collection
+	        ,collectionchapter
+	        ,collectiontoclongg
+ 	        ,biblatex  
+                ,babelshorthands
+%                ,showindex
+                ,newtxmath
+                ,colorlinks, citecolor=brown 
+                ,draftmode
+% 	        ,coverus
+		  ]{langscibook}                              
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% put all additional commands you need in the 
+% following files. If you do not know what this might 
+% mean, you can safely ignore this section
+
+\input{localmetadata.tex}
+\input{localpackages.tex}
+\input{localhyphenation.tex}
+\input{localcommands.tex} 
+
+\renewcommand{\oneline}[1]{%
+  \begingroup
+    \sbox0{\ignorespaces#1\unskip}%
+    \noindent
+    \ifdim\wd0>\linewidth
+      \hbox to\linewidth{%
+        \hss\resizebox{\linewidth}{!}{\copy0 }\hss
+      }%
+    \else
+      \copy0 %
+    \fi
+  \endgroup
+}
+
+% just for this document:
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+\newcommand\meta[1]{$\left<\text{#1}\right>$}
+
+% udc stuff
+% \newcommand{\tnode}[2]{
+%  \rnode{#1}{\emph{#2}}
+% }
+
+
+
+\newcommand{\bcdiag}[2]{
+  \ncdiag{#1}{#2}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%             Frontmatter                      %%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+
+\maketitle                
+\frontmatter
+
+\currentpdfbookmark{Contents}{name} % adds a PDF bookmark
+%%
+\mainmatter          
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%             Chapters                         %%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Uncomment the chapter(s) you would like to check
+
+
+% \begin{forest}
+%   [{\footnotesize\textit{object}}
+%     [\{{\avmoptions{center}\begin{avm}\[\asort{substantive}
+%               prd & boolean\]\end{avm}}}
+%       [{{\avmoptions{center}\begin{avm}\[\asort{verb} vform & vform\\
+%                 prd & plus\]\end{avm}}}]
+%       [{{\avmoptions{center}\begin{avm}\[\asort{noun} case & case\]\end{avm}}}] ]
+%     [{\footnotesize\textit{case}}]
+%     [{\footnotesize\textit{vform}}]
+%     [{\footnotesize\textit{boolean}}
+%       [{\footnotesize\textit{plus}}]
+%       [{\footnotesize\textit{minus}}] ]
+%   ]
+% \end{forest}
+
+% \bigskip
+
+% \begin{forest}
+%   delay={for nodewalk={c2n,fake=n,tree}{content={\footnotesize\type{#1}}}},
+%   [object,
+%     calign=midpoint, calign children={2}{3},
+%     [{\[\asort{substantive} prd & boolean\]},avm=center
+%       [{\[\asort{verb} vform & vform\\prd & plus\]},avm=center]
+%       [{\[\asort{noun} case & case\]},avm=center]
+%     ]
+%     [case]
+%     [vform]
+%     [boolean
+%       [plus]
+%       [minus]
+%     ]
+%   ]
+% \end{forest}
+
+% \bigskip
+
+
+\begin{forest} 
+type hierarchy
+[electric appliance, calign=midpoint, calign children={1}{2},
+  [printing device,calign=first
+    [printer,calign=first
+      [laser printer]
+      [\ldots]]
+    [photocopier]]
+  [scanning device,calign=last
+    [,identify=!r12]
+    [scanner,calign=first
+      [negative scanner]
+      [\ldots]]]
+  [\ldots]]
+\end{forest}
+
+
+%\if0
+\begin{forest} type hierarchy
+  [object,
+    calign=midpoint, calign children={2}{3},
+    [\avm{[\type*{substantive} prd & boolean]}
+      [\avm{[\type*{verb} vform & vform\\prd & plus]}]
+      [\avm{[\type*{noun} case & case]}]
+    ]
+    [case]
+    [vform]
+    [boolean
+      [plus]
+      [minus]
+    ]
+  ]
+\end{forest}
+
+
+
+
+% Stefan: The AVMs should come out north and the atomic types (case, vform, \ldots) too. You did this in
+% the second example. This is nice. Can this be done in the type hierarchy style?
+
+% Sašo: In the second example, it only seems it works at first sight. In fact, the alignment is not
+% perfect, and the problem is the AVMs.  How are we on that front?
+
+% Stefan: What does ``calign children'' do?
+
+% Sašo: It sets ``calign primary child'' and ``calign secondary child'' at the same time.
+
+% It is just a (new) shorthand for ``calign primary child=2, calign
+% secondary child=3''.
+
+% By default, "calign=center": the parent will be aligned with the
+% midpoint between the primary and seconday child. But "calign=center" is
+% an abbreviation for "calign=midpoint, calign primary child=1, calign
+% secondary child=-1", so changing these children to 2 and 3 means that the
+% alignment will be with the midpoint between these two children.
+
+% If I remember correctly, I have used this in situations with ``...'' as
+% the third child. Well, this effectively ignores the ``...'' for alignment
+% with the parent.
+
+
+% > I cannot find out what a secondary child is. This is in the manual on
+% > page 40, but I am lacking something. It is not the second child, right?
+% > But then what is the function of this concept?
+% Different methods of "calign" use the settings given in "calign primary
+% child" and "calign secondary child". Some use only the former, some
+% both. If you remember, I also introduced a shortcut "calign children" to
+% set both at once.
+
+>
+> What I try to find out now, is how do I get common-noun exactly aligned
+> with noun and verb aligned with relational:
+This is really easy now (in your, pre-published version of forest), just
+say ``calign=2'' in both ``noun'' and ``relational'' nodes.
+
+In the CTAN version, you can say ``calign with current'' on ``common-noun''
+and ``verb''. (This works in your version as well, of course.)
+
+What both of these approaches do, under the hood, is set (on the parent
+node) ``calign=child'' and ``calign primary child=2''. (``calign secondary
+child'' not used by ``calign=child'' method.)
+
+
+
+% New AVM package:\\
+% \begin{forest} type hierarchy
+%   [object,
+%     calign=midpoint, calign children={2}{3},
+%     [\avmtmp{[\type*{substantive} 
+%            prd & boolean]}
+%       [\avmtmp{[\type*{verb}
+%              vform & vform\\
+%              prd & plus]}]
+%       [\avmtmp{[\type*{noun} 
+%              case & case]}]
+%     ]
+%     [case]
+%     [vform]
+%     [boolean
+%       [plus]
+%       [minus]
+%     ]
+%   ]
+% \end{forest}
+
+
+
+\newpage
+
+\begin{forest}
+[{\footnotesize\textit{list}}
+  [{\avm{[\type*{nelist} first & object\\
+                                                    rest & list]}}]
+  [{\footnotesize\textit{elist}} ]]
+\end{forest}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [list
+    [\avm{[\type*{nelist} first & object\\rest & list]}]
+    [elist]
+  ]
+\end{forest}
+
+Stefan: Both AVMs and types should come out north.
+
+Sašo: ditto.
+
+\newpage
+
+\oneline{%
+  \begin{forest}
+    [{\type{univ-pas-bas-lci}}
+      [{\type{univ-do-pas-lci}}, name=D
+        [{\type{german-zuinf-pas-lci}}, name=Z
+          [{\type{german-pers-zuinf-pas-lci}} 
+            [{\type{german-long-pers-neutral-zuinf-pas-lci}}, name=PZ
+              [{\type{german-long-pers-zuinf-pas-lci}} ]
+              [{\type{german-long-attr-zuinf-pas-lci}} ]
+            ]		
+          ]
+        ]
+      ]
+      [{\type{german-pas-lci}}, name=G
+        [ , no edge ]
+        [{\type{german-long-pas-lci}}, name=L
+          [ , no edge ]  ]
+        [{\type{german-io-pas-lci}} ]	
+      ]
+      [ {\type{univ-imp-pas-lci}} ]
+      [ {\ldots} ]
+    ]
+    \draw(G.south) -- (Z.north); 
+    \draw(L.south) -- (PZ.north);
+  \end{forest}}
+
+\bigskip
+
+\oneline{%
+  \begin{forest} type hierarchy
+    [univ-pas-bas-lci
+      [univ-do-pas-lci
+        [german-zuinf-pas-lci, edge to=!un
+          [german-pers-zuinf-pas-lci 
+            [german-long-pers-neutral-zuinf-pas-lci, edge to=!r21,
+              calign=first % maybe?
+              [german-long-pers-zuinf-pas-lci ]
+              [german-long-attr-zuinf-pas-lci ]
+            ]		
+          ]
+        ]
+      ]
+      [german-pas-lci, calign with current, calign=first
+        [german-long-pas-lci]
+        [german-io-pas-lci ]	
+      ]
+      [ univ-imp-pas-lci ]
+      [ \ldots, fit=band % maybe?
+      ]
+    ]
+  \end{forest}%
+}
+
+Stefan: Do you know what one can do about the black bars? The figure is scaled
+to fit the linewidth, so there should not be any black bars.
+
+Sašo: well, they will be gone once the draft mode is off, but I know what you mean \dots\@ So I replaced
+|\leavevmode| in the definition of |\oneline| for |\noindent|.
+
+\bigskip
+
+\newpage
+%\oneline{%
+  \begin{forest} type hierarchy
+    [univ-pas-bas-lci
+      [univ-do-pas-lci
+        [german-zuinf-pas-lci, edge to=!un
+          [german-pers-zuinf-pas-lci]
+        ]
+      ]
+      [german-pas-lci, calign with current, calign=first
+        [german-long-pas-lci
+          [german-long-pers-neutral-zuinf-pas-lci, l*=2, edge to=!r111,
+            [german-long-pers-zuinf-pas-lci ]
+            [german-long-attr-zuinf-pas-lci ]
+          ]		
+        ]
+        [german-io-pas-lci ]	
+      ]
+      [ univ-imp-pas-lci ]
+      [ \ldots, fit=band % maybe?
+      ]
+    ]
+  \end{forest}
+%}
+
+Stefan: Very nice. See my comments in the code. Did I get these right?
+
+Sašo: Yes!
+
+\begin{forest}
+type hierarchy
+    [univ-pas-bas-lci
+      [univ-do-pas-lci
+        [german-zuinf-pas-lci, edge to=!un  % draw an edge to the "uncle": !un = first go "u"p, then to
+                                            % the "n"ext node = german-pas-lci ("!" means we will not
+                                            % give a node name but a nodewalk)
+          [german-pers-zuinf-pas-lci]
+        ]
+      ]
+      [german-pas-lci, calign with current, 
+                       calign=first         % the center of the children is exactly below german-pas-lci
+                                            % this is so since we have two daughters in the tree,
+                                            % but three in the hierarchy. There will be a further edge
+                                            % from german-zuinf-pas-lci.
+        [german-long-pas-lci
+          [german-long-pers-neutral-zuinf-pas-lci, l*=2, edge to=!r111, % draw an edge to the node (!r111),
+                                % which is found by going to the first child of the root node (!r1)
+                                % = univ-do-pas-lci and the first child of this node (!r11) =
+                                % german-zuinf-pas-lci and the first child of this node (!r111) = german-pers-zuinf-pas-lci
+            [german-long-pers-zuinf-pas-lci ]
+            [german-long-attr-zuinf-pas-lci ]
+          ]		
+        ]
+        [german-io-pas-lci ]	
+      ]
+      [ univ-imp-pas-lci ]
+      [ \ldots, fit=band
+      ]
+    ]
+\end{forest}
+
+Stefan: It works even without ``calign with current'', doesn't it?
+
+Sašo: No, because of the dots on the right.
+
+\newpage
+
+\begin{forest}
+[{\type{head}}
+[{\type{func}}  [{\type{det}} ] [{\type{marker}} ] ]
+[{\type{subst}} [{\type{noun}} 
+					[{\type{c-noun}} ] [{\type{gerund}}, name=G ]
+				  ]
+				 [{\type{relational}}, name=R
+				 [, no edge ] 
+				 [{\type{verb}} ] [{\type{adj}} ] [{\type{prep}} ]
+				 ] ]
+]
+\draw(R.south) -- (G.north);
+\end{forest}
+
+
+\bigskip
+
+
+\begin{forest}
+type hierarchy
+  [head
+    [func
+      [det]
+      [marker]
+    ]
+    [subst
+      [noun
+        [c-noun]
+        [gerund, edge to=!un] % draw an edge to the node one up (u) and the next sibling (n), which
+                              % is "relational"
+      ]
+      [relational, calign children={1}{2}
+        [verb]
+        [adj]
+        [prep]
+      ]
+    ]
+  ]
+\end{forest}
+
+Stefan: What does ``calign children'' do? ``identify'' seems to be even better here:
+
+Sašo: The result is different, so it's up to you what you prefer.  |calign children| does nothing but set
+the children which the default calign method |midpoint| will work with.  This is why above, ``verb'' and
+``adj'' are symmetric --- child alignment is to their midpoint.  And what happens below, with |identify|?
+a) With |identify|, we pretend that ``gerund'' is a child of ``relational''.  So we have four children.
+The default calign method, |midpoint| is again in effect, but by default it works on the first and the
+last child, so it is now ``gerund'' and ``prep'' which are symmetric. (In other words, this is normal
+  centering.)
+
+\begin{forest}
+type hierarchy
+  [head
+    [func
+      [det]
+      [marker]
+    ]
+    [subst
+      [noun
+        [c-noun]
+        [gerund]
+      ]
+      [relational,
+        [,identify=!P] % The previous leaf is identical.
+        [verb]
+        [adj]
+        [prep]
+      ]
+    ]
+  ]
+\end{forest}
+
+How does |identify| work?  We have two nodes: the ``identified'' node where we apply this key, and the
+``other'' node that we point to when we say |identify=|\meta{relative node name}.
+
+So what happens? We copy the content of the other node into the identified node (that's why it makes no
+  sense to have content in the identified node) and phantomize it.  When forest is doing its job
+(arranging the nodes so that they fit together nicely --- this is called packing), the parent of our
+identified node (``relational'') really has four children: the invisible ``gerund'', and visible
+``verb'', ``adj'' and ``prep''.  But after packing these four children under ``relational'' (normally,
+  and this is why ``gerund'' looks like a normal child of ``relational''), we make it ``forget'' about
+the invisible ``gerund'' completely (we |ignore| it, plus do some black magic to forget about any
+  descendants it might have).  So, when it comes to packing the children of ``subst'', the phantom
+``gerund'' is completely ignored, and forest is really putting together ``[noun[c-noun][gerund]]'' and
+``[relational[verb][adj][prep]]''.
+
+Effectively, we get a child which is ``shared'' between two parents.  Crucially, during packing
+(including positioning according to |calign|), the shared child was taken into account for both parents.
+Note that if we want uniform distances between ``c-noun'' \dots ``prep'', three |s sep|s must be equal:
+of nodes ``noun'', ``relational'' and also ``subst''.
+
+
+
+
+\newpage
+	\begin{forest}
+       [{\type{verb}} 
+      					[{\fbox{\textsc{vform}}}
+      						[{\type{fin}}, name=A1  
+      						 [{\tc{gray}{\type{fin+intrans}}}, name=A,edge={gray,dashed}   ]    		
+      							[, no edge ] ]
+      						[{\type{base}}, name=B1       							[{\tc{gray}{\type{base+trans}}}, name=B,
+      								edge={gray,dashed}  ]   		 
+      							[, no edge ] ]
+      						] 
+      					[{\fbox{\textsc{arg-st}}} 
+      					    [{\type{intrans}}, name=C1 
+      					 		[, no edge ]
+      					 		[{\tc{gray}{\type{base+intrans}}}, name=C,edge={gray,dashed}  ] ]
+      						[{\type{trans}}, name=D1 
+      						     [, no edge ]
+      						     [{\tc{gray}{\type{fin+trans}}}, name=D,edge={gray,dashed} ]   ]
+      					]  
+      	]
+      				\draw[style=dashed,gray] (C1.south) -- (A.north);
+      				\draw[style=dashed,gray] (D1.south)-- (B.north);
+      				\draw[style=dashed,gray] (B1.south)-- (C.north);
+      				\draw[style=dashed,gray] (A1.south)-- (D.north);
+\end{forest}
+
+\bigskip
+
+\begin{forest}
+  type hierarchy,
+  %for level=2{tier=2},
+  for level=3{l*=1.5,gray,edge={gray,dashed}},
+  [verb 
+    [\textsc{vform},draw,
+      before computing xy={for relative level=2{s-=3em}},
+      [fin, name=A1
+        [fin+intrans, name=A, edge to=!r21]
+      ]
+      [base, name=B1
+        [base+trans, name=B, edge to=!r22]
+      ]
+    ]
+    [\textsc{arg-st},draw,
+      before computing xy={for relative level=2{s+=3em}},
+      [intrans, name=C1
+        [base+intrans, name=C, edge to=!r12]
+      ]
+      [trans, name=D1
+        [fin+trans, name=D, edge to=!r11]
+      ]
+    ]
+  ]
+\end{forest}
+
+\bigskip
+
+\forestset{
+  textsc/.style={
+    % People usually say "delay={ content=\textsc{#1} }" but I don't like that.  First, out of principle,
+    % as the form and content are not separated ;-) but sometimes there's also a practical reason.
+    % Assume you want to detect empty nodes (we do this often to turn them into coordinates).  Well, if
+    % you say "content=\textsc{#1}", then the node is not empty anymore. So, I prefer "content format".
+    content format={\textsc{\forestoption{content}}},
+    draw,
+    outer ysep=0.5ex,  % outer sep (tikz) means how much a node is padded outside the border.
+  },
+}
+
+\begin{forest}
+  type hierarchy,
+  % for level=2{tier=2},
+  for level=3{l*=1.5,gray,edge={gray,dashed}},
+  [verb 
+    [vform, textsc,
+      [fin, name=A1
+        [fin+intrans, name=A, edge to=!r21,
+          before drawing tree={
+            for nodewalk={cNNN}{x-=3em},
+            spread=x{cNNN}{!r22}{3em},
+          },
+        ]
+      ]
+      [base, name=B1
+        [base+trans, name=B, edge to=!r22]
+      ]
+    ]
+    [arg-st, textsc,
+      [intrans, name=C1
+        [base+intrans, name=C, edge to=!r12]
+      ]
+      [trans, name=D1
+        [fin+trans, name=D, edge to=!r11]
+      ]
+    ]
+  ]
+\end{forest}
+
+Stefan: Wow! Could you explain why tier=2 is needed?
+
+Sašo: Umm ... it is not.
+
+
+Stefan: What does the ``before drawing tree'' magic do?
+
+Sašo: The idea in the final tree is to have the bottom nodes uniformly distanced from one another (note
+  that this is not the case in the second tree).  So we let forest position the bottom nodes directly
+under their parents and then spread them out using |spread| (we define this in langsci-forest-setup).
+But the point here is that we can only reposition the nodes once when are positioned.  So here's a crash
+course on forest \emph{stages} (manual 3.4.1).
+
+Forest first reads in the input (simplifying a lot here), then enters |typeset nodes stage| where each
+node is typeset in limbo and measured.  Then comes the stage that forest was made for: |pack stage|
+nicely and tightly positions the nodes.  In detail, this determines the so-called |l| (level) and |s|
+(sibling) coordinates of nodes --- |l| and |s| are relative to the parent; |l| axis is in the direction
+of tree growth, here down; |s| is orthogonal to it.  But before we can think of finally putting the tree
+on paper, we must compute the |x| and |y| coordinates of nodes: this is done in |compute xy stage|.  Only
+then, forest enters |draw tree stage|.
+
+Now above, we want to adjust the |x| coordinate of some nodes. Clearly, we have to do this after |x| (and
+  |y|) were computed.  And also clearly, before the tree is drawn.  So |before drawing tree|.
+
+
+Stefan: The lines should not touch the boxes as with the type in other trees.
+
+Sašo: Ah! Well, then use either the original |\fbox| idea, or if you need more flexibility (in the first
+  tree, there is actually too much space above the box for my taste), I made an |textsc| style where you
+can set the exact amount of spacing. Look at the third tree.
+
+I introduced the styles ``,partition'' and ``,instance'' for the boxed and the grey nodes. This is
+really cool! Thanks! Here is my version:
+
+
+
+
+% how to: just draw the tree without multiple inheritance.
+% every type will have exactly one subtype
+% fin+intrans is a subtype of fin, we need another edge to intrans, which is drawn by "edge to" with
+% the node specifeid by a path starting at the root node (r). We go to the second daughter of the
+% root node, which is ARG-ST (!r2) and take the first duaghter of it, which is intr (!r21).
+% magic code 
+%
+% before drawing tree={
+%             for nodewalk={cNNN}{x-=3em},
+%             spread=x{cNNN}{!r22}{3em},
+%           },
+%
+% is added to spread the last line by ...
+\begin{forest}
+  type hierarchy, instances,
+%  for level=2{tier=2},
+  for level=3{l*=1.5}, % increases the distance to the third level (the instances) by a factor of 1.5
+  [verb 
+    [vform,partition,
+      [fin,
+        [fin+intrans, edge to=!r21,
+           before drawing tree={
+             for nodewalk={cNNN}{x-=3em},
+             spread=x{cNNN}{!r22}{3em},
+           },
+        ]
+      ]
+      [base,
+        [base+trans, edge to=!r22]
+      ]
+    ]
+    [arg-st,partition,
+      [intrans, 
+        [base+intrans, edge to=!r12]
+      ]
+      [trans,
+        [fin+trans, edge to=!r11]
+      ]
+    ]
+  ]
+\end{forest}
+
+
+
+
+\newpage
+
+
+
+\oneline{%
+\begin{forest}
+for tree={inner sep=-1pt,l=50pt}
+[{\type{aller}}
+  [{\fbox{\type{aller-entries}}}
+	[{\type{``fit}}, name=F
+		 [{\tc{gray}{\type{``fit''+all-}}}, name=F1,edge={dashed,gray},tier=bottom ]
+		 [{\tc{gray}{\type{``fit''+v-}}}, name=F2,edge={dashed,gray},tier=bottom ]
+		 [, no edge ]  
+		 [, no edge ] ]
+	[{\type{``go''}}
+		[{\type{``go.to''}}, name=G
+			[{\tc{gray}{\type{``go.to''+all-}}}, name=G1, edge={dashed,gray} ]
+			[{\tc{gray}{\type{``go.to''+v-}}}, name=G2, edge={dashed,gray} ]
+			[, no edge ]
+			[, no edge ] ]
+		[{\type{``leave''}}, name=L, for tree={l=100pt}
+			[{\tc{gray}{\type{``leave''+all-}}}, name=L1,edge={dashed,gray} ]
+			[{\tc{gray}{\type{``leave''+v-}}}, name=L2,edge={dashed,gray} ]
+			[, no edge ] 
+			[, no edge ] 
+			 ] ]
+	]
+  [{\fbox{\type{aller-stems}}}, for tree={l=100pt,inner sep=-3pt} 
+  	[{\type{all-}}, name=A
+  		[, no edge ]
+		[, no edge ]
+		[, no edge ]
+  	]
+  	[{\type{v-}}, name=V
+  		[, no edge ]
+		[, no edge ]
+		[, no edge ]
+  	]
+  	[{\type{i-}}, name=I, for tree={l=80pt} 
+		[{\tc{gray}{\type{``fit''+i-}}}, name=I1,edge={dashed,gray} ]
+		[{\tc{gray}{\type{``go.to''+i-}}}, name=I2,edge={dashed,gray} ]
+		[{\tc{gray}{\type{``leave''+i-}}},  name=I3,edge={dashed,gray} ]
+  	]
+  	[{\type{aill-}}, name=AI, for tree={l=100pt,inner sep=-3pt}
+  		[{\tc{gray}{\type{``fit''+aill-}}}, name=A1, edge={dashed,gray} ]
+		[{\tc{gray}{\type{``go.to''+aill-}}}, name=A2, edge={dashed,gray} ]
+		[{\tc{gray}{\type{``leave''+aill-}}}, name=A3, edge={dashed,gray},tier=bottom ]  	
+	]
+  ]
+]
+\draw[style=dashed,gray](A.south) -- (F1.north); 
+\draw[style=dashed,gray](V.south) -- (F2.north); 
+\draw[style=dashed,gray](A.south) -- (G1.north); 
+\draw[style=dashed,gray](V.south) -- (G2.north); 
+\draw[style=dashed,gray](A.south) -- (L1.north); 
+\draw[style=dashed,gray](V.south) -- (L2.north); 
+\draw[style=dashed,gray](F.south) -- (I1.north);
+\draw[style=dashed,gray](F.south) -- (A1.north);
+\draw[style=dashed,gray](G.south) -- (I2.north);
+\draw[style=dashed,gray](G.south) -- (A2.north);
+\draw[style=dashed,gray](L.south) -- (I3.north);
+\draw[style=dashed,gray](L.south) -- (A3.north);
+\end{forest}}
+
+\bigskip
+
+%\oneline{%
+  \begin{forest}
+    type hierarchy,
+    for tree={
+      s sep=0,
+      if n children=0{
+        gray,
+        edge={dashed,gray},
+      }{},
+    },
+    [aller
+      [aller-entries,draw
+	[``fit'', name=F, l*=4, for children={l*=2},
+          [``fit''+all-, edge to=A]
+          [``fit''+v-, edge to=V]
+        ]
+	[``go''
+          [``go.to'', name=G, l*=2, for children={l*=4},
+            [``go.to''+all-, edge to=A, ignore edge]
+            [,coordinate,edge'={}]
+            [``go.to''+v-, edge to=V]
+          ]
+          [``leave'', name=L, for children={l*=6},
+            [``leave''+all-, edge to=A, ignore edge]
+            [,coordinate,edge'={}]
+            [``leave''+v-, edge to=V,ignore edge]
+          ]
+        ]
+      ]
+      [aller-stems, calign children=34, draw, where n children=0{l*=4.5}{},
+  	[all-, name=A, before computing xy={s-=3em} [,phantom,ignore,ignore edge]]
+  	[v-, name=V, before computing xy={s-=1.5em} [,phantom,ignore,ignore edge]]
+  	[i-, name=I, l*=2,
+          [``fit''+i-, edge to=F]
+          [``go.to''+i-, edge to=G, ignore edge]
+          [``leave''+i-,  edge to=L, ignore edge]
+  	]
+  	[aill-, name=AI,
+          [``fit''+aill-, edge to=F]
+          [``go.to''+aill-, edge to=G]
+          [``leave''+aill-, edge to=L]  	
+	]
+      ]
+    ]
+  \end{forest}
+%}
+
+Stefan: Here I would prefer if the dashed lines would not cross any black nodes. So edges from ``all-''
+should not cross ``leave''. I guess this could be reached by shifting ``all-'' to the right or
+putting it on the same line as ``leave''. But I do not understand the code. Maybe there are better
+ways.
+
+Sašo: Yes, I didn't know how much it would bother you.  Personally, I dislike resized (shrunk) figures.
+What I did now is a) Moved ``all-'' to the right and then, to avoid overfull box or shrinking, b) reduce
+the horizontal spacing between nodes.  But if they are too close now, we search for another solution.
+
+
+  \begin{forest}
+    type hierarchy,
+    instances,
+    for tree={
+      % reduce horizontal spacing
+      inner xsep=0,    % in comparison to s sep=0, this makes the left- and right-most node touch the
+                       % margins of the page precisely
+      s sep=0.275em,
+    },
+    [aller, s sep=3em, % push "all-" a bit to the right, so that dashed edges avoid "leave"
+      [aller-entries, partition
+	[``fit'', name=F, l*=4, for children={l*=2},   % "l*=<n>" pushes the node <n> 'levels' down.
+          [``fit''+all-, edge to=A]   % "edge to" can also take a node name, that's why there is no "!"
+          [``fit''+v-, edge to=V]
+        ]
+	[``go''
+          [``go.to'', name=G, l*=2, for children={l*=4},
+            [``go.to''+all-, edge to=A, ignore edge] % if there was no "ignore edge", "fit" and children
+                                                     % would be pushed more to the left
+            [,coordinate,edge'={}]
+            [``go.to''+v-, edge to=V]
+          ]
+          [``leave'', name=L, for children={l*=6},
+            [``leave''+all-, edge to=A, ignore edge]  % if there was no "ignore edge", "go.to" and
+                                                      % children would be pushed more to the left
+            [,coordinate,edge'={}]
+            [``leave''+v-, edge to=V,ignore edge]   % if there was no "ignore edge", "i-" and children
+                                                    % would be pushed more to the right
+          ]
+        ]
+      ]
+      [aller-stems, partition,
+        calign children=34, % align to the midpoint between the third and the fourh child
+                            % "calign children={3}{4}" would be more understandable, right? ;-)
+        where n children=0{l*=4.5}{},   % push all the leaves of "aller-stems" 4.5 levels down
+        % Forest does a bad job nicely positioning the children of "aller-stems", because we have pushed
+        % "i-" down.  "all-" and "v-" end up too close to "i-" and each other, so we push them to the
+        % left by "before computing xy={s-=...}".  (I explained "before computing xy" somewhere above.)
+        % 
+        % The weird "[,phantom,red,ignore,ignore edge]" children have a single function: "all-" and "v-"
+        % should not be leaves of the tree, because of "instances" at the top and "where n
+        % children=0{l*=4.5}{}" above.  So we give them a child which is both invisible and completely
+        % ignored in packing. :D
+  	[all-, name=A, before computing xy={s-=3em} [,phantom,red,ignore,ignore edge]]
+  	[v-, name=V, before computing xy={s-=1.5em} [,phantom,red,ignore,ignore edge]]
+  	[i-, name=I, l*=2,
+          [``fit''+i-, edge to=F]
+          [``go.to''+i-, edge to=G, ignore edge]
+          [``leave''+i-,  edge to=L, ignore edge]
+  	]
+  	[aill-, name=AI,
+          [``fit''+aill-, edge to=F]
+          [``go.to''+aill-, edge to=G]
+          [``leave''+aill-, edge to=L]  	
+	]
+      ]
+    ]
+  \end{forest}
+
+Stefan: The n children=0 stuff is cool. I turned this into a style. =:-)
+
+Saso: :-)
+
+
+
+\newpage
+
+\hspace*{-1em}\begin{tikzpicture}[text height=1.5ex,text depth=.25ex,
+  % inner sep=2pt,
+  node distance=5em,
+  baseline=10.75em]\small\it
+\node (snom) {snom};
+\node (sgen) [right of=snom] {sgen};
+\node (sacc) [right of=sgen] {sacc};
+\node (lgen) [right of=sacc] {lgen};
+\node (ldat) [right of=lgen] {ldat};
+\node (lacc) [right of=ldat] {lacc};
+\node (acc) [above of=sacc] {acc};
+\node (dat) [left of=acc] {dat};
+\node (gen) [left of=dat] {gen};
+\node (nom) [left of=gen] {nom};
+\node (structural) [above of=lgen, xshift=3em] {structural};
+\node (lexical) [above of=lacc] {lexical};
+\node (morph-case) [above right of=gen] {morph-case};
+\node (syn-case) [above right of=structural] {syn-case};
+\node (case) [above of=acc, node distance=7em] {case};
+\draw (case.south) -- (morph-case.north);
+\draw (case.south) -- (syn-case.north);
+\draw (morph-case.south) -- (nom.north);
+\draw (morph-case.south) -- (gen.north);
+\draw (morph-case.south) -- (dat.north);
+\draw (morph-case.south) -- (acc.north);
+\draw (syn-case.south) -- (structural.north);
+\draw (syn-case.south) -- (lexical.north);
+\draw (nom.south) -- (snom.north);
+\draw (gen.south) -- (sgen.north);
+\draw (gen.south) -- (lgen.north);
+\draw (dat.south) -- (ldat.north);
+\draw (acc.south) -- (sacc.north);
+\draw (acc.south) -- (lacc.north);
+\draw (structural.south) -- (snom.north);
+\draw (structural.south) -- (sgen.north);
+\draw (structural.south) -- (sacc.north);
+\draw (lexical.south) -- (lgen.north);
+\draw (lexical.south) -- (ldat.north);
+\draw (lexical.south) -- (lacc.north);
+\end{tikzpicture}
+
+\bigskip
+
+
+\begin{forest}
+  type hierarchy,
+  [case
+    [morph-case, name=M
+      [nom]
+      [gen]
+      [dat]
+      [acc]
+    ]
+    [syn-case
+      [structural]
+      [lexical, calign=last, % We just make all the cases subtypes of "lexical", even the structural
+                             % ones and align the last child to "lexical". It will be right below "lexical".
+                l sep*=3,    % The distance between "lexical" and the nodes below it is multiplied
+                             % by three.
+        [snom, edge to=!up,  % There is an edge to the previous node (p) of the node up (u) (!pu) = "structural"
+               edge to=M!1,  % There is an edge to the first child of M (M!1) = "morph-case".
+               no edge]      % and there is no edge to the original mother.
+        [sgen, edge to=!up, edge to=M!2, no edge ]
+        [sacc, edge to=!up, edge to=M!4, no edge ]
+        [lgen, edge to=M!2 ]
+        [ldat, edge to=M!3 ]
+        [lacc, edge to=M!4,
+           before drawing tree={
+             spread=x{current and preceding siblings reversed}{M!1}{0}
+           },
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+
+Stefan: What does the magic code ``before drawing tree'' do?
+
+Sašo: explained above.
+
+\newpage
+
+\begin{tikzpicture}[text height=1.5ex,text depth=.25ex,
+  % inner sep=2pt,
+  node distance=3em,
+  baseline=5.25em]\small\it
+\node (p-acc) {p-acc};
+\node (p-acc1) [right of=p-acc] {};
+\node (p-nom-acc) [right of=p-acc1] {p-nom-acc};
+\node (p-nom1) [right of=p-nom-acc] {};
+\node (p-nom) [right of=p-nom1] {p-nom};
+\node (acc) [above of=p-acc1] {acc};
+\node (nom) [above of=p-nom1] {nom};
+\node (p-nom-acc1) [above of=p-nom-acc] {};
+\node (case) [above of=p-nom-acc1] {case};
+\draw (case.south) -- (acc.north);
+\draw (case.south) -- (nom.north);
+\draw (acc.south) -- (p-acc.north);
+\draw (acc.south) -- (p-nom-acc.north);
+\draw (nom.south) -- (p-nom.north);
+\draw (nom.south) -- (p-nom-acc.north);
+\end{tikzpicture}
+
+\bigskip
+
+\begin{forest}
+  type hierarchy,
+  [case
+    [acc
+      [p-acc]
+      [p-nom-acc]
+    ]
+    [nom
+      [,identify=!P] % The previous leaf is identical.
+      [p-nom]
+    ]
+  ]
+\end{forest}
+
+\newpage
+
+\begin{tikzpicture}[text height=1.5ex,text depth=.25ex,
+  % inner sep=2pt,
+  node distance=4em,
+  baseline=5.25em]\small\it
+\node (p-acc) {p-acc};
+\node (p-acc1) [right of=p-acc] {};
+\node (p-nom-acc) [right of=p-acc1] {p-nom-acc};
+\node (p-nom1) [right of=p-nom-acc] {};
+\node (p-nom) [right of=p-nom1] {p-nom};
+\node (acc) [above of=p-acc1, node distance=3em, xshift=-1em] {acc};
+\node (nom) [above of=p-nom1, node distance=3em, xshift=1em] {nom};
+\node (p-nom+acc) [above of=p-nom-acc, node distance=3em] {p-nom+acc};
+\node (nom+acc) [above of=p-nom+acc, node distance=3em] {nom+acc};
+\draw (nom+acc.south) -- (acc.north);
+\draw (nom+acc.south) -- (nom.north);
+\draw (nom+acc.south) -- (p-nom+acc.north);
+\draw (acc.south) -- (p-acc.north);
+\draw (acc.south) -- (p-nom-acc.north);
+\draw (nom.south) -- (p-nom.north);
+\draw (nom.south) -- (p-nom-acc.north);
+\end{tikzpicture}
+
+\bigskip
+
+\begin{forest}
+  type hierarchy,
+  [case,
+    [acc
+      [p-acc]
+      [,identify=!N] % Identify this node with the next leaf = p-nom-acc.
+    ]
+    [p-nom+acc, calign with current % Align this node with its mother (case).
+      [p-nom-acc, % p-nom-acc is a fake daughter of p-nom+acc.
+        delay=no edge
+      ]    
+    ]
+    [nom
+      [,identify=!P] % Identify this node with the previous leaf = p-nom-acc.
+      [p-nom]
+    ]
+  ]
+\end{forest}
+
+Stefan: What does the ``delay'' do? Is it the case that without the ``delay'', ``identify'' would not
+know that p-nom-acc is a leaf?
+
+Sašo: It is related to |identify|, but it's not about being a leaf. It's about the edges.  |identify| is
+implemented so that the edge between ``p-nom-acc'' and ``nom'' is \emph{not} the ``original'' edge
+between the identified node (!r21) and its parent.  What you see is the extra edge drawn by |edge to|.
+And this key picks up the style of the edge (by default, |draw|) from the node we're identifying with
+(``p-nom+acc'').  So if we empty out the |edge| option of ``p-nom+acc'' to soon, there will be no
+(visible) edge between ``p-nom-acc'' and ``nom''.  (The funny thing is that the edge between from
+  ``p-nom-acc'' to ``acc'' would be there. This is because of the processing order: the children of
+  ``acc'' are processed, edge is good and drawn, ``p-nom+acc'' is processed, edge is removed, the
+  children of ``nom'' are processed, upst the edge of ``p-nom+acc'' is gone!)  Given that |identify|
+draws the extra edge ``immediately'', a |delay| is ``enough''; in other cases, we sometimes need to use
+one of the |before ...| black magic keys.
+
+
+\newpage
+
+\begin{tikzpicture}[text height=1.5ex,text depth=.25ex,
+  % inner sep=2pt,
+  node distance=3em,
+  baseline=2.5em]\small\it
+\node (acc) {acc};
+\node (accnom) [right of=acc] {};
+\node (nom) [right of=accnom] {nom};
+\node (nom-acc) [below of=accnom] {nom-acc};
+\node (nom+acc) [above of=accnom] {nom+acc};
+\draw (nom+acc.south) -- (acc.north);
+\draw (nom+acc.south) -- (nom.north);
+\draw (acc.south) -- (nom-acc.north);
+\draw (nom.south) -- (nom-acc.north);
+\end{tikzpicture}
+
+\bigskip
+
+\begin{forest}
+  type hierarchy
+  [nom+acc
+    [acc
+      [nom-acc, edge to=!un, before drawing tree={x/.option=!r.x},
+      ]
+    ]
+    [nom]
+  ]
+\end{forest}
+
+
+Stefan: What is ``before drawing tree'' doing?
+
+Sašo: Same as always :D
+
+
+\newpage
+
+\begin{tikzpicture}[text height=1.5ex,text depth=.25ex,
+  % inner sep=2pt,
+  node distance=6.5em,
+  baseline=8em]\small\it
+\node (a) {a};
+\node (d) [right of=a] {d};
+\node (g) [right of=d] {g};
+\node (a-d+a-g+d-g) [right of=g, xshift=1em] {a-d+a-g+d-g};
+\node (a+g-d) [above of=a, node distance=3em]  {a+g-d};
+\node (d+a-g) [above of=d, node distance=3em] {d+a-g};
+\node (g+d-a) [above of=g, node distance=3em] {g+d-a};
+\node (a+d) [above of=a+g-d, node distance=3em] {a+d};
+\node (a+g) [above of=d+a-g, node distance=3em] {a+g};
+\node (d+g) [above of=g+d-a, node distance=3em] {d+g};
+\node (a+d+g) [above of=a+g, node distance=3em] {a+d+g};
+\node (a-d+a-g) [below of=a, node distance=3em] {a-d+a-g};
+\node (a-d+d-g) [below of=d, node distance=3em] {a-d+d-g};
+\node (a-g+d-g) [below of=g, node distance=3em] {a-g+d-g};
+\node (a-d) [below of=a-d+a-g, node distance=3em] {a-d};
+\node (a-g) [below of=a-d+d-g, node distance=3em] {a-g};
+\node (d-g) [below of=a-g+d-g, node distance=3em] {d-g};
+\node (a-d-g) [below of=a-g, node distance=3em] {a-d-g};
+\draw (a+g-d.south) -- (a.north);
+\draw (a+g-d.south) -- (a-d+a-g+d-g.north);
+\draw (d+a-g.south) -- (d.north);
+\draw (d+a-g.south) -- (a-d+a-g+d-g.north);
+\draw (g+d-a.south) -- (g.north);
+\draw (g+d-a.south) -- (a-d+a-g+d-g.north);
+\draw (a+d.south) -- (a+g-d.north);
+\draw (a+d.south) -- (d+a-g.north);
+\draw (a+g.south) -- (a+g-d.north);
+\draw (a+g.south) -- (g+d-a.north);
+\draw (d+g.south) -- (d+a-g.north);
+\draw (d+g.south) -- (g+d-a.north);
+\draw (a+d+g.south) -- (a+d.north);
+\draw (a+d+g.south) -- (a+g.north);
+\draw (a+d+g.south) -- (d+g.north);
+\draw (a.south) -- (a-d+a-g.north);
+\draw (d.south) -- (a-d+d-g.north);
+\draw (g.south) -- (a-g+d-g.north);
+\draw (a-d+a-g.south) -- (a-d.north);
+\draw (a-d+a-g.south) -- (a-g.north);
+\draw (a-d+d-g.south) -- (a-d.north);
+\draw (a-d+d-g.south) -- (d-g.north);
+\draw (a-g+d-g.south) -- (a-g.north);
+\draw (a-g+d-g.south) -- (d-g.north);
+\draw (a-d.south) -- (a-d-g.north);
+\draw (a-g.south) -- (a-d-g.north);
+\draw (d-g.south) -- (a-d-g.north);
+\draw (a-d+a-g+d-g.south) -- (a-d+a-g.north);
+\draw (a-d+a-g+d-g.south) -- (a-d+d-g.north);
+\draw (a-d+a-g+d-g.south) -- (a-g+d-g.north);
+\end{tikzpicture}\hfill\mbox{}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [a+d+g
+    [a+d
+      [a+g-d, edge to=!un
+        [a, name=a
+          [a-d+a-g
+            [a-d, edge to=d!1]
+          ]
+        ]
+      ]
+    ]
+    [a+g, calign with current
+      [d+a-g, edge to=!up, edge to=!un, no edge
+        [d, name=d
+          [a-d+d-g
+            [a-g, edge to=a!1, edge to=g!1, no edge
+              [a-d-g, edge to=a!11, edge to=g!11]
+            ]
+          ]
+        ]
+      ]
+    ]
+    [d+g
+      [g+d-a, edge to=!up,
+        calign=child, calign child=1,
+        [g, name=g, 
+          [a-g+d-g
+            [d-g, edge to=d!1]
+          ]
+        ]
+        [a-d+a-g+d-g,
+          edge to=a!u, edge to=d!u, edge to=g!u,
+          edge from=a!1, edge from=d!1, edge from=g!1,
+          before computing xy={s+=2em},
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+
+Is ``edge to'' the counter part of ``edge from''?
+
+Sašo: Yes!  And there are also |edge to'| and |edge from'|, which allow you to draw the extra edges in a
+different style, e.g. replacing |edge from=g!1| by |edge from'={g!1}{draw,red}| would make the edge from
+``a-d+a-g+d-g'' to ``a-g+d-g'' red (don't forget the |draw| in there!).
+
+\newpage
+
+\begin{forest}
+%sm edges
+[\type{phrase}
+	[\textsc{headedness}
+		[\type{headed-phrase}
+			[\type{head-subject-phrase} [\type{nonfin-head-subj-cx}, name=A2]]
+                        [...]			
+                        [\type{head-spr-phrase} [\type{noun-poss-cx}, name=B2]]]]			
+	[\textsc{clausality}
+		[\type{clause}, name=A1]
+		[\type{non-clause}, name=B1]]]
+\draw (A1.south) -- (A2.north);
+\draw (B1.south) -- (B2.north);
+\end{forest}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [phrase
+    [\normalfont\textsc{headedness}
+      [headed-phrase
+        [head-subject-phrase
+          [nonfin-head-subj-cx, edge to=C!1]
+        ]
+        [\dots, calign with current]
+        [head-spr-phrase
+          [noun-poss-cx, edge to=C!2]
+        ]
+      ]
+    ]
+    [\normalfont\textsc{clausality}, name=C
+      [clause]
+      [non-clause]
+    ]
+  ]
+\end{forest}
+
+
+\begin{forest}
+type hierarchy
+[phrase
+  [headedness, partition
+    [headed-phrase
+      [head-subject-phrase
+         [nonfin-head-subj-cx, 
+          edge to=C!1, % Draw an edge to the first child of the node named C.
+                       % This is the partitition clausality and the first child is clause.
+          tier=nonfin-head-subj-cx] % Remember at which level we are here.
+      ]
+      [\dots, calign with current]
+      [head-spr-phrase
+        [,identify=!NN] % We do not give the subtype here, but say that it is identical to the
+                        % second leave to the right (N N). The first leave to the right is clause
+                        % and the second one is noun-poss-cx.
+        ]
+      ]
+    ]
+    [clausality, partition, name=C
+      [clause]
+      [non-clause
+        [noun-poss-cx,tier=nonfin-head-subj-cx]] % noun-poss-x would be at the same level as
+                                % head-spr-phrase, but we want to have it down to the level of
+                                % nonfin-head-subj-cxg, so we refer to this tier. 
+               
+    ]
+  ]
+\end{forest}
+
+Stefan: identify=!N doesn't seem to work.
+
+Sašo: We need |identify=!NN| here.  |!N|, the next leaf, is ``clause''.
+
+\begin{forest} type hierarchy
+  [phrase
+    [headedness, partition
+      [headed-phrase
+        [head-subject-phrase
+          [nonfin-head-subj-cx, edge to=C!1,tier=nonfin-head-subj-cx]
+        ]
+        [\dots, calign with current]
+        [head-spr-phrase
+        ]
+      ]
+    ]
+    [clausality, partition, name=C
+      [clause]
+      [non-clause
+        [noun-poss-cx,edge to=!r113,tier=nonfin-head-subj-cx]]
+    ]
+  ]
+\end{forest}
+
+Stefan: This works without crossing branches, but maybe it would be nicer if noun-poss-cx would be in the
+midlle of head-spr-phrase and non-clause.
+
+Sašo: Hmm, what is the easiest (but precise!) way of doing this?  Got it, see the comments in the code!
+
+\label{trick-for-later}
+\begin{forest} type hierarchy
+  [phrase
+    [headedness, partition
+      [headed-phrase
+        [head-subject-phrase
+          [nonfin-head-subj-cx, edge to=C!1,tier=nonfin-head-subj-cx]
+        ]
+        [\dots, calign with current]
+        [head-spr-phrase
+        ]
+      ]
+    ]
+    [clausality, partition, name=C
+      [clause]
+      [noun-poss-cx,              % new location: we have a fake parent now
+        tier=nonfin-head-subj-cx, % vertical position
+        edge to=!r113, edge to=!r23, % draw the edges before we say "no edge"
+        ignore, no edge,          % pretend we're not there, so that our siblings are positioned as before
+        before computing xy={s=0}, % horizontal position directly below the fake parent "clausality"; if
+                                   % we don't do this, the node ends up directly below "clause"
+      ]
+      [non-clause]
+    ]
+  ]
+\end{forest}
+
+\newpage
+
+\begin{forest}
+%sm edges
+[\type{phrase}
+	[\textsc{headedness}
+		[\type{headed-phrase}
+			[\type{head-nonargument-phrase}
+				[\type{head-functor-phr} [\type{regular-nominal-phrase}, name=B2]]
+				[\type{head-independent-phr}, name=A1]]]]
+	[\textsc{clausality}
+		[\type{non-clause}
+			[\type{nominal-parameter}
+			[\type{intersective-modification}, name=B1 [\type{big-mess-phrase}, name=A2]]]]]]
+\draw (A1.south) -- (A2.north);
+\draw (B1.south) -- (B2.north);
+\end{forest}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [phrase
+    [\normalfont\textsc{headedness}
+      [headed-phrase
+        [head-nonargument-phrase
+          [head-functor-phr
+            [regular-nominal-phrase, edge to=!NNu]
+          ]
+          [head-independent-phr]
+        ]
+      ]
+    ]
+    [\normalfont\textsc{clausality}
+      [non-clause
+        [nominal-parameter
+          [intersective-modification
+            [big-mess-phrase, edge to=!P]
+          ]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+
+\newpage
+
+	\begin{forest}
+       [{\type{lexeme}} 
+      					[{\fbox{\textsc{part-of-speech}}}
+      						[{\type{verb-lx}}, name=A1 
+      							[, no edge ]
+      							[, no edge ] ] 
+      						 [{\type{adj-lx}}]
+      						 [{\type{noun-lx}}] 
+      						 [{\ldots}]   		
+      					] 
+      					[{\fbox{\textsc{arg-selection}}} 
+      					    [{\type{intr-lx}}
+      					 		[{\type{subj-rsg-lx}}
+      					 			[{\type{srv-lx}}, name=B1 ]
+      					 		]
+      					 		[{\ldots}]
+      					 	]
+      					 	 [{\type{tr-lx}}
+      					 		[{\type{obj-rsg-lx}}
+      					 			[{\type{orv-lx}}, name=B2 ]
+      					 		]
+      					 		[{\ldots}]
+      					 	]
+      					 	[{\ldots}]
+      					]  
+      	]
+      	\draw (A1.south)-- (B1.north);
+      	\draw (B2) to [bend left= 6] (A1);
+\end{forest}
+
+\bigskip
+
+
+\begin{forest}
+  type hierarchy
+  [lexeme
+    [part-of-speech, partition, calign=2
+      [verb-lx, name=vlx] 
+      [adj-lx]
+      [noun-lx] 
+      [\ldots]   		
+    ] 
+    [arg-selection, partition, calign children=12
+      [intr-lx
+        [subj-rsg-lx
+          [srv-lx, edge to=vlx]
+        ]
+        [\ldots]
+      ]
+      [tr-lx
+        [obj-rsg-lx
+          [orv-lx, name=orv-lx]
+        ]
+        [\ldots]
+      ]
+      [\ldots]
+    ]  
+  ]
+  \draw (orv-lx) to [bend left=6] (vlx);
+\end{forest}
+
+Stefan: The original did apply a bend to the edge. Would this be possible to avoid the overlap?
+
+Sašo: Not with |edge to|, so we do it by hand, as in the original.
+
+\newpage
+
+
+
+\begin{tabular}{cccc}
+  \tnode{hf}{head-filler-ph} & \tnode{itrr}{interr-cl} & \tnode{rel}{rel-cl} & \tnode{decl}{decl-cl}\\[2em]
+
+  \tnode{whi}{wh-interr-cl} & \tnode{whr}{wh-rel-cl} & \tnode{top}{top-cl} & \tnode{the}{the-cl}
+\end{tabular}
+
+
+
+\psset{linewidth=.5pt,angleA=-90,angleB=90,arm=0pt,nodesepA=2pt}
+
+\bcdiag{hf}{whi}
+\bcdiag{itrr}{whi}
+\bcdiag{hf}{whr}
+\bcdiag{rel}{whr}
+\bcdiag{hf}{top}
+\bcdiag{decl}{top}
+\bcdiag{hf}{the}
+\bcdiag{decl}{the}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [,phantom, for children={!1.l*=1.5}
+    [head-filler-ph
+      [wh-interr-cl, edge to=!r2]
+    ]
+    [interr-cl
+      [wh-rel-cl, edge to=!r1, edge to=!r3, no edge]
+    ]
+    [rel-cl
+      [top-cl, edge to=!r1, edge to=!r4, no edge]
+    ]
+    [decl-cl
+      [the-cl, edge to=!r1]
+    ]
+  ]
+\end{forest}
+
+
+% \begin{forest} type hierarchy
+%   [,phantom, for children={!1.l*=1.5}
+%     [head-filler-ph
+%       [wh-interr-cl]
+%     ]
+%     [interr-cl
+%       [wh-rel-cl]
+%     ]
+%     [rel-cl
+%       [top-cl]
+%     ]
+%     [decl-cl
+%       [the-cl]
+%     ]
+%   ]
+% \end{forest}
+
+Stefan: What does ``for children'' do?
+
+Sašo: Looks complicated, right? :D I have no idea why I did it this way, probably I was toying with
+various ways and you get the strange leftovers.  |for level=2{l*=1.5}| has the same effect. But as we
+have the beast, let me explain how it works.  I'm assuming that |for children| is clear, but that
+|!1.l*=...| is not.
+
+The construct \meta{relative node name}|.|\meta{option name} sets option \meta{option name} for the node
+given by \meta{relative node name}.  Above, \meta{relative node name} is |!1|, so the first child.  Thus
+the entire |!1.l*=1.5| multiplies |l| of the first child by 1.5.  Amazing!  (And as we are under %
+  |for children| anyway, and each child has a single child \dots\ |for level=2{...}|.)
+
+At first sight, |!1.l*=|\meta{value} seems equivalent to |for 1={l*=|\meta{value}|}|. And in our case, it
+is.  But if we were referring to the value of the current node in \meta{value}, things would be
+different.  In |!1.l*=|\meta{value}, \meta{value} is evaluated in the context of the original node where
+you write down the entire thing (so the parent).  In the |for 1| case, \meta{value} would be evaluated in
+the context of the node that receives the value (so the child).  For example, |[A,!1.l*=n_children()[]]|
+would leave the |l| of the child unchanged, because the parent has a single child.  But %
+|[A,for 1={l*=n_children()}[]]| would set the |l| of the child to |0pt|, because the child has no
+children.  Yiiihaa!
+
+
+\newpage
+
+\begin{tabular}{ccccc}
+\multicolumn{2}{c}{\tnode{hf}{head-filler-ph}} & \tnode{itrr}{interr-cl} & \tnode{rel}{rel-cl} & \tnode{decl}{decl-cl}\\[1em]
+\tnode{std}{standard-head-fill-ph}\\[1.5em]
+\tnode{whi}{wh-interr-cl} & \multicolumn{2}{c}{\tnode{whr}{wh-rel-cl}} & \tnode{top}{top-cl} & \tnode{the}{the-cl}\\[1.5em]
+&  \tnode{fwh}{fin-wh-rel-cl} & \tnode{iwh}{inf-wh-rel-cl}
+
+
+\end{tabular}
+
+
+
+\psset{linewidth=.5pt,angleA=-90,angleB=90,arm=0pt,nodesepA=2pt}
+  
+\bcdiag{hf}{std}
+\bcdiag{std}{whi}
+\bcdiag{itrr}{whi}
+\bcdiag{std}{whr}
+\bcdiag{rel}{whr}
+\bcdiag{std}{top}
+\bcdiag{decl}{top}
+\bcdiag{hf}{the}
+\bcdiag{decl}{the}
+\bcdiag{whr}{fwh}
+\bcdiag{whr}{iwh}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [,phantom, 
+    [head-filler-ph,
+      for siblings={!1.l*=2.5}, !11.l*=1.5,
+      [standard-head-fill-ph, anchor=base east, inner xsep=0
+        [wh-interr-cl, edge to=!r2]
+      ]
+    ]
+    [interr-cl
+      [wh-rel-cl, edge to=!r11, edge to=!r3, no edge
+        [fin-wh-rel-cl]
+        [inf-wh-rel-cl]
+      ]
+    ]
+    [rel-cl
+      [top-cl, edge to=!r11, edge to=!r4, no edge]
+    ]
+    [decl-cl
+      [the-cl, edge to=!r1]
+    ]
+  ]
+\end{forest}
+
+Stefan: What does ``for siblings'' do?
+
+Sašo: I get off easy here, I explained it in the previous example!
+
+Stefan: What does ``anchor'' do?
+
+Sašo: In short, it pushes ``standard-head-fill-ph'' to the left.  The long version:
+
+In forest, the horizontal ``part'' of the anchor is used to align siblings; the vertical, to align
+the child and the parent.  Above, we are interested in the vertical part, because we have changed the
+default |anchor=base| into |anchor=base east|. 
+
+The vertical part of the anchor of the ``standard-head-fill-ph'' is |east|, and the vertical part of the
+anchor of ``head-filler-ph'' is center (because |base| is really |base center|).  So the center of the
+parent is aligned to the east of the child, effectively pushing the child to the west. 
+
+In fact, I added |inner xsep=0| to ``standard-head-fill-ph'' right now.  Before, the centering was to the
+west part of the (invisible) border around ``standard-head-fill-ph'' (you can see this if you say |draw|
+  on the original version), so the alignment was not perfect.
+
+
+\newpage
+\includegraphics[scale=1.2]{figures/Riehemann-crop.pdf}
+
+\bigskip
+
+\begin{forest}
+  type hierarchy
+  [lexeme, for tree={s sep=0.1em},
+    [structure, partition
+      [complex
+        [compound]
+        [derived
+          [compositionality, partition
+            [compositional
+              [syntype, partition
+                [externalized, name=ext]
+                [\ldots]
+              ]
+              [semtype, partition
+                [possibility, name=poss]
+                [\ldots]
+              ]
+            ]
+            [noncomp]
+          ]
+          [dertype, partition
+            [affixed
+              [prefixed]
+              [suffixed, name=suff]
+            ]
+            [\ldots]
+          ]
+        ]
+      ]
+      [simple]
+    ]
+    [pos, partition, calign=2
+      [adjective
+        [bar-adj, l*=6, calign=2, edge to=suff,
+          [poss-bar-adj, calign children=23, edge to=poss,
+            for children={s sep=0},
+            [trans-bar-adj, calign=2, edge to=ext,
+              [reg-bar-adj]
+              [essbar]
+              [\ldots]
+            ]
+            [dative-bar-adj
+              [unentrinnbar]
+              [\ldots]
+            ]
+            [prep-bar-adj
+              [verfügbar]
+              [\ldots]
+            ]
+            [intr-bar-adj
+              [brennbar]
+              [\ldots]
+            ]
+          ]
+          [fruchtbar]
+          [\ldots]
+        ]
+        [bar-adj, l*=6, phantom]
+      ]
+      [verb]
+      [\ldots]
+    ]
+  ]
+\end{forest}
+
+Wow!
+
+\newpage
+\includegraphics[scale=.84]{figures/OTC-crop.pdf}
+
+\newpage
+  \includegraphics[scale=.63]{figures/pretyping-crop.pdf}
+
+
+\newpage
+
+\begin{forest}
+[\emph{verb-infl}
+	[2ND-SLOT,draw
+    	[\emph{1sg},name=1sg
+    		[\emph{1sg-pos}]
+    	]
+    	[\emph{3pl}]
+   ]
+	[1ST-SLOT,draw
+		[\emph{neg}
+			[\emph{1sg-neg},name=neg]
+			[\emph{¬1sg-neg}]
+		]
+		[\emph{pos}]
+	]
+	[3RD-SLOT,draw
+		[\emph{pst}
+			[\emph{pos-pst}]
+			[\emph{neg-pst}]
+		]
+		[\emph{fut}]
+	]
+]
+\draw (1sg.south) to (neg.north);
+\end{forest}
+
+\bigskip
+
+\begin{forest} type hierarchy
+  [verb-infl, calign=2
+    [2nd-slot,partition
+      [1sg,name=1sg
+        [1sg-pos]
+      ]
+      [3pl]
+    ]
+    [1st-slot,partition
+      [neg
+        [1sg-neg,edge to=!Pp] % Draw edge to ??? previous leaf (P) 
+        [¬1sg-neg]
+      ]
+      [pos]
+    ]
+    [3rd-slot,partition
+      [pst
+        [pos-pst]
+        [neg-pst]
+      ]
+      [fut]
+    ]
+  ]
+\end{forest}
+
+Stefan: What does ``Pp'' mean? Isn't P the previous leaf and p the previous sibling.
+
+Sašo: Correct.
+
+Stefan: But the previous leaf is 1sg-pos and it does not have a previous sibling.
+
+Sašo: Incorrect. The previous leaf is ``3pl.''
+
+\newpage
+
+%% This does not compile ....
+
+\scalebox{.8}{%
+\begin{forest}for tree={l=2cm}
+[\emph{realisation-rule}
+	[MORPHOTACTICS,draw, name=morph
+		[\avm{
+			[
+			mud & \{\normalfont\textit{agr} \}\\
+			ms & \{ [\type*{pid}
+			cat & verb], ...\}\\
+			mph & < [pc & $-4$]> ]
+		}, name= 1, tier=word]
+		[\avm{
+			[mud & \{\normalfont\textit{agr}\}\\
+			 ms & \{ [\type*{pid}
+			cat & [\type*{adj}
+			type & A]], ...\}\\
+			mph & < [pc & -1]>]
+		}, name=2, tier=word]
+	]
+	[EXPONENCE,draw
+		[QUAL,draw, name=qual
+			[\avm{
+				[mud & \{ [\normalfont\textit{agr}\\cl & 7]\}\\
+				mph & < ... [ph & <\normalfont ca>\\
+				pc & $-1$ $\vee$ $-2$
+				] ... >]
+			}, tier=word]
+			[\dots]
+		]
+		[CONC,draw, name=conc
+			[\avm{
+				[mud & \{ [\normalfont\textit{agr}\\cl & 7]\}\\
+				mph & < ... [ph & <\normalfont ci>\\
+				pc & $-1$ $\vee$ $-4$
+				] ... >]
+			}, tier=word]
+			[\dots]
+		]
+	]
+]
+%% sorry this is an ugly workaround but even on stackexchange, no one could help me :/
+\node[below of=morph, node distance= 8cm](3){%
+	\avm{
+			[mud & \{\normalfont\textit{agr}\}\\
+			ms & \{ [\type*{pid}
+			cat & [\type*{adj}
+			type & B]], ...\}\\
+			mph & <[pc & $-2$], [pc & $-1$]>]
+	}%
+};
+\draw (1.north) to (qual.south);
+\draw (2.north) to (conc.south);
+\draw (3.north) to (morph.south);
+\end{forest}
+}    
+
+
+
+\scalebox{.8}{%
+\begin{forest}for tree={l=2cm}
+[\emph{realisation-rule}
+	[MORPHOTACTICS,draw, name=morph
+		[\avm{
+			[
+			mud & \{\normalfont\textit{agr} \}\\
+			ms & \{ [\type*{pid}
+			cat & verb], ...\}\\
+			mph & < [pc & $-4$]> ]
+		}, name= 1, tier=word]
+		[\avm{
+			[mud & \{\normalfont\textit{agr}\}\\
+			 ms & \{ [\type*{pid}
+			cat & [\type*{adj}
+			type & A]], ...\}\\
+			mph & < [pc & -1]>]
+		}, name=2, tier=word]
+	]
+	[EXPONENCE,draw
+		[QUAL,draw, name=qual
+			[\avm{
+				[mud & \{ [\normalfont\textit{agr}\\cl & 7]\}\\
+				mph & < ... [ph & <\normalfont ca>\\
+				pc & $-1$ $\vee$ $-2$
+				] ... >]
+			}, tier=word]
+			[\dots]
+		]
+		[CONC,draw, name=conc
+			[\avm{
+				[mud & \{ [\normalfont\textit{agr}\\cl & 7]\}\\
+				mph & < ... [ph & <\normalfont ci>\\
+				pc & $-1$ $\vee$ $-4$
+				] ... >]
+			}, tier=word]
+			[\dots]
+		]
+	]
+]
+%% sorry this is an ugly workaround but even on stackexchange, no one could help me :/
+%% saso: do you want to achieve the same as I did in \ref{trick-for-later}?
+\node[below of=morph, node distance= 8cm](3){%
+	\avm{
+			[mud & \{\normalfont\textit{agr}\}\\
+			ms & \{ [\type*{pid}
+			cat & [\type*{adj}
+			type & B]], ...\}\\
+			mph & <[pc & $-2$], [pc & $-1$]>]
+	}%
+};
+\draw (1.north) to (qual.south);
+\draw (2.north) to (conc.south);
+\draw (3.north) to (morph.south);
+\end{forest}
+}    
+
+
+
+
+\newpage
+
+  \begin{tabular}{lcc}
+    \rnode{u1}{\textsc{beak}} & \rnode{u2}{\textsc{gen}} & \rnode{u3}{\textsc{pl}}\\[2ex]
+    \rnode{l1}{nokk} & \rnode{l2}{-a} & \rnode{l3}{-de}
+  \end{tabular}
+      \psset{angleA=-90,angleB=90,arm=0pt,linewidth=.5pt}
+
+      \ncdiag{u1}{l1} \ncdiag{u1}{l2} \ncdiag{u2}{l1} \ncdiag{u2}{l3}
+      \ncdiag{u3}{l1} \ncdiag{u3}{l2} \ncdiag{u3}{l3}
+
+\bigskip
+
+\begin{forest}
+  [,phantom,
+    for children={font=\sc},
+    [beak
+      [nokk, edge to=!r2, edge to=!r3]
+    ]
+    [gen
+      [-a, edge to=!r1, edge to=!r3, no edge]
+    ]
+    [pl
+      [-de, edge to=!r2]
+    ]
+  ]
+\end{forest}
+
+\newpage
+
+\begin{forest}
+[\emph{realisation-rule}
+	[SHAPE,draw
+		[\avm{
+			[ mph & \{[ph &  <\normalfont ni>]\}\\
+			mud & \{[per & 1\\ num & sg]\}
+			]
+		}, name=1
+			[\avm{
+				[ mph & \{[ph &  <\normalfont ni>\\ pc & 2]\}\\
+				mud & \{ [\type*{subj} per & 1\\ num & sg] \}
+				]
+			}, name=a, no edge, tier=word, l=3cm]
+		]
+		[\avm{
+			[ mph & \{[ph &  <\normalfont wa>]\}\\
+			mud & \{[per & 3\\ num & pl]\}
+			]
+		}, name=2
+			[\avm{
+				[ mph & \{[ph &  <\normalfont wa>\\ pc & 5]\}\\
+				mud & \{ [\type*{obj} per & 3\\ num & pl] \}
+				]
+			}, name=b, no edge, tier=word, l=3cm]
+		]
+	]
+	[POSITION,draw
+		[\avm{
+			[ mph & \{[pc & 2]\}\\
+			mud & \{subj\}
+			]
+		}, name=3
+			[\avm{
+				[ mph & \{[ph &  <\normalfont wa>\\ pc & 2]\}\\
+				mud & \{ [\type*{subj} per & 3\\ num & pl] \}
+				]
+			}, name=c, no edge, tier=word, l=3cm]
+		]
+		[\avm{
+			[ mph & \{[pc & 5]\}\\
+			mud & \{ obj \}
+			]
+		}, name=4
+			[\avm{
+				[ mph & \{[ph &  <\normalfont ni>\\ pc & 5]\}\\
+				mud & \{[\type*{obj} per & 1\\ num & sg]\}
+				]
+			}, name=d, no edge, tier=word, l=3cm]
+		]
+	]
+]
+\draw[dashed] (1.south) to (a.north);
+\draw[dashed] (1.south) to (d.north);
+\draw[dashed] (2.south) to (b.north);
+\draw[dashed] (2.south) to (c.north);
+\draw[dashed] (3.south) to (c.north);
+\draw[dashed] (3.south) to (a.north);
+\draw[dashed] (4.south) to (b.north);
+\draw[dashed] (4.south) to (d.north);
+\end{forest}
+
+
+
+%\fi
+
+
+\end{document} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%                  END                         %%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% TeX-engine: xetex
+%%% End:
