@@ -1,0 +1,268 @@
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Footnote \ref{#1}} 
+\newcommand{\glossterm}[2]{\hyperref[#1]{\textsc{#2}}}
+
+%GW command to get references to show up in the right order
+\newcommand{\noop}[1]{}
+
+%GW commands for adding marginal glosses to texts, June 2020
+%Needs packages changepage and marginnote to be loaded
+\reversemarginpar
+\renewcommand*{\marginfont}{\color{gray}\scriptsize\sffamily}
+
+\newenvironment{textglossed}
+    {\begin{adjustwidth}{0pt}{75pt}
+     \edef\marginnotetextwidth{250pt}
+     \setlength{\marginparwidth}{65pt}
+     \begin{quote}}
+    {\end{quote}
+     \end{adjustwidth}}
+
+% FK: This code can't work on TeX Live > 2018. Please explain what you mean
+%     to achive here, so we can find another solution.
+%GW: this bit is from stack exchange. Thanks, random internet people
+\makeatletter
+\long\def\@mn@@@marginnote[#1]#2[#3]{%
+  \begingroup
+    \ifmmode\mn@strut\let\@tempa\mn@vadjust\else
+      \if@inlabel\leavevmode\fi
+      \ifhmode\mn@strut\let\@tempa\mn@vadjust\else\let\@tempa\mn@vlap\fi
+    \fi
+    \@tempa{%
+      \vbox to\z@{%
+        \vss
+        \@mn@margintest
+        \if@reversemargin\if@tempswa
+            \@tempswafalse
+          \else
+            \@tempswatrue
+        \fi\fi
+          \rlap{%
+            \ifx\@mn@currxpos\relax
+              \kern\marginnoterightadjust
+              \if@mn@verbose
+                \PackageInfo{marginnote}{%
+                  xpos not known,\MessageBreak
+                  using \string\marginnoterightadjust}%
+              \fi
+            \else\ifx\@mn@currxpos\@empty
+                \kern\marginnoterightadjust
+                \if@mn@verbose
+                  \PackageInfo{marginnote}{%
+                    xpos not known,\MessageBreak
+                    using \string\marginnoterightadjust}%
+                \fi
+              \else
+                \if@mn@verbose
+                  \PackageInfo{marginnote}{%
+                    xpos seems to be \@mn@currxpos,\MessageBreak
+                    \string\marginnoterightadjust
+                    \space ignored}%
+                \fi
+                \begingroup
+                  \setlength{\@tempdima}{\@mn@currxpos}%
+                  \kern-\@tempdima
+                  \if@twoside\ifodd\@mn@currpage\relax
+                      \kern\oddsidemargin
+                    \else
+                      \kern\evensidemargin
+                    \fi
+                  \else
+                    \kern\oddsidemargin
+                  \fi
+                  \kern 1in
+                \endgroup
+              \fi
+            \fi
+            \kern\marginnotetextwidth\kern\marginparsep
+            \vbox to\z@{\kern\marginnotevadjust\kern #3
+              \vbox to\z@{%
+                \hsize\marginparwidth
+                \linewidth\hsize
+                \kern-\parskip
+                \marginfont\raggedrightmarginnote\strut\hspace{\z@}%
+                \ignorespaces#2\endgraf
+                \vss}%
+              \vss}%
+          }%
+      }%
+    }%
+  \endgroup
+}
+\makeatother
+\makeatletter
+\long\def\@mn@@@marginnote[#1]#2[#3]{%
+  \begingroup
+    \ifmmode\mn@strut\let\@tempa\mn@vadjust\else
+      \if@inlabel\leavevmode\fi
+      \ifhmode\mn@strut\let\@tempa\mn@vadjust\else\let\@tempa\mn@vlap\fi
+    \fi
+    \@tempa{%
+      \vbox to\z@{%
+        \vss
+        \@mn@margintest
+        \if@reversemargin\if@tempswa
+            \@tempswafalse
+          \else
+            \@tempswatrue
+        \fi\fi
+          \rlap{%
+            \ifx\@mn@currxpos\relax
+              \kern\marginnoterightadjust
+              \if@mn@verbose
+                \PackageInfo{marginnote}{%
+                  xpos not known,\MessageBreak
+                  using \string\marginnoterightadjust}%
+              \fi
+            \else\ifx\@mn@currxpos\@empty
+                \kern\marginnoterightadjust
+                \if@mn@verbose
+                  \PackageInfo{marginnote}{%
+                    xpos not known,\MessageBreak
+                    using \string\marginnoterightadjust}%
+                \fi
+              \else
+                \if@mn@verbose
+                  \PackageInfo{marginnote}{%
+                    xpos seems to be \@mn@currxpos,\MessageBreak
+                    \string\marginnoterightadjust
+                    \space ignored}%
+                \fi
+                \begingroup
+                  \setlength{\@tempdima}{\@mn@currxpos}%
+                  \kern-\@tempdima
+                  \if@twoside\ifodd\@mn@currpage\relax
+                      \kern\oddsidemargin
+                    \else
+                      \kern\evensidemargin
+                    \fi
+                  \else
+                    \kern\oddsidemargin
+                  \fi
+                  \kern 1in
+                \endgroup
+              \fi
+            \fi
+            \kern\marginnotetextwidth\kern\marginparsep
+            \vbox to\z@{\kern\marginnotevadjust\kern #3
+              \vbox to\z@{%
+                \hsize\marginparwidth
+                \linewidth\hsize
+                \kern-\parskip
+                \marginfont\raggedrightmarginnote\strut\hspace{\z@}%
+                \ignorespaces#2\endgraf
+                \vss}%
+              \vss}%
+          }%
+      }%
+    }%
+  \endgroup
+}
+\makeatother
+
+\newcommand{\textupsilon}{ʊ}
+
+
+% \newcommand{\exercises}[1]{\begin{tblsfilledsymbol}{Exercises}{pencil}#1\end{tblsfilledsymbol}}
+
+
+\newcommand{\ilit}[1]{#1\il{#1}}
+
+\newcounter{exercise}[chapter]
+\newcounter{text}[chapter]
+
+\newenvironment{exercises}[1]{
+    \phantomsection
+    \refstepcounter{exercise}
+    \begin{tblsframedsymbol}{E.\theexercise{} #1}{pencil}
+}{
+    \end{tblsframedsymbol}
+}
+
+\newenvironment{texts}[1]{
+    \phantomsection
+    \refstepcounter{text}
+    \begin{tblsframedsymbol}{T.\thetext{} #1}{receipt}
+}{
+    \end{tblsframedsymbol}
+}
+
+\newenvironment{furtherreading}{
+    \begin{tblsframedsymbol}{Recommended further reading}{book}
+    \setcounter{subsection}{0}
+    \let\oldsubsection\thesubsection
+    \renewcommand \thesubsection {R.\arabic{subsection}}
+}{
+    \let\thesubsection\oldsubsection
+    \end{tblsframedsymbol}
+}
+
+
+\newenvironment{peoplebox}[1]{
+    \begin{tblsframedsymbol}{#1}{people}
+}{
+    \end{tblsframedsymbol}
+}
+
+\newenvironment{syntaxbox}[1]{
+    \begin{tblsframedsymbol}{#1}{tree}
+}{
+    \end{tblsframedsymbol}
+}
+
+\newenvironment{soundbox}[1]{
+    \begin{tblsframedsymbol}{#1}{voice}
+}{
+    \end{tblsframedsymbol}
+}
+
+
+\newenvironment{varietybox}[1]{
+    \begin{tblsframedsymbol}{#1}{explore}
+}{
+    \end{tblsframedsymbol}
+}
+
+
+\newenvironment{sourcebox}[1]{
+    \begin{tblsframedsymbol}{#1}{history}
+}{
+    \end{tblsframedsymbol}
+}
+
+
+\newenvironment{miscbox}[1]{
+    \begin{tblsframedsymbol}{#1}{glass}
+}{
+    \end{tblsframedsymbol}
+}
+
+\newcommand{\exerciseref}[1]{E.\ref{#1}}
+
+
+
+% \newfontfamily\runefont
+% 	  [
+% 	    Scale=MatchLowercase,
+%       ]
+%       {GULLSKOE.ttf}
+
+% \newfontfamily\runefont
+% 	  [
+% 	    Scale=MatchLowercase,
+%       ]
+%       {FUTHARKA.ttf}
+
+% \newcommand{\textara}[1]{{\color{red}\Large \runefont #1}}
+% \newcommand{\textarc}[1]{{\color{orange}\Large \runefont #1}}
+% \newcommand{\textarn}[1]{{\color{green}\Large \runefont #1}}
+% \newcommand{\doubledot}{᛬}
+
+\newcommand{\chili}{
+\begin{wrapfigure}[2]{l}{0.04\textwidth}
+    \vspace{-10pt}
+    \centering
+    \includegraphics[scale=0.066]{chapters/img/chili.png}
+\end{wrapfigure}
+
+}
