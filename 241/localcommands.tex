@@ -1,0 +1,252 @@
+\let\hspaceThis\hphantom
+
+\captionsetup[sub]{labelformat=simple,labelsep=period}
+
+\renewcommand{\lsCoverTitleFontSize}{48pt}
+\renewcommand{\lsCoverTitleFontBaselineskip}{15mm}
+
+\DefineBibliographyExtras{french}{\restorecommand\mkbibnamefamily}
+\DefineBibliographyStrings{french}{ phdthesis = {Thèse de doctorat} }
+
+
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\fnref}[1]{Footnote \ref{#1}}
+\renewcommand{\sectref}[1]{section~\ref{#1}}
+
+\newcommand*{\Boite}{\bgroup\normalfont\ttfamily\char"25A2\egroup}
+\setkomafont{descriptionlabel}{\normalfont}
+
+\tcbuselibrary{theorems}
+
+\newcommand{\chapfuturef}[1]{chapitre~#1 du vol.~2}
+\renewcommand{\chapref}[1]{chapitre~\ref{#1}}
+\newcommand{\hi}[1]{\textit{#1}}
+
+\RedeclareSectionCommand[font={\sffamily},beforeskip=\baselineskip]{paragraph}
+
+\newcommand*{\FurtherReading}[1]
+  {%
+    \vskip\baselineskip
+    \begin{refsection}
+    \nocite{*}
+    \printbibliography[heading=none,keyword={Ch-#1}]
+    \end{refsection}
+  }
+
+\newtcbtheorem[number within=chapter]
+  {definition}
+  {Définition}
+  { 
+    graphical environment = tikzpicture,
+    boxsep = 0pt,
+    fonttitle = \normalsize\sffamily\bfseries,
+    toptitle = 5mm,
+    top = 5mm,
+    bottom = 5mm,
+    left = 5mm,
+    right = 5mm,
+    borderline = {0.8mm}{0pt}{\lsSeriesColor},
+    sharp corners = all,
+    before upper = {\hspace*{-\parindent}},
+    beforeafter skip balanced = \baselineskip
+  }
+  {def}
+
+\DeclareTColorBox
+  [auto counter,
+   number within=chapter,
+   list inside=encadre
+  ]
+  {encadre}{O{} m m}
+  {
+    label = #1,
+    skin = enhanced,
+    graphical environment = tikzpicture,
+    title = {Encadré~\thetcbcounter: #2},
+    list entry = {\protect\numberline{\thetcbcounter} #2},
+    boxsep = 0pt,
+    toptitle = 10mm,
+    top = 5mm,
+    bottom = 5mm,
+    left = 5mm,
+    right = 5mm,
+    frame style = {black!12},
+    interior hidden,
+    sharp corners = all,
+    enlarge top initially by = 5mm,
+    underlay unbroken and first = 
+      {
+        \node 
+          [
+            anchor = base,
+            xshift = 11.3mm,
+            yshift = -5mm,
+            fill = white,
+            draw = black!12,
+            inner sep = 1mm,
+            line width = 0.8mm
+          ] at (frame.north west) 
+          {{\color{black!12}\includegraphics[height=10mm]{tbls-#3.pdf}}};
+      },
+    subtitle style = 
+      {
+        top = 3.25ex,
+%         before skip = \baselineskip,
+        boxrule = 0pt,
+        colback = black!12,
+        fontupper = \normalfont\sffamily\bfseries\large
+      } 
+  }
+
+
+\newcommand{\Definition}[2]{%
+  \begin{definition}{#1}{}
+  #2
+  \end{definition}%
+}
+
+\newfontfamily\xitsfont
+	  [
+	    Scale=MatchLowercase,
+      ]
+      {XITSMath-Regular.otf}
+\AdditionalFontImprint{XITS Math}
+
+\setlength{\epigraphwidth}{.618\textwidth}% (Golden ratio)
+\tikzset
+  {
+    reset shape/.style = {
+      shape=rectangle,
+      draw=none,
+      fill=none
+    },
+    AbsSet/.style = {
+      draw,
+      circle,
+      inner sep=9pt
+    },
+    AbsEllipse/.style ={
+      draw,
+      ellipse,
+      inner xsep=9pt
+    },
+    ConcSet/.style = {
+      draw,
+      ellipse,
+      font = {\itshape\strut}
+    },
+    EdgeLabel/.style = {
+      midway,
+      above,
+%       sloped,
+      font=\small
+    },
+    every loop/.style={
+        -{Triangle[]},
+        out=120,
+        in=60
+    },
+    FnEdgeLabel/.style={
+      reset shape,
+      font=\footnotesize
+    },
+    CircleNode/.style={
+      circle, 
+      draw,
+      inner sep=2.5pt,
+    },
+    CircleFillNode/.style={
+      circle, 
+      fill=black,
+      inner sep=2.5pt,
+    },
+    ConversionArrow/.style={
+      double, 
+      -{Triangle[open]}
+    },
+	DiamondNode/.style={
+		diamond,
+		draw,
+		inner sep=2pt,
+	},
+  }% exceptions for the every node/.style key
+
+\forestset
+  {% Adapted from the decision tree example in the forest doc.
+    anchors/.style={anchor=#1,child anchor=#1,parent anchor=#1},
+    dot/.style={tikz+={\fill (.child anchor) circle[radius=#1];}},
+    dot/.default=3pt,
+    dot tree/.style = {
+      anchors=south, outer sep=2pt,
+      dot=3pt,for descendants=dot,
+      for tree = {
+        if n children=0{anchors=north}{
+        if n=1{anchors=south east}{anchors=south west}},
+      }
+    }
+  }  
+
+\newenvironment{langscibars}{\begin{axis}[ybar,xtick=data, xticklabels from table={\mydata}{pos},
+        width  = \textwidth,
+	height = .3\textheight,
+    	nodes near coords,
+	xtick=data,
+	x tick label style={},
+	ymin=0,
+        ]}{\end{axis}}
+
+\newcommand{\langscibar}[1]{\addplot+ table [x=i, y=#1] {\mydata};\addlegendentry{#1};}
+
+\newcommand{\langscidata}[1]{\pgfplotstableread{#1}\mydata;}
+
+
+\newcommand{\textstylePhono}[1]{#1}
+\newcommand{\textstylePhonoApprofondissement}[1]{#1}
+\newcommand{\textstylest}[1]{#1}
+\newcommand{\textstyleTermes}[1]{\is{#1}\textsc{#1}}
+\newcommand{\textstyleTermesapprof}[1]{\textstyleTermes{#1}}
+\newcommand{\textstyleTermesapprofondissement}[1]{\textstyleTermes{#1}}
+\newcommand{\terme}[1]{\textstyleTermes{#1}}
+\newcommand\phraseme[1]{$\ulcorner$\textsc{#1}$\urcorner$}
+\newcommand{\noterme}[1]{\textsc{#1}}
+\newcommand{\notextstyleTermes}[1]{\textsc{#1}}
+\newcommand{\notextstyleTermesapprof}[1]{\textsc{#1}}
+\newcommand{\notextstyleTermesapprofondissement}[1]{\textsc{#1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%
+\setlength{\marginparwidth}{24pt}
+\KOMAoptions{headings=optiontotocandhead}
+\newcommand{\gkchapter}[2]{#1: #2}
+\newcommand{\encadref}[1]{encadré~\ref{#1}}
+
+\NewDocumentCommand{\loupe}{O{} m +m}
+  {\begin{encadre}[#1]{#2}{glass}#3\end{encadre}}
+\NewDocumentCommand{\eiffel}{O{} m +m}
+  {\begin{encadre}[#1]{#2}{french}#3\end{encadre}}
+\NewDocumentCommand{\globe}{O{} m +m}
+  {\begin{encadre}[#1]{#2}{world}#3\end{encadre}}
+\NewDocumentCommand{\chevalier}{O{} m +m}
+  {\begin{encadre}[#1]{#2}{history}#3\end{encadre}}
+\NewDocumentCommand{\maths}{O{} m +m}
+  {\begin{encadre}[#1]{#2}{calc}#3\end{encadre}}
+
+\newcommand{\corrections}[1]{\begin{tblsfilledsymbol}{Corrections des exercices}{checkmark}#1\end{tblsfilledsymbol}}
+\newcommand{\exercices}[1]{\begin{tblsfilledsymbol}{Exercices}{pencil}#1\end{tblsfilledsymbol}}
+\newcommand{\exercice}[1]{\vspace{\baselineskip}\noindent{\normalfont\sffamily\bfseries Exercice #1.}\hspace{.75em}}
+\newcommand{\corrigé}[1]{\vspace{\baselineskip}\noindent{\normalfont\sffamily\bfseries Corrigé #1.}\hspace{.75em}}
+\newcommand{\citations}[1]{\begin{tblsfilledsymbol}{Citations originales}{quote}#1\end{tblsfilledsymbol}}
+\newcommand{\lecturesadditionnelles}[1]{\begin{tblsfilledsymbol}{Lectures additionnelles}{book}#1\end{tblsfilledsymbol}}
+
+
+\newcommand{\HappySmiley}{\bgroup\fontspec[Scale=MatchUppercase]{DejaVuSansMono.ttf}\char"263A\egroup}
+\newcommand{\SadSmiley}{\bgroup\fontspec[Scale=MatchUppercase]{DejaVuSansMono.ttf}\char"2639\egroup}
+\newcommand{\CryingSmiley}{\bgroup\fontspec[Scale=MatchUppercase]{DejaVuSans.ttf}\char"1F62D\egroup}
+
+\newcommand{\gkcaption}[1]{
+	\draw ($(current bounding box.south west)+(0cm,-0.3cm)$) -- (current bounding box.south east);
+	\node (caption) [anchor=south] at ($(current bounding box.south)+(0,-0.65cm)$) {#1};
+}
+
+
+\renewcommand{\lsDedicationFont}{\fontsize{13pt}{10mm}\selectfont}

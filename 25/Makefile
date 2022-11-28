@@ -96,7 +96,7 @@ SOURCE=/Users/stefan/Documents/Dienstlich/Bibliographien/biblio.bib \
 #	sed -i.backup 's/\\protect \\active@dq \\dq@prtct {=}/"=/g' *.adx
 #	sed -i.backup 's/{\\O }/Oe/' *.adx
 	sed -i.backup 's/\\MakeCapital //g' *.adx
-	sed -i.backup 's/.*Group.*//' grammatical-theory.adx
+	sed -i.backup 's/.*Group.*//' *.adx
 	python3 fixindex.py $*.adx
 	mv $*mod.adx $*.adx
 	makeindex -gs index.format-plus -o $*.and $*.adx
@@ -279,6 +279,10 @@ check-gt.bib: ../../../Bibliographien/biblio.bib
 
 check-bib: gt.bib 
 	biber --validate-datamodel grammatical-theory
+
+checked:
+	../../../Bibliographien/extracted-checked-items gt.bib
+
 
 # what do you have to do after changing langsci.dbx? Everything?
 grammatical-theory.bcf: langsci.dbx ../../../Bibliographien/biblio.bib
