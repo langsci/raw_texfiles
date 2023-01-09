@@ -1,0 +1,1995 @@
+\documentclass[output=paper
+  ,nobabel
+  ,draftmode
+  ,uniformtopskip % manual adjustment of pagebreaks
+  ,colorlinks, citecolor=brown
+]{langscibook}
+
+
+\IfFileExists{../localcommands.tex}{%hack to check whether this is being compiled as part of a collection or standalone
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \togglepaper[4]
+}{}
+
+\ChapterDOI{10.5281/zenodo.7142691}
+\selectlanguage{USenglish}
+
+% fix, remove once forest is updated
+\makeatletter
+\apptocmd\forest@pgfmathhelper@attribute@dimen{\global\pgfmathunitsdeclaredtrue}{\typeout{patching succeeded}}{patching failed}
+\apptocmd\forest@pgfmathhelper@register@dimen{\global\pgfmathunitsdeclaredtrue}{\typeout{patching succeeded}}{patching failed}
+\makeatother 
+
+
+\title{Headless in Berlin: Headless (nominal) structures in Head-Driven Phrase Structure Grammar} 
+%\runningtitle{Kopf"|lose Strukturen in HPSG}
+
+
+\author{Stefan Müller\orcid{0000-0003-4413-5313}\affiliation{Humboldt-Universität zu Berlin}}
+
+\abstract{This paper deals with the status of heads in Head-Driven Phrase Structure Grammar
+  (HPSG). Firstly, background assumptions are presented: the lexical representation of valence at
+  the head and projection of head features. Secondly, I discuss criteria for determining the head of
+  a phrase. I use nominal structures as an example, since the DP/NP debate is still undecided across
+  frameworks, and exploring the arguments from an HPSG perspective may be interesting for
+  readers. \citegen{Zwicky85a} criteria are discussed, and I show that most of them do not decide
+  the issue for German nominal structures, but assignment of semantic roles by relational nouns and
+  selectional relations in idioms \citep{OG2012a-u,Bruening2020a} support NP structures. I discuss
+  nominal structures with non-overt nouns and copulaless sentences in African American Vernacular
+  English (AAVE) and argue for an empty nominal head. I show that empty elements can be eliminated
+  from grammars but argue that they are nevertheless useful in nominal structures and copula
+  constructions in AAVE, since they capture generalizations. However, there are other structures
+  like \citegen{Jackendoff2008a} N-P-N construction that should be analyzed as unheaded. The paper
+  closes with general considerations about the use of empty elements in grammars, arguing that they
+  should be detectable in the input by systematic variation with overt material. This excludes the
+  assumption of empty elements like AgrO or Topic in grammars of languages like German, 
+since there is no overt material associated with these heads.}
+
+
+
+\begin{document}
+
+%\largerpage[4]
+% Do not tell anybody about the next four lines. They are shifting the chapter heading up by two lines.
+\let\backupskip\chapterheadstartvskip
+\makeatletter
+\renewcommand{\chapterheadstartvskip}{\vspace{\@tempskipa-2\baselineskip}}
+\makeatother
+\rohead{\thechapter\hspace{0.5em}Headless structures in HPSG} % Display short title
+\maketitle
+\let\chapterheadstartvskip\backupskip
+
+\section{Introduction}
+
+
+Ulrike Freywald and Horst Simon asked proponents of various linguistic theories to take part in
+their workshop \emph{Headedness and/""or grammatical anarchy?} and explain the notion of head used
+in the respective theories. They asked the following questions:
+
+\begin{itemize}
+\item Are structural asymmetries a precondition for structure building?
+\item Or do ``real'' non-headed structures exist?
+\item If so, how are non-headed structures built?
+
+%a. Entstehen sie aus asymmetrischen Strukturen (Verlust von Kopfmerkmalen)?
+%b. Entstehen sie durch ein eigenständiges, separates Verfahren der Strukturbildung?
+
+\item How does headedness/a headed structure work, if there is no head?
+
+%• Wie verändert sich Köpfigkeit in der diachronen Entwicklung von Sprache?
+\item Do we need the concept of ``head'' in grammatical theory?
+\end{itemize}
+
+\noindent
+The current paper addresses these questions. I start with an introduction of Head-Driven Phrase
+Structure Grammar (HPSG, \citealt{ps,ps2,MuellerLehrbuch3}) in Section~\ref{sec-koepfe-in-hpsg}; there, I
+explain how lexical heads determine the internal structure and external distribution of phrases.
+Following the introduction of the basic machinery in Section~\ref{sec-koepfe-in-hpsg}, I step back a bit
+and discuss more general, theory-neutral criteria for an element being a head in
+Section~\ref{sec-np-dp}. \citegen{Zwicky85a} criteria for being a head are applied in the notorious
+DP/NP debate. \ili{German} data shows that most of the criteria deliver inconclusive results, but some seem
+to argue for N as the head. After comparing the complexity of NP and DP
+structures and discussing the assignment of semantic roles in nominalizations, selection, and idioms, I argue for assuming N
+as the head in nominal structures.
+
+Section~\ref{sec-unsichtbar} deals with the question of how to deal with structures in which there
+is no visible head. Again, I discuss nominal structures and show how nounless nominal structures can
+be described by assuming an empty nominal head. Furthermore, I explain the analysis of predicative
+structures in African American Vernacular English\il{English!African American Vernacular} and why the assumption of an empty head was
+suggested in \citew[Section~15.3.5]{SWB2003a}.
+
+\largerpage[2]
+Frameworks like Construction Grammar reject empty elements dogmatically \parencites[\page
+219]{Goldberg2003b}[\page 10]{Goldberg2006a}[\page 3]{HT2013a-u}[\page 112]{Fillmore2013a-u}[\page
+134]{Michaelis2013a-u} since they are said to be unacquirable. I show in
+Section~\ref{sec-grammatikkonversion} that grammars with empty elements may be transformed into
+grammars without empty elements, and I argue that the NP grammar with empty nominal heads is in fact
+easier to learn than the grammar without empty elements, since it captures the facts about omissible
+elements directly. 
+
+Apart from nominal structures in which we have a head but it is invisible, there are other
+structures in which it is impossible to identify one central element that determines the structure
+of the whole unit and where the stipulation of an empty head cannot be motivated by anything theory-external. 
+Section~\ref{sec-kopflos} shows how such phrases can be analyzed and why they are
+unproblematic for HPSG even though the theory has ``head-driven'' in its name, which seems to
+suggest that all structures have to have a head. 
+
+Section~\ref{sec-lang-acqui} discusses language acquisition and provides criteria for when the
+assumption of empty elements is appropriate. Section~\ref{sec-summary} provides a summary of the paper.
+
+
+\section{Heads and HPSG}
+\label{sec-koepfe-in-hpsg}
+        
+The notion of head is crucial for Head-Driven Phrase Structure Grammar: most phrases in grammars
+have a central element that is responsible for the internal structure of the phrase and for its
+distribution. For example, prepositions determine the case of the NP they combine with:
+\eal
+\ex[]{
+\gll  zu diesem Termin\\
+      to this.\dat{} appointment\\
+}
+\ex[*]{
+\gll  zu diesen Termin\\
+      to this.\acc{} appointment\\
+}
+\zl
+
+\largerpage[2]
+\noindent
+The form of the preposition in prepositional objects is important, since it is responsible for the
+external distribution of the whole phrase: while an \emph{auf} PP can function as the object of
+\emph{warten} `to wait', an \emph{an} PP cannot:
+\eal
+\ex[]{
+\gll Ich warte auf den Mann.\\
+     I   wait  on  the man\\
+\glt `I am waiting for the man.'
+}
+\ex[*]{
+\gll Ich warte an den Mann.\\
+     I wait    at the man\\
+}
+\zl
+It is clear for prepositions, verbs, and adjectives that they have valence and that their
+form and/or inflectional properties are responsible for the distribution of the whole phrase. The problematic
+cases (determiner and noun) and respective criteria for head status are discussed in Section~\ref{sec-nominalstrukturen}.
+
+I turn now to the foundational assumptions of HPSG (treatment of valence and percolation of
+head information) in order to be able to explain headless structures with reference to these more
+common structures.
+
+In HPSG, valence information is expressed by means of lists. For example, valence lists of two-place
+verbs contain two elements (in \ili{German}).\footnote{
+  It is commonly assumed that finite verbs in OV languages select all their arguments in one valence
+  list \parencites[\page 295--296]{Pollard90a-Eng}[Section~3.1.1]{Kiss95a}[]{Mueller2002b}, while there are two valence lists for SVO languages like \ili{English}: one list for preverbal
+  arguments (specifiers) and one for post-verbal arguments (complements;
+  \citealp*[Section~4.3]{SWB2003a}; \citealp[Section~4.3]{MuellerGermanic}).
+}
+One of these arguments gets the nominative and the other one the accusative case. 
+
+I assume binary branching structures for \ili{German}, as most authors working on \ili{German} in HPSG do (see for instance
+\citealt{HN94a,Kiss95a,Meurers99a,Mueller99a,Kathol2000a,Holler-Feldhaus2001a}). Which argument is
+combined with the head is not constrained, so the head can combine with the nominative or with the accusative
+first. The argument that is not combined with the head is passed up in the
+tree. Figure~\ref{abb-niemand-ihn-kennt} shows this for the example in (\mex{1}):
+\ea
+\gll {}[dass] niemand ihn kennt\\
+     \spacebr{}that nobody him knows\\
+\glt `that nobody knows him'
+\z
+\begin{figure}
+\centerfit{
+\begin{forest}
+sm edges
+[{V \eliste}
+  [{NP[\type{nom}]} [niemand;nobody] ]
+  [{V \sliste{ NP[\type{nom}] } }
+    [{NP[\type{acc}]} [ihn;him] ]
+    [{V \sliste{ NP[\type{nom}], NP[\type{acc}] }} [kennt;knows]] ] ]
+\end{forest}}
+\caption{Analysis of \emph{niemand ihn kennt} `nobody knows him'}\label{abb-niemand-ihn-kennt}
+\end{figure}
+
+The verb \emph{kennt} `knows' requires one NP in the nominative and one in the accusative. After combining 
+\emph{kennt} `knows' with the accusative object \emph{ihn} `him', one gets a linguistic object that requires
+an NP in the nominative. If this linguistic object is combined with the nominative, an element with an
+empty valence list results. Since the head of this linguistic object is a verb, the whole linguistic
+object is a sentence.
+
+\largerpage[2]
+Many theoretical papers discuss tree structures without providing the rules that actually license the
+trees. HPSG uses abstract dominance schemata to license linguistic objects. A
+representation of such a schema is shown in Figure~\ref{abb-spr-h}.
+\begin{figure}
+\hfill\begin{forest}
+[{H[\spr \eliste ]}
+  [\ibox{1}]
+  [{H[\spr \sliste{ \ibox{1} }]}]]
+\end{forest}
+\hfill\mbox{}
+\caption{Visualization of the  Specifier-Head Schema}\label{abb-spr-h}
+\end{figure}
+%% \hfill
+%% \scalebox{.7}{%
+%% \begin{forest}
+%% [{H[\spr \ibox{1}, \comps \ibox{2}]}
+%%   [\textsc{mod} \ibox{3}]
+%%   [{\ibox{3} H[\spr \ibox{1}, \comps  \ibox{2}]}]]
+%% \end{forest}}
+
+This treelet shows how heads can be combined with an element of their specifier list (\spr stands
+for specifier). Usually the \sprl of a head contains exactly one element (the subject of SVO
+languages and the determiner in NP structures\footnote{%
+  Some authors assume an additional valence feature for subjects, namely \subj \parencites{Borsley87a}[Chapter~9]{ps2}. I assume a head feature
+  \subj for control and raising. Subjects in SVO languages like \ili{English} and the Scandinavian
+  languages are treated as specifiers \citep{MuellerGermanic}. There are analyses of the NP assuming
+  that the determiner is a marker of the head rather than a dependent selected via valence features
+  \citep{VanEynde2006b,Allegranza2007a-u,Sag2012a}. See also \citew{VanEynde2021a} for an
+  overview of alternative approaches to nominal structures within HPSG. 
+  The marker-based approaches provide a simple analysis of determinerless nominal structures
+  \citep[\page 167, 174--175]{VanEynde2006b}, but the syntactic simplicity of syntactic structures
+  comes at a price: the resulting structures are missing the quantifier usually contributed by the
+  determiner. The only solution to the problem I am aware of was suggested by
+  \citet{Allegranza98a-u}. \citet{Allegranza98a-u} suggests an analysis in which nouns that may appear
+  without determiner (plurals and mass nouns) introduce a quantifier lexically. If these nouns are
+  used without a determiner or a quantifier, the lexically introduced quantifier is used. In all
+  other cases the lexically introduced quantifier is removed (p.\,103). The solution involves
+  disjunctions and subtraction operations over sets and is rather complex. Furthermore, Allegranza's account fails
+  on examples like \emph{alledged water}, since in his setup the quantifier scopes over \emph{water}
+  directly. While this probably can be fixed, any imaginable solution is probably not simpler than
+  what was suggested so far and hence I prefer the approach described in this paper.
+
+In addition, marker-based approaches do not capture the parallelism between verbs and nouns in nominalizations like (i):
+\eal
+\ex Caesar destroyed the city.
+\ex Caesar's destruction of the city
+\zl
+In the approach assumed here, both the subject \emph{Caesar} and the determiner phrase \emph{Caesar's} will be selected by the
+verb and by the noun derived from the verb, respectively. The heads will assign semantic roles to
+the selected element \citep{MyPM2021a}. In the marker-based analysis
+\emph{Caesar's} would select \emph{destruction of the city} despite the fact that it fills a
+semantic role of \emph{destruction} (Frank Van Eynde, p.c. 2019). I prefer the more uniform analysis of
+the examples in (i). Nominalizations will be discussed further in Section~\ref{sec-relational-nouns-and-semantic-roles}.
+}, \ibox{1} in Figure~\ref{abb-spr-h}), which means that the \sprl of the mother node is the empty
+list.\footnote{%
+  See \citet{MOe2013b} for an analysis of object shift in \ili{Danish} in which objects appearing to the
+  left of the verb (like subjects) are treated as specifiers. In this analysis the \sprl may contain
+  more than one element. See also \citew[Sections~5.3, 6.3]{Ng97a} for an analysis of nominal
+structures in \ili{English} and \ili{Chinese} with multiple specifiers and \citew{WL2007a-u} for such an
+analysis of \ili{Chinese} nominal structures.
+}
+
+\largerpage[2]
+Heads are marked by H in the figures. This is supposed to indicate that all head information, that
+is, information that is relevant for the distribution of the phrase, is present at both the head
+daughter and the mother. For sentences, this would be the information that the part of speech of the
+head is \type{verb} and whether the verb is finite, a participle, or an infinitive with or without
+\emph{to}. Of course other information 
+about required arguments, extracted arguments and adjuncts, and relative
+pronouns within a phrase, among other things, are also relevant for the external distribution of a phrase. This information is part
+of the complex categories that are assumed in HPSG. The head information is the information
+that is directly shared between lexical heads and intermediate and maximal projections of the lexical head.
+
+The trees we saw so far are convenient for visualization, but HPSG uses typed feature value structures to
+model all aspects of linguistic objects; even the internal configuration of complex syntactic
+objects is represented by feature value pairs. (\mex{1}) shows how the Specifier-Head Schema can be
+described with feature value pairs.\footnote{ 
+  Even though the schema is more formal than the little treelets, it is still a simplification in that not
+  all feature-value paths are fully specified as they would have to be according to the
+  theory. (\mex{1}) leaves out the paths leading to \spr and a path in the list of daughters. For
+  details see \citew[\page 30]{GSag2000a-u} and \citew{MuellerCurrentApproaches}.%
+}
+\ea
+\label{specifier-head-phrase}
+Specifier-Head Schema:\\*
+\type{specifier-head-phrase} \impl\\*
+\ms{
+spr      & \eliste\\
+head-dtr & \ibox{1} \ms{ spr \sliste{ \ibox{2} } }\\
+dtrs     & \sliste{ \ibox{1}, \ibox{2} }\\
+}
+\z
+The symbol \impl{} stands for a logical implication: if a feature structure is of type
+\type{specifier-head-phrase}, the restrictions on the right side of the implication have to
+hold. Types and implicational constraints are discussed further below.
+The daughters in a tree are represented in a list, which is the value of the \textsc{daughters}
+feature \citep[\page 30]{GSag2000a-u}. In the case at hand, we have two daughters: \ibox{1} and
+\ibox{2}. The daughter \ibox{1} is the head daughter. In addition to being in the \dtrs list, it is
+identified with the value of the feature \textsc{head-dtr}. The \sprl contains a description of the
+other daughter \iboxb{2}. Figure~\ref{fig-spec-head-phrase} shows the tree representation for
+structures licensed by the schema in (\mex{0}). \emph{Mannes} `man' selects a determiner. 
+\begin{figure}
+\begin{forest}
+sm edges
+[N{[\spr \eliste ]}
+  [\ibox{1} Det [des;the.\gen]]
+  [N{[\spr \sliste{ \ibox{1} } ]} [Mannes;man.\gen]]]
+\end{forest}
+\caption{Specifier"=Head structure}\label{fig-spec-head-phrase}
+\end{figure}
+
+\largerpage
+Verbs project information about part of speech and inflection. The part of speech and case
+information determines the distribution of nominal projections. HPSG groups information that belongs
+together into one attribute value matrix (AVM). Part of speech information and case information
+form the value of \head in (\mex{1}).\footnote{%
+  Of course other properties like number, gender, and declension class are relevant for the distribution as
+  well. Some authors bundle case, person, number, gender, and declension class as agreement features inside of \head
+  \citep[\page 262]{Kathol99b}, and others refer to the number and gender information contained in the semantic
+  index contributed by nouns \parencites[Section~2.5.1]{ps2}[Section~13.2]{MuellerLehrbuch1}. I omit
+  declension class here, since it is not relevant for the current discussion.
+} \type{noun} is the type of the feature description. Feature
+structures of type \type{noun} always have a \textsc{case} feature. This feature may have the values \type{nom}, \type{gen},
+\type{dat}, or \type{acc} in \ili{German}. For \emph{Frau} `woman', we may leave the value underspecified, since
+\emph{Frau} is compatible with any of the four cases in \ili{German}, but for \emph{Mannes} `man', which is
+in the genitive, it has to be \type{gen}.
+\ea
+\label{le-mannes}
+\ms{
+phon & \phonliste{ Mannes }\\
+head & \ms[noun]{
+       case & gen\\
+       }\\
+spr  & \sliste{ \normalfont Det }\\
+comps & \sliste{ }\\
+}
+\z
+
+\largerpage[2]
+\noindent
+Since HPSG allows values of features to be internally complex, features that have to be projected
+from lexical items can be grouped together and the projection of head
+features can be set up in a general way: all information that is present under \head is shared
+between head daughter and mother, that is, the information in the description of the head daughter
+is identical to the respective information at the mother. Figure~\ref{abb-spec-head} shows the
+analysis of the nominal phrase \emph{des Mannes} `the.\gen{} man.\gen'.
+\begin{figure}[htb]
+\begin{forest}
+sm edges
+[\ms{ head & \ibox{1} }
+  [Det [des;the.\gen]]
+  [ \ms{ head & \ibox{1} \ms[noun]{ case & gen }}  [Mannes;man.\gen]]]
+\end{forest}
+\caption{Specifier"=Head structure}\label{abb-spec-head}
+\end{figure}
+
+\newpage
+The information concerning part of speech and case of the noun is shared with the respective
+information for the whole phrase.
+
+Apart from Specifier"=Head structures, there are also Head-Complement structures. These play a role
+in the combination of relational nouns with their complements. Figure~\ref{abb-head-comp} gives an example.
+
+\begin{figure}
+\scalebox{.93}{%
+\begin{forest}
+sm edges, for tree={base=top}
+[\ms{\textsc{head} \ibox{1}\\
+     \comps \sliste{}}
+  [\ms{\textsc{head} \ibox{1} \type{noun}\\
+       \comps        \sliste{ \ibox{2} }}  [Eroberung;conquest]]
+  [{\ibox{2} NP[\type{gen}]} [der Stadt;of.the city, roof]]]
+\end{forest}}
+\caption{Head-Complement structure}\label{abb-head-comp}
+\end{figure}
+
+\largerpage
+Head-Complement phrases are parallel to Specifier-Head phrases. The only difference is that
+complements are selected via another valence feature (\comps rather than \spr). The schema for
+head-complement combinations that is parallel to Figure~\ref{abb-spr-h} is shown in Figure~\ref{abb-kopf-comp}.
+\begin{figure}
+\hfill
+\scalebox{.93}{%
+\begin{forest}
+[{H[\comps \ibox{1}]}
+  [{H[\comps  \sliste{ \ibox{2} } $\oplus$ \ibox{1}  ]}]
+  [\ibox{2}]]
+\end{forest}}
+\hfill\mbox{}
+\caption{Visualization of the Head-Complement Schema}\label{abb-kopf-comp}
+\end{figure}
+As with Specifier-Head phrases, the valence list is split into two parts: one list with exactly one element \sliste{
+  \ibox{2} } and another list with the rest \iboxb{1}. \ibox{2} is identified with the other
+daughter, and \ibox{1}, the list containing the rest, is identified with the \compsv of the mother
+node. The combination of a head with its complements as it is given in Figure~\ref{abb-kopf-comp}
+combines the head with the first element in the valence list. This is exactly what we find in SOV
+languages. For SOV languages and languages with scrambling see
+\parencites[Sections~9.1.1, 9.4]{MuellerGT-Eng4}[Sections~3, 4]{MuellerOrder}. The order of combination differs from the one in Specifier-Head
+structures, in which the head is combined with the last element in the \sprl first. Again see
+\citew{MOe2013b} for details.
+
+%\largerpage[2]
+(\mex{1}) shows the schema that licenses Head-Complement phrases.
+\begin{figure}
+\ea
+\label{head-complement-phrase}
+Head-Complement Schema:\\
+\type{head-complement-phrase} \impl\\*
+\ms{
+comps & \ibox{1}\\
+head-dtr & \ibox{2} \ms{ comps \ibox{1} $\oplus$ \sliste{ \ibox{3} } }\\
+dtrs     & \sliste{ \ibox{2}, \ibox{3} }\\
+}
+\z
+\vspace{-1.5\baselineskip}
+\end{figure}
+Apart from the schemata introduced so far, HPSG has schemata for head"=adjunct combinations and for
+nonlocal dependencies (for less general schemata see Section~\ref{sec-kopflos}). The two schemata
+above are sufficient to be able to explain the assumptions about heads and headedness made in
+HPSG.\footnote{%
+  A reviewer asked how agreement between determiners, adjectives, and nouns can be accounted for in
+  HPSG. These items agree in case, number, gender, and match in declension class. Agreement is usually
+  analyzed using structure sharing of features of items that select others/are selected by
+  others. Since nouns select their determiners, agreement between nouns and determiners can be
+  assured. Similarly, adjectives select nouns, and hence adjective-noun agreement can be taken
+  care of. Since nouns agree with their determiners, the agreement between all three elements is
+  accounted for. See \citew[Section~2.5.1]{ps2} and \citew[Section~13.2]{MuellerLehrbuch1} for
+  worked-out proposals for agreement in \ili{German} noun phrases and \citew{WZ2003a} on agreement in HPSG in general.
+}
+
+\largerpage
+%\begin{sloppypar}
+All feature structures in HPSG have to be of a certain type. These types are organized in hierarchies.
+All feature structures modeling linguistic signs are of type \type{sign}. Linguistic signs are
+divided into phrases and words. For these objects, we have the types \type{phrase} and
+\type{word}. Phrases can be categorized into phrases that have a head (\type{headed-phrase}) and
+phrases without a head (\type{non-headed-phrase}). \type{specifier-head-phrase} and
+\type{head-complement-phrase} are subtypes of the type \type{head\-ed-phrase}.
+%\end{sloppypar}
+
+We want to say the following about structures: if there is a head in the structure, then the head
+features of the head daughter have to be identical to the head features of the mother. HPSG allows
+for an elegant expression of this fact using an implicational constraint:\footnote{%
+  An alternative formulation of the Head Feature Principle, the so-called Generalized Head Feature
+  Principle, is suggested by \citet[\page 33]{GSag2000a-u}. They suggest that all syntactic and semantic
+  information of the head daughter is shared with the information of the mother by default. As
+  (\ref{specifier-head-phrase}) and (\ref{head-complement-phrase}) show,
+  the valence information at mother nodes differs from the valence information at the head daughter
+  in Specifier-Head phrases and in Head-Complement phrases. The same is true for semantic
+  information: usually the semantic information at the mother node differs from the information at
+  the head daughter, since the mother node has a collection of the semantic contributions of all
+  daughters. This is captured by Ginzburg \& Sag because sharing all information is a default that
+  is overwritten in subtypes of \type{headed-phrase}. Defaults are often used in linguistics to
+  describe unmarked cases, but what the Generalized Head Feature Principle sets as a default never actually holds. In fact,
+  there is not a single structure in any HPSG theory I am aware of in which all syntactic and
+  semantic features of head daughter and mother are identical. So the Generalized Head Feature
+  Principle is not a generalization. It is never true, and hence I do not use it. 
+}
+\ea
+\type{headed-phrase} \impl \ms{ head & \ibox{1}\\
+                                head-dtr & \ms{ head & \ibox{1} }
+                                }
+\z
+(\mex{0}) specifies a constraint that holds for all feature structures of type \type{headed-phrase},
+including those that are subtypes of \type{headed-phrase}. The constraint identifies the head
+features of the head daughter with the head features of the mother.
+
+The fact that we have an implication in (\mex{0}) cannot be emphasized enough. This means that the
+conclusion has to hold only if the antecedent is true. If the antecedent is false, nothing is said
+about the presence of head daughters or the values of head features. This means that one can assume
+headless structures in HPSG, and there are plenty of examples of headless constructions in the
+literature \parencites{Mueller99b}[Chapter~10]{Mueller99a}. Hence it would be wrong to claim that HPSG assumes that all
+structures must be headed. I will return to headless constructions in Section~\ref{sec-kopflos}.
+
+%\largerpage
+Before turning to such truly headless constructions, in the following section I want to discuss
+nominal structures, which are interesting for two reasons. For one, researchers still disagree as to
+which element in a nominal structure is the head. And for another, both determiner and noun may be
+omitted in \ili{German}, which means that nominal structures could be problematic for linguistic theories
+in general.  
+
+
+\section{Nominal structures}
+\label{sec-np-dp}
+\label{sec-nominalstrukturen}
+
+%\largerpage[2]
+Since the 1970s there have been proposals to treat the determiner as the head of nominal structures.
+Such proposals became popular within the framework of GB \citep{Chomsky81a} but are entertained in
+other frameworks as well: there are proposals in Categorial Grammar, LFG, HPSG, and Dependency
+Grammar that assume the determiner to be the head. See \textcites[\page 6]{Ajdukiewicz35a-u}{VH77a-u,
+%Lyons77a-u, 392
+Brame82a}[\page 90--92]{Hudson84a-u}{Hellan86a,Abney87a,Netter94,Netter98a-Eng,vanLangendonck94a,Salzmann2020a,chapters/salzmann} for DP
+proposals and \textcites[\page 49]{ps2,Demske2001a}[Section~6.6.1]{MuellerLehrbuch1}{Bruening2009a,Bruening2020a}
+for NP proposals in various frameworks. \citet{Hudson2004a} working in Word Grammar, a version of
+Dependency Grammar, suggests mutual dependency between determiner and noun.\footnote{%
+  Due to space limitations, it is not possible to go into the details of a comparison, but such mutual
+  dependencies are also assumed in HPSG: the noun selects the determiner via the valence feature
+  \spr and the determiner selects the noun via the feature \textsc{specified} \citep[\page 50]{ps2}.
+}
+
+\subsection{Tests for head status}
+
+I talked about prepositions, verbs, and adjectives
+at the beginning of the previous section. It is clear that these categories are
+heads of their respective phrasal units. This begs the question whether there are criteria for headedness
+that could help deciding the question for nominal structures. \citet{Zwicky85a} looked at tests for
+headhood in the 80s more carefully. The tests will be repeated below and it will be examined
+whether they are useful in the DP/NP debate.
+
+\subsubsection{The subcategorizand}
+
+%\largerpage
+\citet[Section~2.1.2]{Zwicky85a} states that the subcategorizand is likely to be the head. The
+subcategorizand is the lexical element, in contrast to the phrasal one(s), and it may appear in certain configurations. For instance,
+the verb \emph{give} can appear with two NP arguments (e.g.\ in \emph{give her a book}) or with an NP and a PP as arguments (e.g.\ in \emph{give a book to her}). 
+On the other hand, \emph{donate} is restricted to NP and PP. 
+In both cases, the lexical element (the verb) is the head of the respective phrase.
+For nominal structures, Zwicky argues that Det must be the subcategorizand, since the Det is the sole lexical
+element in Det-\nbar combinations, and hence the determiner is the only plausible candidate for a
+lexical head.
+%% Zwicky begrüßt dieses Ergebnis, weil
+%% seiner Meinung nach Determinatoren lexikalisch subkategorisiert dafür sind, ob sie mit Singular-
+%% oder Pluralnomina bzw. Stoff- oder Massennomina vorkommen:
+%% \eal
+%% \ex each penguin/*penguins/*sand  % jeder Pinguin
+%% \ex many *penguin/penguins/*sand  % 
+%% \ex much *penguin/*penguins/sand
+%% \zl
+Unfortunately, he missed the fact that the determiner may be complex both in \ili{English} and other
+languages as well:\footnote{%
+  See \citew[\page 51--54]{ps2} and \citew[\page 193]{GSag2000a-u} for analyses of \emph{'s} as determiner and
+  of complex prenominal phrases as determiner phrases.
+}
+%\newpage
+
+\eal
+\ex the Queen of England's son
+\ex 
+\gll unter des Körpersportlers Haut\footnotemark\\
+     below the body.sportsman's skin\\
+\glt `below the body builder's skin'
+\footnotetext{
+taz [\ili{German} newspaper], 1995-01-04, p.\,15, quoted from \citew[\page 59]{Mueller99a}}
+\zl
+Since both the determiner and the \nbar can be phrasal, this test does not really help here.
+
+\largerpage
+\subsubsection{The morphosyntactic locus}
+
+A further test discussed by \citet[Section~2.1.3]{Zwicky85a} is the test for the morphosyntactic
+locus. The inflectional features are located at the noun in \ili{English}:
+\eal
+\ex the child
+\ex the children
+\zl
+However, this test does not help for \ili{German}, since determiners are inflected as well:
+\eal
+\ex 
+\gll das / dieses Kind\\
+     the.\SG.\N{} {} this.\SG.\N{} child(\N)\\
+\ex 
+\gll die / diese Kinder\\
+     the.\PL{} {} these.\PL{} children.\PL\\
+\zl
+
+\subsubsection{Determinant of concord}
+
+\citet[Section~2.2.2]{Zwicky85a} looks at the element that determines concord within a
+phrase. Sometimes it is claimed that the determiner is responsible for the inflection class of the
+adjective. The determiners in (\mex{1}) have a fixed inflection class and the other elements in the
+nominal structure have to be appropriate for the respective class with it:
+\eal
+\ex 
+\gll ein kluger Mann\\
+     a   smart  man\\
+\ex
+\gll der kluge  Mann\\
+     the smart  man\\
+\zl
+% % Zu schwach und zu kompliziert.
+% und das Papier ist eh zu lang.
+% The situation is not that clear since there are nouns like \emph{Gesandter} `envoy',
+% \emph{Verwandter} `relative', and \emph{Bekannter} `acquaintance' that also inflect according to the declension class:
+% \eal
+% \ex 
+% \gll ein kluger Gesandter\\
+%      a   smart  envoy\\
+% \ex 
+% \gll der kluge Gesandte\\
+%      the smart envoy\\
+% \zl
+% So at least in these examples it could be argued that the noun is the important element.
+
+However, it is equally possible to argue the other way round, and \citet[\page 9]{Zwicky85a} does exactly
+this: gender is an inherent property of most nouns and the determiner has to match the gender of the noun:
+\eal
+\ex 
+\gll der Mann\\
+     the.\M{} man(\M)\\
+\ex 
+\gll die Frau\\
+     the.\F{} woman(\F)\\
+\zl
+This suggests that the noun is the head in nominal structures. Therefore we can conclude that this test
+fails as well for \ili{German}: sometimes the determiner, sometimes the noun determines concord.
+
+
+
+\subsubsection{Semantic functor}
+
+A further criterion suggested by \citet[Section~2.1.1]{Zwicky85a} is the one of the semantic
+selector. Unfortunately, this criterion does not really decide the issue either. It is true -- as
+Zwicky notes on page~4 -- that for instance the universal quantifier selects the semantic contribution
+of the nominal part and incorporates it into the complete formula. The nominal part \emph{Frauen}
+`women' corresponds to the Q in (\mex{1}b):
+\eal
+\ex 
+\gll alle Frauen\\
+     all  women\\
+\ex $\lambda Q (\lambda P(\forall x(Q(x) \rightarrow P(x))))$
+\zl
+But on the other hand, we have relational nouns like \emph{conquest} whose arguments may be realized in the position of
+the determiner. The meaning representation of (\mex{1}a) has to contain (\mex{1}b) somewhere:
+\eal
+\ex 
+\gll Peters Eroberung der Stadt\\
+     Peter's conquest of.the town\\
+\ex conquest(Peter, town)
+\zl 
+This means that this criterion is not reliable either. The determiner embeds the semantic
+contribution of the remaining nominal group, and the remaining nominal group may embed parts
+contributed by the determiner.
+
+\subsubsection{The distributional equivalent}
+
+\citet[\page 12]{Zwicky85a} states that the noun is the distributional equivalent of the whole
+phrase, including the determiner. Proper names like \emph{Kim} and plural nouns like \emph{penguins}
+can be used instead of \emph{the penguins}. 
+
+% If the distributional equivalent criterion is taken as basis, \citegen[\page 219]{Postal69a-u} examples in (\mex{1}) suggest that the prenominal element is the head:
+% \eal
+% \ex we sailors
+% \ex you troops
+% \ex us three men
+% \zl
+% I would argue that these constructions should be treated independently of the DP/NP debate (see Section~\ref{sec-pronoun-noun-combinations}).
+
+As a reviewer pointed out, the criterion is a rather odd one since it could not be
+applied to all heads that obligatorily require arguments. Examples are prepositions in \ili{German} and
+verbs like \emph{devour} in \ili{English}. Since a single preposition cannot be used anywhere without its
+NP argument, the preposition is not distributionally equivalent to the PP and hence would not
+qualify as the head. Clearly an unwanted result.
+
+%%
+%% Das macht die Analyse mit leerem Nomen schwieriger ....
+
+
+\subsubsection{Obligatoriness}
+\label{sec-obligatheit}
+
+Both the determiner (\mex{1}a) and the noun (\mex{1}b) may be omitted in \ili{German}. It is even possible to omit both of them,
+as (\mex{1}c) shows:\footnote{
+  The adjectives in (\mex{1}) could be nominalizations, but I am talking about elliptical
+  constructions here. Nominalizations would be written with capital letters.
+}
+\eal
+\ex 
+\gll Er hilft Frauen.\\
+     he helps women\\
+\glt `He helps women.'
+\ex 
+\gll Er hilft den klugen.\\
+     he helps the smart\\
+\glt `He helps the smart ones.'
+\ex 
+\gll Er hilft klugen.\\
+     he helps smart\\
+\glt `He helps smart ones.'
+\zl
+As the translation of the examples shows, the pronoun \emph{one} is used in the parallel \ili{English}
+structures. However, \ili{English} also permits nominal structures without a visible noun \parencites[\page
+  13]{Zwicky85a,AS2015a}. Zwicky notes that structures with omitted noun are always elliptical. This means
+that nouns are obligatorily present, and if they are missing, their omission is due to ellipsis.
+%\todostefan{Abgrenzung Ellipse}
+So, if this criterion is accepted, it decides in favor of N as the head.
+
+A reviewer pointed out that there are certain cases in which the nominal part is optional, but when
+it does not occur, this is not due to ellipsis. Examples are \emph{this}, \emph{that}, \emph{we}, and
+\emph{you}:
+\eal
+\ex this man
+\ex we sailors
+\zl
+I think that a double categorization of these elements as determiners and full NPs
+is justified. So \emph{we} would be a full DP/NP if it is used without other material and something
+different in constructions like \emph{we sailors}. See Section~\ref{sec-pronoun-noun-combinations} for more on pronoun-noun combinations.
+% \eal
+% \ex[]{
+% \gll Ich helfen den Männern.\\
+%      I help the men\\
+% }
+% \ex[*]{
+% \gll Ich helfe den.\\
+%      I   help the\\
+% }
+% \ex[]{
+% \gll Ich helfe denen.\\
+%      I   help those\\
+% }
+% \zl
+In any case, examples like the ones just mentioned show that the criterion cannot be applied without
+further qualifications.
+
+
+
+\subsubsection{Language acquisition, uniformity, and Poverty of the Stimulus}
+
+Abney's dissertation \citep{Abney87a} made the DP analysis very popular within the generative world. Abney argued for
+a treatment of \ili{English} nominal structures that is parallel to the structures assumed for the
+sentential domain. Many authors assume an IP/VP analysis for \ili{English}, not just those working in
+Mainstream Generative Grammar (MGG), but also in LFG \citep*[\page 102]{BATW2015a}. In such analyses, there is a functional I
+projection in addition to verbal projections. An advantage of the DP analysis is that one has parts
+of the theory that are similar, and hence one can claim to have found deeper laws. Apart from this,
+language acquisition is used as an argument in the DP/NP discussion: Chomsky still believes that
+language cannot be learned from input alone \citep*{BPYC2011a}.\footnote{%
+The authors discuss auxiliary inversion. See \citew[Section~13.8.2.4]{MuellerGT-Eng4} and \citew[Section~1]{Sag2020a} for a
+critical discussion of these claims.%
+} 
+Since -- according to Chomsky -- language is acquired despite this Poverty of the Stimulus, there must be innate
+language-specific knowledge which helps us to acquire language from the input that is available.
+The claim was that children can acquire language because all phrases have the same internal
+structure and knowledge about this structure is innate and therefore helps to acquire language
+\citep[\page 106]{Haegeman94a-u}.\footnote{%
+  \citet[\page 106]{Haegeman94a-u} states that ``the principles of X$'$ theory will be part of UG,
+  they are innate. The ordering constraints found in natural languages vary cross-linguistically and
+  thus have to be learned by the child through exposure. Very little data will suffice to allow the
+  child to fix the ordering constraints of the language he is learning. A child learning \ili{English}
+  will only need to be exposed to a couple of transitive sentences to realize that in \ili{English} verbs
+  precede their complements.''
+} In particular, nominal structures have a DP structure which is parallel to the IP/VP structures.
+
+\citet[739]{Fodor2001b} points out that the situation is not as simple if movement to places in
+otherwise invisible structure is possible. For example, it is not obvious in some cases whether
+verbs are in V, I, or C, whether a language is V2 or not, or whether we have an SVO or an SOV
+language, as the following three examples from \ili{English}, \ili{Danish}, and \ili{German} illustrate
+\citep[Section~6.2.2, Figure~6.11]{MuellerGermanic}:
+% \eal
+% \ex {}[\sub{S} Conny [\sub{VP} reads [\sub{NP} a book]]].
+% \ex {}[\sub{S} Conny$_i$ [\sub{S/NP} læser$_k$ [\sub{S/NP} \_$_i$ [\sub{VP}  \_$_k$ [\sub{NP} en bog]]]].
+% \ex {}[\sub{S} Conny$_i$ [\sub{S/NP} liest$_k$ [\sub{S/NP} \_$_i$ [\sub{\vbar} [\sub{NP} ein Buch] \_$_k$]]]].
+% \zl
+\eal
+\ex Conny reads a book. \hfill $-$V2, SVO
+\ex Conny læser en bog. \hfill $+$V2, SVO
+\ex Conny liest ein Buch.\hfill $+$V2, SOV
+\zl
+\largerpage
+So, having simple transitive sentences in the input is not enough to decide. Sentences with
+auxiliaries would help the linguist to decide between SOV and SVO languages, but this wouldn't help
+to distinguish between $-$V2 and $+$V2; for this the linguist would need examples with fronted
+objects, rather than subjects as in (\mex{0}). As Fodor
+%\addpages the whole paper?
+points out, there are many questions concerning
+how language acquisition is supposed to work in a Principles \& Parameters setting. It is unclear
+how a child can determine which way to set the parameters. Fodor suggests a model assuming innate treelets
+that can be used in analyses of utterances and shows that this avoids problems of alternative
+approaches. While this seems to be the most plausible approach with the Principles \& Parameters
+framework, there are still serious issues (discussed by Fodor herself), and of course the overall
+question is how information about treelets distinguishing between V2 and non-V2 languages are
+supposed to make it into our genome \citep*{HCF2002a}. Assuming data-driven approaches without a rich
+UG \citep{FPAG2007a} seems to be preferable.  
+ 
+But let us assume for the sake of the argument that uniformity of basic \xbar structure
+would help in language acquisition. Even with this assumption, there remains a problem with this argument, namely that many
+researchers (from different frameworks) believe that the assumption of an IP structure is not plausible for \ili{German}
+\citep{BK90a,Haider93a,Berman2003a}. If \ili{German} does not have an IP, it is not reasonable to assume
+that the DP is parallel to the sentential domain and that constraints on both domains are part of
+our innate linguistic knowledge.\footnote{%
+  \citet{Haider92b} assumes a functional head in the \ili{German} clause that is not IP. In his DP approach
+  he assumes a parallel between his FP (Functional Projection) and the DP. While there is a parallel in the
+  functional/lexical structure of FP and DP, the makeup of the respective phrases in \ili{German} is quite
+  different. The head of the FP is the place for the finite verb or a complementizer and SpecCP is
+  the target for fronted constituents in V2 clauses.%
+} Hence, uniformity of nominal and sentential domain is not an
+argument for the DP analysis.
+
+I want to close this section with a somewhat ironic remark. Although I do not believe in the
+``parallelism in structure helps language acquisition'' argument, I want to point out that the NP
+analysis suggested here is parallel to the analysis of the sentential domain assumed in HPSG:
+auxiliaries are treated as verbs, not as Is or Ts \citep{Sag2020a}. The subject of verbs in SVO languages are treated
+as specifiers, and so are determiners in nominal structures \citep[Sections~4.3--4.4]{MuellerGermanic},
+so we have arrived at parallelism all the same.
+
+
+\subsubsection{Pronoun-noun combinations, selection, agreement, and idioms}
+
+\citegen{Zwicky85a} criteria for head status discussed so far are theory-neutral, as far as this is
+possible. The DP analysis is considered the standard in Mainstream Generative Grammar and authors
+usually refer to \citew{Abney87a} for a thorough argumentation for the DP analysis. However,
+\citet{chapters/salzmann}, this volume, points out that all previous arguments for the DP analysis depend on theory-internal
+assumptions. If these assumptions are not made, the arguments collapse. Since MGG changed
+considerably since the 80s, none of the original arguments holds any longer. Salzmann suggests a new
+argument based on agreement data from \ili{Bosnian}/""\ili{Croatian}/""\ili{Serbian} (BCS). In what follows, I want to discuss
+three phenomena that seem to argue for DP analyses (pronoun-noun combinations, selection, and agreement) and one
+controversial phenomenon that is very interesting in the DP/NP debate: idioms.
+
+\subsubsubsection{Pronoun-noun combinations}
+\label{sec-pronoun-noun-combinations}
+
+
+Let us start with pronoun-noun combinations: 
+% There seems to be a clear case suggesting that the initial element is the head: pronoun noun
+% combinations.
+\eal
+\ex[]{ 
+\gll Ich Idiot  habe mich gefreut.\\
+     I   idiot  have myself been.glad\\
+\glt `I idiot was glad.'
+}
+\ex[]{ 
+\gll Du Idiot hast dich gefreut.\\
+     you idiot   have yourself been.glad\\
+\glt `You idiot were glad.'
+}
+\ex[]{ 
+\gll Wir Idioten haben uns gefreut.\\
+     we idiots   have ourselves been.glad\\
+\glt `We idiots were glad.'
+}
+\ex[*]{
+\label{ex-er-idiot}
+\gll Er Idiot hat sich gefreut.\\
+     he idiot has himself been.glad\\
+\glt Intended: `He was glad and he is an idiot.'
+}
+\zl
+The examples in (\mex{0}) show that the pronoun agrees with the verb in person and number, while the
+noun together with a determiner is always third person.
+ (\ref{ex-er-idiot}) shows that third person pronouns are not possible in
+this construction, so there is something idiosyncratic about it. \citet[\page 139--140]{Simon2003a-u} and
+references cited there see data like this as evidence for the DP analysis, but I think this construction should
+not be treated as an instance of the normal NP or DP construction. 
+% weil dir Idiot dabei keiner helfen wird
+Note also that some languages have this construction and combine the pronoun with a full nominal
+projection \citep[Section~5.3]{Hoehn2016a-u}. In these languages, one would not say that a D head
+selects an NP, but the pronoun would have to select a full DP. This is actually the solution suggested by \citet[\page
+568]{Hoehn2016a-u}: he assumes a PersP with the pronoun as head selecting a DP.\footnote{%
+  Note that this begs the question why governing heads selecting for DPs can take PersPs as well.
+} So, it seems
+reasonable to treat the pronoun as a head, but the whole construction should not be decisive in the DP/NP discussion.
+
+% % Das ist Quatsch, denn das geht genauso ohne das Nomen. Durch das Nomen wird nur die Referenz klar
+% % und dann muss das Adverbial passen. 
+% % Apart from this more general issue, there is evidence that the gender of the pronoun noun
+% % combination is determined by the noun:
+% % \eal
+% % \ex Wir Idioten sind dann einer nach dem anderen ausgestiegen.
+% % \ex Wir Idiotinnen sind dann eine nach der anderen ausgestiegen.
+% % \zl
+% % The inflectional paradigm of adjectives does not distinguish 
+
+\subsubsubsection{Selection}
+
+%\largerpage
+\enlargethispage{5pt}
+\citet[Section~\ref{salzmann:sec-categorial-selection}]{chapters/salzmann}, this volume, mentions the fact that incorporation seems to
+require selection of nominal structures without determiners (NPs), while otherwise, verbs select
+nominal structures with determiners (DPs). For this to have any force as an argument for DP, one
+needs the assumption that only maximal projections can be selected. However, this assumption is not
+made in HPSG. For example, partial verb phrase fronting is explained by assuming that non-maximal
+verbal projections may be combined with governing heads (Müller \citeyear{Mueller96a};
+\citeyear[Section~2.2.2]{Mueller2002b}; \citealp{Meurers99a}). And once non-maximal projections can
+be combined with heads, we can have heads combining with bare nouns, \nbars, and NPs, and hence
+there is no argument for DP. See for example \citet[\page 632]{MuellerPersian} for the suggestion
+that light verbs in Persian may combine with lexical nouns.
+
+Salzmann also states that it is impossible to ``select the absence of structure'' \parencites[28, 32]{Salzmann2020a}[Section~\ref{salzmann:sec-agreement}]{chapters/salzmann}, but this does not apply to HPSG. Since \nbar is defined as a nominal projection without a
+specifier, one can select for something with absent structure. Furthermore, material that is
+combined contributes to the properties of a complex category. The respective contributions can be
+selected for. This is independent of the question at which projection level the respective
+combination takes place. See for example the use of the marking feature in \citew[\page 45--46]{ps2} or \citew{VanEynde2006b}. 
+
+
+
+\subsubsubsection{Agreement}
+
+\largerpage
+\citet[Section~4.3]{Salzmann2020a} discusses agreement patterns from
+\ili{Bosnian}/""\ili{Croatian}/""\ili{Serbian} (BCS) and argues that they show that there has to be a DP layer over an
+NP layer to get the facts right. While he is very careful to show that Abney's
+%\citeauthor{Abney87a}'s 
+\citeyearpar{Abney87a}\ia{Abney, Steven P.} arguments
+for the DP analysis are theory-internal, the same holds for Salzmann's new argument: agreement is
+established via the Probe/Goal mechanism of Minimalism \citep{Chomsky2001a-u}. This crucially relies
+on c-command and the proximity of agreement source and agreement target. In comparison to this,
+agreement is dealt with differently in frameworks like HPSG: the main expressive tool is structure
+sharing. It is not assumed that there is an agreement source and an agreement target
+\citep[Section~2.2]{ps2}, but instead, both exponents of morpho-syntactic features are treated alike
+and the information on both sides is simply identified
+\parencites[Chapter~2]{ps2}{Kathol99b}{WZ2003a}{VanEynde2021a}. Salzmann points out that there are
+two types of agreement in BCS: adjectives and determiners may agree in grammatical and semantic
+gender. If a certain head agrees in semantic gender, the next higher head cannot go back to
+grammatical gender. Salzmann concludes from this that there must be a DP layer, since in terms of
+c-command the determiner would be the highest head and its features would be decisive for agreement
+with elements outside of the nominal structure (p.\,38). But this conclusion is dependent on many
+theory-internal assumptions. \citet[Section~4]{Bruening2020a}, working in the same framework and
+assuming an NP approach, developed an alternative theory of the agreement facts.
+
+% \citet{Zlatic2014a} assumes an NP analysis of
+% nominal structures in \ili{Serbian}. Adjectives attach to \nbar and determiners are categorized as
+% adjectives as well and hence also attach to \nbar. The nominal projection is closed off by a unary
+% projection projecting \nbar to NP. It is unclear how the analysis of agreement can be integrated
+% into the general approach to agreement suggested by \citew{WZ2003a},\footnote{%
+%   \citet{Malouf2000b-u} suggested an analysis of case-stacking languages in HPSG assuming a list of case
+%   features. Something along this line could also work for the BCS agreement puzzle.%
+% } but there is this final unary
+% projection and whatever a determiner in a DP projection could contribute can be contributed in this
+% projection. 
+So again, the argument that Salzmann suggests instead of Abney's arguments is also a
+theory-internal one.\footnote{
+  Salzmann's puzzle is not solved for HPSG yet. \citet{VanEynde2020b} discusses agreement in BCS but
+  does not solve the problem of inaccessibility of one of the two agreement options. In his account
+  both agreement options are always available. So further research and modification of the general theory of
+  agreement is needed but it is not necessary to assume an agreement theory based on c-command.
+}
+
+\subsubsubsection{Idioms}
+
+A very interesting argument comes from \citet[Section~5]{Bruening2020a}. Bruening argues that idioms make reference to
+dependency chains. This was also suggested within Dependency Grammar
+\parencites{OGrady98a-u}[Section~4.2]{OG2012a-u}. \citet[Section~4.2]{OG2012a-u}
+argue for the importance of dependency relations in linguistic descriptions and explicitly claim
+that all idioms are based on dependency chains. They assume that determiners are dependents of nouns
+and explicitly state that idioms with fixed verbs, free nouns, and fixed determiners do not exist (p.\,180). 
+
+\largerpage
+If the Catena claim is correct, this is 100\% compatible with the NP analysis suggested
+here. \citet{Sag2007a} and \citet*{KSF2015a} developed a local theory of idioms that is based on
+selection. This is compatible with the claims made by \citet{Bruening2020a} and
+\citet[Section~4.2]{OG2012a-u}.
+
+\citet[\page 31]{Salzmann2020a} argues that examples like the ones in (\mex{1}) are counter-examples to the
+dependency chain claim:
+
+\ea
+She plays the piano/trombone/flute.
+\z
+
+\noindent
+In the specific collocation at hand one has to use the definite determiner and the actual instrument
+is open. Salzmann sees this as a data point that could be used to argue against the dependency chain
+claim. I would argue, however, that the fact that an instrument has to be inserted shows that
+\emph{piano}/\emph{trombone}/\emph{flute} are part of the idiom. The material that is fixed in idioms varies to a great
+degree. Sometimes case is fixed, sometimes it is not. Sometimes idioms can be passivized or used in
+relative clauses, sometimes they cannot \citep{NSW94a}. In the case at hand, the semantic properties of the noun
+slot are specified: \emph{She plays the volleyball} is not possible. Hence the nouns are part of
+the collocation and the determiner depends on a collocation element as predicted by the theory.
+
+
+\subsubsection{Summary}
+
+Summing up the discussion of \citegen{Zwicky85a} tests for headedness and their application to the DP/NP issue, it
+can be said that these tests deliver inconclusive results. Further arguments for either NP or DP are
+either theory-internal or pro-NP (the idiom data).
+
+
+\subsection{The DP analysis}
+
+Having discussed criteria for head status in the previous subsection, I now turn to the DP analysis
+and show why an NP analysis should be preferred.
+
+
+\subsubsection{Personal pronouns}
+
+Figure~\ref{abb-personalpronomina-dp} shows the analysis of personal pronouns in the DP analysis.
+% figure moved below because of type setting
+\begin{figure}[b]
+\centerline{\begin{forest}
+sm edges
+[DP
+    [D\rlap{$'$}
+      [D\rlap{$^0$} [er]]]]
+\end{forest}}
+\caption{Personal pronouns in the DP analysis}\label{abb-personalpronomina-dp}
+\end{figure}
+Personal pronouns are complete and stand for a full nominal structure. Hence they are \dnull rather
+than \nnull. \dnull is projected to the maximal level, that is, to DP. This begs the question how
+languages without determiners are analyzed (\eg \ili{Slavic} languages; \citealp{Zlatic2014a}). Since there are no determiners, maximal projections
+within nominal structures have to be NPs. Since personal pronouns are placeholders for the whole
+structure, they should be NPs as well. Hence we had languages in which pronouns are DP and others in
+which pronouns are NPs, which would be somewhat unsatisfying.
+%
+%\inlinetodo{Read \citet{Boskovic2009b-u}.}
+
+
+\if 0
+
+Wenn man die ganze X-bar-Theorie annimmt, dann ist DetP, Det', Det genauso hohl wie die unnötigen
+NP-Projektionen. Wenn man Det=DetP zulässt, dann kann man auch NP -> Mann annehmen. Adjektive
+modifizieren dann NPen.
+
+\subsubsection{Überflüssige Projektionsstufen}
+\begin{figure}
+\hfill
+\begin{forest}
+sm edges
+[DP
+    [D\rlap{$'$}
+      [\dnullrlap [der]]
+        [NP
+          [N\rlap{$'$}
+            [\nnullrlap [Mann]]]]]]
+\end{forest}
+\hfill
+\begin{forest}
+sm edges
+[NP
+  [DetP [Det\rlap{$'$} [Det [der]]]]
+  [N\rlap{$'$}
+    [\nnullrlap [Mann]]]]
+\end{forest}
+\hfill\mbox{}
+\caption{Überflüssige NP"=Projektionsstufen in der DP"=Analyse}\label{abb-analyse-eigennamen-dp-np}
+\end{figure}
+
+\fi
+
+\if 0
+\subsubsection{Eigennamen}
+
+Eine andere Frage ist die nach der Analyse der
+Eigennamen. Abbildung~\ref{abb-analyse-eigennamen-dp-np} zeigt die Analyse von Eigennamen in der DP-
+bzw.\ in der NP"=Welt.
+\begin{figure}
+\hfill
+\begin{forest}
+sm edges
+[DP
+    [D\rlap{$'$}
+      [\dnullrlap [\trace]]
+        [NP
+          [N\rlap{$'$}
+            [\nnullrlap [Peter]]]]]]
+\end{forest}
+\hfill
+\begin{forest}
+sm edges
+[NP
+  [N\rlap{$'$}
+    [\nnullrlap [Peter]]]]
+\end{forest}
+\hfill\mbox{}
+\caption{Analyse von Eigennamen in der DP- bzw.\ NP"=Welt}\label{abb-analyse-eigennamen-dp-np}
+\end{figure}
+Verzichtet man wie in HPSG oder in jüngeren Varianten des Minimalismus auf unäre Verzweigungen, dann
+sind Eigennamen einfach NPen. Mit ausgebauter \xbar"=Syntax stellt sich aber die Frage, wozu man in
+der DP"=Analyse die Projektionsstufen bei N braucht. Entweder N$'$ oder NP ist überflüssig, da ja an einen Eigennamen
+kein Artikel angeschlossen wird.\todostefan{Das gilt doch allgemein für \nbar}
+\fi
+
+\subsubsection{Possessive pronouns}
+
+The next question concerns possessive pronouns. Possessive pronouns and possessor phrases in general
+will play a major role in my argument for an NP analysis in HPSG, which is the reason why the
+proposals to treat them in a DP approach are discussed here. There are proposals to analyze possessives like
+determiners, that is, as \dnull (left figure in Figure~\ref{abb-dp-possessiva}). Since possessives may be complex and since possessive pronouns
+alternate with such possessive phrases, both should occupy the same position. This is the reason for
+G. \citet[\page 18]{GMueller2007a} to analyze possessive pronouns as specifiers. The middle figure
+in Figure~\ref{abb-dp-possessiva} shows a GB rendering of this analysis.
+\begin{figure}
+\hfill
+\scalebox{.8}{
+\begin{forest}
+sm edges
+[DP
+  [D\rlap{$'$}
+    [\dnullrlap [seine;his]]
+    [NP
+      [N\rlap{$'$}
+        [\nnullrlap [Stadt;town]]]]]]
+\end{forest}}
+\hfill
+\scalebox{.8}{
+\begin{forest}
+sm edges
+[DP
+  [DP
+    [D\rlap{$'$}
+      [\dnullrlap [seine;his]]]]
+  [D\rlap{$'$}
+    [\dnullrlap [\trace]]
+        [NP
+          [N\rlap{$'$}
+            [\nnullrlap [Stadt;town]]]]]]
+\end{forest}}
+\hfill
+\scalebox{.8}{
+\begin{forest}
+sm edges
+[DP
+  [DP
+    [D\rlap{$'$}
+      [\dnullrlap [sein-;his]]]]
+  [D\rlap{$'$}
+    [\dnullrlap [-e]]
+        [NP
+          [N\rlap{$'$}
+            [\nnullrlap [Stadt;town]]]]]]
+\end{forest}}
+\hfill\mbox{}
+\caption{Possible analyses for possessive pronouns: left as \dnull, middle as specifier of an empty
+  \dnull, right as specifier with inflection in \dnull following \citet[\page 53]{Olsen91b}}\label{abb-dp-possessiva}
+\end{figure}
+Finally, \citet[\page 52]{Olsen91b} observes that a DP like \emph{seine Stadt} `his town' is third person but
+\emph{seine} `his' is first person, and that this is evidence against the possessive pronoun being the
+head. Therefore, she assumes that \suffix{e} is the D head and \stem{mein} is a DP functioning
+as the specifier. While this seems to be convincing at first, one could assume that \emph{seine} has
+a first person referential index but syntactic features for third person for DP-internal
+agreement. The rightmost analysis in Figure~\ref{abb-dp-possessiva}, therefore, is not the only possibility. One could assume the one in
+the middle as well. The analysis to the right would not be an option within HPSG anyway, since
+usually, fully inflected words are inserted into syntax rather than bound morphemes like \suffix{e}.
+% Karl s Auto  s = D-Kopf bei Olsen91a:50
+
+The assignment of thematic roles by relational nouns also plays a role in the analysis of
+possessives. These are discussed in the following section.
+
+\subsubsection{Relational nouns and assignment of semantic roles}
+\label{sec-relational-nouns-and-semantic-roles}
+
+If possessives were analyzed as D heads as in Figure~\ref{abb-dp-possessiva} (left) and in
+Figure~\ref{abb-possessivpronomen-dnull}, relational nouns would have to assign a semantic role to a
+head position that is higher up in the tree \citep[\page 51]{Olsen91b}. This is prohibited since, according to \citet[\page
+  47]{Chomsky81a}, semantic roles may be assigned to argument positions (A positions) only. Chomsky
+explicitly does not count head positions among these.
+\begin{figure}
+\centerline{
+\scalebox{.9}{
+\begin{forest}
+sm edges
+[DP
+  [D\rlap{$'$}
+    [\dnullrlap [seine;his]]
+    [NP
+      [N\rlap{$'$}
+        [\nnullrlap [Eroberung;conquest]]
+        [DP [der Stadt;of.the town,roof]]]]]]
+\end{forest}}}
+\caption{Possessive pronouns as \dnull and assignment of a semantic role by a relational noun}\label{abb-possessivpronomen-dnull}
+\end{figure}
+One could claim that the possessive pronoun is a \dnull and that the agent gets its semantic role
+within the NP and is then moved out of the NP into the head position, as shown in the left figure
+in Figure~\ref{abb-rollenzuweisung-rel-nom}. 
+\begin{figure}
+\hfill
+\scalebox{.9}{
+\begin{forest}
+sm edges
+[DP
+  [D\rlap{$'$}
+    [\dnullrlap [seine$_i$;his]]
+        [NP
+          [DP [\trace$_i$]]
+          [N\rlap{$'$}
+            [\nnullrlap [Eroberung;conquest]]
+            [DP [der Stadt;of.the town,roof]]]]]]
+\end{forest}}
+\hfill\hfill
+\scalebox{.9}{
+\begin{forest}
+sm edges
+[DP
+  [DP\rlap{$_i$}
+    [D\rlap{$'$}
+      [\dnullrlap [seine;his]]]]
+  [D\rlap{$'$}
+    [\dnullrlap [\trace]]
+        [NP
+          [DP [\trace$_i$]]
+          [N\rlap{$'$}
+            [\nnullrlap [Eroberung;conquest]]
+            [DP [der Stadt;of.the town,roof]]]]]]
+\end{forest}}
+\hfill\mbox{}
+\caption{Assignment of semantic role to SpecNP and successive movement from a phrase position into a
+  head position or a specifier position, respectively}\label{abb-rollenzuweisung-rel-nom}
+\end{figure}
+In such a setting, the movement out of the NP would have
+to target a head position, which is also prohibited (see \eg \citet[Sections~5.1, 6.1, 7.1]{Radford2004a-u} on various types
+of movement).
+This means that possessive pronouns have to be placed into SpecDP. It follows that the semantic role
+assigned by the relational noun is either assigned nonlocally, that is, from within the NP to a
+specifier position of the DP, or that the assignment is local within the NP and the receiving
+element is moved into the specifier position of the DP (see Figure~\ref{abb-rollenzuweisung-rel-nom}
+(right)).\footnote{%
+  HPSG does not refer to movement within NPs, but, as a reviewer pointed out, similar effects can be
+  obtained by assuming that D embeds an \nbar and that the specifier of the embedded \nbar is shared
+  with the specifier of the determiner (see \citew{HN94a} for argument attraction in general).
+}
+
+Given what was said in this and the previous section, it follows that possessive pronouns have to be
+in SpecDP in the DP system. Figure~\ref{abb-poss-dp-np} shows the structures of the DP and NP
+analysis in a fully fledged \xbar system.
+
+\begin{figure}
+\hfill
+\begin{forest}
+sm edges
+[DP
+  [DP
+    [D\rlap{$'$}
+      [\dnullrlap [seine;his]]]]
+  [D\rlap{$'$}
+    [\dnullrlap [\trace]]
+        [NP
+          [N\rlap{$'$}
+            [\nnullrlap [Stadt;town]]]]]]
+\end{forest}
+\hfill
+\begin{forest}
+sm edges
+[NP
+  [DP
+    [D\rlap{$'$}
+      [\dnullrlap [seine;his]]]]
+          [N\rlap{$'$}
+            [\nnullrlap [Stadt;town]]]]]]
+\end{forest}
+\hfill\mbox{}
+\caption{Comparison of the construction with possessive pronouns in a fully fledged \xbar system in
+  the DP and in the NP analysis}\label{abb-poss-dp-np}
+\end{figure}
+It is obvious that the NP analysis is much simpler.
+
+\subsubsection{The DP analysis in Minimalism and the NP analysis in HPSG}
+
+The HPSG analysis with an NP structure is really minimal: the lexical noun is combined directly with
+the determiner/""possessive pronoun. Since the noun does not require anything but the determiner, it has the
+category \nbar\unskip\hspace{1pt}.%
+  \footnote{Categories are feature bundles. \nbar is an abbreviation for a nominal object selecting a
+  determiner. (\ref{le-mannes}) is an example.}
+The possessive pronoun is complete as well and need not be combined with other
+elements. Hence it may be combined with the noun, directly resulting in a fully saturated nominal
+projection: an NP. The left figure in Figure~\ref{abb-np-hpsg-dp-minimalismus} shows the HPSG analysis.
+\begin{figure}
+\hfill
+\begin{forest}
+sm edges
+[NP
+  [Det [seine;his]]
+  [N\rlap{$'$}
+    [Stadt;town]]]
+\end{forest}
+\hfill
+\begin{forest}
+sm edges
+[DP  
+  [DP [seine;his]]
+  [D\rlap{$'$}
+  [D [\trace]]
+  [NP
+    [Stadt;town]]]]
+\end{forest}
+\hfill\mbox{}
+\caption{NP and DP analysis in HPSG and Minimalism}\label{abb-np-hpsg-dp-minimalismus}
+\end{figure}
+The figure on the right-hand side of Figure~\ref{abb-np-hpsg-dp-minimalismus} shows the respective analysis in Minimalism.
+Although the problem with unnecessary unary branching nodes does not exist in the framework of Bare Phrase
+Structure \citep{Chomsky95b-u},\footnote{%
+In Bare Phrase Structure Grammar, unary projections of determiners or nouns do not exist. Linguistic
+objects are combined with Merge and the category of the result is determined by Labeling. The Label
+is basically part of speech information, bar levels are not used. A noun and its dependent form a
+phrase and if the noun does not require any further arguments, the result of the combination will be
+a complete nominal object, which corresponds to the classical NP. Assuming a
+DP analysis of \emph{the house}, the noun like \emph{house} is categorized as NP right away. So in Bare Phrase Structure,
+lexical items can be both minimal and maximal at the same time \parencites[\page
+64]{Chomsky95a-u}. This is parallel to what Categorial Grammar assumed since
+\citew{Ajdukiewicz35a-u} and what is assumed in the analysis of nominal structures in HPSG as
+well. See also \citet{Muysken82a} for an early suggestions to collapse bar-levels in the GB framework.
+See \citew[Section~4.6.2]{MuellerGT-Eng4} for further discussion of Bare Phrase Structure Grammar.
+} the problem with role assignment remains. In contrast, in the NP analysis, possessives
+are in the specifier position of the noun and can receive their semantic role there. If one assumes
+a DP analysis, one would have to assign the semantic role to the governing head (in HPSG) or to an
+even higher element -- the specifier of the governing head. Within Minimalism, one could -- or rather,
+had to -- assume non-local role assignment across phrase boundaries or movement of the possessive
+pronoun out of the NP into the dominating DP \citep[\page 18]{Salzmann2020a}.
+
+\largerpage%[2]
+In conclusion, one can say that there is almost no theory-external evidence for a DP or NP analysis. The
+criteria for headedness are inconclusive in the DP/NP area. Only few tests clearly decide
+the issue, and these are in favour of an NP analysis. Theory-internal considerations show, however, that
+the NP analysis must be preferred in non-transformational approaches. 
+
+
+%% Auch relationale Nomina können semantische Rollen direkt an ihren Spezifikator zuweisen.
+%% \nocite{Muysken82a}
+
+%% \subsection{Zuweisung semantischer Rollen}
+
+The next section deals with invisible heads, and nominal structures will play an important role in
+this section as well.
+
+
+\section{Invisible heads}
+\label{sec-unsichtbar}
+
+%\largerpage[-1]
+\citet[\page 37]{Wunderlich87d} writes the following on empty elements in syntax:
+\begin{quote}
+\label{page-wunderlich-on-empty-elements}
+Eine sinnfällige Sprachtheorie sollte die Prinzipien der Sprache so nahe wie möglich nachzeichnen
+und nicht Repräsentationen für Positionen vorsehen, die aus funktionalen Gründen gar nicht
+erscheinen. Dem erwähnten sprachinhärenten Prinzip möchte ich daher das methodologische Prinzip
+"`Vermeide leere Kategorien"' zur Seite stellen.
+\citep[\page 37]{Wunderlich87d}\footnote{%
+Language theory should model the principles of language as closely as possible. It should not assume
+representations for positions that do not appear for functional reasons. In addition to the
+principle inherent to language mentioned already [Avoid Pronoun], I would like to add the
+methodological principle Avoid Empty Categories. [my translation, St.M.]
+}
+\end{quote}
+While early HPSG used empty elements in nonlocal dependencies (traces, \citealp[\page 164]{ps2}) and empty heads for the
+analysis of relative clauses \citep[\page 216]{ps2}, later publications tried to avoid empty elements
+\citep*{SF94a,Sag97a,BMS2001a}. This section discusses two examples of empty heads: Subsection~\ref{sec-empty-nominal-heads} deals
+with nominal structures again and suggests an empty nominal head, and
+Subsection~\ref{sec-empty-copula} deals with copula constructions in African American
+  Vernacular English\il{English!African American Vernacular} (AAVE), for which an empty verbal head was suggested. 
+
+Another empty verbal head is assumed in the analysis of \ili{German} by almost all HPSG theoreticians
+working on \ili{German}. I followed an approach without such an empty verbal head from 1993 until 2003
+(see \citealp[Section~1.9]{Mueller2002b}), but I am now convinced that the assumption of the empty
+verbal head is necessary to account for apparent multiple frontings in \ili{German}
+\citep{Mueller2003b,Mueller2005d}. The discussion of the arguments for an analysis with an empty
+verbal head cannot be included here due to space limitations, but the reader is referred to a
+book-length discussion of the data, the analysis, and its alternatives in \citew{MuellerGS}.
+
+See also \citew{Borsley99c-u,Borsley2009a-u,Borsley2013a-u} for further explicit suggestions of analyses
+with empty heads.
+%\itdopt{Dieser Absatz steht hier etwas unvermittelt und unverbunden.}
+
+\subsection{Nominal heads}
+\label{sec-empty-nominal-heads}
+
+\largerpage[2]
+In the previous section, I argued for an NP analysis, that is, for an analysis in which the noun is the
+head. This begs the question how to analyze phrases that distributionally behave like NPs but
+do not contain a noun. The phrases in (\mex{1}f--k) may appear in places in which the NPs in
+(\mex{1}a--e) may appear:
+\eal
+\ex 
+\gll die kluge Frau\\
+     the smart woman\\
+\ex 
+\gll die Frau aus Hamburg\\
+     the woman from Hamburg\\
+\ex 
+\gll die kluge Frau aus Hamburg\\
+     the smart woman from Hamburg\\
+\ex 
+\gll die kluge Frau, die wir kennen\\
+     the smart woman who we know\\
+\ex 
+\gll die kluge Frau aus Hamburg, die wir kennen\\
+     the smart woman from Hamburg who we know\\
+\ex 
+\gll die kluge\\
+     the smart\\
+\glt `the smart one'
+\ex 
+\label{ex-die-aus-hamburg} 
+\gll die aus Hamburg\\
+     the from Hamburg\\
+\glt `the one from Hamburg'
+\ex\label{ex-die-kluge-aus-hamburg} 
+\gll die kluge aus Hamburg\\
+     the smart from Hamburg\\
+\glt `the smart one from Hamburg'
+\ex 
+\gll die, die wir kennen\\
+     the who we know\\
+\glt `the one who we know'
+\ex 
+\gll die kluge, die wir kennen\\
+     the smart  who we know\\
+\glt `the smart one who we know'
+\ex 
+\gll die kluge aus Hamburg, die wir kennen\\
+     the smart from Hamburg who we know\\
+\glt `the smart one from Hamburg who we know'
+\zl
+\largerpage
+\noindent
+For instance, all phrases in (\mex{0}) may function as the subject of the verb \emph{lacht}
+`laughs'. Therefore it is appropriate to categorize all these phrases with the same label, rather
+than to assume that those in (\mex{0}a--e) are NPs and those in (\mex{0}f--k) DPs, say. If we want
+to analyze (\mex{0}f--k) as NPs, we either have to assume an empty nominal head or we have to
+formulate rules for NPs that say that an NP may consist of a determiner and one or several
+adjectives, or of a determiner and PPs, or relative clauses, or some variation of these elements. The
+set of rules would grow and the generalizations would not be captured (see
+Section~\ref{sec-psg}). Instead of this, one can simply assume an empty nominal head. The advantage
+of this is that all phrases in (\mex{0}) can be analyzed with the same set of rules and that they
+have the same structure. Figure~\vref{fig-die-kluge-aus-hamburg} shows the analysis of
+(\ref{ex-die-kluge-aus-hamburg}). A simple trick to get rid of the empty element in
+Figure~\ref{fig-die-kluge-aus-hamburg} is to assume a unary branching rule that projects the
+adjective to \nbar \citep{Wunderlich87d}. Note though that this unary branching rule does not
+account for (\ref{ex-die-aus-hamburg}). We will come back to this in Section~\ref{sec-grammar-conversion}.
+
+\begin{figure}
+\centerline{%
+\begin{forest}
+sm edges
+[NP
+  [Det [die;the]]
+  [N\rlap{$'$}
+    [N\rlap{$'$}
+      [Adj [kluge;smart]]
+      [N\rlap{$'$} [\trace]]]
+  [PP [aus Hamburg;from Hamburg,roof]]]]
+\end{forest}}
+\caption{Analysis of \emph{die kluge aus Hamburg} `the smart one from Hamburg' with empty nominal head}\label{fig-die-kluge-aus-hamburg}
+\end{figure}
+
+\largerpage[2]
+As was noted in Section~\ref{sec-obligatheit}, determiners can be omitted as well. This is possible
+for all nouns in the plural:
+\eal
+\ex\label{ex-Frauen}
+\gll Frauen\\
+     women\\
+\ex 
+\gll Frauen, die wir kennen\\
+     women   who we know\\
+\ex 
+\gll kluge Frauen\\
+     smart women\\
+\ex 
+\gll kluge Frauen, die wir kennen\\
+     smart women   who we know\\
+\zl
+Mass nouns may be used without a determiner in the singular as well:
+\eal
+\ex 
+\gll Getreide\\
+     grain\\
+\ex 
+\gll Getreide, das gerade gemahlen wurde\\
+     grain    that just  ground  was\\
+\glt `grain that was just ground'
+\ex 
+\gll frisches Getreide\\
+     fresh grain\\
+\ex 
+\gll frisches Getreide, das gerade gemahlen wurde\\
+     fresh    grain    that just  ground was\\
+\glt `fresh grain that was just ground'
+\zl
+%
+As I did for structures without a noun, one may assume an empty determiner \citep[\page 90]{ps2}. The analysis of
+(\ref{ex-Frauen}) is shown in Figure~\vref{fig-NP-ohne-Det}.
+
+\begin{figure}
+\centering
+\begin{forest}
+sm edges
+[NP
+  [Det [\trace] ]
+  [\nbarrlap [Frauen;women] ] ] 
+\end{forest}
+\caption{Analysis of nominal structures without a determiner}\label{fig-NP-ohne-Det}
+\end{figure}
+
+Interestingly, both determiner and noun may be omitted in a phrase, resulting in phrases consisting
+of one or several adjectives and possibly PPs and relative clauses:
+\eal
+\ex 
+\gll Ich helfe klugen.\\
+     I help smart\\
+\glt `I help smart ones.'
+\ex 
+\gll Dort drüben steht frisches, das gerade gemahlen wurde.\\
+     there over  stands fresh    that just ground was\\
+\glt `Over there is fresh [grain] that was just ground.'
+\zl
+The structures for (\mex{0}a) and a similar NP including a modifying PP are shown in Figure~\ref{fig-no-det-no-noun}.
+\begin{figure}
+\hfill\begin{forest}
+sm edges
+[NP
+  [Det [\trace] ]
+  [\nbarrlap
+    [A [klugen;smart] ]
+    [\nbarrlap [\trace] ] ] ]
+\end{forest}
+\hfill
+\begin{forest}
+sm edges
+[NP
+  [Det [\trace] ]
+  [\nbarrlap
+    [\nbarrlap
+      [A [klugen;smart] ]
+      [\nbarrlap [\trace] ] ]
+    [PP [aus Hamburg;from Hamburg, roof]] ]]
+\end{forest}
+\hfill\mbox{}
+\caption{Analysis of nominal structures lacking both determiner and noun: \emph{klugen} `smart ones' and \emph{klugen aus Hamburg} `smart ones from Hamburg'}\label{fig-no-det-no-noun}
+\end{figure}
+
+%\largerpage[-1]
+%\newpage
+Instead of an empty determiner, one can assume a unary branching rule projecting an \nbar to NP
+\citep[\page 88]{MuellerLehrbuch1}.\footnote{
+  The computational implementation \citep{Babel} of the grammar described in \citew{Mueller99a} did not contain
+  empty elements. I used a unary branching rule for structures without a determiner. A lexical rule,
+  as suggested by \citet[\page 80]{Michaelis2006a}, is not an option. See \citew[Section~6.6.2]{MuellerLehrbuch1} on this point.
+} This and other alternatives to empty elements will be discussed in
+Section~\ref{sec-grammatikkonversion}. But before turning to alternatives to empty heads, I want to
+discuss empty verbal heads in the next subsection.
+
+%% {Leere Elemente}
+
+%% \begin{itemize}
+%% \item Ich verwende genau drei:
+%% \begin{itemize}
+%% \item leerer Determinator (kein Kopf)
+%% \item leeres Nomen (Kopf)
+%% \item leeres Verb für Verbbewegung (Kopf)
+%% \end{itemize}
+%% \end{itemize}
+
+
+\subsection{Verbal heads}
+\label{sec-empty-copula}
+
+\citet{Bender2001a} discusses data from African American Vernacular English\il{English!African American Vernacular} (AAVE), in which the
+copula can be omitted, resulting in sentences like (\mex{1}), taken from \citew*[\page 457]{SWB2003a}:
+\eal
+\label{ex-AAVE-copula}
+\ex Chris at home.
+\ex We angry with you.
+\ex You a genius.
+\ex They askin for help.
+\zl
+\citet*[Section~15.3.4]{SWB2003a} discuss a phrasal schema that combines a predicate selecting for an NP
+in a certain form with this NP directly. 
+\ea
+S \to{} NP Pred
+\z
+While this provides an account for examples like (\ref{ex-AAVE-copula}), it fails on examples like (\mex{1}), also
+taken from \citew[\page 463]{SWB2003a}:
+\eal
+\ex How old they say his baby $\phi$?
+\ex Tha's the man they say $\phi$ in love.
+\zl
+The interesting fact about these examples is that the predicate is extracted in (\mex{0}a) and the
+subject is extracted in (\mex{0}b). The rule in (\mex{-1}) cannot apply in the analysis of (\mex{0}),
+since \citeauthor{SWB2003a} do not assume traces for extraction, and hence one would need a special
+rule for the case in (\mex{0}a) for combining a subject with an extracted predicate and a special
+rule for the case in (\mex{0}b) for combining a predicate with an extracted subject.\footnote{
+  Note that this is basically the same problem as the one I pointed out in the discussion of phrasal
+  approaches in Construction Grammar \citep[\page 854]{Mueller2006d}.
+}
+Rather than assuming three unrelated rules, \citeauthor{SWB2003a} follow \citet{Bender2001a} in
+assuming an empty head for the copula. This is an interesting twist in the discussion of empty
+elements, since the need to assume this empty copula was caused by eliminating empty elements in the
+analysis of extraction phenomena by \citet*{BMS2001a}. 
+
+\section{Grammar conversion}
+\label{sec-grammatikkonversion}\label{sec-grammar-conversion}
+
+
+In the previous section, I suggested using empty elements in the analysis of nominal
+structures. Current grammatical theories have different views regarding empty elements. There are
+hundreds of empty elements of various categories in Minimalism (\citealt[\page 76]{Webelhuth95a}; Newmeyer \citeyear[\page 194]{Newmeyer2004b};
+  \citeyear[\page 82]{Newmeyer2005a}; \citealt[Section~4.6.1.1]{MuellerGT-Eng4}), in most
+  Construction Grammar variants there is not a single one, and in other frameworks it depends on the
+  author whether empty elements are assumed and, if so, which ones.\footnote{%
+    \citew[Section~19.1]{MuellerGT-Eng4} gives an overview of approaches with and without empty
+    elements in Categorial Grammar, GPSG, LFG, TAG, Dependency Grammar, and HPSG.
+} Apart from the two empty elements mentioned
+already, I am using only two further empty elements in my grammars: one for nonlocal movement and
+one for head movement \citep{MuellerLehrbuch3,MuellerGS}.
+
+I show in this section which formal means used in various frameworks correspond to each other and
+how grammars using empty elements can be transformed into grammars without them. This may help to
+objectify the discussion, which is a bit emotional sometimes.
+
+\subsection{Phrase structure grammars}
+\label{sec-psg}
+
+It was shown as early as the 1960s that grammars with empty elements can be transformed into
+grammars without them by inserting the empty elements into the grammar rules. This results in new
+grammar rules in which the respective symbols do not appear any longer \citep{BHPS61a,Mueller2004e}.
+
+Let's take the grammar in (\mex{1}a) as an example. We can eliminate the empty element for \nbar by
+adding new rules for all rules where \nbar appears on the right-hand side of the rule. The result of
+such a transformation is shown in (\mex{1}b):
+\ea
+\begin{tabular}[t]{@{}ll@{~}l@{~}l@{\hspace{2cm}}ll@{~}l@{~}l@{~}l}
+a. & NP    & $\to$ & Det \nbar                   & {b.} & {NP}          & {$\to$} & {Det \nbar}\\
+   &   & &                                       &    & {\red{NP}}    & \red{$\to$} & {\red{Det}}\\
+   & \nbar & $\to$ &Adj \nbar                    &    & {\nbar}       & {$\to$} & {Adj \nbar}\\
+   &    & &                                      &    & {\red{\nbar}} & \red{$\to$} & {\red{Adj}}\\
+   & \nbar & $\to$ &\nbar PP                     &    & {\nbar}       & {$\to$} & {\nbar PP}\\
+   &    & &                                      &    & {\red{\nbar}} & \red{$\to$} & {\red{PP}}\\
+   & \red{\nbar} & \red{$\to$} &\raisebox{0.2ex}{\red{\_}}\rule{0cm}{0.7em}                   & \\\\
+%Det   & \trace\\
+   & Det & $\to$ &die                            &    & {Det} & {$\to$} &{die}\\
+   & Adj & $\to$ &klugen                         &    & {Adj} & {$\to$} &{klugen}\\
+   & \nbar & $\to$ &Frauen                       &    & {\nbar} & {$\to$} &{Frauen}\\
+\end{tabular}
+\z
+When we insert empty elements into rules, it may happen that all elements on the right-hand side are
+deleted, which has the effect of creating new empty elements. Hence the step of inserting empty elements into
+rules has to be applied until it converges, no new empty elements are produced, and all empty
+elements are eliminated from the grammar.
+
+As is demonstrated by the simple example in (\mex{0}), the elimination of empty elements may result
+in an increase of the number of rules.\footnote{
+  \citet[\page 38]{Wunderlich87d}, discussing a proposal with an empty head by \citet{Olsen87b-u},
+  suggests a rule projecting nouns from adjectives, but does not mention cases like
+  (\ref{ex-die-aus-hamburg}), in which no adjective is present.
+} One rule from grammar (\mex{0}a) (the one for the lexical
+item of the empty element) was removed and we got three new rules in (\mex{0}b) instead. The generalization that
+nouns may be omitted in \ili{German} is not captured directly in the new grammar any longer. Instead we
+have a largish number of descriptions of constituents that can form an NP or an \nbar, respectively.
+
+It is often argued that there cannot be empty elements since these would be invisible and hence not
+learnable.
+%\inlinetodo{add references} 
+The acquisition problem seems to argue for empty elements in the nominal structures at
+hand, though, since what has to be acquired is the fact that the noun can be omitted in elliptical constructions.
+
+\largerpage[2]
+The empty determiner is not part of the example in (\mex{0}), but it is clear that its elimination by
+the techniques described above results in a unary branching rule that projects an \nbar to an NP. See \citew[\page
+31]{Zlatic2014a} for the assumption of such a unary projection.
+
+\subsection{Lexical rules}
+
+%\largerpage
+As was mentioned above, the number of empty heads that are assumed in Minimalist work is
+significant. Some contribute semantic information and are important for valence alternations like the
+one in (\mex{1}):
+\eal
+\ex 
+\gll Er bäckt einen Kuchen.\\
+     he.\nom{} bakes a.\acc{} cake\\
+\ex 
+\gll Er bäckt {ihr} einen Kuchen.\\
+     he.\nom{} bakes her.\dat{} a.\acc{} cake\\
+\zl
+(\mex{0}a) shows the transitive verb \emph{backen} `to bake' with a nominative and an accusative
+argument. (\mex{0}b) has a dative argument in addition.
+
+Almost all linguistic theories handle such alternations without empty elements. LFG, HPSG, and SBCG
+analyze such valence alternations via lexical rules instead \citep*{Toivonen2013a,MuellerLFGphrasal,SBK2012a}. Figure~\vref{fig-lr-vs-leerer-kopf}
+is a comparison of the two analyses.
+\begin{figure}
+\begin{forest}
+[, phantom, s sep = 1cm
+[
+ {V[\sliste{ NP$_x$, NP$_z$, NP$_y$ }]}
+ [ {V[\sliste{ NP$_x$, NP$_y$ }]} ]]
+[
+ {BenefactiveP[\sliste{ NP$_x$, NP$_z$, NP$_y$ }]}
+ [ {V[\sliste{ NP$_x$, NP$_y$ }]} ]
+ [Benefactive [$\varnothing$]]]]
+\end{forest}
+\caption{Comparison of the analysis of valence alternations by lexical rule and empty head}\label{fig-lr-vs-leerer-kopf}
+\end{figure}
+The left-hand side shows a lexical rule-based analysis relating a word with two elements in the
+valence list to a word with three elements in the valence list. The right-hand side shows an
+analysis with an empty head: The benefactive head selects a verb with two arguments, and the result
+of the combination is a projection that takes three arguments.\footnote{
+  Analyses suggested in the literature usually combine a VP with one further head, that is, the
+  verbal head is combined with its arguments first and the result of this combination is then
+  combined with the benefactive head \citep[\page 75]{BB2011b-u}.
+}
+
+%% \scalebox{1}{%
+%% \begin{forest}
+%% [, phantom, s sep = 1cm
+%% [
+%%  {V[\sliste{ NP[\type{nom}], NP[\type{dat}], NP[\type{acc}] }]}
+%%  [ {V[\sliste{ NP[\type{nom}], NP[\type{acc}] }]} ]]
+%% [
+%%  {BenefactiveP[\sliste{ NP[\type{nom}], NP[\type{dat}], NP[\type{acc}] }]}, visible on=<2->
+%%  [ {V[\sliste{ NP[\type{nom}], NP[\type{acc}] }]} ]
+%%  [Benefactive [$\varnothing$]]]]
+%% \end{forest}}
+
+%\enlargethispage{2pt}
+Lexical rules in HPSG are basically unary branching rules \citep{BC99a,Meurers2001a} and hence it does not
+come as a big surprise that they correspond to constructions with an empty head.
+
+\subsection{Recategorization of phrases}
+\label{sec-recategorization}
+
+%\largerpage
+The previous section dealt with lexical rules. Lexical rules relate words or stems to other words or
+stems. One way to model lexical rules is parallel to unary branching rules. But nothing prevents one
+from relating phrases to one another. For instance, \citet{Partee86b-u} and, following her, \citet{MuellerPredication}
+suggest recategorizing NPs like \emph{ein guter Lehrer} `a good teacher' as in
+(\mex{1}a) via a unary projection into an NP that can be used predicatively as in (\mex{1}b). (The
+lexical rule"=based analysis by \citet[\page 409]{GSag2000a-u} has scope problems, since lexical
+rules can be applied to single lexical elements only, and other elements that can appear in NPs (adjectives for
+example) cannot be part of the input of the lexical rule \citep{Kasper97a,MuellerCopula}.)
+
+\eal
+\ex 
+\gll Ein guter Lehrer lobt.\\
+     a good teacher praises\\
+\glt `A good teacher praises.'
+\ex 
+\gll Er ist ein guter Lehrer.\\
+     he is a good teacher\\
+\glt `He is a good teacher.'
+\zl
+
+\noindent
+Figure~\ref{fig-typanhebung} shows the analysis with a unary branching syntactic rule.
+The rule projects a NP[\textsc{prd}$-$] to NP[\textsc{prd}$+$], and of course the semantic type
+of the NP is adapted as well. This is not shown in the figure, since I do not have the space to
+introduce semantic representations in this paper.
+%Die Zusammenhänge kann man natürlich genauso mit einem leeren Kopf erfassen. Die Strukturen sind
+%dann aber komplexer, da man erstens einen zusätzlichen Lexikoneintrag für das leere Element braucht
+%und
+What is missing from the figure is that both valence and semantics of the dominating NP are
+different from the one of the dominated NP. The predicative NP selects for a subject and introduces a
+respective relation that relates the subject to the predicative noun.
+\begin{figure}
+\centerline{%
+\begin{forest}
+[
+ {NP[\textsc{prd}+]}
+ [ {NP[\textsc{prd}$-$]} ]]
+\end{forest}
+}
+\caption{Semantic type raising via unary rule}\label{fig-typanhebung}
+\end{figure}
+
+%\largerpage[-1]
+The same effect can be reached by assuming an empty nominal head selecting for a \textsc{prd}$-$
+phrase and projecting a \textsc{prd}$+$ one.\footnote{%
+Proposals in MGG sometimes use an empty Pred head
+projecting a PredP \citep{Bowers93a-u}. This is not entirely equivalent to what is suggested here,
+since all categories are projected as PredP, and this makes it impossible for governing heads to
+select the syntactic category of the predicative element they combine with. As \citet[\page
+105--106]{ps2} pointed out, verbs like \emph{grow}, \emph{get}, \emph{turn out}, \emph{become},
+and \emph{end up} select different kinds of predicative elements. In the analysis in
+Figure~\ref{fig-typanhebung}, an NP is projected into an NP. The syntactic category remains selectable.}
+
+%\largerpage
+Another interesting case are free relative clauses. Free relative clauses have the form of relative
+clauses but function like NP or PP arguments or adjuncts \citep{Bausewein90,Mueller99b}. For
+example, in (\mex{1}) the relative clause \emph{wem er vertraut} `who he trusts' fills the slot of the dative object of \emph{helfen} `to help':
+\ea
+\gll \emph{Wem}  er vertraut, hilft er auch.\footnotemark\\
+     who he trusts    helps he too\\
+\footnotetext{%
+        \citet[\page 234]{Engel77}
+      }
+\glt `He helps those he trusts.'
+\z
+%
+\citet[Section~2]{GR81a} suggest an analysis with an empty head (XP) that is modified by a relative
+clause and the properties of the relative phrase are related to the ones of the empty head. This
+analysis as sketched in (\mex{1}a) is interesting since it is parallel to normal relative clause structures containing an
+overt pronoun as in (\mex{1}b):
+\eal
+\ex {}[\sub{\npdat} \_\sub{\npdat} [Wem er vertraut]], hilft er auch.
+\ex 
+\gll {}[\sub{\npdat} Denen\sub{NP[\type{dat}]}, [denen er vertraut]], hilft er auch.\\
+     {}              those              \spacebr{}who   he trusts    helps he too\\
+\glt `He helps those he trusts.'
+\zl
+However, the problem is that relative clauses are adjuncts and modification by adjuncts is
+optional. To maintain an analysis like the one by \citeauthor{GR81a}, one would have to assume that
+modification of the empty head by a relative clause is obligatory, since otherwise one would have
+complete XPs in the grammar that could function as arguments in other areas of the grammar
+\citep[\page 97]{Mueller99b}. For example, one could derive sentences with ditransitive verbs and
+all of the arguments could be saturated by the empty element:
+\ea[*]{
+\gll dass \_\sub{NP[nom]} \_\sub{NP[dat]} \_\sub{NP[acc]} gibt\\
+     that {}              {}              {}              gives\\
+\glt As in: `that she gives it to her'
+}
+\z
+Usually adjunction is not obligatory however. While empty elements and unary projections are
+equivalent in most cases, we have a clear difference here. If one analyzes free relatives using a
+unary branching rule mapping a free relative clause to an XP, it is clear that this rule can only
+apply if there is a free relative clause, while nothing ensures the presence of an adjunct in the
+analysis using an empty head.
+
+\subsection{Summary}
+
+%\largerpage
+I have used nominal structures without overt nouns to further support the point that empty elements may
+help capturing generalizations in some cases. They can be avoided in other parts of grammars, and
+unary branching projections in the lexicon or in the syntax may be assumed instead. Sometimes unary
+projections have an advantage over empty heads since they can ensure the obligatory presence of
+constituents that would be treated as adjuncts to empty elements.
+
+
+
+
+\section{Headless structures}
+\label{sec-kopflos}
+
+Section~\ref{sec-unsichtbar} dealt with structures in which we usually find certain elements, and it
+was argued that it is reasonable to use empty elements in the places in which the heads would appear
+when realized overtly. That is, it was assumed that there is a head even though it is invisible. The
+argumentation for empty elements is based on the fact that the respective positions are usually
+filled. In Section~\ref{sec-recategorization}, I argued that the assumption of an empty head in the
+analysis of free relative clauses would permit ill-formed structures and argued for an analysis
+without head. However, \citet{Jackendoff2008a} pointed out that there are sequences like those in
+(\mex{1}), called N-P-N expressions, where it is not reasonable to assume that one of the involved
+elements is the head or that there is some kind of bigger structure from which an element is missing:\footnote{
+  See also \citew{Jacobs2008a} for further examples from \ili{German} and \citew[Section~21.10.1]{MuellerGT-Eng4}
+  for discussion. Another example of a construction that is usually treated as headless in HPSG is
+  coordination. \citet{Borsley2005a} shows that the Minimalist analysis of coordination as ConjP
+  suggested by \citet[Chapter~6]{Kayne:94}, \citet[Chapter~3]{Johannessen98a-u}, and others fails in several
+  respects. Categorial Grammar also assumes a functor-based approach with the conjunction as the
+  head. However, the result of the combination of two X with a conjunction categorized as
+  (X/X)$\backslash$X is an X, which gets the external distribution right as far as the main category
+  is concerned, while this remains a puzzle in the Minimalist proposals (governing heads select a DP,
+  not a ConjP). Nevertheless, there are
+  cases in which the last conjunct determines the properties of the complete phrase, as Borsley has
+  shown. So additional mechanisms seem to be needed to get the headed analysis right. I will not
+  take a stand on this issue here but point the reader to \citew{AC2021a} for a general 
+  discussion and an overview of approaches to coordination in HPSG.
+}
+\ea
+student after student
+\z
+Such sequences can be used in NP positions within larger structures, but they do not have the
+structure of NPs internally. For instance, there is no determiner and there is the restriction that
+the second N has to be identical with the first one. The meaning of N-P-N expressions cannot be
+determined compositionally from the meaning of the parts: N \emph{after} N roughly means
+\emph{many Ns in succession} \citep[\page 26]{Jackendoff2008a}.
+
+All theories assuming that all structures have a head/""functor (Minimalism, Dependency Grammar,
+Categorial Grammar) have a problem. The previous section showed that one can charm away empty
+heads if one does not like them. Similarly, one can conjure up empty heads if one needs
+them. Figure~\vref{fig-leerer-Kopf-N-P-N} shows a hypothetical Dependency Grammar analysis.
+\begin{figure}
+\begin{forest}
+dg edges
+[N
+  [\trace]
+  [N [student]]
+  [P [after]]
+  [N [student]]]
+\end{forest}
+\caption{Analysis of the N-P-N Construction with empty head}\label{fig-leerer-Kopf-N-P-N}
+\end{figure}
+This analysis assumes an empty head that selects the two Ns and a P.
+
+Since Minimalism allows for binary branching only, one would need two empty heads to model the N-P-N
+construction with empty heads.\footnote{
+  G.\ \citet{GMueller2011a} suggests an analysis in which the preposition selects a noun and bears a
+  feature \textsc{redup}, which triggers a reduplication of the noun. It remains unclear why a
+  structure with a preposition as the main element should project an NP and how sequences of the
+  type N-P-N-P-N (\emph{student after student after student}) should be analyzed. See \citew[Section~4.4]{Jackendoff2008a} and
+  \citew{Bargmann2015a} on sequences of the latter type. Note also that G.\ Müller stated that his
+  analysis predicts that adjectival modifiers of the N in N-P-N constructions are not permitted in
+  \ili{German}, a claim that is empirically false \citep[Section~4.1]{MuellerCxG}. 
+}
+
+Like for Constructional Grammar, Jackendoff's examples are entirely without any problem for HPSG: a
+special schema combines N, P, and N (and possibly further Ps and Ns). Figure~\ref{fig-n-p-n} shows
+the respective analysis.
+\begin{figure}
+\begin{forest}
+sm edges
+[NP
+  [N [student]]
+  [P [after]]
+  [N [student]]]
+\end{forest}
+\caption{Construction-based analysis of N-P-N structures}\label{fig-n-p-n}
+\end{figure}
+
+I can hear the reproaches: ``But the assumption of a special schema is a stipulation!'' This is true,
+but an empty head would be a stipulation as well. The N-P-N schema captures everything that can be
+and must be said about the construction: three or more elements (see \citealt{Bargmann2015a}) are combined
+idiosyncratically, resulting in an idiosyncratic meaning.
+
+Having shown that empty elements can be removed from grammars (Section~\ref{sec-grammar-conversion})
+and can be added if theories require heads (Figure~\ref{fig-leerer-Kopf-N-P-N}), I now turn to the
+question of whether there are limits/style guides for the assumption of empty heads.
+
+\section{Good and bad empty elements}
+\label{sec-lang-acqui}
+
+As mentioned on page~\pageref{page-wunderlich-on-empty-elements}, HPSG follows Wunderlich in
+assuming that syntactic theories should avoid the stipulation of empty elements because of
+methodological considerations. I have
+demonstrated that sometimes the assumption of empty elements is warranted (empty nominal and verbal
+heads) and sometimes it is not and should therefore be avoided (N-P-N construction). This section tries to give a more general
+answer to the question when it is legitimate to assume an empty element and when it is not. In
+general, it has to be explained how syntactic structures that are suggested can be acquired by
+language learners. If one assumes a lean Universal Grammar as \citet*{HCF2002a} or none at all
+(\citealt{Tomasello2003a,Goldberg2006a}), then there must be language-particular evidence for empty
+elements. Analyses that are solely theory-internally motivated like, for instance, the analysis of PPs
+by \citet[\page 452]{Radford97a-u} are not legitimate. Radford assumes that case can be checked in
+specifier positions only. In addition, he assumes five empty elements and complicated movement
+processes. His analysis is shown in Figure~\ref{fig-kaese}. 
+\begin{figure}
+\hfill
+\begin{forest}
+sm edges without translation
+[pP
+   [p
+	[P [with]]
+	[p [$\varnothing$]]]
+   [AgrOP
+	[D [\textbf{me}]]
+	[$\overline{\mbox{AgrO}}$
+		[AgrO
+			[P [t\rlap{$'$}]]
+			[AgrO [,phantom  ]]]
+		[PP
+			[P [t]]
+			[D [\textbf{t}]]]]]]
+\end{forest}
+%\hfill
+%% \begin{forest}
+%% sm edges without translation
+%% [PP
+%%   [P [with]]
+%%   [NP [me]]]
+%% \end{forest}
+\hfill\mbox{}
+\caption{Theory-internally motivated analysis of a PP following Radford}\label{fig-kaese}
+\end{figure}
+The necessity for these empty elements follows from the theoretical apparatus that is assumed. Since
+there is no independent evidence for the apparatus, it is not acquirable and hence has to be
+innate. This contradicts Minimalist assumptions \citep*{HCF2002a}. A precondition to detect absence of
+elements is that the positions of the prospective elements can be filled in
+principle \citep[\page 40]{MuellerCoreGram}. It is not
+legitimate to argue cross-linguistically for empty elements, since the cross-linguistic evidence is
+available to us as linguists but not to those who acquire the language.
+
+Summing up, one can say that empty determiners, nouns, and verbs can be acquired from linguistic
+evidence from within the language that is acquired, but categories like
+AgrO, Topic, Pred, etc.\ that are motivated with reference to other languages cannot. The respective
+categories should be assumed for the languages in which they have visible forms (\eg AgrO for \ili{Basque}
+and Topic for \ili{Japanese}) but not for languages without any morphological reflexes.
+%, \citealp{Chomsky93a}
+
+\section{Summary}
+\label{sec-summary}
+
+
+This paper discussed the role of heads in syntactic structures (within the framework of HPSG). Heads
+project morpho-syntactic features (part of speech, case, verb form, and so on), and they have valence
+specifications determining the structure of phrases. While it is clear for most types of phrases
+which element is the head, theory-neutral criteria for determining heads often fail to decide the
+question of whether N or D is the head in \ili{German} nominal structures. I used thematic role assignment
+and selection in idioms to argue for an NP analysis. Apart from discussing the notorious DP/NP
+issue, I discussed two cases in which empty heads were assumed (again nominal structures in \ili{German} and copula
+constructions in AAVE\il{English!African American Vernacular}). These empty heads filled slots in which overt material can be realized. For
+the N-P-N construction, an empty head could be stipulated as well, in order to save claims made in
+other frameworks that all structures have to have a head. Since HPSG does not make this claim, I
+argued for a headless construction instead. I have shown that grammars assuming empty elements can
+be converted into ones without empty elements in a straightforward way. Nevertheless there are
+conditions on the use of empty elements in grammatical theories: the elements should be recoverable
+from input in the language under consideration. There has to be language-internal 
+evidence for assuming an empty element, that is the position that is assumed should be filled in some
+situations.
+
+
+\section*{\acknowledgmentsUS}
+
+I thank all participants of the workshop on Headedness and/or grammatical anarchy that took place in
+2017 at the Freie Universität Berlin for interesting conversations and stimulating
+discussion. Ulrike Freywald and Horst Simon are thanked for organizing this event.
+
+I thank two anonymous reviewers, Jong-Bok Kim, and Antonio Machicao y Priemer for valuable comments.
+Georg Walkden and András Bárány are thanked for pointers to relevant literature.
+I thank Elizabeth Pankratz for proofreading and for comments on the paper.
+
+{\sloppy
+\printbibliography[heading=subbibliography,notkeyword=this]
+}
+\end{document}
+
+
+
+% en
+%      <!-- Local IspellDict: en_US-w_accents -->

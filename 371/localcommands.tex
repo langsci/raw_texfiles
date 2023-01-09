@@ -1,0 +1,167 @@
+% \newcommand*{\orcid}{}
+
+\newcounter{Tabelle}
+\newcounter{Abbildung}
+\newcounter{Beispiel}
+
+\newcommand{\bspref}[1]{Bsp.~\ref{#1}}
+
+\newcommand{\marzoukepigram}[2]{\hfill\parbox{5cm}{
+        {\itshape #1}\\
+            \hfill#2}
+}
+
+\pgfplotsset
+{
+	marzoukBar/.style={
+		ybar,
+		legend style={at={(0.5,1.5)},
+		anchor=north,legend columns=1},
+		xtick=data,
+		nodes near coords,
+		axis lines*=left,
+		bar width=.75cm,
+		width=.75\textwidth,
+		height=5cm,
+		cycle list = {{draw=black,fill=black},}
+	}
+}
+
+\newcommand{\smbars}[1][]{
+    \begin{tikzpicture}
+    \tikzset{every node/.style={font=\scriptsize}};
+    \begin{axis}[ybar,
+                ylabel = {Summe},
+                ylabel style={yshift=-.2cm},
+                enlarge x limits={.05},
+                width  = \textwidth,
+                height = .45\textheight,
+                axis lines*=left,
+                axis on top,
+                bar width=8.5,
+                bar shift=0pt,
+                ymin = 0,
+                xtick = {1,2,...,26},
+                xticklabels={IN\_OR\_1.v,
+                IN\_OR\_1.n,
+                IN\_OR\_2.v,
+                IN\_OR\_2.n,
+                IN\_LX\_3.v,
+                IN\_LX\_3.n,
+                IN\_LX\_4.v,
+                IN\_LX\_4.n,
+                IN\_LX\_5.v,
+                IN\_LX\_5.n,
+                IN\_LX\_6.v,
+                IN\_LX\_6.n,
+                IN\_GR\_7.v,
+                IN\_GR\_7.n,
+                IN\_GR\_8.v,
+                IN\_GR\_8.n,
+                IN\_GR\_9.v,
+                IN\_GR\_9.n,
+                IN\_GR\_10.v,
+                IN\_GR\_10.n,
+                IN\_SM\_11.v,
+                IN\_SM\_11.n,
+                IN\_SM\_12.v,
+                IN\_SM\_12.n,
+                IN\_SM\_13.v,
+                IN\_SM\_13.n},
+            x tick label style={rotate=60,anchor=east,font=\scriptsize},
+            nodes near coords,
+            legend style={at={(0.5,-0.25)},anchor=north},
+            legend columns={-1},
+            #1
+            ]
+        \addplot +[shift={(.5,0)},tmnlpone,x filter/.code={\ifodd\coordindex\def\pgfmathresult{}\fi}] table {\datatable};
+        \addplot +[shift={(-.5,0)},tmnlpthree,  x filter/.code={\ifodd\coordindex\relax\else\def\pgfmathresult{}\fi}] table {\datatable};
+        \legend{vor KS,nach KS}
+    \end{axis}
+\end{tikzpicture}
+}
+
+
+\newcommand{\torte}[5][inside]{
+    \begin{tikzpicture}
+    \pie[radius=2,
+        text={#1},
+        style={ultra thin},
+        color={tmnlpfour,tmnlpthree,tmnlptwo,tmnlpone},
+        sum=auto,
+%         text=legend,
+        rotate=90]{#2/FF ,
+                   #3/FR ,
+                   #4/RF ,
+                    #5/RR} ;
+    \end{tikzpicture}
+}
+
+
+
+\newcommand{\groupedbars}{
+    \begin{tikzpicture}
+    \begin{axis}[ybar,
+                width  = \textwidth,
+                height = .45\textheight,
+                axis lines*=left,
+                axis on top,
+                nodes near coords,
+                bar width=7pt,
+                enlarge x limits=0.25,
+                ymin=0,
+                legend cell align=left,
+                xtick = data,
+                symbolic x coords={FF,FR,RF,RR},
+                xlabel = {Annotationsgruppe},
+                ylabel = {Anzahl},
+                ylabel style={yshift=-.2cm},
+                cycle list name=langscicolors,
+                legend style={
+                    at={(0.01,1)},
+                    anchor=north west,
+                    column sep=1ex,
+                    legend columns = 5,
+                    font=\small
+                    }
+                    ]
+        \addplot table[x=XX, y=Bing] {\datatable};
+        \addplot table[x=XX, y=Google] {\datatable};
+        \addplot table[x=XX, y=Lucy] {\datatable};
+        \addplot table[x=XX, y=SDL] {\datatable};
+        \addplot table[x=XX, y=Systran] {\datatable};
+        \legend{Systran, SDL, Lucy, Google, Bing};
+    \end{axis}
+    \end{tikzpicture}
+}
+
+
+\definecolor{smGreen}{cmyk}{0.1,0,.25,0}
+\definecolor{smBlue}{cmyk}{0.15,0.0125,0.0125,0}
+\definecolor{smYellow}{cmyk}{0,0.125,.5,0}
+\definecolor{smRed}{cmyk}{0.0125,.25,0.3,0}
+
+
+% Beispiel tables
+\newcommand{\bspnote}[1]{\parbox{\textwidth}{\raggedright\footnotesize\noindent{#1}}}
+\newcommand{\txblue}[1]{{\color{tmnlpthree}#1}}
+\newcommand{\txred}[1]{{\color{lsRed}#1}}
+\newcommand{\txgray}[1]{\colorbox{lsLightGray}{#1\strut}}
+\newcommand{\txgreen}[1]{\colorbox{smGreen}{#1\strut}}
+\newcommand{\boxblue}[1]{\colorbox{smBlue}{#1\strut}}
+\newcommand{\bful}[1]{\ul{\textbf{#1}}}
+\newcommand{\itul}[1]{\ul{\textit{#1}}}
+\newcommand{\bfitul}[1]{\textit{\ul{\textbf{#1}}}}
+
+
+% accept/reject box, Kap. 4, S. 125ff.
+\newcommand{\triplebox}[3]{\noindent\framebox[\textwidth]{\parbox[t]{.3\textwidth}{\raggedright #1}\parbox[t]{.3\textwidth}{\raggedright #2}\parbox[t]{.3\textwidth}{\raggedright #3}}}
+
+
+\newcommand{\acceptbox}[2]{\noindent\framebox[\textwidth]{\parbox[t]{.45\textwidth}{\raggedright #1}\parbox[t]{.05\textwidth}{\langscicheckmark}\parbox[t]{.45\textwidth}{\raggedright #2}}}
+
+\newcommand{\rejectbox}[2]{\noindent\framebox[\textwidth]{\parbox[t]{.45\textwidth}{\raggedright #1}\parbox[t]{.05\textwidth}{\langscicross}\parbox[t]{.45\textwidth}{\raggedright #2}}}
+
+
+
+\renewcommand{\figref}[1]{Abbildung \ref{#1}} %no protected space ~

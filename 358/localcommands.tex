@@ -1,0 +1,87 @@
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\makeatother
+
+\newcommand{\togglepaper}[1][0]{
+   \bibliography{../localbibliography.bib}
+   \papernote{\scriptsize\normalfont
+     \theauthor.
+     \titleTemp.
+     To appear in:
+     E. Di Tor \& Herr Rausgeberin (ed.).
+     Booktitle in localcommands.tex.
+     Berlin: Language Science Press. [preliminary page numbering]
+   }
+   \pagenumbering{roman}
+   \setcounter{chapter}{#1}
+   \addtocounter{chapter}{-1}
+}
+
+\newbool{bookcompile}
+\booltrue{bookcompile}
+\newcommand{\bookorchapter}[2]{\ifbool{bookcompile}{#1}{#2}}
+
+\makeatletter
+% This command ignores the optional argument for itemize and enumerate lists
+\newcommand{\inlineitem}[1][]{%
+\ifnum\enit@type=\tw@
+    {\descriptionlabel{#1}}
+  \hspace{\labelsep}%
+\else
+  \ifnum\enit@type=\z@
+       \refstepcounter{\@listctr}\fi
+    \quad\@itemlabel\hspace{\labelsep}%
+\fi}
+\makeatletter
+\newcommand{\thickhline}{%
+    \noalign {\ifnum 0=`}\fi \hrule height 1pt
+    \futurelet \reserved@a \@xhline
+}
+\makeatletter
+ \renewcommand{\chaptername}{Capítulo} 
+\makeatother
+
+% \parindent=0pt
+%Path relative to the main .tex file 
+\graphicspath{ {./images/}}
+\newcommand{\myarrow}[1][0.1pt]{\tikz[baseline=-0.26em,y=3em, x=3em]{\filldraw[line width=#1] (0.4202,0.0021) .. controls (0.4202,-0.0000) and (0.4188,-0.0018) .. (0.4171,-0.0025) .. controls (0.3917,-0.0092) and (0.3699,-0.0236) .. (0.3509,-0.0401) .. controls (0.3355,-0.0538) and (0.3225,-0.0704) .. (0.3130,-0.0890) .. controls (0.3119,-0.0915) and (0.3094,-0.0929) .. (0.3066,-0.0929) .. controls (0.3028,-0.0929) and (0.2996,-0.0897) .. (0.2996,-0.0858) .. controls (0.2996,-0.0848) and (0.3000,-0.0837) .. (0.3003,-0.0827) .. controls (0.3087,-0.0665) and (0.3193,-0.0517) .. (0.3316,-0.0391) -- (0.1181,-0.0391) .. controls (0.1143,-0.0391) and (0.1111,-0.0359) .. (0.1111,-0.0320) .. controls (0.1111,-0.0282) and (0.1143,-0.0250) .. (0.1181,-0.0250) -- (0.3471,-0.0250) .. controls (0.3611,-0.0137) and (0.3766,-0.0046) .. (0.3935,0.0021) .. controls (0.3766,0.0088) and (0.3611,0.0179) .. (0.3471,0.0292) -- (0.1181,0.0292) .. controls (0.1143,0.0292) and (0.1111,0.0323) .. (0.1111,0.0362) .. controls (0.1111,0.0401) and (0.1143,0.0432) .. (0.1181,0.0432) -- (0.3316,0.0432) .. controls (0.3193,0.0559) and (0.3087,0.0707) .. (0.3003,0.0868) .. controls (0.3000,0.0879) and (0.2996,0.0889) .. (0.2996,0.0900) .. controls (0.2996,0.0939) and (0.3028,0.0970) .. (0.3066,0.0970) .. controls (0.3094,0.0970) and (0.3119,0.0956) .. (0.3130,0.0932) .. controls (0.3225,0.0745) and (0.3355,0.0580) .. (0.3509,0.0443) .. controls (0.3699,0.0278) and (0.3917,0.0133) .. (0.4171,0.0067) .. controls (0.4188,0.0059) and (0.4202,0.0042) .. (0.4202,0.0021) -- cycle;}}
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+% \captionsetup{%
+%     ,format=hang
+%     ,justification=raggedright
+%     ,singlelinecheck=false
+%     ,figureposition=top
+%     }
+\newfloat{tableeng}{h}{lot}[chapter]
+\floatname{tableeng}{Table}
+% \newfloat{Quadro}{luc}{Quadro}
+\floatsetup[tableeng]{capposition=top}
+% \newfloat{Figura}{luc}{Figura}
+% % \forestset{qtree/.style={for tree={parent anchor=south,
+% %            child anchor=north,align=center,inner sep=0pt}}}% for nodes with linebreaks
+%
+% \counterwithin*{figure}{chapter}
+% \counterwithin*{Figura}{chapter}
+% \counterwithin*{Tabela}{chapter}
+% \counterwithin*{table}{chapter}
+
+% \restylefloat*{figure}
+% \restylefloat*{Figura}
+
+\newcommand{\uplett}[1]{\textsuperscript{#1}}
+
+\newcommand{\RaiseImage}{}%set this to void, unclear what this command is supposed to do
+\newcommand{\subcaptionbox}{}%set this to void, unclear what this command is supposed to do
+
+
+\newcommand{\envalias}[2]{\newenvironment{#1}{\begin{#2}}{\end{#2}}}
+\envalias{Tabela}{table} %We redirect the newly defined environments back to the original Latex environments until all occurrences are replaced in the source code
+\envalias{Figura}{figure}
+\envalias{Quadro}{figure}
+
+
+\newcommand{\tabnote}[1]{\parbox{\textwidth}{\raggedright\footnotesize\noindent{#1}}}
+
+
+

@@ -1,0 +1,357 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.7053373}
+\author{Martine Robbeets\affiliation{Max Planck Institute for the Science of Human History \& Johannes Gutenberg Universität Mainz} and Sofia Oskolskaya\affiliation{Institute for Linguistic Studies, Russian Academy of Sciences}}
+%\ORCIDs{}
+
+\title{Proto-Tungusic in time and space}
+
+\abstract{Although there is a general consensus among historical comparative linguists that the Tungusic languages are genealogically related and descend from a common ancestral language, the internal structure of the family, its age, homeland and prehistoric cultural context remain subject to debate. In addition to four competing concepts of classification, the linguistic literature yields a wide range of time estimations for the family covering more than a millennium as well as four different proposals with regard to the location of the homeland covering Eastern Siberia and Manchuria. Here we will combine the power of traditional comparative historical linguistics and computational phylogenetics to shed light on the prehistory of the Tungusic languages. Our aim is to build on a recent Bayesian verification of the Tungusic family and examine its implications in determining a plausible time depth, location and cultural context of the ancestral proto-Tungusic speech community. We will compare spatial inferences based on two different statistically well-supported Tungusic classifications, namely one in which the break-up of \ili{Manchuric} constitutes the first split in the family as well as a North-South classification with a northern branch including Even, Evenki, Negidal, Oroqen, Solon, Oroch and Udehe as opposed to a southern branch including \ili{Manchuric} and Nanaic languages. Situating Proto-Tungusic in time and space, we will estimate the break-up of Proto-Tungusic in the beginning of the first millennium and place its homeland in the area around Lake Khanka. Our study pushes the field forward in answering some tantalizing questions about the prehistory of the Tungusic family, providing a quantitative basis for some conflicting hypotheses and in triangulating linguistics, archaeology and genetics into a holistic approach to the Tungusic past.}
+
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[2]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\largerpage
+
+The Tungusic language family is distributed over a vast area in China and Russia, ranging from the Sea of Okhotsk in the east to the Yenisei Basin in the west, and from the Bohai Sea in the south to the Arctic Ocean in the north. Figure \ref{fig:8:1} shows the distribution of 12 Tungusic languages, notably \ili{Oroch}, Udehe, \ili{Hezhe},\footnote{We use the term \textit{\ili{Hezhe}} as a cover term for the \ili{Kilen} and \ili{Hezhen} dialects and used sources for both dialects.} \ili{Nanai}, \ili{Orok}, \il{Ulcha}Ulch, Xibe\il{Sibe}, \ili{Even}, \ili{Solon}, \ili{Evenki}, \ili{Negidal} and \ili{Oroqen}, as well as dialectal varieties.\footnote{We used Natural Earth vector map data for the maps printed in this chapter, which are available in the public domain from \url{https://www.naturalearthdata.com/}.} Whereas the four \ili{Nanaic} varieties, \ili{Hezhe} (Heilongjiang), Najkhin \ili{Nanai} (Middle-lower Amur), Kur-Urmi Nanai\il{Kili} (Khabarovsk) and Bikin \ili{Nanai} (\ili{Ussuri}), are so diverse that it is not clear whether they should be considered dialects or separate languages, the Momsky and Olsky \ili{Even} doculects show less internal variation. The map in Figure \ref{fig:8:1} further shows two historical varieties, notably \ili{Jurchen} and \ili{Manchu}. Since written materials in \ili{Jurchen}, the now extinct language of the Jin dynasty (1115--1234), are only partially deciphered, the earliest well documented stage is \ili{Manchu}, the official language of the Qing dynasty (1636--1911).
+
+There is a general consensus that the Tungusic languages are genealogically related and descend from a common ancestral language, conventionally called “\ili{Proto-Tungusic}”. However, due to the wide geographical distribution and the considerable internal variation of these languages, the internal family structure along with its root age and homeland are subject to debate. Here we will combine the power of traditional comparative historical linguistics and computational phylogenetics to shed light on the prehistory of the Tungusic languages. Our aim is to build on recent Bayesian analyses of the Tungusic family and examine their implications for determining a plausible time depth and location of the ancestral proto-Tungusic speech community. In addition, we would like to shed light on the factors that drove early Tungusic language spread.
+
+To this end, we will organize our paper as follows. In \sectref{Section8.2}, we will summarize how the recent application of Bayesian inference methods was able to quantify the reliability of previously proposed classifications of the Tungusic family. In \sectref{Section8.3}, we will compare  the time range of Tungusic, previously inferred by various linguistic dating techniques, against the quantitative basis provided by Bayesian analysis. In \sectref{Section8.4}, we will test various competing hypotheses concerning the possible homeland of \ili{Proto-Tungusic}, applying the diversity hotspot principle on the best supported tree models. Finally, we will map our linguistic inferences about Tungusic prehistory on findings from archaeology and genetics in a holistic approach, for which we use the term “triangulation”.
+
+\begin{figure}
+\includegraphics[width=0.8\textwidth]{figures/Robbeets1a.jpg}
+\caption{The distribution of the Tungusic languages}
+\label{fig:8:1}
+\end{figure}
+
+
+\section{Family structure}\label{Section8.2}
+
+\subsection{Previous classifications}\label{Section8.2.1}
+
+Previous studies of the internal taxonomy of the Tungusic family reach different results, particularly with respect to the early separation of the \ili{Manchuric} (\ili{Jurchen}, \ili{Manchu}, Xibe\il{Sibe}) branch.\footnote{The term \ili{Manchuric} is used elsewhere in literature to designate this branch, see among others \citet{Fuente2011} and \citet{RobbeetsSavelyev2020}.} \citet{Cincius1949RO}, \citet{Benzing1956}, \citet[27]{Menges1968} and, more recently, \citet{Kormushin1998RO}, \citet{Georg2004} and \citet{Janhunen2012a} proposed a binary north-south classification, in which the separation of \ili{Manchuric} from the other Tungusic languages does not constitute the earliest split in the family (Figure \ref{fig:8:2}a). The classical approaches by Cincius, Benzing and Menges separated a Northern branch consisting of \ili{Evenki}, \ili{Even}, \ili{Solon} and \ili{Negidal} from the rest of the Tungusic languages, while the more recent approaches added \ili{Oroch} and Udehe to the Northern branch instead (Figure \ref{fig:8:2}b). \citet[333--335]{Sunik1959}, \citet[44]{Vasilevič1960}, \citet[5]{Doerfer1978}, \citet[102]{Vovin1993}, \citet[291]{Whaleyetal1999}, \citet{Robbeets2015}, \citet{RobbeetsBouckaert2018}, \citet{Dybo2019} and \citet{WhaleyOskolskaya2020} all argued for an early breakup between \ili{Manchuric} and the rest of Tungusic, even if their precise configurations do not overlap in each detail (Figure \ref{fig:8:2}c). Moreover, \citet{Ikegami1974RO} proposed a polytopology, distinguishing as many as four branches, namely \ili{Manchuric}, Evenic\il{Ewenic}, \ili{Nanaic} and Udeheic\il{Udegheic} (Figure \ref{fig:8:2}d).\footnote{Some authors, such as Ikegami and Janhunen used a different terminology for these groupings, but for reason of accessibility, we use a consistent terminology here.} The basic configuration of these four topologies is represented in Figure \ref{fig:8:2}.
+
+Except for \citegen{Dybo2019} classification, which is based on lexicostatistics, the majority of previous research is based on the traditional Maximum Parsimony method. This approach used by historical comparative linguists, seeks a tree that explains a dataset by minimizing the number of evolutionary changes required to produce the observed data. Lexicostatistics is an early and less reliable form of statistical tree-building, which uses the shared cognate proportion in a basic vocabulary list as a distance metric to estimate linguistic relationships.
+
+The Bayesian method seeks to explain a set of observed data by quantifying how likely it is that they have been produced by a certain model. As this is a statistical approach in which all forms of uncertainty are expressed in terms of probability, it can contribute to the current state of the art by verifying which of the models in Figure \ref{fig:8:2} is best supported by the data by quantifying the statistical robustness of  different proposals and by inferring absolute divergence dates. In this way, a Bayesian approach can provide a quantitative basis for previous classifications based on classical historical linguistic approaches. Here we aim at interpreting the results of a recent Bayesian analysis of the Tungusic family (\citealt{Oskolskayaetal2022}) and at inferring spatiotemporal and cultural patterns of Tungusic linguistic dispersal.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/Robbeets2a.jpg}
+\caption{Basic configuration distinguishing four topologies for the Tungusic family: a. Classical North-South classification; b. Revised North-South classification; c. Manchu-Tungusic classification; d. Quadruple topology}
+\label{fig:8:2}
+\end{figure}
+
+\subsection{A recent Bayesian approach to the classification of the Tungusic languages}\label{Section8.2.2}
+
+\citet{Oskolskayaetal2022} took a Bayesian approach to the classification of the Tungusic languages, based on the dataset of 254 basic vocabulary items collected for 21 Tungusic varieties. The maximum clade credibility tree in Figure \ref{fig:8:3}, which is the best supported tree among all trees generated by applying different evolutionary models, summarizes the results of this study.\footnote{All datasets and coding details are accessible through the supplementary information in \citet{Oskolskayaetal2022}.}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/Robbeets3a-smaller.png}
+\caption{Maximum clade credibility tree (Binary covarion, no gamma variation, relaxed clock) for the Tungusic family \citep{Oskolskayaetal2022}}
+\label{fig:8:3}
+\end{figure}
+
+
+The trees underlying Figure \ref{fig:8:3} were generated running the software BEAST 2.4.7 (\citealt{Bouckaert2014}), which only allows for a binary structure of splits. \ili{Jurchen}, which is usually considered as a direct ancestor of \ili{Manchu} is represented as a separate branch because a written standard is never considered directly ancestral to a spoken variety.\il{written Manchu} The model thus assumes that \ili{Jurchen} and \ili{Manchu}-Xibe\il{Sibe} have separated from a common ancestor, spoken at some point in the past.
+
+The numbers on the nodes show the posterior probability, which qualifies the statistical robustness of each clade. The higher the number, the more probable the existence of the clade. We can thus safely establish a \ili{Northern Tungusic} branch (posterior probability = 1), a \ili{Nanaic} branch with Najkhin \ili{Nanai}, \ili{Orok} and \il{Ulcha}Ulch (posterior probability = 0.99) and a \ili{Manchuric} branch, probably including \ili{Hezhe} besides \ili{Jurchen}, \ili{Manchu} and Xibe\il{Sibe} (posterior probability = 0.97). With posterior probabilities below 0,80, the exact position in the tree of \ili{Udihe}, \ili{Oroch}, Kur-Urmi\il{Kili}, Bikin \ili{Nanai}\il{Ussuri} and the cluster \ili{Orok}-\il{Ulcha}Ulch-Nakjin \ili{Nanai}  is less secure, but it is interesting to note that the tree in Figure \ref{fig:8:3} does not support a monophyletic cluster composed by \ili{Oroch} and \ili{Udihe}.\footnote{\textcitetv{chapters/07} proposes that \ili{Udihe}, \ili{Oroch}, and \ili{Kyakala} are the ends of a continuum.}
+
+Taking into account the probabilities of the branches, the tree in Figure \ref{fig:8:3} supports two basic classifications previously proposed in the literature, the revised North-South classification (Figure \ref{fig:8:2}b) and the \ili{Manchu}-Tungusic classification (Figure \ref{fig:8:2}c). According to \citet{Oskolskayaetal2022}, the revised North-South classification with a binary split between \ili{Manchuric} and \ili{Nanaic} on the one hand and \ili{Northern Tungusic}, Udehe\il{Udihe} and \ili{Oroch} on the other is best supported (i.e. in 48,3\% of generated trees), while the \ili{Manchu}-Tungusic classification (Figure \ref{fig:8:2}c) is also highly probable (31,1\% of trees). The other two classifications, namely the classical North-South and the quadruple classification presented in Figures~\ref{fig:8:2}a and \ref{fig:8:2}d, are excluded by this analysis.
+
+
+\section{Age}\label{Section8.3}
+
+\subsection{Previous dating}\label{Section8.3.1}
+
+As shown in Table \ref{table:8.1}, different linguistic dating principles yield a time range for the primary breakup of \ili{Proto-Tungusic} between 950 BC and AD 700. Applying lexicostatistic methods, \citet{Dybo2019} dated \ili{Proto-Tungusic} to around 950 BC, while \citet{Korovina2011} dated it to the sixth century BC, but other distance-based methods, such as the Automated Similarity Judgment Program (ASJP) yielded much younger dates, notably AD 681 (\citealt[854]{Holman2011}). Distance-based methods use a distant metric, such as the lost cognate proportion or the number of operations required to turn one string of phonemes into another, to infer the time depth of language separation. However, as they assume a constant rate of loss over time, their results are not generally accepted. Another loose dating principle that is not entirely foolproof is tracing the primary break-up of \ili{Proto-Tungusic} back to certain ethnonym shifts. Referring to the name change in \ili{Chinese} dynastic chronicles of the Tungusic ethnonym “Yilou” to “Wuji”, \citet[16–18]{Robbeets2015} situated the break-up of \ili{Proto-Tungusic} at the end of the Han period (206 BC--AD 220). On the basis of a rough measure of mutual intelligibility, \citet[32]{Pevnov2012} estimated that \ili{Proto-Tungusic} could not be younger than two thousand years.
+
+Reconstructing the vocabulary of a proto-language, we can examine the cultural and ecological concepts revealed in it. The time when some of these concepts became available to the speakers of the proto-language can also serve as an indication for the language family’s time depth. In line with \citegen[8]{Janhunen2012a} findings, an Iron Age dating of \ili{Proto-Tungusic} is supported by the reconstruction of PTg\il{Proto-Tungusic} *\textit{sele} `iron', reflected in \ili{Evenki} \textit{sele}, \ili{Even} \textit{hel}, Neg. \textit{sele}, \ili{Solon} \textit{sele}, Xibe\il{Sibe} \textit{selǝ}, \ili{Manchu} \textit{sele}, Jur. *\textit{sele}, \il{Ulcha}Ulch \textit{sele}, \ili{Orok} \textit{sele}, \ili{Nanai} \textit{sele}, \ili{Oroch} \textit{sele} and \ili{Udihe} \textit{sele}. Although a single reconstruction, which is not backed up by other vocabulary items, cannot provide us with a reliable chronology, the Iron Age dating of \ili{Proto-Tungusic} is further corroborated by contact linguistics. As words have travelled between languages since prehistoric times, giving voice to new ideas and names to new products and practices, we expect to observe links between cultural diffusion and prehistoric borrowing. One possible candidate for such a link is PTg\il{Proto-Tungusic} *\textit{murgi}, the reconstructed term for ‘barley and similar crops’. There is reason to believe that this word is borrowed from an Old \ili{Chinese} donor word \zh{來} *\textit{mə.rˤək} > *\textit{mə.rˤə} ‘a kind of wheat’ (\citealt{Robbeets2017a}: 28--29). The linguistic reconstruction can be correlated to the archaeological evidence for barley being first imported through \ili{Chinese} contact at the time of the Krounovskaya culture (600 BC--AD 200), situated in the Southern Primorye around Lake Khanka (\citealt{Sergusheva2009}: 214--215). This culture also marks the beginning of the Early Iron Age in the \ili{Russian} Far East with the first uncontested finds of iron. Therefore, on the basis of contact studies, the break-up of \ili{Proto-Tungusic} has been dated to the period between 600\,BC and AD\,200.
+
+\begin{table}
+\begin{tabular}{ l l l }
+  \lsptoprule
+Dating principle        &	Source                           &	Time depth\\
+  \midrule
+Lexicostatistics        &	\citealt{Dybo2019}               &	950 BC\\
+Lexicostatistics        &	\citealt{Korovina2011}           &	600 BC\\
+ASJP                    &  	\citealt{Holman2011}             &	AD 681\\
+Ethnonym shift          &	\citealt{Robbeets2015}           &	206 BC--AD 220\\
+Intelligibility         &	\citealt{Pevnov2012}             &	AD 1\\
+Cultural reconstruction &	\citealt{Janhunen2012a}          &	500 BC--AD 500\\
+Contact linguistics     &	\citealt{Robbeetsetal2020}       &	600 BC--AD 200\\
+  \lspbottomrule
+\end{tabular}
+\caption{The estimated time of separation of Proto-Tungusic according to different linguistic dating principles}
+\label{table:8.1}
+\end{table}
+
+
+\subsection{Dating through Bayesian inference}\label{Section8.3.2}\largerpage
+
+The Bayesian method calibrates the divergence time of the root and the nodes in a language family against known cases of language divergence over attested timespans and quantifies how likely it is that the inferred time depth falls within a certain density interval. For calculating the divergence time of the root and the nodes in Tungusic tree, \citet{Oskolskayaetal2022} calibrated the tree in three nodes.
+
+First, they estimated a time depth for the transition from \ili{Jurchen} into \ili{Manchu} and inserted it as a calibration point. To this end, they used the time of the first known \ili{Manchu} manuscript which is dated to 1599 (\citealt{Gorelova2002}: 50). The logic is that \ili{Jurchen} is no longer attested by that period and had thus ceased to exist before 1599. Therefore, 351 years before present (conventionally before 1950) was used as an estimation for the separation time between \ili{Jurchen} and \ili{Manchu}–Xibe\il{Sibe}. However, as the model assumes that \ili{Jurchen} and \ili{Manchu}–Xibe\il{Sibe} already separated before the time that \ili{Jurchen} was first attested, thus before 1185, a separation time that aligns with the model should be at least 765 years before present. This difference of at least 400 years is expected to yield a later date for the calculated time depth of \ili{Proto-Tungusic} than the real one.
+
+The second calibration point is the time of the split between the Xibe\il{Sibe} and \ili{Manchu} languages, 186 years ago. This is based on the dating of the resettlement of Xibe\il{Sibe} populations to the northwest of China in 1764 (\citealt{Gorelova2002}: 31).
+
+The third calibration point is the time of the first break-up of \ili{Evenki}, which had taken place already before 1723, i.e. more than 227 years ago. According to \citet{Vasilevic1969}, D.\,G. Messerschmidt in his fieldnotes in 1723 provided vocabulary collected from various \ili{Evenki} people in different regions. His data show that there were at least two dialects that can be associated with the modern distinction between the \il{Evenki!Northern}Northern versus the \il{Evenki!Southern}Southern and \il{Evenki!Eastern}Eastern dialects. Thus, the first break-up of \ili{Evenki} had already taken place by that time.\largerpage
+
+Using these three calibration points to calibrate the tree,  Bayesian analysis infers a time depth for the root and nodes in the Tungusic tree, as shown in Figure \ref{fig:8:4}.\footnote{The detailed information of this analysis is described in \citet{Oskolskayaetal2022}.}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/Robbeets4.jpg}
+\caption{Bayesian age estimation for the nodes in the Tungusic tree \citep{Oskolskayaetal2022}}
+\label{fig:8:4}
+\end{figure}
+
+All dates in Figure \ref{fig:8:4} indicate a time “before present”, conventionally before 1950. Each bar shows a time range, in which a specific split has taken place with a 95\% higher posterior density interval (HPDI). The time depth of the primary split is particularly relevant for our present study. The credible interval for this split covers about 1800 years (737 BC--1154 AD), which implies that there are not enough data for more precise results. Nevertheless, the median of this bar is around 1500 BP, i.e. AD 450.
+
+It should be noted that the three calibration points refer to relatively recent events and present upper limits after which the separation cannot have taken place. This could lead to a bias in the estimation of the time-depth of the Tungusic tree, by which the estimated age would be younger than the real age. This effect is increased by the fact that the split between \ili{Jurchen} and \ili{Manchu}-Xibe\il{Sibe} should be calibrated at least 400 years earlier. Therefore, it is probable that the actual break-up of \ili{Proto-Tungusic} took place several centuries before the inferred date of AD 450, probably in the beginning of the first millennium AD, as implied in the hypotheses provided by \citet{Janhunen2012a}, \citet{Pevnov2012}, \citet{Robbeets2015} and \citet{Robbeetsetal2020}.
+
+
+\section{Homeland}\label{Section8.4}
+
+\subsection{Previous proposals}\label{Section8.4.1}
+
+As indicated on the map in Figure \ref{fig:8:5}, there are four competing hypotheses with regard to the possible homeland of \ili{Proto-Tungusic}, notably (1) the Baikal region (\citealt{Vasilevič1960}; \citealt[23]{Menges1968}; \citealt{Derevyanko1976}; \citealt{Helimski1985}: 279), (2) the Mid Amur and the lower part of the Upper Amur region (\citealt{Tugolukov1980}; \citealt{Janhunen1996RO}: 169; \citealt{Korovina2011}; \citealt{Pevnov2012}; \name[Wichmann, Søren]{Wichmann} p.c., 2019.10.03; \citealt{Pugach2016}), (3) the region around Lake Khanka (\citealt{Robbeets2020}; \citealt{WangRobbeets2020}) and (4) the Yalu River region on the border between present-day Liaoning and Northern Korea (\citealt{Janhunen2012a}). The evidence in support of the Baikal region comes mainly from prehistoric contact linguistics assuming ethnolinguistic interaction with ancient speakers of \ili{Amuric}, \ili{Samoyedic}, \ili{Mongolic} and Yeniseic\il{Yeniseian}. An original location in the Mid and Upper Amur region is supported by various approaches: \citet[169]{Janhunen1996RO} provides ethnolinguistic indications; \citet{Korovina2011} reconstructs names for insects, reptiles, shellfish and fish; \citet{Pevnov2012} combines toponyms with reconstructed river vocabulary and tree names; and Wichmann takes a computer-automated approach to the diversity hotspot principle. The region around Lake Khanka is supported by the diversity hotspot principle and cultural reconstruction, while the Yalu River region is proposed on the basis of a general northward trend of expansion.
+
+\vfill
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{figures/Robbeets5a-smaller.jpg}
+\caption{Proposed locations for the homeland of Proto-Tungusic:\\ (1) the Baikal region; (2) the Mid Amur and the lower part of the Upper Amur region; (3) the region around Lake Khanka; (4) the Yalu River region}
+\label{fig:8:5}
+\end{figure}
+\vfill\pagebreak
+
+% Base map purchased from [vectormaps.de]. In addition, map data was created using QGIS 3.12 [1]https://qgis.org/en/site/ and uses Natural Earth vector map data from [2]https://www.naturalearthdata.com/downloads/.
+
+\subsection{Diversity hotspot principle}\label{Section8.4.2}
+
+The “diversity hotspot principle” is based on the assumption that the homeland is closest to where one finds the greatest diversity with regard to the deepest subgroups of the language family. It follows that the primary splits in the family are determinants for the location of the homeland. In the case of the Tungusic family, this implies that depending on which of the four classifications in Figure \ref{fig:8:2} we favor, the center of primary diversity – and thus also the inferred location of the homeland – will move on the map. The resulting locations are situated on the map in Figure 6. Whereas the classical north-south classification pushes the homeland to the north towards the Upper to Mid Amur region (Figure \ref{fig:8:6}a), the revised north-south, the Manchu-Tungusic and the quadruple classifications pull it more southwards towards the Mid Amur region immediately north of Lake Khanka (Figure \ref{fig:8:6}b), the area around Lake Khanka (Figure \ref{fig:8:6}c) and Manchuria (Figure \ref{fig:8:6}d), respectively. 
+
+Although the diversity hotspot principle can provide some clues about the homeland of a language family, it must also contend with several limitations (\citealt{WangRobbeets2020}): the contemporary hotspot of linguistic diversity may diverge from the earlier one or the principle may be upset when a migration was suddenly directed over a long distance rather than representing slow, gradual and random movement into adjacent areas. The Xibe\il{Sibe} populations, for instance, were suddenly resettled to the west in the 18th century and northern Tungusic populations, such as the \ili{Evenki} and \ili{Even}, are extremely mobile. Nevertheless, we can gain more from applying the diversity hotspot principle to Tungusic, than we can lose from ignoring it, because it helps us to set up hypotheses about homelands and it makes us aware of the interconnection between internal family structure and the identification of a homeland.\largerpage[1.5]
+
+Since our Bayesian analysis presented in \citet{Oskolskayaetal2022} and summarized in \sectref{Section8.2.2} supports the classifications represented in Figure \ref{fig:8:6}b/c, it indicates that the original homeland of the \ili{Proto-Tungusic} speech community was situated in the area around lake Khanka or immediately to the north of it. This location is corroborated by \citegen{Wichmann2010} attempt to formalize the diversity hotspot principle in a computer-automated approach. Taking into account 11 Tungusic languages, notably \ili{Even}, \ili{Evenki}, \ili{Negidal}, \ili{Oroqen}, Naykhin \ili{Nanai}, \ili{Oroch}, \ili{Orok}, \il{Ulcha}Ulch, Udehe\il{Udihe}, \ili{Manchu} and Xibe\il{Sibe}, they compute a diversity measure for each language and identify the homeland with the location of Naykhin \ili{Nanai}, the language with the highest diversity measure.\footnote{Wichmann et al.'s measure of diversity is derived as the proportion $l/g$ of the linguistic distance $l$ and the geographical distance $g$ between two languages. By way of linguistic distance, they use the \textit{Levenshtein distance}, which is the minimum number of substitutions necessary to transform one string of phonemes into another in a subset of 40 basic vocabulary items.} The location of Naykhin \ili{Nanai} at latitude 49.28 and longitude 136.47 is equated with that of the Tungusic homeland. As more southern varieties such as \ili{Solon} on the \ili{Nonni} River in Inner Mongolia and Bikin \ili{Nanai}\il{Ussuri} in the southern part of the Primorye province as well as \ili{Hezhe} in Heilongjiang are lacking from this analysis, we may expect the real diversity hotspot to be slightly more to the south than the inferred one.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/Robbeets6a-smaller.jpg}
+\caption{Diversity hotspot of the Tungusic languages under the four proposed classifications}
+\label{fig:8:6}
+\end{figure}
+
+% Base map purchased from [vectormaps.de]. In addition, map data was created using QGIS 3.12 [1]https://qgis.org/en/site/ and uses Natural Earth vector map data from [2]https://www.naturalearthdata.com/downloads/.
+
+\section{Triangulation}\label{Section8.5}
+
+\subsection{Linguistics}\label{Section8.5.1}
+
+Combining Bayesian inference with other linguistic approaches, we estimate that \ili{Proto-Tungusic} was spoken in the area around or immediately north of lake Khanka in the beginning of the first millennium AD. As shown in Table \ref{table:8.2}, cultural reconstruction indicates that the speakers of \ili{Proto-Tungusic} were familiar with agriculture. The use of words such as *\textit{pisike} ‘broomcorn millet (\textit{Panicum miliaceum})’, *\textit{jiya-} ‘foxtail millet (Setaria italica)’,\footnote{The cognates \ili{Nanai} \textit{jie-kte} and \ili{Oroch} \textit{jie-kte} suggest front vocalization *\textit{jiye-kte} in \ili{Proto-Tungusic}, while \ili{Negidal} \textit{ja:kta}, \ili{Solon} \textit{jakta} and Udehe\il{Udihe} \textit{jakta} suggest original back vocalization *\textit{jiya-kta}. In addition to the vowel alternation in the in \ili{Oroch} suffix \textit{-kte} and \textit{-kta}, this observation suggests that the alternation between *\textit{jiya-kta} and *\textit{jiye-kte} was already present at the \ili{Proto-Tungusic} stage. It was probably due to assimilation with the initial front vowel in *\textit{jiya-kta}. Another example of such an alternation is found in \ili{Proto-Tungusic} *\textit{niaya-} {\textasciitilde} \textit{nieye-}, which is reflected as \textit{yaya-} or \textit{ńaya}- ‘to shamanize’ in most Tungusic languages but as \textit{leye-} ‘to sing’ in \ili{Manchu}. Note that PTg\il{Proto-Tungusic} *\textit{ye} regularly develops in \ili{Manchu} \textit{ye}, e.g. PTg\il{Proto-Tungusic} *\textit{xeye-} ‘to sink’ and Ma. \textit{eye-} ‘to float, flow’ (\citealt{Cincius1975RO}: 440--442; \citealt{Starostin2003}) or PTg\il{Proto-Tungusic} *\textit{jeye} ‘sharp point; blade’ and \ili{Manchu} \textit{jeyen} ‘sharp point; blade’ (\citealt{Cincius1975RO}: 282--283; \citealt{Starostin2003}), etc. \ili{Manchu} \textit{je} ‘foxtail millet (Setaria italica); grain’ is thus considered a contraction from *\textit{jiye}.} *\textit{murgi} ‘barley’,\footnote{It is a universal tendency that consonant clusters are susceptible to variation through assimilation, metathesis or consonant loss. Consonant clusters across the Tungusic languages are no exception to this expectation. Although the reflex of the \ili{Proto-Tungusic} *\textit{rg} cluster is relatively stable in most northern Tungusic languages, we find a variety of reflexes, such as \textit{rg}, \textit{gg}, \textit{yg}, \textit{jg} and \textit{g} in \ili{Manchuric} and other southern Tungusic languages, including an occasional \textit{j} in \ili{Nanai}, \ili{Orok} and \il{Ulcha}Ulch, e.g., PTg\il{Proto-Tungusic} *\textit{burga-kta} ‘beard, moustache’ reflected in \il{Ulcha}Ulch \textit{bụja-qta}, \ili{Nanai} \textit{boja-qta}; PTg\il{Proto-Tungusic} *\textit{serge-kte} ‘nose bone’ in \ili{Nanai} \textit{sejurẽ}; PTg\il{Proto-Tungusic} *\textit{irge} `brain, head’ in \il{Ulcha}Ulch \textit{ije}, etc.} *\textit{üse-} {\textasciitilde} \textit{üsi-} ‘to plant’,\footnote{Given that the expected reflex of PTg\il{Proto-Tungusic} *\textit{ü} is Udehe\il{Udihe} \textit{i}, Udehe\il{Udihe} \textit{uhi-} ‘to sow, to plant a garden’, \textit{uhi} ‘garden for cultivating plants’ may represent cases of intra-Tungusic borrowing and the inherited reflex in \ili{Udihe} may be \textit{yehu-} ‘to grow’, given the palatal glide onset. Note however that, even if the majority reflex PTg\il{Proto-Tungusic} *\textit{ü} is \textit{i} in \ili{Oroch}, there are a few instances where  PTg\il{Proto-Tungusic} *\textit{ü} is retained as \textit{u} instead, e.g. PTg\il{Proto-Tungusic} *\textit{erün} ‘time’ as \ili{Oroch} \textit{erū(n)} (\citealt{Cincius1975RO}: 463--464; \citealt{Starostin2003}), PTg\il{Proto-Tungusic} *\textit{xulbü-} ‘to bind, arrange’ as \ili{Oroch} \textit{ubbuna-} (Cincius 1977: 258; \citealt{Starostin2003}), PTg\il{Proto-Tungusic} *\textit{xegün} ‘nine’as \ili{Oroch} \textit{xuju(n)} (\citealt{Cincius1975RO}: 352--353; \citealt{Starostin2003}), PTg\il{Proto-Tungusic} *\textit{tüksa} ‘house cover made of birch bark’ as \ili{Oroch} \textit{tuksa} (\citealt{Cincius1975RO}: 179; \citealt{Starostin2003}), etc. Therefore, this correspondence is included in the appended list of sound correspondences.\il{Proto-Tungusic}} *\textit{üse} {\textasciitilde} \textit{üsi} ‘seed, seedling’, *\textit{üsin} ‘field for cultivation’ and *\textit{tari-} ‘to sow, plant, cultivate’ implies that the speakers relied on plant cultivation for subsistence. The derivation of the \ili{Proto-Tungusic} word *\textit{üse} {\textasciitilde} \textit{üsi} ‘seed, seedling’ as a deverbal noun from the verb *\textit{üse-} {\textasciitilde} \textit{üsi-} ‘to plant’ suggests that seeds were not just collected for consumption in the wild but that they were planted as part of a cultivation process. In addition, for some crop names such as ‘barley’ and ‘broomcorn millet’, we can argue that the word refers to the domesticated crop rather than to the wild variety of the plant because both crops are not native to the region and have been imported as domesticated crops. It is commonly assumed that broomcorn millet has been imported from the West Liao River region by the people who introduced the Zaisanovskaya culture (3200--1300 BCE) to the \ili{Russian} far East (\citealt{Sergusheva2009}; \citealt{Leipe2019}; \citealt{Li2020}).
+
+\begin{table}
+\caption{The reconstruction of agricultural vocabulary in Proto-Tungusic (adapted from \citealt{Robbeetsetal2020}: 765)\label{table:8.2}}
+\small
+\begin{tabularx}{\textwidth}{ l >{\raggedright\arraybackslash}p{2.5cm} Q }
+  \lsptoprule
+No. &	Proto-Tungusic &	Attested Tungusic words\\
+  \midrule
+(1) &
+*\textit{pisike} ‘broomcorn millet (Panicum miliaceum)’ & Manchu \textit{fisihe} {\textasciitilde} \textit{fisike} ‘glutinous millet, broomcorn millet (Panicum miliaceum)’; \il{Ulcha}Ulch \textit{pikse}; \ili{Nanai} \textit{pikse} ‘millet’; Kur-Urmi\il{Kili} dialect \textit{fisxe} ‘broomcorn millet (Panicum miliaceum)’; \ili{Jurchen} *\textit{fise} \textit{bele} ‘yellow rice; coarse rice’ (\textit{bele} ‘hulled rice, edible grain’)\\
+\midrule
+(2) & *\textit{jiya-kta} {\textasciitilde} *\textit{jiye-kte} ‘foxtail millet (\textit{Setaria italica})’ &
+Negidal \textit{ja:kta} ‘foxtail millet (Setaria italica), small millet,; cleaned grain; oats flour’; \ili{Solon} jakta ‘porridge, food’; Xibe\il{Sibe} \textit{je} ‘foxtail millet (Setaria italica)’; \ili{Manchu} \textit{je} ‘foxtail millet (Setaria italica); grain’, \ili{Jurchen} *\textit{je bele} ‘millet’;  \ili{Nanai} \textit{jiekte} ‘foxtail millet (Setaria italica)’; \ili{Oroch} \textit{jiekte}, \textit{jekte}, \textit{jiekta} ‘millet’, Udehe\il{Udihe} \textit{jakta} ‘foxtail millet (Setaria italica), porridge’\\
+\midrule
+(3) & *\textit{üse-} {\textasciitilde} \textit{üsi-} ‘to plant’ → *\textit{üse} {\textasciitilde} \textit{üsi} ‘seed, seedling’ → *\textit{üsi-n} ‘field for cultivation’ &
+Evenki \textit{ihəw-} ‘to grow (of people)’; \ili{Even} \textit{isu:-} {\textasciitilde} \textit{esu:-} ‘to sprout, come out (of plants), blossom, grow’, \ili{Negidal} \textit{isew-} ‘to grow, become acclimatized (about plants); mature, grow up (about people)’; Xibe\il{Sibe} \textit{use-} ‘to sow seeds’, \textit{use} ‘seed, grain’, \textit{usin} ‘field, farmland’; \ili{Manchu} \textit{use-} ‘to plant, seed (tr.)’, \textit{use} ‘seed; insect egg’, \textit{usin} ‘field for cultivation’, \ili{Jurchen} *\textit{use} ‘seedling’, \textit{usi-in} ‘field’, \il{Ulcha}Ulch \textit{use} ‘seed’, \textit{usun} ‘field, garden’; \ili{Nanai} \textit{use} ‘seed’, \textit{usĩ} ‘arable field for cultivation; private garden for cultivating vegetables’, \ili{Orok} \textit{usi} ‘field (farm), garden’, \textit{usi-} ‘to cultivate, till; hunt a bear’; \ili{Oroch} \textit{usi} ‘seeds, grains’, \textit{usin} ‘garden for cultivation’, \textit{usin-} ‘to sow, to plant in a garden’; Udehe\il{Udihe} \textit{yehu-} ‘to grow’, \textit{uhi-} ‘to sow, to plant a garden’, \textit{uhi} ‘garden for cultivating plants’\\  \midrule
+(4) & *\textit{tari-} ‘to sow, plant, cultivate’ & Evenki \textit{tari-} {\textasciitilde} \textit{tare-} {\textasciitilde} \textit{tale-} ‘to sow’; \ili{Solon} \textit{tari-} ‘to sow seeds; to plant; to cultivate; to grow; to disseminate; to inject; to infect, to catch a disease’, \textit{tariŋko} ‘injector’; \ili{Manchu} \textit{tari-} ‘to cultivate, farm; to plow’; \ili{Jurchen} *\textit{tali-} {\textasciitilde} \textit{tari-} ‘to sow, to plant, to cultivate’; \il{Ulcha}Ulch \textit{tari̇}- ‘to sow, to plant’;  \ili{Nanai} \textit{tari-} ‘to sow seeds’, \textit{tariko} ‘sowing machine’, \textit{tarici-} ‘to sow (seeds) regularly’; Udehe\il{Udihe} \textit{tali-} ‘to plant a garden’, \textit{tali} ‘garden for cultivating plants’\\
+\midrule
+(5) & *\textit{murgi}  ‘barley (Hordeum vulgare)’ & Manchu \textit{muji} ‘barley (Hordeum vulgare)’, Xibe\il{Sibe} \textit{muji} ‘barley (Hordeum vulgare)’, \il{Ulcha}Ulch \textit{muji} ‘oats’, \ili{Nanai} \textit{muji} ‘oats’, \ili{Oroch} \textit{muji} 'barley', \ili{Jurchen} *\textit{mirɣei} ‘product of agriculture’, \ili{Solon} \textit{mụrgil} ‘spring crops, spring-sown field’\\
+\lspbottomrule
+\end{tabularx}
+% \caption{continues}
+\end{table}
+
+Whereas several agricultural terms are inherited, maritime vocabulary can often be explained as borrowed from \ili{Proto-Amuric} or its descendant \ili{Nivkh}. This is for instance the case for ancient loanwords, such as PTg\il{Proto-Tungusic} *\textit{laamos} ‘wind (from the sea)’ from \ili{Proto-Amuric} *\textit{lamos} > \ili{Nivkh} \textit{lams} ‘eastern wind’, PTg\il{Proto-Tungusic} *\textit{kalïmV} ‘whale’ from \ili{Proto-Amuric} *\textit{kalïmV} ‘whale’ > \ili{Nivkh} \textit{kalm} (\textit{qalm}) ‘(small) whale’ (\citealt{Janhunen2016}) and PTg\il{Proto-Tungusic} *\textit{laska} ‘sea goby’ from \ili{Proto-Amuric} *\textit{laskV} ‘goby’ > \ili{Nivkh} \textit{lask} ‘a goby (of middle size).
+
+The direction of the borrowing is verifiably from \ili{Amuric} into Tungusic given that \ili{Proto-Amuric} *\textit{lamos} is derived from the simplex root *\textit{la} ‘wind’, while the Tungusic parallel is not segmentable and because the initial liquid phoneme *\textit{l-} is atypical for \ili{Proto-Tungusic}.
+
+\citet{Korovina2011} further finds that fish species that inhabit the Pacific Ocean are not well distributed across the Tungusic languages and are often borrowed from \ili{Nivkh} into one or more individual daughter languages (e.g. \ili{Oroqen} \textit{lokko} ‘flounder’ from \ili{Nivkh} \textit{lok} ‘flounder’, \ili{Oroqen} \textit{la:kka} ‘herring’ and \ili{Orok} \textit{la:qqa} ‘herring’ from \ili{Nivkh} \textit{laku} ‘herring’, etc.). This suggests that the speakers of \ili{Proto-Tungusic} were farmers, who did not acquire maritime vocabulary until they came in contact with indigenous populations on the Pacific coast, some of which might have spoken an ancestral form of \ili{Nivkh}.
+
+\begin{sloppypar}
+Except for these maritime loanwords, \ili{Proto-Tungusic} borrowed only few words from \ili{Proto-Amuric}. By contrast, there are several indications of \ili{Proto-Amuric} substratum interference in \ili{Proto-Tungusic}. The evidence comes from atypical structural features in Tungusic that are likely to have developed through imperfect learning from \ili{Proto-Amuric}. Among others, these features include the development of a word-initial liquid and velar nasal sound in Tungusic, the development of a distinction between ‘we (including the addressee)’ and ‘we (excluding the addressee)’ in first-person plural pronouns, the development of a distinction between alienable and inalienable possession and the development of marking possessive relations on the head noun instead of the dependent (\citealt{Robbeets2017a}).
+
+Whether one prefers to explain the numerous structural similarities between Tungusic and other Transeurasian languages by borrowing or inheritance, it is commonly agreed that Tungusic typology is of the Transeurasian (or “\ili{Altaic}”) type (\citealt{Robbeets2017b}). Transeurasian languages are typical dependent-marking languages, while \ili{Nivkh} is – similar to \ili{Ainu}, Asian North Pacific-Coast languages (e.g., \ili{Chukotko-Kamchatkan}), wider \ili{Paleosiberian} languages (e.g., \il{Yeniseian}) and languages of  the Northwest Pacific Coast (e.g., \ili{Salishan}, \ili{Wakashan}, \ili{Chimakuan}, \ili{Athabaskan}) – of the head-marking type. The features above are atypical for Tungusic and  more proto-typical of \ili{Nivkh} in the sense that they represent direct or indirect implicational tendencies of being of the head-marking type or that they more frequently occur in \ili{Ainu}, other Asian North Pacific-Coast languages, wider \ili{Paleosiberian} languages   and languages of  the Northwest Pacific Coast than in languages of the Transeurasian type.
+\end{sloppypar}
+
+These linguistic observations thus suggest a situation of language shift where\-by some ancestral speakers of \ili{Proto-Amuric} abandoned their own language and adopted the Proto-Tunguisic target language.
+
+
+\subsection{Archaeology}\label{Section8.5.2}
+
+Is our association of \ili{Proto-Tungusic} with incoming millet farmers who imposed their language on local fishers speaking \ili{Proto-Amuric} supported by the archaeological record?
+
+During the Middle to Late Hongshan periods (4000--3000 BC), the cultivation of broomcorn and foxtail millet dispersed from the West Liao River basin in North East China to the Primorye (Maritime) province of the \ili{Russian} Far East (\citealt{Sergusheva2009}; \citealt{Leipe2019}; \citealt{Li2020}). The introduction of millet farming in the Primorye was combined with the adoption of Northeast \ili{Chinese} material culture such as cord-marked pottery, spindle whorls and stone agricultural tools, especially mortars, pestles and constricted-waist hoes (\citealt{Nelson2020}; \citealt{Li2020}) and led to the establishment of the Zaisanovskaya culture (3200--1300 BCE). The linguistically inferred time depth in the beginning of the first millennium AD corresponds to the break-up time when \ili{Proto-Tungusic} separated into its primary branches and thus ceased to exist, but it does not inform us about when the ancestral language arrived in the region or started to exist there. Considering Bayesian inference of the time depth of the split between Tungusic and Mongolo-\ili{Turkic} at 3300 BC (\citealt{RobbeetsBouckaert2018}), it is inviting to associate the arrival of \ili{Proto-Tungusic} in the \ili{Russian} Far East with the beginning of the Zaisanovskaya culture (\citealt{Mallory2019}; \citealt{WangRobbeets2020}; \citealt{Cui2020}; \citealt{Li2020}).
+
+Observing the high productivity of rice vis-à-vis millets, archaeobotanists argue that rice tends to be spread more easily through cultural diffusion, while millets are more frequently spread by population migration (\citealt{Fuller2009}; \citealt{StevensFuller2017}). This is explained by the fact that wet rice cultivation can absorb population increase through intensification of land use, while the increased production of millet tends to occur through the agricultural colonisation of new land. The assumption of actual population movements from the West Liao River Basin to the Primorye in the fourth millennium BC is further supported by increases in population density (\citealt{Peterson2010}; \citealt{Miyamoto2014}; \citealt{Drennan2017}; \citealt{Leipe2019}).  
+
+Population migration and cultural diffusion are expected to yield different linguistic outcomes (\citealt{Thomason1988}). In the first case, when human populations move into new areas along with their language and culture, language shift is frequently observed: local speakers abandon their own language in favour of the incoming target language. Due to imperfect learning, the abandoned language may leave some traces in the structure of the target language, a phenomenon called “substratum interference” (\citealt{VanCoetsem2000}; \citealt{Johanson2002}; \citealt{Winford2013}). Nevertheless, the newly adopted language is genealogically related to the ancestral language of the migrants. By contrast, in the case of cultural diffusion, when certain elements of language and culture move into new areas without the intervention of a migrating population, local speakers frequently maintain their own language but borrow certain words from the model language. 
+The assumption of language shift, whereby a part of the \ili{Proto-Amuric} speakers abandoned their native language and shifted to the \ili{Proto-Tungusic} target language is thus in line with a scenario of population migration. Therefore, the archaeological and linguistic observations converge in suggesting that the spread of the \ili{Proto-Tungusic} farmers was driven by population migration. 
+
+At the end of the third century AD, there was a sharp cooling of the climate, which led to a worsening of the conditions for agriculture. This provided the impetus for a gradual migration of millet farmers to coastal regions across most of the Primorye. Based on archaeobotanical data (\citealt{Yanuševič1990}), it appears that the coastal groups ceased to cultivate millets and wheat and returned to a subsistence strategy of hunting and fishing. If this event can be associated with the separation between \ili{Manchuric} and Tungusic languages, as suggested by 31\% of trees in the Bayesian phylogenetic analysis in \citet{Oskolskayaetal2022}, it would explain why southern Tungusic populations on the Lower Amur such as the \ili{Nanai}, \ili{Oroch} and Udehe\il{Udihe} people were traditionally predominantly fishers and gatherers, rather than farmers.
+
+\citet{Hudson2020} proposed further details of later northern Tungusic expansions. The \ili{Evenki} are widely distributed hunter-gatherers who also herd domesticated reindeer. According to \citet[142]{Anderson1999} and \citet[166]{Zgusta2015}, they first herded wild reindeer around Lake Baikal then moved north ca. AD 1000, reaching the Arctic ocean by the 17th century. The \ili{Even} probably separated from the \ili{Evenki} in medieval times (\citealt{Pakendorf2007}: 15--16), matching the separation estimated at 556 years ago in our Bayesian analysis (Figure \ref{fig:8:4}). They further expanded with reindeer from 17th century onwards, mirroring the separation between \ili{Even} and \ili{Negidal} estimated at 393 years ago. Probably due to \ili{Russian} colonial expansion, the \ili{Oroqen} and \ili{Solon} moved south from the Amur in the 17th century, mirroring the estimate of 405 years ago.  
+
+
+\subsection{Genetics}\label{Section8.5.3}
+
+The first applications of genetics to the study of human prehistory involved mitochondrial and Y-chromosomal DNA. Whereas mitochondrial DNA is passed down along the maternal line from mother to daughter to granddaughter (and from mother to son but not passed on from sons to their offspring), Y-chro\-mo\-somal DNA goes along the paternal line from father to son to grandson. Sequencing the chemical building blocks of uniparental DNA from diverse people around the world and comparing the mutations across these sequences, geneticists can reconstruct family trees of maternal and paternal relationship. However, since mitochondrial DNA and Y-chromosomal DNA represent only a tiny proportion of the human genome and provide information on only one out of very numerous ancestors, they shed light on only a limited slice of human prehistory. In fact, our entire genome contains information about many diverse ancestors, not just the two whose lineages can be traced with mitochondrial and Y-chromosomal DNA. The recently acquired ability to sequence the whole genome – meaning, the entire genome analyzed at once instead of just small stretches of it such as mitochondrial and Y-chromosomal DNA – has given us access to richer information recorded into all 23 chromosomes of our genome and representing a multitude of ancestors. Whole genome analysis means a revolution in the study of the human past because it allows us to go beyond the tiny slice of the past sampled by our mtDNA and Y-chromosomal DNA. As recent genome-wide analyses of Tungusic speakers (\citealt{Pugach2016}; \citealt{Siska2017}; \citealt{Wang2021}; \citealt{WangRobbeets2020}) are expected to tell a richer story than previous studies about their mtDNA (\citealt{Starikovskaya2005}; \citealt{Sukernik2012}; \citealt{Duggan2013}) and Y-chromosomal DNA (\citealt{Malyarchuk2010}; \citealt{Duggan2013}), we here focus our report on genome-wide analyses.
+
+The Principal Component Analysis in Figure \ref{fig:8:7} visualizes the genetic distance between contemporary speakers of Tungusic languages and other present-day East Asian populations. In addition, it plots ancient genomes from the Devil’s cave in the Southern Primorye dating back to the fifth and sixth millennium BC and from the Ust’-lda site near Lake Baikal dating back to the fourth and third millennium BC onto the contemporary Tungusic-speaking populations. 
+
+The contemporary Tungusic speakers in the Amur River Basin, such as the \ili{Hezhen}, \ili{Nanai}, \ili{Negidal}, \ili{Oroqen} and \il{Ulcha}Ulch are genetically most similar to ancient genomes from the Southern Primorye dating back to the fifth and sixth millennium BC (\citealt{Siska2017}; \citealt{Wang2021}; \citealt{WangRobbeets2020}). This is also true for the \ili{Nivkh} people on \ili{Sakhalin} island, even if their language is not of a Tungusic descent. The Xibe\il{Sibe} people in Xinjiang are shifted towards Han \ili{Chinese} populations due to \ili{Chinese} influence but they are still very similar to the Amur Tungusic populations and close to the Devil’s Gate genome. Whereas some Eastern \ili{Evenki} are similar to the Amur Tungusic populations, Baikal \ili{Evenki} and \ili{Even} populations are shifted towards West Eurasians, such as the \ili{Uyghur} \ili{Turkic} populations on the PCA. \citet{WangRobbeets2020} estimate that they have about 14\% to 35\% West Eurasian related ancestry, but that their admixture is a very recent event, going back less than 200 years in time.  The ancient genomes from the Ust’-lda site near Lake Baikal dating back to the fourth and third millennium BC show that they derive a large amount of Devil’s Gate related Amur-like ancestry and also have some admixture from West Eurasians. Their genetic profile is similar to \ili{Even} people.
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/Robbeets7a.png}
+\caption{Principal Component Analysis of East Asian populations, projecting ancient Devil’s Gate and Ust’-lda genomes onto the present-day speakers of Tungusic languages (adapted from \citealt{WangRobbeets2020})}
+\label{fig:8:7}
+\end{figure}
+
+This genome-wide perspective is corroborated by analyses of mitochondial and Y-chromosomal DNA.  In the maternal line, there are only faint traces of a genetic relationship between Tungusic-speaking populations in the Amur region, such as \ili{Negidal}, \il{Ulcha}Ulch and Udeghe\il{Udihe} and northern Tungusic populations, such as \ili{Even} and \ili{Evenki}, due to drift and admixture (\citealt{Duggan2013}). Nevertheless, the shared haplotypes found in these populations might be retentions from an earlier shared ancestral Tungusic population. Mitochondrial haplogroup frequencies show a cluster of Tungusic-speaking populations in the Amur region with \ili{Nivkh} populations. The clustering of \ili{Even} speakers with speakers of Yukaghir is seen as an implication of recent northward expansions of northern Tungusic speakers (\citealt{Sukernik2012}).
+
+ Tungusic speakers are further associated with the Y chromosomal haplogroup C3-M217, which is prevalent in \ili{Evenki} and \ili{Even}, as well as in other Tungusic speaking populations in the Amur River Basin including \ili{Oroqen}, \il{Ulcha}Ulch, \ili{Negidal}, Udehe\il{Udihe} and \ili{Nanai} (\citealt{Malyarchuk2010}; \citealt{Duggan2013}). This haplogroup is further well distributed among contemporary \ili{Mongolic} and \ili{Nivkh}-speaking populations and has been recovered in human remains of the Boisman culture (4825–2470 BC) in the \ili{Russian} Far East (\citealt{Yanetal2014}; \citealt{Wang2021}).
+ 
+It thus appears that both northern and southern Tungusic speaking populations share a proportion of their ancestry, which we refer to as the “Amur” genome. \ili{Mongolic} and \ili{Turkic}-speaking populations share a part of this “Amur” ancestry in spite of their increasing admixture with people of Western Eurasian ancestry from the first millennium BC onwards. (\citealt{Jeong2018, Jeong2019}). Combined with recent analyses of ancient genomes from the West Liao River Basin (\citealt{Ning2020}), these results suggest that the Amur gene pool has long occupied the region from the Baikal to the West Liao River to the Russian Far East, at least for the last 10 000 years.
+
+Since the \ili{Nivkh} and the Tungusic-speaking populations share the same Amur ancestry, there are no traces of genetic admixture indicating population migration at the time of the agricultural dispersals. The long-term genetic continuity in the Amur basin is commonly used to argue against population migration and to support demic diffusion of agriculture into the Amur area (\citealt{Siska2017}). However, this conclusion does not take into account the increase in population density at the time of the agricultural expansions discussed in \sectref{Section8.5.2}, which supports an alternative possibility that the incoming farmers may have shared an Amur-like genetic profile with the local populations (\citealt{Cui2020}; \citealt{WangRobbeets2020}; \citealt{Jeong2020}; \citealt{Li2020}). Given the vast geographical reach of the Amur genetic profile, including the West Liao River region as well as the \ili{Russian} Far East, a genetic admixture between \ili{Proto-Tungusic} incoming farmers and \ili{Proto-Amuric} local fishers would have led to an admixture of two similar Amur genomes, like mixing two white paints together. Therefore, population migration and admixture are not expected to be visible in the genome. Bringing the archaeological, linguistic and genetic evidence together thus leaves room for agriculture-driven population migration and language shift spreading \ili{Proto-Tungusic} to the \ili{Russian} Far East in the Neolithic. 
+
+
+\section{Conclusion}\label{Section8.6}
+
+Quantitative methods, such as the Bayesian approach adopted in \citet{Oskolskayaetal2022}, have much to offer: they can infer an internal family structure, calculate the statistical robustness of the proposed branches, estimate an absolute time depth within credible intervals without assuming a constant rate of change and help us to determine the location of the original homeland. Nevertheless, Bayesian results should be interpreted with caution, as they are dependent on the quality of the data input and the plausibility of the calibrations. Besides, they are limited in their abilities because even if they can infer information about the time and space of linguistic dispersals, they do not inform us about the natural and cultural environment of the ancient speakers: they can tell us where and when ancestral speech communities were located, but not why these people moved. In order to provide a better understanding of causalities in linguistic prehistory, we need to reinstate comparative historical linguistic tradition and, together with archaeology and genetics, integrate it into a holistic approach. In this paper, we attempted to take such an approach for the dispersal of \ili{Proto-Tungusic} in time and space.
+
+Combining the power of traditional comparative historical linguistics and computational phylogenetics, we used the recent Bayesian analysis provided by \citet{Oskolskayaetal2022} to quantify the likelihood of previously proposed classifications. We found that two classifications, namely the revised North-South classification (Figure \ref{fig:8:2}b) and the \ili{Manchu}-Tungusic classification (Figure \ref{fig:8:2}b) were statistically robust, while other proposals could be excluded.  Since we expressed the disagreement among different authors with regard to the exact configuration of the Tungusic tree in terms of probability, we were able to provide a quantitative basis to the ongoing discussions.
+
+Chronologically, we estimated the break-up of \ili{Proto-Tungusic} in the beginning of the first millennium AD and situated the homeland geographically in the area around or to the north of Lake Khanka.
+
+Triangulating the linguistic evidence for \ili{Proto-Tungusic} with evidence from archaeology and genetics, we argued for a language shift around 3300\,BC, where\-by some ancestral speakers of \ili{Proto-Amuric} in the \ili{Russian} Far East abandoned their own language and adopted the \ili{Proto-Tungusic} target language. The dispersal of \ili{Proto-Tungusic} from the Liao River basin to the area around lake Khanka was probably caused by the expansion of millet agriculture and driven by population migration. The separation of the \ili{Manchuric} branch, which may represent the first split in the family, can be associated with a return to hunting and fishing, in part because the conditions for agriculture worsened through climate change. 
+
+
+\section*{Abbreviations}
+
+\begin{tabularx}{\textwidth}{@{}lQ@{}}
+PTg\il{Proto-Tungusic} & Proto-Tungusic\\
+\end{tabularx}
+
+
+\section*{Acknowledgements}
+
+The research leading to these results has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation program (grant agreement No 646612) granted to Martine Robbeets. We thank \name{Patryk}{Czerwinski}, \name{Elena}{Klyachko} and \name{Matthew}{Miller} for their help in collecting lexical data from the field and \name{Ezequiel}{Koile} for his advice on Bayesian methodology.
+
+\begin{paperappendix}
+\section{Reconstruction of basic sound inventories for Proto-Tungusic}
+
+\bgroup\footnotesize%
+\begin{longtable}{l  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.55cm}}
+\caption{Reconstruction of the basic consonant inventory of Proto-Tungusic (\citealt{Robbeets2020}, supplementary files)}\smallskip\\
+\lsptoprule
+PTg\il{Proto-Tungusic} &	J.    & 	Ma. &	X.    &	Or.   &	Ud. &	N &	B.N.   &	Ork.    &	Ul    &	Evn    &	Sol.    &	Evk.    &	Neg.\\
+\midrule\endfirsthead
+\midrule
+PTg\il{Proto-Tungusic} &	J.    & 	Ma. &	X.    &	Or.   &	Ud. &	N &	B.N.   &	Ork.    &	Ul    &	Evn    &	Sol.    &	Evk.    &	Neg.\\
+\midrule\endhead\endfoot\lspbottomrule\endlastfoot
+*p-     &	f-  &	f-  &	f-  &	x-  &	x-  &	p-  &	f- x-    &	p-  &	p-  &	h-  &	ø-  &	h-  &	x-\\
+\tablevspace
+*-p-    &   f   &	f b ø   &	v ø &	p w ø   &	p f w   &	p   &	f   &	p   &	p   &	b w ø   &	p w g ø &	p b w ø &	p w\\
+\tablevspace
+*b-     &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-  &	b-\\
+\tablevspace
+*-b-    &	b w ø   &	b f w ø &	v ø &	b w ø   &	b w ø   &	b w ø   &	w ø &	b w ø   &	b w ø   &	b w ø   &	b p w ø &	w ø &	w ø\\
+\tablevspace
+*t-     &	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t-  & 	t- \\
+\tablevspace
+*-t-    &	t   & 	t   & 	t s &	t   & 	t   & 	t   & 	t   & 	t   & 	t   & 	t   & 	t   & 	t   & 	t \\
+\tablevspace
+*d-     &   d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-  &	d-\\
+*ji-   &   ʤi- &   ʤi- &   ʤi- &       &       &   ʤi-  &   ʤi- &   ʤi-    &        &       &       &       &\\
+\tablevspace
+*-d-     &   d  &	d  &	d   &	d   &	d   &	d   &	d   &	d  &	d  &	d  &	d  &	d  &	d\\
+*-ji-    &   ʤi &   ʤi &   ʤi   &       &       &   ʤi  &   ʤi  &   ʤi &        &        &       &      &\\
+\tablevspace
+*k-     &	x-  &	x-  &	x-  &	k- ø-   &	k- ø-   &	k- ø-   &	k- ø-   &	k- ø-   &	k- ø-   &	k- ø-   &	x- ø-   &	k- ø-   &	k- ø-\\
+\tablevspace
+*-k-    &	k x ø   &	k x &	k ɣ &	k ø &	k x ɣ ø &	k ɣ ø   &	k ɣ ø   &	k ø &	 k ɣ ø  &	k   &	k x &	k x &	k x\\
+\tablevspace
+*g-     &	g-  &	g-  &	g-  &	g- ŋ-   &	g- ŋ-   &	g- ø-   &	g- ø-   &	g- ŋ-   &	g- ŋ-   &	g- ŋ-   &	g- n-   &	g- ŋ-   &	g- ŋ\\
+\tablevspace
+*-g-    &	ɣ w ø   &	ɣ w y ø &	ø   &	ɣ w y ø &	ɣ w y ø &	ɣ w y ø &	y ø &	ɣ w y ø   &	ɣ w y ø &	ɣ y	&    ɣ ø    &   ɣ	&   ɣ y w\\
+\tablevspace
+*č-     &	č-  &	č-  &	č-  &	č-  &	č-  &	č-  &	č-  &	č- > t- &	č- > t- &	č-  &	s-  &	č-  &	č-\\
+\tablevspace
+*-č-    &	č   &	č   &	č   &	č   &	s   &	č   &	č s &	č > t   &	č   &	č   &	š   &	č   &	č\\
+\tablevspace
+*x-     &	w- ø-   &	w- ø-   &	v- ø-   &	x- ø-   &	w- ø-   &	x- s-   &	x- s-   &	x- s-   &	x- s-   &	ø-  &	ø-  &	ø-  &	ø-\\
+\tablevspace
+*-x-    &	x   &	x   &	x k ɣ   &	k   &	ø   &	x ø &	x k &	x ø &	x ø &	k   &	x   &	k   &	k x\\
+\tablevspace
+*s-     &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-  &	s-\\
+\tablevspace
+*-s-    &	s   &	s   &	s   &	s   &	s h ø   &	s   &	s   &	s   &	s   &	s   &	s   &	x   &	s\\
+\tablevspace
+*m-     &	m-  &	m-  &	m-  &	m-  &	m-  &	m- ŋ-   &	m-  &	m-  &	m- ŋ-   &	m-  &	m-  &	m-  &	m-\\
+\tablevspace
+*-m-    &	m   &	m   &	m   &	m   &	m   &	m   &	m   &	m   &	m   &	m   &	m   &	m   &	m\\
+\tablevspace
+*n-     &	n-  &	n-  &	n-  &	n-  &	n-  &	n- l-   &	n- l-   &	n- l-   &	n- l-   &	n-  &	n-  &	n- l-    &	n-\\
+\tablevspace
+*-n-    &	n   &	n   &	n   &	n   &	n   &	n   &	n   &	n   &	n   &	n   &	n   &	n   &	n\\
+\tablevspace
+*-r-    &	r   &	r   &	r   &	y ø &	y ø &	r   &	r   &	r   &	r   &	r   &	r   &	r   &	y ø\\
+\tablevspace
+*-l-    &	l   &	l   &	l   &	l   &	l   &	l   &	l n &	l   &	l   &	l   &	l   &	l   &	l\\
+\tablevspace
+*-y-    &	y   &	y   &	y   &	y   &	y   &	y   &	y   &	y   &	y   &	y   &	y   &	y   &	y\\
+\end{longtable}\egroup
+\il{Jurchen}\il{Manchu}\il{Sibe}\il{Oroch}\il{Udehe}\il{Nanai}\il{Ussuri}\il{Orok}\il{Ulcha}\il{Even}\il{Solon}\il{Evenki}\il{Negidal}
+
+\largerpage
+\begin{table}\footnotesize
+\fittable{\begin{tabular}{l  p{0.45cm}  p{0.45cm}  l  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm}  p{0.45cm} l p{0.45cm}  p{0.55cm}}
+  \lsptoprule
+PTg\il{Proto-Tungusic} &	J.    & 	Ma. &	X.    &	Or.   &	Ud. &	N &	B.N.   &	Ork.    &	Ul    &	Evn    &	Sol.    &	Evk.    &	Neg.\\
+\midrule
+*a  &	a   &	a   &	a   &	a   &	a   &	a   &	a   &	a   &	a   &	a   &	a   &	a   &	a\\
+\tablevspace
+*e  &	e   &	e   &	e   &	e   &	e   &	e   &	e   &	e   &	e   &	e   &	e   &	e   &	e\\
+\tablevspace
+*o  &	o   &	o   &	o   &	o   &	o   &	o   &	o   &	o   &	o   &	o   &	o   &	o   &	o\\
+\tablevspace
+*ö  &	u   &	u   &	u   &	o u &	o   &	u   &	u   &	o u &	o u &	o   &	u   &	u   &	u\\
+\tablevspace
+*u  &	u   &	u   &	u   &	u   &	u   &	u   &	u   &	u   &	u   &	u ö & 	u ö &	u ö    & 	u ö\\
+\tablevspace
+*ü  &	u ei    &	u ei    &	u i &	i u &	i y ø   &	u o &	i o &	i u &	i u o   &	i   &	i   &	i u &	i o\\
+\tablevspace
+*i  &	i   &	i   &	i   &   i   &	i   &	i ị &	i ị &	i   &	i ị &	i   & 	i   & 	i ị &	i ị\\
+\tablevspace
+*i(y)a  &	ie \textsuperscript{i}a &	iya ai \textsuperscript{i}a   & 	ia a    &	\textsuperscript{i}æ  ei    &	\textsuperscript{i}æ æ a    &	\textsuperscript{i}a ea &	\textsuperscript{i}æ    &	ị:  &	ị:  &	ia  &	ị:  &	ị:  &	ị:\\
+\lspbottomrule
+\end{tabular}}
+\caption{Reconstruction of the basic vowel inventory of Proto-Tungusic (\citealt{Robbeets2020}, supplementary files)}
+% % % \parbox{\textwidth}{\footnotesize{\url{https://fdslive.oup.com/www.oup.com/booksites/uk/booksites/content/9780198804628/Chapter\%2011.pdf}}}
+\label{table:8.5}
+\end{table}
+\il{Jurchen}\il{Manchu}\il{Sibe}\il{Oroch}\il{Udehe}\il{Nanai}\il{Ussuri}\il{Orok}\il{Ulcha}\il{Even}\il{Solon}\il{Evenki}\il{Negidal}
+\end{paperappendix}
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}

@@ -1,0 +1,60 @@
+\documentclass[output=paper]{langscibook}
+
+\IfFileExists{../localcommands.tex}{
+  \addbibresource{../localbibliography.bib}
+  \input{../localpackages}
+  \input{../localcommands}
+  \input{../localhyphenation}
+  \togglepaper[1]%%chapternumber
+}{}
+
+\begin{document}
+
+\newsavebox{\transmodbox}
+\savebox{\transmodbox}{
+\begin{tikzpicture}[
+node distance = 11pt,
+corpusnode/.style={draw, cylinder, shape border rotate=90, shape aspect=.15, minimum width={width("Monolingual corpus")+4pt}, minimum height={height("Monolingual corpus")+4pt}}]
+\node(transmod){Translational model};
+\node[corpusnode](paracorpus)[below=of transmod]{Parallel corpus};
+\end{tikzpicture}
+}
+
+\newsavebox{\langmodbox}
+\savebox{\langmodbox}{
+\begin{tikzpicture}[
+node distance = 3pt]
+\node(langmod){Language model};
+\node[cylinder, shape border rotate=90, shape aspect=.15, draw](monocorpus)[below=of langmod]{Monolingual corpus};
+\end{tikzpicture}
+}
+
+\begin{figure}
+\scalebox{.8}{
+\begin{tikzpicture}
+
+\node[rectangle, rounded corners, draw, align=center] (decoder) {Decoder\\argmax(P(t)*P(s/t))};
+\node[rectangle, draw](pre-pros)[left=of decoder]{Pre-processing};
+\node[align=center](source)[left=of pre-pros]{Source\\text};
+\node[rectangle, draw](post-pros)[right=of decoder]{Post-processing};
+\node[align=center](target)[right=of post-pros]{Target\\text};
+
+\node[draw](transmodbox)[above= of pre-pros]{\usebox\transmodbox};
+\node[draw](langmodbox)[above= of post-pros]{\usebox\langmodbox};
+
+%arrows
+\draw[->](transmodbox.east)-|(decoder.150) node[pos=.2, above]{P(s/t)};
+\draw[->](langmodbox.west)-|(decoder.30) node[pos=.2, above]{P(t)};
+\draw[->](source.east)--(pre-pros.west);
+\draw[->](pre-pros.east)--(decoder.west);
+\draw[->](decoder.east)--(post-pros.west);
+\draw[->](post-pros.east)--(target.west);
+
+
+\end{tikzpicture}
+}
+\caption{SMÜ-Architektur\\Quelle: \citealt{Dubey2017}}
+\label{fig:key:}
+\end{figure}
+
+\end{document}

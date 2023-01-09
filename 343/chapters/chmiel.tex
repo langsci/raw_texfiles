@@ -1,0 +1,683 @@
+\documentclass[output=paper]{langscibook}
+\ChapterDOI{10.5281/zenodo.6977042}
+  \author{Agnieszka Chmiel\orcid{}\affiliation{Adam Mickiewicz University} and Danijel Koržinek\orcid{}\affiliation{Polish-Japanese Institute of Information Technology} and Marta Kajzer-Wietrzny\orcid{}\affiliation{Adam Mickiewicz University} and Przemysław Janikowski\orcid{}\affiliation{University of Silesia} and Dariusz Jakubowski\orcid{}\affiliation{University of Silesia} and Dominika Polakowska\orcid{}\affiliation{Adam Mickiewicz University}}
+
+\title{Fluency parameters in the Polish Interpreting Corpus (PINC)}
+
+\abstract{The following chapter introduces PINC — the Polish Interpreting Corpus, a Polish-English and English-Polish corpus of short European Parliament speeches and their interpretations. The uniqueness of PINC, apart from its language combination, consists in careful balancing of mode of delivery, in rich metadata, interpreter identification and availability of a strictly controlled subcorpus of retour interpretations. The chapter also briefly presents custom-built tools used in the making of the corpus, especially for transcription, text-audio alignment at word level and interpreter identification. To showcase PINC’s potential for analysing various aspects of simultaneous interpreting, we examined fluency parameters, such as speaking rate and pauses, in the Polish-English subcorpus. We found that interpreting speed was modulated by the source text speaking and articulation rate and the target text compression rate. Target texts had fewer but longer silent pauses and more numerous and longer filled pauses. Together with shorter runs, understood as utterances uninterrupted by pauses, this suggests more fragmented delivery of interpretations. We also found interesting individual differences in compression rate with the majority of interpreters producing interpretations longer than the source texts. }
+
+\IfFileExists{../localcommands.tex}{
+  \addbibresource{../localbibliography.bib}
+  \input{../localpackages}
+  \input{../localcommands}
+  \input{../localhyphenation}
+  \togglepaper[3]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+%\shorttitlerunninghead{}%%use this for an abridged title in the page headers
+\lehead{Agnieszka Chmiel et al.}
+ 
+ 
+ 
+
+ 
+
+\section{Introduction}\label{sec:chmiel:1}
+
+New empirical paradigms require constant development of tools that would allow us to investigate increasingly challenging research questions. This is particularly visible in the case of Corpus Interpreting Studies, where new incarnations of interpreting or intermodal corpora based on the European Parliament plenary debates have emerged every few years since 2005, when EPIC: European Parliament Interpreting Corpus \citep{MontiEtAl2005} was announced. Despite the readiness of the corpus creators to collaborate and share their data (most corpora are available either online or from their owners upon request), all of them stand by their own preferred corpus tools and compilation procedures as these fit their research needs best. This is related to the fact that interpreting is not limited to the text and the linguistic aspects captured in transcripts do not reflect the full communication event. As the Corpus Interpreting Studies pioneer, \citet[1]{Shlesinger1998}, put it “[w]hile transcription, however laborious, can provide us with a representation of the interpreter's linguistic output, its failure to reflect the concomitant paralinguistic dimensions is a major drawback”. Hence, so far, most interpreting corpora have been compiled with particular research objectives in mind. Such is also the case of PINC: The Polish Interpreting Corpus, which, at a later stage of the project, will be used to analyse activation and inhibition and thus needs intense annotation of such features as e.g. temporal details of individual words, pause length or word-level alignment. Many of these features will enable a peek into the process of interpreting, rather than being strictly product-oriented, and the data obtained will inform the selection of stimuli for final-stage experimental procedures. This puts quite a heavy demand on strict balancing and control as well as the sheer size of the corpus.
+
+This chapter presents this newly created Polish Interpreting Corpus and offers an example study that shows the potential of PINC in analysing various aspects of simultaneous interpreting. We have decided to concentrate on interpreter fluency, including speaking rate and pauses, and to look for characteristics in the source text that modulate fluency parameters in interpretations. 
+
+To the best of our knowledge, only three interpreting corpora have been created for the Polish-English language combination so far. Two of them (\citealt{Dumara2015,Bartlomiejczyk2016}) were analysed manually and with a narrow research focus, such as intrusive pronouns or face threats. The third is a Polish-English small-scale subcorpus currently available as part of EPTIC (Department of Interpreting and Translation - Forlì Campus). We hope that PINC, thanks to its size and advanced analytical metadata (to be described below), will make it possible to tackle varied and numerous research questions.
+
+\section{PINC: a new member of the EPIC suite of corpora}\label{sec:chmiel:2}
+\subsection{Features}\label{sec:chmiel:2.1}
+
+The Polish Interpreting Corpus (PINC) adds to an ever-growing family of interpreting or intermodal corpora derived from the European Parliament debates called by \citet{BernardiniEtAl2018} “the EPIC suite of corpora”. As summarised by \citet[22]{BernardiniEtAl2018}, “[t]he availability of interpretations and translations from and into a large number of languages, the ease of access to the videos (downloadable from the Internet), and the high professional standards of the interpreters” makes this source very promising for interpreting corpora, which is why the EPIC suite is constantly growing. Next to EPIC: European Parliament Interpreting Corpus \citep{MontiEtAl2005}, TIC: Translation and Interpreting Corpus \citep[57]{KajzerWietrzny2012}, EPICG: European Parliament Interpreting Corpus – Ghent (\citealt{DefrancqEtAl2015}) and EPTIC: European Parliament Translation and Interpreting Corpus (\citealt{FerraresiBernardini2019}), PINC comprises a collection of recordings and transcripts of speeches delivered during the plenary sessions of the European Parliament, as well as their simultaneous interpretations. These were obtained from the Europarl website (Directorate-General for Communication).
+
+Several aspects of the PINC compilation process have been modelled on the work of the creators of the other corpora of the EPIC suite (e.g. EPIC or EPTIC). Thus, the texts compiled in the PINC corpus follow the same topic classification as EPIC and EPTIC for ease of comparison; similar contextual metadata have been collected and transcription guidelines were, to a large extent, very much alike. Similarly to TIC, interpreters’ voices have been distinguished from one another and individual codes have been assigned to each voice. The uniqueness of PINC consists in the specific language combination, careful balancing of mode of delivery, detailed interpreter voice identification, speech-to-text and sentence alignment of the whole corpus and in the specific tools employed to automatise parts of the compilation process. Some of these tools and features are described in more detail below.
+
+ \subsubsection{Corpus size, speech length and mode of delivery}\label{sec:chmiel:2.1.1}
+
+Since we are interested in a fully bidirectional analysis, PINC consists of four balanced subcorpora: Polish source texts (ST-PL), their interpretations into English (TT-EN), English source texts (ST-EN) and their interpretations into Polish (TT-PL). All of these were collected from the Europarl website from plenary session recordings of the European Parliament sittings taking place between January 2009 and September 2010. The reasons for selecting such a time frame were twofold. First, we wanted to use verbatim reports to facilitate the transcription process and later recordings are not accompanied by them. Second, we are planning to correlate corpus data for individual interpreters with other data, such as working memory spans, obtained from the same interpreters in the same time frame and analysed in other studies (\citealt{Chmiel2012}; \citealt{Chmiel2016}; \citealt{Chmiel2018}). 
+
+The PINC corpus comprises of texts ranging between 100 and 500 words, with the mean text length of 204 and the median text length of 183 words. Including a higher number of shorter speeches rather than fewer longer ones made it possible to achieve greater variation within the data, as a greater proportion of longer speeches in a corpus of the same size could have easily skewed the data. Thus, texts longer than 500 words have been excluded from the corpus altogether. 
+
+\begin{sloppypar}
+As in other corpora of the EPIC suite, speeches in PINC are annotated for mode of delivery. Following EPIC \citep{MontiEtAl2005}, most EP-based interpreting corpora use a three-way classification of mode of delivery: impromptu (for unscripted speeches), read (for scripted speeches) and mixed (semi-scripted speeches). In the course of compilation of PINC, a decision was made to include only the first two types of speeches in the corpus; hence speeches of varying degree of scriptedness are not part of the PINC corpus. The reason for excluding mixed speeches was that we found it difficult to indicate precise and objective criteria for assigning speeches to that category. \tabref{tab:chmiel:1} presents basic data about the number of speeches and tokens, as well as speech rate in each subcorpus of PINC. More information about ST and TT speaking rates will be provided in \sectref{sec:chmiel:3.1}.
+\end{sloppypar}
+
+%\begin{table}
+%\small 
+%\begin{tabularx}{\textwidth}{Qrrrrrrrr} 
+%\lsptoprule
+%& \multicolumn{2}{p{.17\textwidth}}{\bfseries \makecell[tl]{Polish\\source texts}}  & \multicolumn{2}{p{.17\textwidth}}{\bfseries \makecell[tl]{English\\interpretations}} &  \multicolumn{2}{p{.17\textwidth}}{\bfseries \makecell[tl]{English\\source texts}} &  \multicolumn{2}{p{.17\textwidth}}{\bfseries \makecell[tl]{Polish\\interpretations}} \\
+%& Impromptu & Read & Impromptu & Read & Impromptu & Read & Impromptu & Read\\
+%\midrule 
+% Number of speeches & 117 & 115 & 117 & 115 & 115 & 115 & 115 & 115\\
+% Number of tokens & 20769 & 19399 & 21627 & 19656 & 25715 & 28374 & 17496 & 19153\\
+% Average speech rate (wpm) & 127 & 126 & 127 & 131 & 178 & 165 & 121 & 110\\
+%\lspbottomrule
+%\end{tabularx} 
+%\caption{Basic data about four subcorpora of PINC}
+%\label{tab:chmiel:1}
+%\end{table}
+%\todo{is the font too small?}
+
+\begin{table}
+    \begin{tabularx}{\textwidth}{p{2.5cm}lrrr}
+    \lsptoprule
+     &&  \makecell[tr]{Number of\\speeches} &	\makecell[tr]{Number of\\tokens} &	\makecell[tr]{Average speech\\rate (wpm)}\\
+     \midrule
+\multirow{2}{=}{\bfseries Polish source texts} &	Impromptu	& 117	& 20769 &	127\\
+	& Read	& 115	& 19399	& 126\\
+	\tablevspace
+\multirow{2}{=}{\bfseries English interpretations}	& Impromptu &	117 &	21627 &	127\\
+&	Read &	115 &	19656 &	131\\
+\tablevspace
+\multirow{2}{=}{\bfseries English source texts} &	Impromptu &	115 &	25715 &	178\\
+&	Read &	115 &	28374 &	165\\
+\tablevspace
+\multirow{2}{=}{\bfseries Polish interpretations} &	Impromptu &	115 &	17496 &	121\\
+&	Read &	115 &	19153 &	110  \\
+    \lspbottomrule
+    \end{tabularx}
+\caption{Basic data about four subcorpora of PINC}
+\label{tab:chmiel:1}
+\end{table}
+
+\subsubsection{Topics}\label{sec:chmiel:2.1.2}
+
+
+As in the remaining corpora of the EPIC suite, specific topics of debates taking place at the European Parliament have been grouped into more general categories including agriculture and fisheries, economics and finance, employment, environment, health, justice, politics, procedure and formalities, science and technology, society and culture. There are topics that dominate the EP agenda, such as politics or economics and finance and those that are only occasionally discussed, e.g. science and technology, so an even distribution of topics across such a corpus is always difficult to obtain. Moreover, MEPs from different countries are not equally active in all debates. A perfect balance of topics is impossible, but it is still vital to be able to control the impact of the topic in those empirical investigations that require it. In the data selection process we paid particular attention to achieving a relatively even distribution of read and impromptu speeches across topics, although in the end it was not always possible. Also, the distribution of the two modes of delivery across topics in the two source language subcorpora, i.e. Polish and English, differs (\figref{fig:chmiel:1a} and \ref{fig:chmiel:1b}).
+
+  
+\begin{figure}
+%\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img001.png}
+\scalebox{.8}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xbar,
+                xmin=0,
+                xmax=40,
+%                bar width=.1cm,
+%                enlarge y limits=.5,
+                xlabel={Number of speeches},
+                axis lines*=left,
+                width=\textwidth,
+                height=15cm,
+                yticklabels={Agriculture and fisheries,Economics and finance,Employment,Environment,Health,Justice,Politics,Procedure and formalities,Science and technology,Society and culture,Transport},
+                ytick=data,
+                nodes near coords,
+                nodes near coords align = horizontal,
+                reverse legend,
+                legend pos = north east,
+                point meta=rawx
+                ]
+                 \addplot+[lsDarkBlue,fill=lsDarkBlue,]
+                    coordinates {
+                   (16,0)
+		  (29,1)
+		  (1,2)
+		  (9,3)
+		  (5,4)
+		  (11,5)
+		  (29,6)
+		  (7,7)
+		  (2,8)
+		  (4,9)
+		  (0,10)
+                };
+                \addplot+[lsMidOrange,fill=lsMidOrange,]
+                      coordinates {
+                   (11,0)
+		  (13,1)
+		  (3,2)
+		  (11,3)
+		  (3,4)
+		  (19,5)
+		  (40,6)
+		  (9,7)
+		  (1,8)
+		  (5,9)
+		  (0,10)
+                };
+
+                \legend{Impromptu,Read}
+            \end{axis}
+        \end{tikzpicture}
+}
+        \caption{Topic coverage and mode of delivery in PINC subcorpora EN}
+        \label{fig:chmiel:1a}
+\end{figure}
+
+\begin{figure}
+\scalebox{.8}{
+         \begin{tikzpicture}
+            \begin{axis}[
+                xbar,
+                xmin=0,
+                xmax=40,
+%                bar width=.1cm,
+%                enlarge y limits=.5,
+                xlabel={Number of speeches},
+                axis lines*=left,
+                width=\textwidth,
+                height=15cm,
+                yticklabels={Agriculture and fisheries,Economics and finance,Employment,Environment,Health,Justice,Politics,Procedure and formalities,Science and technology,Society and culture,Transport},
+                ytick=data,
+                nodes near coords,
+                nodes near coords align = horizontal,
+                reverse legend,
+                legend pos = north east,
+                point meta=rawx
+                ]
+                 \addplot+[lsDarkBlue,fill=lsDarkBlue,]
+                    coordinates {
+                   (11,0)
+		  (19,1)
+		  (3,2)
+		  (11,3)
+		  (3,4)
+		  (26,5)
+		  (26,6)
+		  (5,7)
+		  (1,8)
+		  (5,9)
+		  (5,10)
+                };
+                \addplot+[lsMidOrange,fill=lsMidOrange,]
+                      coordinates {
+                   (12,0)
+		  (23,1)
+		  (1,2)
+		  (6,3)
+		  (6,4)
+		  (33,5)
+		  (14,6)
+		  (7,7)
+		  (1,8)
+		  (7,9)
+		  (4,10)
+                };
+
+                \legend{Impromptu,Read}
+            \end{axis}
+        \end{tikzpicture}
+}
+\caption{Topic coverage and mode of delivery in PINC subcorpora PL}
+\label{fig:chmiel:1b}
+\end{figure}
+
+It transpires from \figref{fig:chmiel:1a} and \ref{fig:chmiel:1b} that, in the PINC dataset, speeches regarding economics and finance are more often delivered impromptu by native English speakers at the EP, while the Polish MEPs read them slightly more often. Even more striking differences concern the speeches on politics, where most English speakers read texts out loud and the Polish ones predominantly speak impromptu.
+
+\subsubsection{Speakers} \label{sec:chmiel:2.1.3}
+
+The ST-EN subcorpus contains speeches of 65 unique speakers (20 female and 45 male), while the ST-PL includes 57 unique speakers (11 female and 46 male). With 230 ST-EN speeches and 232 ST-PL speeches, this gives the average of 3.8 speeches per person (ranging from 1 to 19) in both subcorpora. Since PINC metadata includes precise speaker identification, we will control for the uneven number of speeches in our analyses, whenever possible. We took extra care to exclude any non-native speakers of either language and to only include MEPs. 
+
+Interestingly, the majority of speeches delivered by Polish female MEPs were read out while the majority of male MEPs spoke impromptu. This was also true for English-speaking MEPs, although the differences are not as pronounced (\figref{fig:chmiel:2}).
+
+ \begin{figure}
+%\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img002.png}
+\scalebox{.95}{
+\subcaptionbox{Delivery by speaker gender PL
+        \label{fig:chmiel:2a}}{
+\begin{tikzpicture}
+            \begin{axis}[
+                xbar,
+                enlarge y limits = .5,
+                xmin=0,
+                xmax=120,
+                xlabel={Number of speeches},
+                axis lines*=left,
+                width=\textwidth,
+                height=5cm,
+                symbolic y coords={Male,Female},
+                ytick=data,
+                nodes near coords,
+                nodes near coords align = horizontal,
+                reverse legend,
+                legend pos = north east,
+                point meta=rawx
+                ]
+                 \addplot+[lsDarkBlue,fill=lsDarkBlue,]
+                    coordinates {
+                   (110,Male)
+                   (5,Female)
+                };
+                \addplot+[lsMidOrange,fill=lsMidOrange,]
+                      coordinates {
+                   (85,Male)
+                   (30,Female)
+                };
+
+                \legend{Impromptu,Read}
+            \end{axis}
+        \end{tikzpicture} 
+}
+}
+
+\scalebox{.95}{
+\subcaptionbox{Delivery by speaker gender EN
+        \label{fig:chmiel:2b}}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xbar,
+		        enlarge y limits = .5,
+                xmin=0,
+                xmax=120,
+                xlabel={Number of speeches},
+                axis lines*=left,
+                width=\textwidth,
+                height=5cm,
+                symbolic y coords={Male,Female},
+                ytick=data,
+                nodes near coords,
+                nodes near coords align = horizontal,
+                reverse legend,
+                legend pos = north east,
+                point meta=rawx
+                ]
+                 \addplot+[lsDarkBlue,fill=lsDarkBlue,]
+                    coordinates {
+                   (82,Male)
+                   (30,Female)
+                };
+                \addplot+[lsMidOrange,fill=lsMidOrange,]
+                      coordinates {
+                   (81,Male)
+                   (31,Female)
+                };
+
+                \legend{Impromptu,Read}
+            \end{axis}
+        \end{tikzpicture}
+}
+}
+
+\caption{
+Speeches delivered by female and male MEPs in each mode
+}
+\label{fig:chmiel:2}
+\end{figure}
+
+ \subsubsection{Interpreters}\label{sec:chmiel:2.1.4}
+ 
+
+Interpreters are key in any interpreting corpus. Professionals working during the European Parliament plenary sessions are carefully selected in a process designed to guarantee top quality interpreting services at the EU institutions. The usual problem with EP data, however, is that the only detail allowing us to distinguish between them is their voice. As most interpreting corpora are compiled by interpreting scholars with no expertise in speaker identification, interpreter identity in the corpora of the EPIC suite is frequently disregarded. Yet, controlling for individual variation is desired in many empirical studies, hence PINC does include precise metadata on interpreter identity. This will greatly enhance the control of the individual variation in further analyses.
+
+Both interpreting subcorpora of PINC consist of slightly more texts interpreted by females. There are altogether 39 different interpreters in the PINC corpus, all of them Polish natives interpreting both into A (L1) and B language (L2). The TT-EN subcorpus contains texts interpreted by 21 different interpreters (10 female and 11 male) and the TT-PL subcorpus includes productions by 35 interpreters (23 female and 12 male). In most cases, interpreters interpreted both impromptu and read speeches in both directions (\figref{fig:chmiel:3a} and \ref{fig:chmiel:3b}), which makes it possible, for example, to investigate the same interpreter’s interpreting output into different languages.
+
+As not many interpreters in the European Parliament have Polish as a C language, interpretations from Polish are frequently provided as retour interpretations by interpreters from the Polish booth (with Polish as A and English as B), or as relay interpretations when interpreters from other language booths use Polish-English retour as their pivot and the source input. We deliberately excluded any speeches interpreted via relay. As a result, the TT-EN subcorpus is a retour subcorpus and includes interpretations by the same interpreters who contributed to the TT-PL subcorpus. This offers an interesting opportunity for interlinguistic comparisons that are not between-groups, but within-group. This differentiates PINC from other corpora, which include either interpretations into A languages only or which do not strictly control for the language status (A or B) of the interpreters in specific subcorpora.
+
+\begin{figure}
+%\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img003.png}
+
+\scalebox{.75}{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xbar,
+                xmin=0,
+                xmax=25,
+                xlabel={Number of speeches},
+                axis lines*=left,
+                width=\textwidth,
+                height=24cm,
+                symbolic y coords={F01,F02,F03,F04,F05,F06,F07,F08,F09,F10,M01,M02,M03,M04,M05,M06,M07,M08,M09,M10,M11},
+                ytick=data,
+                nodes near coords,
+                nodes near coords align = horizontal,
+                reverse legend,
+                legend pos = north east,
+                point meta=rawx
+                ]
+                 \addplot+[lsDarkBlue,fill=lsDarkBlue,]
+                    coordinates {
+                   (2,F01)
+                   (6,F02)
+                   (7,F03)
+                   (5,F04)
+                   (0,F05)
+                   (12,F06)
+                   (3,F07)
+                   (6,F08)
+                   (17,F09)
+                   (6,F10)
+                   (1,M01)
+                   (1,M02)
+                   (12,M03)
+                   (0,M04)
+                   (4,M05)
+                   (4,M06)
+                   (14,M07)
+                   (1,M08)
+                   (3,M09)
+                   (3,M10)
+                   (9,M11)
+                };
+                \addplot+[lsMidOrange,fill=lsMidOrange,]
+                      coordinates {
+                    (1,F01)
+                   (4,F02)
+                   (11,F03)
+                   (6,F04)
+                   (1,F05)
+                   (6,F06)
+                   (3,F07)
+                   (4,F08)
+                   (13,F09)
+                   (14,F10)
+                   (1,M01)
+                   (1,M02)
+                   (21,M03)
+                   (2,M04)
+                   (1,M05)
+                   (1,M06)
+                   (9,M07)
+                   (3,M08)
+                   (0,M09)
+                   (2,M10)
+                   (11,M11)
+                };
+
+                \legend{Impromptu,Read}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{
+Read and impromptu speeches interpreted by individual interpreters PL-EN (codes starting with capital F indicate female interpreters, codes starting with M indicate male interpreters)
+}
+\label{fig:chmiel:3a}
+ }
+ \end{figure}
+ 
+ \begin{figure}
+ \scalebox{.7}{
+         \begin{tikzpicture}
+            \begin{axis}[
+                xbar,
+                xmin=0,
+                xmax=25,
+                xlabel={Number of speeches},
+                axis lines*=left,
+                width=\textwidth,
+                height=26cm,
+                enlarge y limits = .08,
+                bar width = .28cm,
+                symbolic y coords={F01,F02,F03,F04,F06,F07,F08,F09,F10,F11,F12,F13,F14,F15,F16,F17,F18,F20,F21,F23,F24,M03,M06,M07,M08,M09,M11,M12,M13,M14,M15  },
+                ytick=data,
+                nodes near coords,
+                nodes near coords align = horizontal,
+                reverse legend,
+                legend pos = north east,
+                point meta=rawx
+                ]
+                 \addplot+[lsDarkBlue,fill=lsDarkBlue,]
+                    coordinates {
+                   (3,F01)
+                   (3,F02)
+                   (4,F03)
+                   (2,F04)
+                   (0,F06)
+                   (3,F07)
+                   (4,F08)
+                   (6,F09)
+                   (3,F10)
+                   (3,F11)
+                   (12,F12)
+                   (7,F13)
+                   (3,F14)
+                   (0,F15)
+                   (1,F16)
+                   (5,F17)
+                   (1,F18)
+                   (0,F20)
+                   (0,F21)
+                   (0,F23)
+                   (0,F24)
+                   (7,M03)
+                   (3,M06)
+                   (15,M07)
+                   (4,M08)
+                   (1,M09)
+                   (7,M11)
+                   (1,M12)
+                   (6,M13)
+                   (2,M14)
+                   (1,M15)
+                };
+                \addplot+[lsMidOrange,fill=lsMidOrange,]
+                      coordinates {
+                   (2,F01)
+                   (3,F02)
+                   (6,F03)
+                   (3,F04)
+                   (2,F06)
+                   (5,F07)
+                   (5,F08)
+                   (4,F09)
+                   (5,F10)
+                   (6,F11)
+                   (6,F12)
+                   (2,F13)
+                   (2,F14)
+                   (1,F15)
+                   (1,F16)
+                   (5,F17)
+                   (5,F18)
+                   (1,F20)
+                   (1,F21)
+                   (3,F23)
+                   (3,F24)
+                   (4,M03)
+                   (5,M06)
+                   (5,M07)
+                   (3,M08)
+                   (1,M09)
+                   (12,M11)
+                   (5,M12)
+                   (4,M13)
+                   (3,M14)
+                   (2,M15)
+                };
+
+                \legend{Impromptu,Read}
+            \end{axis}
+        \end{tikzpicture}
+ }
+\caption{
+Read and impromptu speeches interpreted by individual interpreters EN-PL (codes starting with capital F indicate female interpreters, codes starting with M indicate male interpreters)
+}
+\label{fig:chmiel:3b}
+\end{figure}
+
+
+\subsection{Design}\label{sec:chmiel:2.2}
+\subsubsection{Interpreter identification}\label{sec:chmiel:2.2.1}
+
+Identifying interpreters may have presented the greatest technical challenge in building PINC so far. The Europarl website provides no information about the individual interpreters and, as opposed to the original speakers, they are not visually identifiable. In order to distinguish between the voices, we had to employ a three-stage procedure. In stage one, two human compilers who took part in collecting the corpus data (authors of this chapter) labelled each new interpreter in a spreadsheet. These were later proofed by another team member, especially where any doubts as to potential overlaps were expressed. In this manner, a pool of potential interpreter voices was identified. In stage two, this pool of identified voices was given for verification to an experienced conference interpreter who had worked with the interpreters included in the sample.
+
+Independently of this strictly human-based procedure, in stage three, an automated attempt at interpreter identification was also made. It consisted in comparing the above pool of potential interpreter samples (enrolment data) to the recordings of all 476 interpretations (test data) within the Kaldi Speech Recognition Toolkit \citep{SnyderEtAl2018} trained on large-scale, open-source corpora of human voices (development data). The method relies on computing a multidimensional vector representation of an audio segment, known as the x-vector. This vector is computed both for the enrollment data and for all the test data. Next, a Probabilistic Linear Discriminant Analysis algorithm is used to compute a matrix of distances between each file and speaker, thus providing an easy method of assigning the most likely candidate for each file. Interestingly, the comparison of the human-made and automatic judgments yielded very satisfying results as only around 15\% of stage-one interpreter judgments have been misassigned. A detailed description of the interpreter voice identification procedure is provided in \citet{Korzinek2020ID}.
+
+ \subsubsection{Transcription}\label{sec:chmiel:2.2.2}
+ 
+
+As in most of the corpora from the EPIC suite \citep{BernardiniEtAl2018}, the source text subcorpora in PINC are based on verbatim reports, i.e. transcripts of the audio/video files of speeches downloaded from the EP website. The EP website offers relatively accurate renditions that had to be manually corrected to a small extent only in order to facilitate speech-text alignment. Unfortunately, the texts of interpretations available on the EP website are actually written translations of the original verbatim reports and thus depart heavily from what was said by the interpreters. Therefore, in the case of target text subcorpora, we decided to use an automatic speech recognition system as input for later manual correction. We specifically used Google Cloud Speech as accessed through the WebMaus service (\citealt{KislerEtAl2017}). To streamline the process of post-editing we set up a simple service based on the Corrector webApp \citep{Korzinek2019} consisting of a rich audio player (based on wavesurfer.js audio editor and controllable from the keyboard) and a text field with basic change-tracking capabilities (\figref{fig:chmiel:4}). Its cloud-based storage of results allowed for seamless cooperation between team members.
+
+ \begin{figure}
+%%please move the includegraphics inside the {figure} environment
+\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img004.png}
+ 
+
+\caption{
+Corrector-webApp online environment
+}
+\label{fig:chmiel:4}
+\end{figure}
+
+This application was used not only for correcting transcriptions but also for manual endpointing, that is, marking when the transcription starts and ends within the audio file (the pink areas in the waveform in \figref{fig:chmiel:4}). Unfortunately, each audio recording begins and ends with a portion of speech that has a more dialogical and organisational character, such as the President giving the floor to a particular MEP whose speech is of primary interest in a given file. Thanks to endpointing, the alignment tools described below only utilised the audio that perfectly matched the transcription.
+
+In terms of principles our transcription was largely based on guidelines used in EPIC and EPTIC (\citealt[27]{BernardiniEtAl2018}), altered in order to meet the needs of PINC. One such need was the automatic speech-text alignment described below; another was the planned ST-TT alignment on the word level. This required as accurate a marking of word-boundaries as possible, including unfinished, self-corrected and distorted words. In this respect we decided to introduce three special symbols: tildes <{\textasciitilde}> for truncated words, plus signs <+ +> marking the boundaries of filled pauses (the pluses were to surround an approximation of the actual sounds produced by the speaker, e.g. +ehm+) and square brackets <[ ]> to mark any external noises, such as applause, which could be picked up by the system and misinterpreted.
+
+\subsubsection{Speech-text alignment}\label{sec:chmiel:2.2.3}
+
+
+While some corpora in the EPIC suite include only transcripts e.g. EPIC, others contain recordings that are time-aligned at various levels. Most language components of EPTIC are time-aligned with videos of the speeches at sentence-like utterance level (\citealt[132]{FerraresiBernardini2019}) using a system of subtitles integrated into NoSketchengine online platform \citep{Rychly2007}. EPICG includes timestamps at event level aligned in EXMARaLDA (\citealt{SchmidtWoerner2009}). PINC has been automatically time-aligned to audio files of the speeches/interpretations. The word-level alignment was then manually corrected in yet another instance of computer-human interaction employed for best possible results. This time the starting point was automatic segmentation and alignment performed in the Kaldi toolkit \citep{PoveyEtAl2011} and based on a Gaussian mixture-based acoustic model for which the endpointed transcriptions from the previous step were used as input along the audio recordings. Following that, two human aligners manually proofed and adjusted the output using the EMU-webApp (see \figref{fig:chmiel:5}), which is an open-source browser-based labelling and correction tool that allows for a hassle-free cooperative annotation of audio files (\citealt{WinkelmannRaess2014}).
+
+  
+ \begin{figure}
+
+\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img005.png}
+ 
+
+\caption{
+EMU-webApp online environment
+}
+\label{fig:chmiel:5}
+\end{figure}
+
+As a result, all words, pauses and disfluencies are orthographically transcribed, timestamped and available for analysis. A detailed description of the speech-text alignment in PINC is presented in \citet{Korzinek2020Seg}.
+
+Further processing of the corpus (currently underway) involves \textsc{pos} tagging, text and video alignment, alignment of source texts and target texts on the utterance level and – most importantly – word level. This last alignment is especially crucial for the main objectives driving PINC creation. Apart from a plethora of corpus-driven research, PINC will first and foremost inform corpus-based studies on activation and inhibition as mechanisms of language control in interpreting. This is why precise timestamps are needed for specific words (cognates, homonyms, words with single and multiple translation equivalents), since we are interested, among other things, in the ear-voice span as a processing index of these words. 
+
+\section{An example study: fluency parameters in interpreting} \label{sec:chmiel:3}
+
+To show the potential of PINC, we present an example of a study that looks into interpreting fluency parameters, such as speaking rate and pauses. We compared source texts and their interpretations on a number of delivery parameters and tried to identify which factors modulate these parameters in interpreters’ outputs. We also wanted to find out if interpreters speed up and compress their target text production when dealing with higher source text delivery rates. Thanks to interpreter voice identification in PINC metadata, we could explore individual differences and control for these differences in our analysis. We conducted the study on the Polish-English subcorpus, so the interpreting examined is performed into the interpreters’ B language, i.e. the more demanding interpreting direction (\citealt{Chang2005}; see also a review in \citealt{Chmiel2016}). 
+
+\subsection{Interpreting speed and its modulating factors}\label{sec:chmiel:3.1}
+
+Speed of delivery is considered one of the most important input variables in interpreting, which has been shown to affect the quality of interpreting \citep{Riccardi2015}, including omissions (\citealt{BarghoutEtAl2015}) or the occurrence of filled pauses (\citealt{PlevoetsDefrancq2016}). While the majority of studies focus on source text speed as an important factor that influences numerous aspects of interpreters’ output, few studies have specifically focused on various factors that affect the target text speed. For instance, \citet{Han2015} found that speech rate in interpreting has a strong correlation with perceived fluency. Below, we use PINC data to see what makes interpreters speed up their production. First, however, we analyse the corpus to compare ST and TT speeds on a number of measures and discuss our results in the context of other available data on comparable corpora.
+
+As mentioned above, the average speaking speed in our Polish-English subcorpus was 126 wpm (SD=15, range: 88--166) for ST and 129 wpm (SD=18, range: 77--178) for TT. These values are considered as low speed of delivery by EPIC standards \citep{MontiEtAl2005} and are lower than those reported for EPICG (158 wpm for ST and 142 wpm for TT, \citealt{CollardDefrancq2019}). The ST speaking speed is also lower than 154 wpm from EPIC reported by \citet{Russo2018} while the TT speed is comparable with the relevant data from the same study (130 wpm).
+
+As languages may differ in word length, some researchers (\citealt{Riccardi2015}; \citealt{Seeber2017}; \citealt{Tissi2000}) pinpoint that speaking speed may also be measured in syllables per minute. When measured this way, the PINC source texts are characterised by a significantly higher speaking rate (M=286 spm, SD=35) than target texts (M=199 spm, SD=27), t(433)=30.26, p<.001, which results from the fact that Polish words are on average longer (2.27 syllables per word in our corpus) than English ones (1.55 syllables per word in our corpus). 
+
+Another important measure of the speed of oral delivery is the articulation rate understood as the average speed of utterance without pauses (\citealt{Christodoulides2013}; \citealt{Riccardi2015}). The PINC source texts have a higher articulation rate (measured in syllables per minute, M=330 spm, SD=36) than target texts (M=248 spm, SD=24), t(404)=28.48, p<.001.
+
+We also measured the compression rate understood, following \citet{Russo2018}, as a relative difference in speech length, expressed in percent and measured according to the following formula: (total ST words – total TT words)*100/total ST words. If the compression rate is 0, the target text equals the source text in length. If it has negative value, the target text is compressed. If the value is positive, the target text is longer than the original. The mean compression rate for the whole subcorpus is 3.6\%, which means that the interpretations are slightly longer than the originals. However, there is much variation among individual interpreters, and we can visualise that thanks to exact identification of interpreter voices in the corpus (\figref{fig:chmiel:6}).
+
+   
+ \begin{figure}
+%%please move the includegraphics inside the {figure} environment
+\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img006.png}
+ 
+
+\caption{
+Individual variation of compression rates 
+}
+\label{fig:chmiel:6}
+\end{figure}
+
+There are six interpreters who consistently compress the source text while the majority of interpreters produce longer interpretations than originals, which is quite surprising and at variance with \citet{Russo2018} but might be triggered by two factors. First, PINC source texts are slower than those analysed by Russo: interpreters might not feel compelled to synthesise if there are no demanding temporal constraints. Second, this analysis pertains to interpretations into B language only and these, as such, might differ in production characteristics from interpretations into A language, for example in terms of opting for more descriptive formulations where precise one-to-one equivalents are not easily retrievable from the mental lexicon. Further comparisons are needed, and they will be possible when PINC, as planned, is extended to include a smaller subcorpus of the same language combination (PL-EN) with interpretations performed into A language. 
+
+In order to see whether interpreters speed up their delivery and compress more when processing a fast source text, we fitted three regression models. The data show that source texts with higher word per minute values lead to interpretations with higher word per minute values
+(b=.49, SD=.07, t=6.96, p<.001, \figref{fig:chmiel:7}), with higher articulation rates
+(b=.54, SD=.10, t=5.35, p<.001, \figref{fig:chmiel:8}) and higher compression rates
+(b=-.40, SD=.05, t=-7.19, p<.001, \figref{fig:chmiel:9}).
+
+ 
+
+ 
+ \begin{figure}
+%%please move the includegraphics inside the {figure} environment
+\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img007.png}
+\caption{
+Mean source text speed (words per minute) plotted against target text speed (words per minute)
+}
+\label{fig:chmiel:7}
+\end{figure}
+   
+   
+
+ \begin{figure}   
+%%please move the includegraphics inside the {figure} environment
+\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img008.png}
+ 
+
+\caption{
+Mean source text speed (words per minute) plotted against target text articulation rate (syllables per minute)
+}
+\label{fig:chmiel:8}
+\end{figure}
+   
+   
+ \begin{figure}
+%%please move the includegraphics inside the {figure} environment
+\includegraphics[width=\textwidth]{figures/a3FluencyparametersinthePolishInterpretingCorpusZoteroformatted-img009.png}
+ 
+
+\caption{
+Mean source text speed (words per minute) plotted against compression rate (percent)
+}
+\label{fig:chmiel:9}
+\end{figure}
+
+The results of our analysis regarding how interpreters modulate their output as a result of the source text speed are in line with those by \citet{Russo2018}, who also found that faster source texts lead to faster target texts and greater compression, and with those by \citet{Gerver1969} and \citet{BarghoutEtAl2015}, who identified a similar relation between ST speed and TT compression. Slower speaking by interpreters as compared to source text speakers was previously confirmed by \citet{Russo2018} and \citet{Christodoulides2013}. This might be explained by the fact that – due to compression – interpreters speak less and thus can slow down. 
+
+Taken together, these results show an established pattern of the source text speed affecting interpreters’ production in terms of speed and compression. The novelty of PINC analysis is the option to better capture individual differences by using specific metadata regarding interpreter voice identification. For instance, in an additional analysis, we used the range of speaking rate of each speaker and interpreter as a variable of speaking rate variability. We excluded from this analysis those speakers and interpreters who only contributed one speech to the data set (as their variability was 0), which left us with data from 42 speakers and 20 interpreters to analyse. It turned out that the individual speaking rate variability of interpreters was much higher (M=40 wpm) than that of speakers (M=19.95 wpm), t(23.8)=4.60, p=.0001. This confirms the results obtained by \citet{Christodoulides2013} on a much smaller corpus based on EP data.
+
+\subsection{Comparing other delivery parameters in source and target texts}\label{sec:chmiel:3.2}
+
+Many studies compare fluency parameters of source texts and their interpretations to shed more light on the difference between non-mediated and interpreter-mediated texts (\citealt{Ahrens2005}; \citealt{Cecot2001}; \citealt{Poechhacker1995}; \citealt{Tissi2000}; \citealt{WangLi2014}). The emerging pattern of data resulting from these experimental studies is that the pausing pattern specific to interpreter-mediated texts includes fewer but longer pauses. Our analysis makes a contribution to the corpus data on ST-TT comparison. The novelty of our findings is that they are based solely on the subcorpus of retour interpretations (i.e. interpretations into the interpreter’s B language). Below we compare source and target texts in the Polish-English subcorpus of PINC on a range of parameters other than those related to speed analysed above and pertaining mainly to pauses. We later compare our results to other findings based on other corpora.
+
+The comparisons of PINC source and target texts are presented in \tabref{tab:chmiel:2}. Duration was calculated from the onset of the first spoken word to the ending of the last word of each speech. Thus, it did not include silence periods before and after the utterance. This is quite important to remember since the TT duration does not include the initial ear-voice span (EVS) and as such does not capture the dynamics of processing involved in interpretation. A detailed analysis of EVS will be the focus of another study. Further in \tabref{tab:chmiel:2}, there are four parameters pertaining to silent and filled pauses – reflecting their number (normalised per minute of speech) and mean length. Various thresholds are used in the literature to identify silent pauses, ranging from 200 ms (\citealt{ChmielEtAl2017ear}; \citealt{CollardDefrancq2019}) to 300 ms (\citealt{WangLi2014}). We identified a silent pause as a period of silence longer than 250 ms, in line with the majority of studies (\citealt{Cecot2001}; \citealt{HanEtAl2020}; \citealt{Mead2005}; \citealt{PradasMacias2006}; \citealt{Tissi2000}). A filled pause was identified as anything marked in transcription as +yyy+ or +eee+ or anything else between two plus signs. We applied no cut-off point for a filled pause following \citet{PlevoetsDefrancq2016}. A run was defined as a segment of speech uninterrupted by silent pauses, as applied by \citet{HanEtAl2020}. Finally, speech proportion was calculated as a ratio of articulation time (i.e. not including pauses) to speech duration \citep{Lee1999}.
+
+\begin{table}
+
+\begin{tabularx}{\textwidth}{Xrrrc}
+
+\lsptoprule
+
+{\bfseries Parameter} & {\bfseries ST mean} & {\bfseries TT mean} & {\bfseries t} & {\bfseries p}\\
+\midrule\\
+ Duration & 1 min 22 s & 1 min 24 s & {}-.28 & =.78\\
+ \makecell[tl]{Number of silent pauses\\per minute} & 12.06 & 10.36 & 5.51 & p<.001*\\
+ \makecell[tl]{Mean length of silent pauses\\(in ms)} & 487 & 626 & {}-6.86 & p<.001*\\
+ \makecell[tl]{Number of filled pauses\\per minute} & 2.84 & 7.37 & {}-11.10 & p<.001*\\
+ \makecell[tl]{Mean length of filled pauses\\(in ms)} & 613 & 722 & {}-3.99 & p<.001*\\
+ \makecell[tl]{Mean length of runs\\(in syllables)} & 26.21 & 20.20 & 2.56 & p=.011*\\
+ Speech proportion & 0.87 & 0.80 & 11.38 & p<.001*\\
+\lspbottomrule
+\end{tabularx}
+\caption{ST and TT delivery parameters compared}
+\label{tab:chmiel:2}
+\end{table}
+
+\newpage
+Differences in all the parameters apart from duration turned out to be statistically significant. The comparison shows a familiar pattern: interpretations include fewer but longer silent pauses, which is in line with a study involving students by \citet{Tissi2000}, a small-scale study of A to B simultaneous interpreting involving professionals and trainees by \citet{WangLi2014} and other studies (\citealt{Ahrens2005}; \citealt{Christodoulides2013}; \citealt{CollardDefrancq2019}; \citealt{Lee1999}; \citealt{Poechhacker1995}). 
+
+It is interesting to see that silent pauses in PINC are much shorter and less numerous than in a comparable corpus (EPICG) involving interpretations from the European Parliament and featuring different language pairs analysed by \citet{CollardDefrancq2019}. In that study, there are almost 23 silent pauses in one minute of ST and 19 silent pauses in one minute of TT. The mean length is 10280 ms and 10580 ms for ST and TT, respectively. It seems that, as compared to PINC, silent pauses in EPICG are approximately twice as long and twice as numerous in all texts. We might speculate that this discrepancy is due to differences in speaking rates, which are much higher in EPICG. A comparison of PINC and EPICG data for filled pauses is also interesting. Despite differences in speaking rates, the numbers of filled pauses per minute match almost exactly across both corpora: 2.61 in EPICG and 2.84 in PINC for source texts and 7.52 in EPICG and 7.37 in PINC for target texts. Unfortunately, Collard and Defrancq do not include data for the mean length of filled pauses. A potential explanation for these results might be the different nature of both corpora. EPICG includes, to the best of our knowledge, only interpretations into the A language, while the subcorpus of PINC under analysis includes retour interpretations only (i.e. into the B language). Since production in one’s B language is more difficult than in one’s A language and since filled pauses, according to \citet{Setton1999}, reflect cognitive load related to formulation, interpretations into B should include a greater number of filled pauses than interpretations into A. The reason PINC and EPICG match on this measure might be because the number of filled pauses in PINC is offset by its lower ST and TT speaking rate. This explanation is tentative and the prediction on the higher number of filled pauses present in retour interpretations as compared to interpretations into A will be tested on the Polish-English language pair once PINC is extended to include a subcorpus of PL-EN interpretations made into the interpreters’ A language.
+
+To the best of our knowledge, no study to date has compared the mean length of runs of source texts and target texts in a corpus study. Our data show that interpretations include shorter runs, or uninterrupted flows of utterance, than source texts. This might mean that interpreters work in shorter spurts and fragment their output due to processing constraints. Additionally, the speech proportion data are in line with \citegen{Lee1999} results, showing that interpreters speak for a smaller proportion of time than speakers and use pauses for information processing. 
+
+In their study of perceived fluency of interpreting, \citet{HanEtAl2020} identified the following criteria as strongly associated with higher fluency: mean length of runs, mean length of silent pauses, phonation time ratio (which is equivalent to speech proportion in the present study) and speech rate. All these criteria have lower values for interpreting than for the source texts in PINC. Although \citegen{HanEtAl2020} data pertain to consecutive interpreting, we might tentatively assume that interpretations in our corpus could be perceived as less fluent than the source texts, although such a conjecture surely requires empirical verification.
+
+\subsection{Silent and filled pauses in interpreting and their modulating factors}\label{sec:chmiel:3.3}
+
+Fluent delivery is an important criterion in interpreting (\citealt{PradasMacias2006}; \citealt{Rennert2010}) and pauses are generally considered as an important element of fluency \citep{Mead2000}. \citet{Poechhacker2004} considers silent and filled pauses as part of the disfluency phenomenon in interpreting related to the limited scope of planning involved in this type of oral production. Silent pauses are associated with problems with ST comprehension, lexical search for translation equivalents and production difficulties (\citealt{Bartlomiejczyk2006, PiccalugaEtAl2005, Toth2011}). Although interpreters tend to follow the general pattern of pauses applied by the speaker, there are modifications to that pattern due to difficulties in processing (\citealt{Cecot2001}; \citealt{Goldman-Eisler1972}). Filled pauses can be interpreted as an indirect index of cognitive load and, similarly to silent pauses, can reflect processing difficulties. According to \citet{Setton1999}, while long silent pauses indicate high attention to input, long filled pauses reflect attention to formulation including speech planning and lexical access. Both silent and filled pauses turned out to be longer in interpretations than in source texts, thus testifying to extreme speech production conditions in interpreting.
+
+We fitted a series of mixed effects linear models to evaluate the impact of ST fluency parameters on pauses in the target texts. Since PINC metadata include exact identification of interpreter voices, we could include interpreters as a random factor in each model. Fixed factors reflected the source text delivery characteristics, such as speed, number of silent pauses per minute, mean length of silent pauses, compression rate and delivery mode (whether the source text was read or delivered impromptu). We could not include the number and mean length of filled pauses due to the violation of the collinearity principle – both of these measures correlated moderately with the source text speaking rate. We used sliding contrasts for delivery mode and treatment contrasts for the remaining fixed factors. P values were obtained through Satterthwaite approximations. The number of silent pauses per minute in the interpretation was influenced by the ST speed (b=-.02, SE=.01, t=-3.03, p=.002), mode of delivery (b=-1.04, SE=.44, t=-2.36, p=.02) and the number of silent pauses per minute in the source text (b=.15, SE=.07, t=2.23, p=.03). The faster the ST, the lower the number of silent pauses in TT. There are more silent pauses in interpreting read-out speeches than impromptu speeches and the number increases when there are more silent pauses in ST. This last association is in line with \citet{CollardDefrancq2019}. It seems that interpreters pause less when dealing with faster and read-out source texts, but they pause more when the speakers pause more. Interestingly, the mean length of silent pauses in TT was not modulated by any factors, which is at variance with Collard and Defrancq’s study, where source text speaking rate did modulate the length but not the number of silent pauses in interpreting.
+
+The number of filled pauses in TT was modulated by the mode of delivery (b=1.24, SE=.58, t=2.12, p=.03) and the compression rate (b=-9.67, SE=2.39, t=-4.05, p<.001). The data show that as compression increases and the interpretation becomes shorter, the number of filled pauses increases. There were also more filled pauses in read out speeches as compared to the impromptu ones. As postulated earlier, this might be related to the cognitive load triggered by increased reformulation involved in producing more compressed and structurally less complex target texts. The mean length of filled pauses in TT was modulated by the ST speed (b=-1.94, SE=.56, t=-3.45, p<.001) and the compression rate (b=-673.42, SE=150.58, t=-4.47, p<.001). These results show that the faster and the less compressed the source text, the lower the mean length of filled pauses in the interpretation. None of the predictors associated with the number of filled pauses in this study match those in EPICG (\citealt{CollardDefrancq2019}). In that study, ST speed influenced the number of filled pauses while in ours it influenced the length of filled pauses. More research is needed to elucidate the phenomenon of filled pauses in interpreting.
+
+Taken together, our data on factors modulating pauses are partially in line with \citegen{Setton1999} general idea of the relationship between silent pauses and the focus on the ST input and between filled pauses and the focus on formulation. Only filled pauses were modulated by the compression rate: they became longer and more numerous as interpreters struggled to provide a more compressed, i.e. more reformulated, version of the target text. Mode of ST delivery influenced the number of both silent and filled pauses. They were more numerous in interpretations of read-out speeches. One may assume that silent pauses helped interpreters’ comprehension of these speeches that are usually lexically denser and structurally more complex. Filled pauses, on the other hand, aided formulation, which was also more demanding as compared to impromptu speeches that are usually more similar in structural complexity to oral production involved in interpreting. However, these conjectures require further empirical support. The study by \citet{WangLi2014} constitutes an interesting attempt at providing detailed explanations of various categories of pauses thanks to a combination of experimental data with retrospective protocols. Alas, no differentiation between motivations for silent and filled pauses is made. This definitely is a promising research avenue worth pursuing in the future. 
+
+\section{Conclusions}
+\begin{sloppypar}
+PINC offers excellent research material that is well balanced, considering the external constraints. Issues of justice and politics predominate the topics of speeches, while as far as gender distribution is concerned, the majority of speakers are male and the majority of interpreters are female. This mirrors the European Parliament reality – male MEPs still dominate the chamber while interpreting is unceasingly a profession dominated by females (which is also true for experimental studies as gender balance is difficult to gain when recruiting study participants). The PINC creation workflow offers new tools and automation opportunities for future corpus developers. 
+
+
+Thanks to using similar categories of metadata (topics, mode of delivery), PINC will be easily comparable to other corpora from the EPIC suite, which should facilitate studies that involve various language combinations to control for lan\-guage-pair-specific factors. Interestingly and due to the language regime and language profiles of interpreters in the European Parliament, PINC includes a strictly controlled Polish-English subcorpus of retour interpreting, an added value as compared to other existing corpora. In the future, it will also include a smaller subcorpus of Polish-English interpretations into A language. This offers a lot of potential for various novel comparisons in corpus-driven studies. We can compare interpretations by the same interpreters working into A (EN-PL) and B (PL-EN). We can also compare interpretations in the same direction (PL-EN) by two different groups of interpreters – native speakers of English and interpreters with English as their B language. 
+\end{sloppypar}
+
+
+Our initial exploratory corpus-driven study shows how important it is to apply various variables since not all of them are sensitive enough to capture differences. Our ST-PL and TT-EN corpora differed in speaking rate measured in syllables per minute but not in words per minute. Interestingly, the mean compression rate was slightly positive, meaning that target texts were actually longer than source texts. However, a detailed analysis of individual differences showed compression as an interpreter-specific feature. We found that interpreters speed up and compress their delivery more when the source text is delivered faster, showing an expected pattern of results in line with previous studies. Our source and target texts differed also on a range of other fluency criteria, such as number and mean length of silent and filled pauses. We also applied another measure of fluency – mean length of runs (i.e. utterances uninterrupted by pauses) – and found interpreters to produce more fragmented output due to processing constraints. Our findings show that interpreters produce more silent and filled pauses when interpreting a read-out text. More numerous silent pauses in the source text also increase the number of such pauses in the target text. Additionally, the number and length of filled pauses increase with increased compression rate, which seems to suggest that filled pauses could be a good index of production problems.
+
+PINC has been created mainly to expand our knowledge about language control mechanisms (activation and inhibition) in interpreters on the basis of naturalistic data and to serve as a source of stimuli for future experimental studies. However, we hope that PINC, with its intended open access format, rich annotation and built-in interpreter identification will also help interpreting scholars find answers to many interesting corpus-driven research questions. 
+
+\section*{Acknowledgements}
+This research was supported by the UMO-2018/30/E/HS2/00035 (SONATA BIS 8) research grant funded by the National Science Centre, Poland (2019-2024). 
+
+\sloppy\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}
