@@ -1,0 +1,122 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%   $RCSfile: grammatiktheorie.tex,v $
+%%  $Revision: 1.3 $
+%%      $Date: 2010/01/18 14:55:27 $
+%%     Author: Stefan Mueller (CL Uni-Bremen)
+%%    Purpose: 
+%%   Language: LaTeX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[output=book
+ 	        ,biblatex  
+                ,babelshorthands
+%                ,showindex
+                ,newtxmath
+%                ,colorlinks, citecolor=brown % for drafts
+%                ,draftmode
+% 	        ,coverus
+                ,uniformtopskip
+                ,tblseight % to get the fonts for the Chinese title of GT
+		  ]{langscibook} 
+
+
+\usepackage{ifthen}
+\provideboolean{draft}
+\setboolean{draft}{false}
+
+%\usepackage{etoolbox}
+\newtoggle{draft}\togglefalse{draft}
+%\newtoggle{draft}\toggletrue{draft}
+
+\newtoggle{finished}\togglefalse{finished}
+
+%\newcommand{\NOTE}[1]{}
+\newcommand{\NOTE}[1]{\marginpar{#1}}
+
+\newcommand{\LATER}[1]{}
+
+% load memoize before german.sty
+
+%\usepackage{nomemoize} 
+\usepackage{memoize} 
+%\memoizeset{readonly}
+% see below for further settings
+
+\input{localmetadata.tex}
+\input{localpackages.tex}
+\input{localcommands.tex}
+\input{localhyphenation.tex}
+
+\input{locallangscifixes.tex}
+
+\memoizeset{
+  memo filename prefix={germanic.memo.dir/},
+  register=\todo{O{}+m},
+  prevent=\todo,
+}
+
+
+% https://tex.stackexchange.com/a/111851/18561
+\DeclareSourcemap{
+    \maps[datatype=bibtex]{
+      \map{
+        \step[fieldsource=checked]
+        \step[fieldset=usera,origfieldval]
+    }
+  }
+}
+
+%\DeclareFieldFormat{usera}{\red{#1}}
+
+% This shows the value of checked:
+%\AtEveryBibitem{
+%\csappto{blx@bbx@\thefield{entrytype}}{\iffieldundef{usera}{\space \red{Not checked!}}{\space\green{\printfield{usera}}}}
+%}
+% This just shows a warning for unchecked items
+\AtEveryBibitem{
+\csappto{blx@bbx@\thefield{entrytype}}{\iffieldundef{usera}{\space \red{Not checked!}}{}}
+}
+
+
+%\memoizeset{readonly}
+
+%\includeonly{chapters/preface}
+%\includeonly{chapters/germanic-overview}
+
+%\includeonly{chapters/germanic-phenomena}
+
+%\includeonly{chapters/germanic-psg}
+%\includeonly{chapters/germanic-psg,chapters/germanic-solutions}
+
+\includeonly{chapters/germanic-valence-scrambling}
+%\includeonly{chapters/germanic-valence-scrambling,chapters/germanic-solutions}
+%\includeonly{chapters/germanic-verbal-complex}
+%\includeonly{chapters/germanic-verbal-complex,chapters/germanic-solutions}
+%\includeonly{chapters/germanic-verb-position}
+%\includeonly{chapters/germanic-verb-position,chapters/germanic-solutions}
+%% %% \includeonly{germanic-mehr-vf}
+
+%\includeonly{chapters/germanic-passive}
+%\includeonly{chapters/germanic-expletives}
+%\includeonly{chapters/germanic-expletives,chapters/germanic-solutions}
+
+%\includeonly{germanic-hpsg-light}
+%\includeonly{chapters/germanic-outlook}
+
+%\includeonly{chapters/germanic-solutions}
+
+%\includeonly{tsdb-examples}
+
+\bibliography{germanic} %\nocite{*}
+
+
+%\bibliography{bib-abbr,biblio-xdata-en,biblio}
+
+\input germanic-include
+
+%\nocite{*}
+
+\end{document}
+
+
+%      <!-- Local IspellDict: en_US-w_accents -->
