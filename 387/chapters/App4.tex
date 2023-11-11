@@ -1,0 +1,310 @@
+% Appendix B
+
+\chapter{Changes to the Eti\_ToBI script}
+
+\label{app:AppendixB} % For referencing the chapter elsewhere, use \chapref{ch:name} 
+
+This Appendix shows the changes applied to Eti\_ToBI v.6.2 \citep{ElviraGarciaRoseanoFernandezPlanas.2016}. The modified script differs from the original Eti\_ToBI in that it can handle data with voiceless consonants. The changes (see list below) all intend to minimize the impact of microprosody on the analysis or to facilitate usage. All changes were made in the first section of the script, and only this section is presented here. See the \href{http://stel3.ub.edu/labfon/amper/eti_ToBI/}{Eti\_ToBI Website} for the current version of the full script.\largerpage
+
+
+\begin{lstlisting}
+# CHANGES COMPARED TO Eti-ToBI v.6.2
+# 
+# Change 1: The pitch-objects are created with the command 'To pitch 
+#           (ac)...' and a voicing threshold at 0.6, which reduces 
+#           the amount of consonantal pitch with an intensity too 
+#           low to have an impact on intonational perception. 
+#           (Many thanks to Paul Boersma for corroborating in 
+#           personal communication the applicability of this 
+#           mechanism, and also in general for the unflagging 
+#           support via the praat-users group.)
+#
+# Change 2: The script unvoices phonemes (preferably consonants) of 
+#           your choice (unvoicing reaches 10ms into adjacent 
+#           intervals).
+#
+# Change 3: The script allows for manual inspection of tracking errors,   
+#           alternative pitch candidates, and microprosody 
+#           in the pitch object.
+#
+# Change 4: The pitch-object files are stored and can be used 
+#           afterwards to export phonetic pitch data together with 
+#           the phonological ToBI-labels. easy_logger.praat is a 
+#           tool that allows such parallel data extraction.
+#
+# Change 5: Once a set of pitch-object files has been created (and 
+#           possibly corrected for microprosodic disturbances) it 
+#           can form the basis of a second run of 
+#           Eti_ToBI labeling. 
+#
+# Change 6: The default 'marca de tónica' has been changed from the 
+#           IPA sign for accented syllables (U+02C8) to an 
+#           apostrophe, which is present on many keyboards.
+#   
+# Change 7: Interpolation and removal of ocatve jumps are disabled.
+#
+# INSTRUCTIONS
+# 
+# The script needs 
+#     a) a folder with sounds (one sentence in each wav)
+#     b) textgrid with the same name as the sound file that contains 
+#        interval syllables and a mark for the stressed syllables
+#     c) a folder to store and load pitch-objects
+#
+
+##### FORMULARIO ##########
+form Eti-ToBI
+
+comment WAVs and Textgrids
+sentence carpeta_folder_wav C:\Users\USER\Desktop\
+
+comment pitch files
+sentence carpeta_folder_pitch C:\Users\USER\Desktop\
+
+comment ¿En que número de tier está la marca de tonicidad?
+integer Tier_tonicidad 2
+word Marca_de_tonica '
+comment ¿Quieres el etiquetaje en un nuevo tier?
+boolean Nuevo_tier_Tones 1
+comment ¿En qué número de tier quieres hacer la inserción de los tonos?
+integer Tier_Tones 7
+comment ¿Tienes marcados los break indexes?
+boolean BI 1
+comment ¿En qué número de tier?
+integer Tier_BI 6
+real umbral_(St) 1.5
+real umbral_upstep_(St) 6.0
+comment Elige los tipos de etiquetaje:
+boolean Etiquetaje_superficial 1
+boolean Etiquetaje_profundo 1
+boolean Etiquetaje_normalizado 1
+#comment Indica la lengua del etiquetaje fonológico:
+optionmenu Lengua 2
+option General
+option Sp_ToBI
+option Cat_ToBI
+option Fri_ToBI
+#option MAE_ToBI
+#option It_ToBI
+
+integer iniciar_en_archivo 1
+boolean crear_figura 1
+
+endform
+
+######### BEGIN CHANGE_A_JF ######### 
+
+beginPause: "Correcciones"
+
+comment: "¿Quieres parar para corregir la microprosódia del pitch-object?"
+optionMenu: "correccion_pitch", 1
+option: "Quiero corregir."
+option: "No quiero corregir."
+
+comment: "En qué número de tier están los fonemas?"
+integer: "tier_fonemas", 1
+
+comment: "Marcas de fonemas a ensordecer (introducir sin espacios o signos de puntuación)"
+sentence: "fonemas_a_ensordecer", "ptSksxTf_rz"
+
+comment: "¿Quieres parar para corregir el etiquetaje?"
+optionMenu: "correccion_eti", 1
+option: "Quiero corregir."
+option: "No quiero corregir."
+comment ("Cuando acabes, clica Continuar para continuar")
+clicked = endPause ("Continuar", 2)
+
+######### END CHANGE_A_JF #########
+
+if etiquetaje_profundo = 1
+
+beginPause: "Tipo de etiquetaje"
+comment: "¿Cuáles de estas etiquetas quieres que aparexcan en el etiquetaje profundo?"
+optionMenu: "Displaced_prenuclear", 1
+option: "L+<H*"
+option: "L*+H"
+optionMenu: "Upstep", 1
+option: "L+¡H*"
+option: "L+H*"
+optionMenu: "Pretonica_upstep", 1
+option: "¡H+L*"
+option: "H+L*"
+optionMenu: "Descenso_tonica", 1
+option: "H*+L"
+option: "H*"
+optionMenu: "Ascenso_tardio", 1
+option: "L* LH%"
+option: "L* H%"
+optionMenu: "Tritonal_Argentina", 1
+option: "L+H*+L"
+option: "no"
+
+comment ("Cuando acabes, clica Continuar para empezar")
+clicked = endPause ("Continuar", 2)
+endif
+
+############## VARIABLES ######################
+folder$ = carpeta_folder_wav$
+folderpitch$ = carpeta_folder_pitch$
+rango$ = "60-600"
+create_picture = crear_figura
+from = iniciar_en_archivo
+a = displaced_prenuclear
+b = upstep
+c = descenso_tonica
+d = ascenso_tardio
+f = tritonal_Argentina
+g = pretonica_upstep
+
+if etiquetaje_normalizado=1 and etiquetaje_profundo =0
+pause La estandarización parte del etiquetaje profundo.
+endif
+if etiquetaje_profundo =1 and etiquetaje_superficial =0
+pause El etiquetaje profundo parte del etiquetaje superficial.
+endif
+
+f0_max = extractNumber (rango$, "-")
+f0_max$ = "'f0_max'"
+f0_min$ = "'rango$'" - "'f0_max$'"
+f0_min$ = "'f0_min$'" - "-"
+f0_min = 'f0_min$'
+
+numberOfLetras = 15
+umbralnegativo = umbral - (2*umbral)
+ultimatonica = 0
+etiquetaprofunda$ = "* no"
+etiquetatonoprofundo$ = " * aguda"
+etiquetafinalprofunda$ = "\% "
+
+############## BUCLE GENERAL ######################
+# Crea la lista de objetos desde el string
+#Create Strings as file list: "listWAV", folder$ + "/" + "*.wav"
+Create Strings as file list: "listWAV", folder$ + "*.wav"
+
+#Hace el bucle con ello
+numberOfFiles = Get number of strings
+
+######### BEGIN CHANGE_B_JF #########
+
+# Crea la lista de objetos pitch desde el string
+#Create Strings as file list: "listPITCH", folderpitch$ + "/" + "*.pitch"
+Create Strings as file list: "listPITCH", folderpitch$ + "*.pitch"
+
+#Hace el bucle con ello
+numberofPitchfiles = Get number of strings
+
+#advertencia / warning
+if 'numberofPitchfiles' > 0
+pauseScript: "There are pitch files in your pitch files folder. 
+Consider a backup before proceeding."
+endif
+
+######### END CHANGE_B_JF #########
+
+#bucle archivos
+for ifile from 'from' to numberOfFiles
+echo Número de frase 'ifile'
+select Strings listWAV
+archivosonido$ = Get string: ifile
+base$ = archivosonido$ - ".wav"
+rutasonido$ = folder$ + archivosonido$
+
+#lee el archivo de sonido
+Read from file: rutasonido$
+
+#lee el texgrid
+archivogrid$ = base$ + ".TextGrid"
+rutagrid$ = folder$ + archivogrid$
+Read from file: rutagrid$
+
+######### CREA OBJETOS ########
+
+select Sound 'base$'
+#elimina todas las frecuencias superiores a 900Hz 
+#para minimizar los Pitch de las fricativas 
+#que están a 2000 y 3000 Hz
+Filter (stop Hann band): 900, 20000, 100
+#sacar la gama
+select Sound 'base$'_band
+
+######### BEGIN CHANGE_C_JF #########
+
+if 'numberofPitchfiles' = 'numberOfFiles' 
+mypitch = Read from file... 'folderpitch$''base$'.Pitch
+
+else
+select Sound 'base$'_band
+mypitch = To Pitch (ac): 0.001, f0_min, 15, "no", 0.03, 0.60, 0.01, 0.35, 0.14, f0_max
+select Pitch 'base$'_band
+Rename: base$
+endif
+
+# reduce microprosodic features of pitch object
+
+if correccion_pitch = 1
+
+select TextGrid 'base$'
+number_of_phonemes = Get number of intervals... 'tier_fonemas'
+
+for ifon from 1 to number_of_phonemes
+select TextGrid 'base$'
+fonlabel$ = Get label of interval... 'tier_fonemas' 'ifon'
+
+if index_regex(fonlabel$,"['fonemas_a_ensordecer$']")
+begin_fon = Get starting point... 'tier_fonemas' 'ifon'
+end_fon = Get end point... 'tier_fonemas' 'ifon'
+duration_fon = (end_fon - begin_fon) * 1000
+intervalfon = Get interval at time... 'tier_fonemas' 'begin_fon'+0.0001
+
+select Pitch 'base$'
+View & Edit
+editor: mypitch
+Select: 'begin_fon'-0.01, 'end_fon'+0.01
+Unvoice
+Close
+endif
+endfor
+
+select Sound 'base$'
+plus TextGrid 'base$'
+do ("View & Edit")
+
+select Pitch 'base$'
+do ("View & Edit")
+pause ¿Quieres corregir? 
+
+endif
+
+# save pitch object
+select Pitch 'base$'
+Save as text file: "'folderpitch$''base$'.Pitch"
+
+######### END CHANGE_C_JF #########
+
+printline frase 'base$'
+f0medial = do ("Get mean...", 0, 0, "Hertz")
+printline mediana de la frase: 'f0medial'
+#minpitch = do ("Get minimum...", 0, 0, "Hertz", "Parabolic")
+#maxpitch = do ("Get maximum...", 0, 0, "Hertz", "Parabolic")
+#cuantiles teoría de Hirst (2011) analysis by synthesis of speach melody
+q25 = Get quantile: 0, 0, 0.25, "Hertz"
+q75 = Get quantile: 0, 0, 0.75, "Hertz"
+minpitch = q25 * 0.75
+maxpitch = q75 * 1.5
+
+gama = maxpitch - minpitch
+
+terciogama = gama/3
+tercio1 = minpitch + terciogama
+tercio2 = minpitch + (2*terciogama)
+tercio3 = minpitch + (3*terciogama)
+
+######### BEGIN CHANGE_D_JF ######### 
+#do ("Kill octave jumps")
+#do ("Interpolate")
+######### END CHANGE_D_JF #########
+do ("Down to PitchTier")
+
+# for the full script, see 
+# http://stel3.ub.edu/labfon/amper/eti_ToBI/
+\end{lstlisting}

@@ -1,0 +1,242 @@
+\chapter{NAP implementations}\label{sec:modelimp}
+
+\section{Complementary NAP models}\label{sec:complementary}
+
+NAP essentially describes a bottom-up process, illustrating the parsing of the stream of speech into syllables as the end point of a process that starts in perception.
+As such, NAP is designed to agree with the laws of physics and the biases of the human auditory system in order to shed light on linguistic processing.
+A bottom-up perspective on modelling NAP is therefore relatively straightforward as it requires a similar approach to the process NAP describes: the analysis of continuous acoustic data at the input, resulting in well-formedness predictions at the output.
+
+A bottom-up approach for NAP models has no capacity to exploit the power of abstraction, so it essentially has no \enquote{memory}. It is a mechanistic dynamic model that contains discrete symbolic entities only as the linguistic target of the task, at the end of the process determining syllabic well-formedness.
+This means that a bottom-up model can only be designed to analyze concrete speech tokens. Unlike traditional sonority principles and their models, a bottom-up model of NAP cannot determine the well-formedness of an abstract syllable as it is depicted in symbolic form. It will, therefore, give slightly different scores to different renditions of the same syllable, even by the same speaker.
+
+A NAP-based model operating on abstracted symbolic units is used as a separate, complementary top-down model (see \chapref{sec:lingMod} and specifically \sectref{sec:missinglinks}). Top-down inferences are based on learned regularities and categorical abstractions that reflect linguistic experience. To that end, knowledge about consonantal inventories and the probabilities of consonantal co-occurrence and distribution with respect to position in the syllable has to be acquired and then stored in abstract symbolic forms which are available for top-down inferences. In that sense, top-down inferences in perception are based on the distributional probability of recognized symbols.
+
+The above description of top-down inferences, which are detached from the functional aspects of the bottom-up route, echo models of the language user as a \emph{statistical learner} (see, e.g., \citealt{christiansen1999power, frisch2001psychologicalsk, tremblay2013processing})
+and, more specifically, they are very much in line with models of \emph{phonotactic learners} (see, e.g., \citealt{coleman1997stochastic, albright2009feature, bailey2001determinants, daland2011explaining, hayes2011interpreting, hayes2008maximum, jarosz2017inputsk, mayer2019phonotacticsk, vitevitch2004webbasedsk}).
+That said, the current project does not explore the statistical nature of top-down inferences. Instead, it operationalizes the rationale behind NAP with symbolic machinery to present what can be understood as the symbolic model of NAP and is used to estimate top-down inferences.
+This choice allows the presentation of a top-down model with a stronger explanatory value with regards to NAP as it uses a similar architecture to that of standard sonority principles, helping to elucidate NAP's core ideas while using a familiar vocabulary (see Section~\ref{sec:naptdmodel}).
+
+Moreover, it should be noted that since a cognitively plausible top-down architecture in this framework is based on the distributional patterns of recognizable symbols, these distributions should be \enquote{blind} to their various sources, which include a host of universal and idiosyncratic phonotactic pressures. A true top-down statistical learner is thus inherently \enquote{contaminated} by all the different sources that contribute to phonotactics in a given system, without a clear distinction between sonority and other factors. Thus, it remains an open question whether top-down inferences that target only sonority-based phonotactics can be modeled in a more direct and principled way than the one presented here with the symbolic model of NAP.
+
+As two complementary inference routes, the top-down and bottom-up models should not be considered equal. The bottom-up route is the source of learned linguistic distinctions and it is functionally motivated by the laws of physics and the limitations of the perceptual and cognitive systems.
+In contrast, the top-down route is based on linguistic experience and superficial inferences that reflect the history of the symbols in the system (i.e.~the distributional probabilities of recognizable recurring patterns and their extensions by analogy). In other words, top-down inferences reflect functionally motivated behaviors only indirectly, as the outcome of learning the superficial expressions of functionally-motivated (bottom-up) dynamics.
+
+\section{Model implementations in dynamic and symbolic terms}\label{sec:modelimpOLD}
+
+\begin{table}
+\caption{\label{tab:hierarchy_rep}Traditional phonological sonority hierarchies (repeated from \tabref{tab:hierarchy}). 
+Index values reflect the ordinal ranking of categories in sonority hierarchies. The obstruents in \emph{H}\textsubscript{col} are collapsed into one category (bottom four rows = 1), while in \emph{H}\textsubscript{exp} they are expanded into four distinct levels.}
+\begin{tabular}{ccll}
+\lsptoprule
+\multicolumn{2}{c}{{Sonority index}} & &\\\cmidrule(lr){1-2}
+\multicolumn{1}{c}{\emph{H}\textsubscript{col}} & \multicolumn{1}{c}{\emph{H}\textsubscript{exp}} & Segmental class & Phonemic examples\\
+\midrule
+5 & 8 & Vowels & \multicolumn{1}{l}{/u, i, o, e, a/}\\
+4 & 7 & Glides & \multicolumn{1}{l}{/w, j/}\\
+3 & 6 & Liquids & \multicolumn{1}{l}{/l, r/}\\
+2 & 5 & Nasals & \multicolumn{1}{l}{/m, n/}\\
+\textbf{1} & \textbf{4} & Voiced Fricatives & \multicolumn{1}{l}{/v, z/}\\
+\textbf{1}& \textbf{3} & Voiced Stops & \multicolumn{1}{l}{/b, d, g/}\\
+\textbf{1}& \textbf{2} & Voiceless Fricatives & \multicolumn{1}{l}{/f, s/}\\
+\textbf{1}&\textbf{1} & Voiceless Stops & \multicolumn{1}{l}{/p, t, k/}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+In order to compare the different proposals, four types of traditional sonority models are considered alongside the two NAP models.
+For traditional models I use the two types of sonority hierarchies that were presented in Section~\ref{sec:hierarchies} (see \tabref{tab:hierarchy}, repeated here in \tabref{tab:hierarchy_rep}), where the class of obstruents is either \emph{collapsed} (\emph{H}\textsubscript{col}) into a single level or \emph{expanded} (\emph{H}\textsubscript{exp}) to include distinctions between voiced and voiceless obstruents, and between stops and fricatives.
+Both hierarchies are applied with each of the two main variants of traditional sonority principles, the \emph{Sonority Sequencing Principle}, SSP, and the \emph{Minimum Sonority Distance}, MSD (see Section~\ref{sec:principles}).
+The four traditional sonority models under discussion are therefore a combination of a sonority principle (either SSP or MSD) and a sonority hierarchy (either \emph{H}\textsubscript{col} or \emph{H}\textsubscript{exp}). Accordingly, they are referred to as SSP\textsubscript{col}, SSP\textsubscript{exp}, MSD\textsubscript{col}, and MSD\textsubscript{exp}.
+
+\begin{sloppypar}
+The two NAP models use periodic energy as the correlate of sonority, and periodic energy is applied either continuously through acoustics (bottom-up model), or in a discrete manner using symbols (top-down model). These two NAP models are referred to as NAP\textsubscript{td} for the top-down model and NAP\textsubscript{bu} for the bottom-up one.
+\end{sloppypar}
+
+To demonstrate the different sonority models, this study focuses on complex onset clusters of the general form CCV, where C denotes consonants in onset position and V denotes a vowel in nucleus position. Traditional sonority models inspect the sonority slope of the onset cluster to determine well-formedness of CCV syllables, while NAP-based models apply the notion of \emph{competition} to determine well-formedness.
+
+In the following sections, I will elaborate on the methods for obtaining well-formedness scores, starting with the ordinal scores obtained from the four traditional sonority models (Section~\ref{sec:traditionalmodels}), and the symbolic NAP model NAP\textsubscript{td} (Section~\ref{sec:naptdmodel}).
+The implementation of the continuous model NAP\textsubscript{bu} follows in Section~\ref{sec:napbu}. Finally, this chapter concludes with a short overview of key advantages of NAP over traditional sonority principles (\sectref{sec:advantages}).
+
+\subsection{Traditional sonority models}\label{sec:traditionalmodels}
+
+Implementation of traditional sonority principles like the SSP is based on a calculation of the sonority slope over a given sequence of segments. Speech segments in these frameworks have fixed index values on the sonority hierarchy, based on their class membership, as in the \emph{H}\textsubscript{col} and \emph{H}\textsubscript{exp} hierarchies (see \tabref{tab:hierarchy_rep}). These sonority index values are usually expressed in terms of integers since they reflect an ordinal scale. Due to this, the mathematical operations that these models employ should be restricted to basic arithmetic functions of addition and subtraction. Sonority slopes can be, therefore, obtained straightforwardly by a subtraction between the corresponding sonority indices of two adjacent consonants. In onset clusters with two consonants (CCV) this can simply be achieved by the formula \(C_2 – C_1\), which yields positive results for rising sonority slopes, negative results for falling sonority slopes, or a zero for plateaus. This calculation is applied to the two SSP models, SSP\textsubscript{col} and SSP\textsubscript{exp} (see examples in \tabref{tab:ordinalscores}).
+
+The exact same formula is also used to obtain scores for the Minimum Sonority Distance models, MSD\textsubscript{col} and MSD\textsubscript{exp}, which elaborate on the well-formedness of onset rises.
+MSD models differ from the SSP in the interpretation of positive values (that reflect rising sonority slopes). While under the SSP all positive scores map to a single score (i.e.~all rises are well-formed to the same extent), under the MSD higher positive scores are preferred over lower positive scores to reflect the preference for a larger sonority distance (or a steeper slope) in a rising onset configuration (see examples in \tabref{tab:ordinalscores}).
+
+\subsection{The top-down symbolic NAP model}\label{sec:naptdmodel}
+
+The symbolic version of NAP, which is used to derive predictions for the top-down NAP (NAP\textsubscript{td}), shares a similar architecture with common SSP-based models. Crucially, it also reflects the novelties of the current proposal, both in terms of the sonority hierarchy it assumes, and in terms of the design of the sonority principle. NAP\textsubscript{td} uses a sonority hierarchy that is based on the periodic energy potential of different phoneme classes as the basis of distinct categorical patterning (see \sectref{sec:snaphierarchy}). Furthermore, NAP\textsubscript{td} models syllabic well-formedness with the notion of nucleus competition, rather than the formal notion of sonority slopes as in traditional SSP-type models (see Section~\ref{sec:snapimplementation}).
+
+\subsubsection{\texorpdfstring{The sonority hierarchy in NAP\textsubscript{td}}{The sonority hierarchy in NAPtd}}\label{sec:snaphierarchy}
+
+The symbolic sonority hierarchy in NAP uses the basic ratio between periodic and aperiodic energy in the speech signal to divide all speech sounds into three distinct groups. This reflects the coarse, yet reliable differences in potential periodic energy mass of different abstract speech sound categories. To achieve that, we rely on the following set of general characteristics: (i) the main source of periodic energy in speech stems from vocal fold vibrations when voicing occurs; (ii) aperiodic energy in speech is mostly the outcome of the turbulent airflow resulting from articulatory friction (i.e.~fricatives) and from articulatory closure in oral stops, which often results in transient bursts when released (see \citealt{rosen1992temporal}).
+
+The ratio between periodic and aperiodic components in speech sounds readily yields the following three distinct groups: (i) voiceless obstruents that consist of mostly aperiodic energy and are the least sonorous type of speech sounds; (ii) sonorant consonants and vowels that consist of mostly periodic energy and are the most sonorous type of speech sounds; as well as (iii) voiced obstruents that consist of both periodic and aperiodic energy and belong in the middle of this ternary scale (see \ref{ex:napscale}).
+\begin{equation}
+\text{Voiceless obstruents} < \text{Voiced obstruents} < \text{Sonorants} \label{ex:napscale}
+\end{equation}
+
+A further distinction in NAP's sonority hierarchy is based on the general presence or absence of articulatory contact.
+A free and open vocal tract contributes to a potentially stronger and longer vocalic signal that can qualitatively enhance the potential periodic energy mass.
+This distinction effectively separates the sonorants into \emph{sonorant vocoids} (glides and vowels) and \emph{sonorant contoids} (nasals and liquids).\footnote{Note that some rhotics, which are traditionally considered liquids, may in fact belong with the vocoid consonants (e.g.~most of the English rhotics, especially in coda position).} See \tabref{tab:napscale} for the full sonority hierarchy in the symbolic model of NAP.
+
+
+\begin{table}
+\caption{\label{tab:napscale}The symbolic sonority hierarchy in NAP\textsubscript{td}. Index values reflect the ordinal ranking of categories in the sonority hierarchy. The distinctions between categories in the symbolic NAP hierarchy are based on the characteristic ratio between periodic and aperiodic energy, and on articulatory contact, both taken to reflect the potential of the periodic energy mass, i.e. the potential for nucleus attraction.}
+\begin{tabular}{clcc}
+\lsptoprule
+Sonority &  & Periodic: & Articulatory\\
+index & Segmental classes & Aperiodic & contact\\\midrule
+4 & Sonorant vocoids (\emph{glides}, \emph{vowels}) & \multicolumn{1}{c}{1:0} & $-$\\
+3 & Sonorant contoids (\emph{nasals}, \emph{liquids}) & \multicolumn{1}{c}{1:0} & $+$\\
+2 & Voiced obstruents (\emph{stops}, \emph{fricatives})& \multicolumn{1}{c}{1:1} & $+$\\
+1 & Voiceless obstruents (\emph{stops}, \emph{fricatives})  & \multicolumn{1}{c}{0:1} & $+$\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+The symbolic sonority hierarchy in NAP reconciles perceptual and articulatory approaches to sonority by modelling their mutual contribution to enhancing pitch intelligibility (or periodic energy mass, in acoustic terms). This hierarchy is similar to a few proposals for sonority hierarchies that combined levels of voicing/periodicity with degree of vocal tract opening (e.g.~\citealt{lass1988phonology, miller2012sonority}, and \citealt{sharma2018significance}). Such hierarchies may also be seen as compatible with source-filter models of speech \citep{fant1960acousticsk}, where the \emph{source} controls voicing and the \emph{filter} controls opening (e.g.~\citealt{puppel1992sonority}).
+
+The complete 4-place sonority hierarchy of NAP\textsubscript{td} in \tabref{tab:napscale} also reflects a basic typology of nucleus types, which supports the use of this scale as a qualitative measure for nucleus attraction potentials. Sonorant vocoids, like glides and vowels, can attract the nucleus in all languages we know (a glide is considered a vowel when syllabified in the nucleus position), while sonorant contoids like nasals or liquids can be syllabic (i.e.~attract the nucleus) only in a subset of languages, of which a smaller subset may allow obstruents to attract nuclei (but see \citealt{easterday2019highly} for some divergent patterns with syllabic obstruents relative to syllabic liquids).
+
+\subsubsection{NAP\textsubscript{td} implementation}\label{sec:snapimplementation}\largerpage[-2]
+
+When assessing C\textsubscript{1}C\textsubscript{2}V syllables under the NAP framework, we essentially aim to measure the competition potential between C\textsubscript{1} and V given C\textsubscript{2}. In and of itself, C\textsubscript{2} is not considered a competitor due to its proximity to the vowel, as discussed in Section (\ref{sec:nap}).
+The issue of competition may be therefore expressed by the following questions:
+(i) what is the potential periodic energy mass of C\textsubscript{1} (i.e.~how sonorous is C\textsubscript{1}, or what is the intercept of the cluster that determines the starting point of the slope);
+(ii) how much of the energy in C\textsubscript{1} is potentially lost, gained or maintained in C\textsubscript{2}, before peaking at the vowel (i.e.~what is the sonority slope).
+Assessing this relationship between C\textsubscript{1} and V given C\textsubscript{2} can be achieved by the combination of two subtraction formulas:
+(i) a calculation of the difference between C\textsubscript{1} and the non-adjacent vowel, to reflect the potential strength of C\textsubscript{1} in terms of the intercept relative to the nucleus;
+(ii) a calculation of the slope between adjacent C\textsubscript{1} and C\textsubscript{2}, as in SSP-based models, to reflect the trajectories of fluctuating energy towards the peak.
+This can be summarized with the formula in \eqref{eq:naptdeq}.\footnote{A somewhat similar calculation can be found in 
+%Fullwood's \citeyear{fullwood2014perceptual}
+\citegen{fullwood2014perceptual} 
+\emph{Sonority Angle}.}
+\begin{equation}
+  (\text{V} - \text{C}_1) + (\text{C}_2 - \text{C}_1)  \label{eq:naptdeq}
+\end{equation}
+
+\subsection{Ordinal sonority scores}\label{sec:ordinalscores}
+
+\tabref{tab:ordinalscores} (page~\pageref{tab:ordinalscores}) demonstrates and compares the scores of the five ordinal models (2\(X\)SSP, 2\(X\)MSD and NAP\textsubscript{td}) with different CCV cluster types. It shows that the main difference between the two sonority hierarchies, \emph{H}\textsubscript{exp} and \emph{H}\textsubscript{col}, concerns fricative-stop clusters like the \emph{/s/-stop} cluster \emph{spV}, which are considered as either an onset fall (with the \emph{H}\textsubscript{exp} hierarchy) or an onset plateau (with the \emph{H}\textsubscript{col} hierarchy). When the MSD is applied, the two sonority hierarchies also show differences in ranking within onset rises, given their different treatment of obstruents. In models that use the \emph{H}\textsubscript{exp} hierarchy there are four levels of obstruents (voiced and voiceless stops and fricatives) which are collapsed into one level in models that use the \emph{H}\textsubscript{col} hierarchy.
+This results in five distinct sonority rise scores in the MSD\textsubscript{exp} model, but only two in the MSD\textsubscript{col} model (where some of the trends also differ, e.g.~\emph{smV} vs.~\emph{vlV} in the two MSD-based models).
+
+
+
+
+\begin{sidewaystable}
+\caption{\label{tab:ordinalscores} Well-formedness scores with ordinal models. The table demonstrates the predictions we obtain using the two traditional sonority hierarchies, \emph{H}\textsubscript{col} and \emph{H}\textsubscript{exp}, with each of the two traditional sonority principles, SSP and MSD. Numbers in brackets next to \enquote{Rise} reflect MSD's ranking of onset rises by distance -- higher values indicate better-formed rises. The scores derived from NAP\textsubscript{td} on the right column are taken to directly reflect the nucleus competition potential, where higher scores are better-formed.}
+\begin{tabular}{lccccc}
+\lsptoprule
+& \multicolumn{4}{c}{Traditional sonority principles} & \multicolumn{1}{c}{Symbolic NAP}\\\cmidrule(lr){2-5}\cmidrule(lr){6-6}
+
+Onset & \multicolumn{2}{c}{\emph{H}\textsubscript{exp} hierarchy} & \multicolumn{2}{c}{\emph{H}\textsubscript{col} hierarchy} & \multicolumn{1}{c}{{NAP\textsubscript{td}}}\\
+clusters & \multicolumn{1}{c}{$C_2-C_1$} & \multicolumn{1}{c}{{SSP(MSD)\textsubscript{exp}}} & \multicolumn{1}{c}{$C_2-C_1$} & \multicolumn{1}{c}{{SSP(MSD)\textsubscript{col}}} & \multicolumn{1}{c}{$(V-C_1)+(C_2-C_1)$}\\
+
+\midrule
+{pl}V & $6-1 = 5$    &  {Rise (5)} & $3-1 = 2$ & {Rise (2)}     & $(4-1)+(3-1) = {5}$\\
+{fl}V & $6-2 = 4$    &  {Rise (4)} & $3-1 = 2$ & {Rise (2)}     & $(4-1)+(3-1) = {5}$\\
+{sm}V & $5-2 = 3$    &  {Rise (3)} & $2-1 = 1$ & {Rise (1)}     & $(4-1)+(3-1) = {5}$\\
+{vl}V & $6-4 = 2$    &  {Rise (2)} & $3-1 = 2$ & {Rise (2)}     & $(4-2)+(3-2) = {3}$\\
+{ml}V & $6-5 = 1$    &  {Rise (1)} & $3-2 = 1$ & {Rise (1)}     & $(4-3)+(3-3) = {1}$\\
+{sf}V & $2-2 = 0$    &  {Plateau}  & $1-1 = 0$  & {Plateau}     & $(4-1)+(1-1) = {3}$\\
+{zv}V & $3-3 = 0$    &  {Plateau}  & $1-1 = 0$  & {Plateau}     & $(4-2)+(2-2) = {2}$\\
+{nm}V & $5-5 = 0$    &  {Plateau}  & $2-2 = 0$  & {Plateau}     & $(4-3)+(3-3) = {1}$\\
+{sp}V & $1-2 = -1$ &  {Fall}       & $1-1 = 0$     & {Plateau}  & $(4-1)+(1-1) = {3}$\\
+{lm}V & $5-6 = -1$ &  {Fall}       & $2-3 = -1$ & {Fall}        & $(4-3)+(3-3) = {1}$\\
+{mz}V & $4-5 = -1$ &  {Fall}       & $1-2 = -1$ & {Fall}        & $(4-3)+(2-3) = {0}$\\
+{lv}V & $4-6 = -2$ &  {Fall}       & $2-4 = -2$ & {Fall}        & $(4-3)+(2-3) = {0}$\\
+{ms}V & $2-5 = -3$ &  {Fall}       & $1-2 = -1$ & {Fall}        & $(4-3)+(1-3) = {-1}$\\
+{np}V & $1-5 = -4$ &  {Fall}       & $1-2 = -1$ & {Fall}        & $(4-3)+(1-3) = {-1}$\\
+{lp}V & $1-6 = -5$ &  {Fall}       & $1-3 = -2$ & {Fall}        & $(4-3)+(1-3) = {-1}$\\
+\lspbottomrule
+\end{tabular}
+\end{sidewaystable}
+
+Unlike traditional models, the predictions of NAP\textsubscript{td} are not grouped into levels that reflect the rough angle of the sonority slope in terms of falls, rises and plateaus. The raw score of the NAP\textsubscript{td} formula is taken as reflective of the nucleus competition potential such that higher scores denote weaker competition and are thus better-formed.
+The top-down NAP model allows scores within a range that goes from $-3$ for the most ill-formed syllable up to 6 for the most well-formed, although a more relevant range to consider, given that glides are excluded from this set, is between $-1$ and 5. These scores are not immediately comparable to the traditional model scores, but some interesting departures from the traditional models can be observed in \tabref{tab:ordinalscores}. For example, NAP\textsubscript{td} considers the onset rise in the sonorous cluster \emph{mlV} to be equally as ill-formed as the inverse fall, \emph{lmV}. Both of these clusters pattern with nasal plateaus (e.g.~\emph{nmV}), where they all receive the same relatively low value of 1. At the same time, voiceless clusters pattern in with well-formed combinations (scoring 3), although they may include sonority plateaus (e.g.~\emph{sfV}) or sonority falls (e.g.~\emph{spV}) in traditional model terms.
+
+\subsection{The bottom-up dynamic NAP model}\label{sec:napbu}
+
+%new from paper
+There are various ways to calculate an estimation of the nucleus competition potential within syllables based on the periodic energy in the acoustic signal. The method presented here has the advantage of not relying on segmental landmarks that are categorical abstractions of the type that is not assumed to be available in the bottom-up route
+% previously...
+%There are various ways to calculate an estimation of the nucleus competition potential within syllables based on the periodic energy in the acoustic signal. The method presented here has the advantage of not relying on segmental landmarks that are categorical abstractions of the type that is assumed in the top-down model -- such abstractions are considered to be unavailable in the bottom-up route 
+(see Sections~\ref{sec:missinglinks} and \ref{sec:complementary}).
+See also \chapref{sec:lingMod} and especially \sectref{sec:risenfall} for more detail on the problems related to the assumption of discrete segments in continuous signals of speech.
+
+% new from paper
+\begin{sloppypar}
+The periodic energy data that were extracted from acoustic recordings of speech is viewed in terms of a mass, i.e. the area under the periodic energy curve, integrating duration and power as the two linked dimensions of quantity in sound (see \citealt{turk1996processing} on interactions between duration and intensity in linguistic perception contexts). 
+Summing is essentially different from averaging, as well as from peak extraction, 
+in how much strength is assigned to the dimension of duration in the abstract measurement of quantity: duration is absent from peak extraction, it is normalized in averages and it is strongly influencing the sum.
+Importantly, only summing strategies are capable of uncovering the quantitative difference between two sounds that have similar amplitude envelopes yet differ in duration. 
+\end{sloppypar}
+% previously...
+%The periodic energy data that was extracted from acoustic recordings of speech is viewed in terms of a \emph{mass}, i.e., the area under the periodic energy curve, integrating duration and power as the two linked dimensions of quantity in sound (see \citealt{turk1996processing} on interactions between duration and intensity in linguistic perception contexts).
+%This approach uses a summing strategy for representing the quantity of sonority, as opposed to averaging or peak extraction.
+%Summing takes measurements from the whole duration of a unit, allowing it to (i) accumulate the individual measurements at each time point, and, in contrast to averaging, (ii) consider the contribution of duration in the final calculation (rather than normalizing over it).
+%Summing is therefore essentially different from averaging, as well as from peak extraction, in that it is capable of uncovering the quantitative difference between two periodic sounds that have similar amplitude envelopes yet differ in duration.
+
+% new from paper
+The contribution of duration to sonority was convincingly illustrated in the seminal work of \citet{price1980sonority}. Price showed that disyllabic English words like \emph{polite} /pəlʌɪt/ were perceived when the duration of the sonorant /l/ in the superficially related monosyllabic word \emph{plight} /plʌɪt/ was manipulated. Thus, an increase in the duration of the sonorant essentially leads to the perception of another syllable. 
+More supporting evidence on the interaction between duration and syllabic parsing can be found in \citet{dupoux1999epentheticsk}, who showed differences in perception between Japanese and French speakers, and in \citet{berent2007we} as well as \citet{wilson2014effects}, who analyzed patterns of misperception of Russian onset clusters by English speakers.
+%previously...
+%The contribution of duration to sonority was convincingly illustrated in the seminal work of \citet{price1980sonority}. Price showed that disyllabic English words like \emph{polite} /pəlʌɪt/ were perceived when the duration of the sonorant /l/ in the superficially related monosyllabic word \emph{plight} /plʌɪt/ was manipulated. Thus, an increase in the duration of the sonorant essentially leads to the perception of another syllable. Importantly, the periodic energy mass, which is the integral of power and duration, is the only measurement of the three basic alternatives for continuous curve measurement -- sum, average or peak -- that is capable of accounting for the data in \citet{price1980sonority}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=\textwidth]{figures/graphics-com-4examples-1-1} 
+
+}
+
+\caption{Smoothed periodic energy curve (black) of the four syllables from the experimental stimuli -- \emph{lpal}, \emph{nmal}, \emph{vlal}, and \emph{smal}. The red vertical line denotes the center of periodic mass of the entire syllable ({CoM\textsubscript{syllable}}), the blue vertical line denotes the center of periodic mass of the left portion ({CoM\textsubscript{onset}}). Grey dotted vertical lines and annotated text denote segmental intervals by manual segmentation (for exposition purposes only). The distance between the two CoM landmarks is indicative of the energy displacement away from the syllabic center, reflecting the nucleus competition potential within the syllable (see details on this measurement in Section~\ref{sec:obtaining}).}\label{fig:com-4examples-1}
+\end{figure}
+
+It is therefore useful to locate the \emph{center of mass} within regions of interest as a measurement that is sensitive to the two axes of periodic energy mass -- duration (x-axis) and power (y-axis). The center of mass can be viewed as the point in time in which the area under the curve is split into two equal parts. The location of the center of mass in time (x-axis) is attracted to the peak of the curve (on the y-axis), where it is expected to be found given a perfectly symmetrical shape. However, the center of mass most often diverges from the peak of rise-fall curves so as to reflect asymmetries in the overall distribution of mass. Identification of the center of mass of the periodic energy curve (henceforth CoM) follows a methodology that was introduced with the \emph{tonal center of gravity} \citep{barnes2012tonal}, in calculating a weighted average time point that uses a continuous time series as the weighting term. The equation in \eqref{eq:com} is used to locate the average point in time (\emph{t}), weighted by continuous periodic energy ($\per$) at discrete time points:
+\begin{equation}
+\text{CoM} = \frac{\sum_i \per_i t_i}{\sum_i \per_i}  \label{eq:com}
+\end{equation}
+
+The location of the center of periodic energy mass of the entire syllable (henceforth {CoM\textsubscript{syllable}}) guides us to the point in time, where the periodic mass of all the competing forces within that syllable are split into two equal parts. Once we obtain this reference point we can repeat this process within the resulting left-side portion, i.e. from the beginning of the syllable up to {CoM\textsubscript{syllable}}, to focus on the onset position (henceforth {CoM\textsubscript{onset}}).
+We therefore measure the center of mass twice -- first for the entire syllable (resulting in {CoM\textsubscript{syllable}}) and then for the left portion of the first measurement (resulting in {CoM\textsubscript{onset}}).
+The distance between {CoM\textsubscript{syllable}} and {CoM\textsubscript{onset}} is indicative of the amount of displacement of energy away from the center of the syllable, which in turn reflects the degree of nucleus competition (see \figref{fig:com-4examples-1}).
+
+The center of mass is capable of capturing both components of a two-di\-men\-sion\-al mass by considering the non-linear shape of the periodic energy curve.
+The leftward displacement of {CoM\textsubscript{onset}} relative to {CoM\textsubscript{syllable}} is affected by the distance, the amplitude, and the amount of discontinuity between the periodic energy at the onset and the center of mass of the entire syllable.
+Any increase in the above results in a larger distance between the two centers of mass, as \figref{fig:com-4examples-1} demonstrates.
+
+\section{NAP advantages}\label{sec:advantages}
+
+Before turning to the experimental evidence in \chapref{sec:experiments}, the potential advantages of NAP over traditional models can already be demonstrated with four examples that illustrate major differences in the expected model predictions. Consider the clusters in the syllables \emph{spV} (an \emph{/s/-stop} cluster), \emph{sfV} (a voiceless fricative plateau), \emph{nmV} (a nasal plateau) and \emph{npV} (a sonority fall from sonorant to voiceless obstruent). In traditional sonority slope terms, all of these clusters are either highly ill-formed (with sonority falls) or borderline ill-formed (with sonority plateaus). Predictions may slightly differ with different sonority hierarchies, such that these examples can represent three sonority plateaus and one fall with the \emph{H}\textsubscript{col} hierarchy
+(\emph{npV} \(<\) \emph{spV} \(=\) \emph{sfV} \(=\) \emph{nmv}),
+or two plateaus and two falls with the \emph{H}\textsubscript{exp} hierarchy
+(\emph{npv} \(=\) \emph{spV} \(<\) \emph{sfV} \(=\) \emph{nmV}).
+
+
+
+\begin{figure}
+\includegraphics[width=.8\linewidth]{figures/graphics-slopes4examples-1}
+\caption{Schematic depiction of the sonority slopes of four different onset clusters. The solid red line which denotes the sonority slope of the onset clusters is a plateau in the case of \emph{nmV} and \emph{sfV} and it is falling in the case of \emph{npV} and \emph{spV}. Note that these determinations are based solely on the angle of the red line, regardless of its overall height.}\label{fig:slopes4examples}
+\end{figure}
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-com-4examples-2-1}
+\caption{Smoothed periodic energy curve (black) of the same four syllables as in \figref{fig:slopes4examples}, taken from the experimental stimuli (see \chapref{sec:experiments}). Plot details are described in \figref{fig:com-4examples-1}.}\label{fig:com-4examples-2}
+\end{figure}
+
+\figref{fig:slopes4examples} schematizes these four examples with traditional sonority slopes, using red lines to denote the portion of the trajectory that represents the relevant slope of the consonantal clusters. These red slopes are level in the onset plateaus \emph{sfV} and \emph{nmV} and falling in the onsets \emph{npV} and \emph{spV} (note again that with the \emph{H}\textsubscript{col} hierarchy, \emph{spV} can be considered a plateau; see \figref{fig:slopes-sp-sp}).
+The representation of sonority slopes in \figref{fig:slopes4examples} highlights the irrelevance of the
+overall height of the slope in traditional sonority formalizations -- only the general trend of the slope matters for the characterization of well-formedness.
+
+In contrast to the traditional approach, NAP is explicitly concerned with energetic quantities that compete for the nucleus (as described in \sectref{sec:nap}).
+The scores of NAP\textsubscript{td} reflect the estimated degree of competition such that lower values imply more competition (= worse-formed).
+In \tabref{tab:ordinalscores}, both \emph{sfV} and \emph{spV} receive the relatively high value 3 (i.e.~relatively well-formed). \emph{nmV} receives a lower score of 1 (i.e.~relatively ill-formed), and \emph{npV} is almost at the bottom of the NAP\textsubscript{td} scale with $-1$ (i.e.~clearly ill-formed).
+
+Unlike the symbol-based ordinal scores of NAP\textsubscript{td}, the continuous signal-based NAP\textsubscript{bu} makes no a priori predictions via symbols. A few concrete audio stimuli that were measured in the context of the experiment (see \chapref{sec:experiments}) can, nevertheless, be shown here to reflect the exact same trend as in the symbolic NAP model. \figref{fig:com-4examples-2} shows the periodic energy curve of the four examples with annotated landmarks.
+As before, the vertical red line denotes the center of periodic mass of the entire syllable ({CoM\textsubscript{syllable}}), while the vertical blue line denotes the center of periodic mass of the left half of the syllabic mass ({CoM\textsubscript{onset}}). A greater distance between the two lines implies more competition (= worse-formed). Here, the distance between {CoM\textsubscript{syllable}} and {CoM\textsubscript{onset}} is around 50\,ms for the two voiceless clusters (\emph{\textbf{sf}al} and \emph{\textbf{sp}al}), it is close to 100\,ms for the nasal plateau \emph{\textbf{nm}al}, and above 150\,ms for the nasal-initial falling sonority slope in \emph{\textbf{np}al}.
+
+In NAP terms, the two voiceless clusters \emph{spV} and \emph{sfV} have only minimal, if any, sonorant energy (effectively zero periodic mass) that would make their onset a serious competitor for the nucleus, regardless of the slope. Therefore, even if \emph{spV} exhibits a sonority fall it should not pattern with \emph{npV} in terms of ill-formedness. Likewise, if we consider \emph{spV} as a plateau, neither this nor \emph{sfV} should pattern with \emph{nmV} just because they are all considered plateaus. The two nasal-initial clusters, \emph{nmV} and \emph{npV}, should in fact be considered as more worse-formed than the two /s/-initial voiceless clusters given their distribution within and across languages. Previous works by \citet{greenberg1978some, lindblom1983production, lombardi1995laryngeal, lombardi1991laryngeal} and \citet{kreitman2008phoneticssk, kreitman2010mixed} have basically confirmed (although with some considerable differences) that voiceless initial consonant clusters are less \emph{marked} (more common) than voiced clusters, and both types of clusters are less marked than voiced-voiceless initial clusters. Such a hierarchy of well-formedness is neatly captured by the rationale and results of NAP, while traditional sonority models regularly make predictions that contradict it to at least some extent.

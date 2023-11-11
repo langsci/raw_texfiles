@@ -1,0 +1,256 @@
+\chapter{Prosodic analysis with periodic energy (ProPer)}\label{sec:properintroduction}
+
+The conceptualization of sonority with causal links to pitch perception has direct implications on models that cover prosodic phenomena. If acoustic periodic energy is strongly associated with the notion of sonority, then the major fluctuations along the periodic energy curve should reflect an underlying syllabic structure in the speech signal. This is very similar to a relatively common practice (mentioned in Section~\ref{sec:correlusions}), in which the amplitude envelope of the acoustic signal is used to automatically detect syllables (see, e.g., \citealt{Pfitzinger1996syllablesk, galves2002sonoritysk, nakajima2017english, patha2016syllablesk, port1996dynamic, rasanen2018pre, tilsen2013speech, wang2007robust}). This is typically done by filtering some frequency bands that discriminate in favor of the low-mid range, where most periodic energy in speech is typically found. The periodic energy curve is thus similar to an amplitude modulation curve that is specialized for the detection of syllabic nuclei in acoustic signals.
+
+Having a continuous measure of the duration and the power of the acoustic correlate of sonority is akin to having a continuous representation of an important \emph{syllabic essence}. This is valuable for modeling various aspects of prosodic structure that go far beyond automatic syllable detection, and include acoustic manifestations of \emph{speech rate} and \emph{prominence} aspects of speech.
+In other words, if we take periodic energy to be the acoustic correlate of sonority, we can deduce from it where syllables are located by observing the location of the major fluctuations on the periodic energy curve. Moreover, we can compute the temporal distance between different syllables in order to measure speech rate, and we can furthermore deduce how prosodically strong each syllable is with respect to other syllables in the same utterance to estimate effects of prominence (e.g.~lexical \emph{stress} and post-lexical \emph{accents}).
+
+The advantages mentioned thus far concern only the periodic energy time series.
+Measuring periodic energy in correspondence with the F0 of the speech signal can unlock a host of other advantages for prosodic analysis.
+Recall that the values of F0 measurement denote the rate of the fundamental frequency, essentially capturing the \emph{quality} of the pitch sensation in terms of \emph{high} vs.~\emph{low} frequencies. Periodic energy provides the \emph{quantity} component of the same sensation that F0 describes from a qualitative perspective.
+The two measurements are therefore fully compatible, and their interaction is meaningful in any model that attempts to characterize perceived pitch.
+Thus, regardless of any link to the linguistic notion of sonority, the interaction between F0 and periodic energy should lead to more comprehensive representations of pitch in speech and beyond.
+
+To test these goals and operationalize them, a set of tools for prosodic analysis based on periodic energy was developed using Praat \citep{boersma2019praat} and R \citep{R-base} codes, that are combined together in a coherent workflow which we call ProPer, standing for \emph{\textbf{Pro}sodic analysis with \textbf{Per}iodic energy}
+(see notes at the end of this subsection on collaborators and the availability of ProPer).\footnote{The complete list of R packages and versions currently used in ProPer is: R (Version 3.6.3; \citealt{R-base}) and the R-packages \texttt{Cairo} (Version 1.5.12; \citealt{R-Cairo}), \texttt{dplyr} (Version 0.8.5; \citealt{R-dplyr}), \texttt{ggplot2} (Version 3.3.0; \citealt{ggplot22016}), \texttt{purrr} (Version 0.3.4; \citealt{R-purrr}), \texttt{rPraat} (Version 1.3.1; \citealt{R-rPraat}), \texttt{seewave} (Version 2.1.6; \citealt{R-seewave}), \texttt{stringr} (Version 1.4.0; \citealt{R-stringr}), \texttt{tuneR} (Version 1.3.3; \citealt{tuneR2018}), and \texttt{zoo} (Version 1.8.7; \citealt{R-zoo}).}
+The ProPer tools essentially reduce the acoustic signal into two parallel interacting time series of periodic energy and F0 in order to describe various phenomena in speech prosody by visualization and quantification procedures.
+
+The following presentation should be regarded as a showcase for an independent project that is still under development. It is relevant in the context of this book since it is the direct result of the main claim behind this work -- that the quantitative dimension of pitch perception is the basis of sonority, and, as such, has the potential to account for many aspects of prosody that have been thus far hard to model.
+In the remainder of this chapter, I present the various capabilities and advantages that ProPer currently has to offer, without providing a great amount of technical detail (as all technical details can be seen and inspected in the public repository mentioned in the notes below, and many of them may likely change over time). I start by describing how periodic energy data is obtained in ProPer (\sectref{sec:obtainingProPer}), and continue by showing how these data can be exploited on their own (\sectref{sec:peronly}), as well as in interaction with F0 data to further enhance our inventory of prosodic analysis tools (\sectref{sec:interactions}).
+
+Important notes with respect to the following chapter:
+
+\begin{itemize}
+\item The ProPer toolbox has been developed in collaboration with Francesco Cangemi and has benefitted from active contributions by T. Mark Ellison and Martine Grice (all from the University of Cologne).
+\item The ProPer workflow is an open-source project, freely available via an Open Science Framework repository at: \url{https://osf.io/28ea5/}.
+  %(DOI: 10.17605/OSF.IO/28EA5).
+\end{itemize}
+
+\section{Obtaining periodic energy data in ProPer}\label{sec:obtainingProPer}
+
+The current method used to obtain periodic energy data is not inherent to the ProPer workflow, and is expected to change whenever improved methods will become available. It is already different from the method used in the experimental study of NAP (\chapref{sec:experiments}), where the APP Detector (\citealt{deshmukh2005use}, see Section~\ref{sec:obtaining}) was used. The current ProPer workflow uses Praat's signal processing abilities to extract the raw data and obtain the periodic energy curve, as detailed below.\footnote{I thank Paul Boersma for his kind help in solving some of the issues related to Praat via personal communication. Any possible misunderstanding in the interpretation is my own.}
+
+We use Praat's autocorrelation analysis to detect periodicity. With autocorrelation, the signal is compared to itself at given time points. Periodic signals are generally more similar to themselves than aperiodic signals such that the level of similarity in the autocorrelation function serve as a very good indication of periodicity in the signal. There are various ways to extract this data from Praat, either directly from a \emph{Harmonicity} object that computes the \emph{harmonics-to-noise ratio} (HNR), or, as we have chosen to do here, from the \emph{strength} value associated with each \emph{pitch candidate} in Praat's \emph{Pitch} object (on a scale of 0--1). We choose the highest strength from up to 15 pitch candidates between 40--1k\,Hz at each time point (every 1\,ms) to determine the \emph{similarity index} (or \emph{periodic fraction}). The full details of this implementation are available in the public release of the ProPer workflow (see notes at the end of the introduction of this chapter).
+
+The similarity index is not indicative of acoustic power and it may give the same values to signals with very different underlying acoustic power. The similarity index values, always ranging from 0 to 1, need to be multiplied by the general acoustic power of the signal in order to express the power of the periodic component, as shown in \eqref{eq:periodicPower}. Before doing so, we need to run the inverse function using the formula in \eqref{eq:totalPower}, in order to recover the acoustic power from the intensity measurements of Praat (that are log-transformed to present values in dB SPL).
+\begin{equation}
+  \text{acoustic power} = \num{4e-10} \times  10^{\frac{\text{intensity}}{10}}    \label{eq:totalPower}
+\end{equation}
+\begin{equation}
+  \text{periodic power} = \text{acoustic power} \times \text{similarity index}    \label{eq:periodicPower}
+\end{equation}
+
+Demonstrations of these data can be viewed in the plot in \figref{fig:proper-power}, with an example taken from \citet{albert2019cansk}, which is also available at the public ProPer repository (the following example is named \enquote{joe\_7} in the examples of the ProPer repository). The audio recording is a rendition of the expression \emph{can I ask you a question?}, spontaneously uttered by a morning show host (specifically, Joe Scarborough on MSNBC's \emph{Morning Joe}),
+and made available to the public at the \emph{TV News Archive}.\footnote{\url{https://archive.org/details/tv}}
+\figref{fig:wave-joe} displays a waveform representation of the acoustic signal, and \figref{fig:proper-power} shows the \emph{similarity index} in the red dotted line, the \emph{acoustic power} in the dashed blue line, and the resulting \emph{periodic power} in the solid purple curve. Note that scales are normalized to fit the entire plot.
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-wave-joe-1} 
+\caption{Waveform representation (a time-domain oscillogram) of the audio example used in the following Figures~\ref{fig:proper-power}–\ref{fig:proper-sync}.}\label{fig:wave-joe}
+\end{figure}
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-power-1} 
+\caption{Examples of the \emph{similarity index} (red dotted line), \emph{acoustic power} (dashed blue line), and resulting \emph{periodic power} (solid purple curve). Dotted vertical lines and annotations were manually added by the author for exposition purposes.}\label{fig:proper-power}
+\end{figure}
+
+Note how the purple periodic power curve in \figref{fig:proper-power} appears to overlap with the dashed blue curve of the general acoustic power in vocalic portions (the high peaks), but not in the voiceless obstruent portions, where the blue curve shows some energy but the purple curve reaches the floor due to the aperiodicity of the signal (e.g.~/s/ in \emph{ask} and in \emph{question}).
+
+To obtain the \emph{periodic energy} curve, we log-transform the periodic power values in a similar way as with the \emph{APP Detector}, as explained in Section~\ref{sec:obtaining} and the function in \eqref{eq:perLog}, repeated here in \eqref{eq:periodicEnergy}. Given the varying conditions of different audio recordings, we need to estimate the threshold of effective pitch sensation on the periodic power scale to set the \emph{periodic floor} variable in the denominator of the log transform in Equation \eqref{eq:periodicEnergy} and thus set the zero value of the resulting periodic energy curve. The estimation of the periodic floor can be achieved, for example, by sampling voiceless portions in the same dataset to track how high they reach on the periodic power scale.
+\begin{equation}
+  \text{periodic energy} = 10 \log_{10}\!\left(\frac{\text{periodic power}}{\text{periodic floor}}\right)  \label{eq:periodicEnergy}
+\end{equation}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-energy-1}
+\caption{Examples of the \emph{periodic power} (solid purple curve) and the log-transformed \emph{periodic energy}, smoothed with a 20\,Hz low-pass filter. Other details are the same as for the previous plot.}\label{fig:proper-energy}
+\end{figure}
+
+This can be viewed in the plot in \figref{fig:proper-energy}, which continues with the same audio example, and with the same periodic power curve in purple as in \figref{fig:proper-power}. The red curve that is added is the \emph{periodic energy} curve after the log-transform function and a 20\,Hz low-pass filter that smooths the final periodic energy curve.
+Again, note that the scales are normalized to fit the plot.
+
+The log-transform is not only useful for setting the floor, it is also a widely used approach to dealing with perception of quantities at various domains and dimensions. In acoustics, it is common to log-transform both the frequency and power scales under the general assumption that differences at the high ends of these scales have a smaller effect than differences of the same absolute size at the lower ends of the scale (e.g.~a 100\,Hz difference is perceptually salient between 200 and 300\,Hz, but it is negligible when occurring between 15 and 15.1k\,Hz). Indeed, it is easy to see how the differences at the higher ends of the purple periodic power curve are diminished in the red periodic energy curve, and, likewise, differences at the lower ends of the purple periodic power curve are enhanced in the red periodic energy curve.
+
+The periodic energy curve in ProPer is smoothed with low-pass filters at 4 different frequencies from 5\,Hz (capturing syllable-size fluctuations of 200\,ms-long intervals) to 20\,Hz (capturing segment-size fluctuations of down to 50\,ms-long intervals). Two values in between, at 8 and 12\,Hz, are also automatically extracted to cover intervals of 125 and 83\,ms (respectively).
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-smogs-1}
+\caption{Examples of the 4 levels of \emph{periodic energy} smoothings, with low-pass filters at 20\,Hz (red), 12\,Hz (brown), 8\,Hz (orange) and 5\,Hz (pink). Other details are the same as for the previous plots.}\label{fig:proper-smogs}
+\end{figure}
+
+The plot in \figref{fig:proper-smogs} demonstrates the four levels of smoothing applied in ProPer to the periodic energy curve. This is the same audio example, here with the same red curve of periodic energy with a 20\,Hz low-pass filter as in the previous figure (\ref{fig:proper-energy}). The added curves show gradually more smoothed behavior by small drops in the frequency of the low-pass filter, from 20\,Hz in red, to 12\,Hz in brown, to 8\,Hz in orange, and down to 5\,Hz in the thicker pink colored curve. The least smoothed version (the red curve with 20\,Hz low-pass filter) is considered the default and will be used in the remainder of this demonstration.
+
+\section{Prosodic measurements based on periodic energy}\label{sec:peronly}
+
+Periodic energy already makes several important measurements available. First of these is the ability to detect the major fluctuations in the curve reflecting different syllables (Section~\ref{sec:boundetect}). With syllabic intervals in place, it is possible to measure the strength of each syllable in terms of the periodic energy \emph{mass}, i.e.~the integral of duration and energy, which is the area under the periodic energy curve (Section~\ref{sec:mass}). We can then locate the \emph{center of mass} of each syllable -- a crucial landmark for many of the following computations, such as the \emph{speech rate} trajectory (Section~\ref{sec:speechRate}), which only requires the periodic energy curve.
+
+\subsection{Boundary detection}\label{sec:boundetect}
+
+The automatic boundary detector in ProPer is based on the fluctuations of the periodic energy curve. We use the 2nd derivative of the periodic energy curve to locate turning points. Positive local peaks in the 2nd derivative are indicative of relevant turning points in the periodic energy curve, from sharp drops to more subtle \emph{shoulders}. The 2nd derivative undergoes dynamic smoothing in this process. It starts with a very strong smooth of 1\,Hz low-pass filtering and repeats the search with incremental steps allowing higher frequencies to control the low-pass filter -- effectively reducing the level of smoothing -- until the expected amount of boundaries is successfully detected (or until the smoothing reaches 40\,Hz low-pass filtering).
+
+As implied above, this algorithm expects a certain number of syllables for each token. If the data is separately annotated (e.g.~using Praat's TextGrid to demarcate syllables), it is possible to use this information to derive expectations for syllables. Otherwise, an automatic expectation can be produced given an adjustable average syllable size.
+The algorithm can take advantage of separately annotated syllabic intervals in another useful way: if syllabic boundaries were segmented by a separate process and fed to ProPer, the automatic boundary detector can avoid the detection of boundaries when they are too far from a pre-segmented boundary, and it can add a boundary if -- at the end of the automatic detection process -- there are pre-segmented boundaries that have no automatic boundary in their vicinity.
+It is also possible to completely force the given segmentation on the automatic detector, but that will result in many suboptimal boundaries that are slightly off the periodic energy minima. 
+
+The boundary detection algorithm in ProPer thus allows the whole spectrum of behaviors, from fully automatic (signal-based) detection, all the way to fully pre-segmented boundaries, as well as options that incorporate the two. These combined processes use pre-segmented boundaries to inform the signal-based automatic detector, offering an optimal boundary detection in the current system: choosing the desirable periodic energy minima only where a boundary is required, while not missing any crucial boundary that the periodic energy curve cannot detect on its own.
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-bounds-1}
+\caption{A demonstration of the ProPer boundary detector with the same audio example as above, including the same manual segmentation boundaries in dotted vertical black lines, and the same periodic energy curve in red. Vertical red lines denote the boundaries of the ProPer boundary detection algorithm. The curves fluctuating above and below zero are derivatives of the red periodic energy curve: the green curve shows the raw 2nd derivative and the purple curve shows the dynamically smoothed 2nd derivative that is used in the boundary detection algorithm.}\label{fig:proper-bounds}
+\end{figure}
+
+\figref{fig:proper-bounds} demonstrates this with the the same red periodic energy curve as in Figures~\ref{fig:proper-energy}--\ref{fig:proper-smogs}. At the bottom of the plot, two derivative curves fluctuate above and below zero. The green curve is the raw 2nd derivative (i.e.~the acceleration curve of the periodic energy trajectory). The purple curve is the dynamically smoothed copy of the 2nd derivative. 
+%This smoothing procedure (gradually raising the cut-off frequency of the low-pass filter) stops for each analysis when the expected amount of boundaries (7 in this example) is detected. 
+Automatic boundaries appear in thick red vertical lines and they are located at the positive high peak maxima along the purple curve. The dynamically smoothed purple curve 
+is initially highly smoothed (1\,Hz low-pass filter) and it stops the process of \enquote{unsmoothing} 
+%is smoother than the green curve since it stopped the process of \enquote{unsmoothing} 
+(gradually raising the cut-off frequency of the low-pass filter)
+as soon as it reached a sufficient number of valid positive peaks on the purple curve. The expected number of boundaries in this example is seven, and it is derived from the number of the manually annotated boundaries provided via a Praat TextGrid (black dotted vertical lines in the plot). Note that since the manual segmentation into syllabic intervals was available for the automatic boundary detection algorithm, it \enquote{knew} not to place a boundary in the middle of the last syllable (\emph{-tion}), although the shoulder of the final nasal on the red periodic energy curve was pronounced enough to be detected by the purple 2nd derivative curve as a boundary (a positive peak on the purple curve).
+
+Crucially, ProPer does not require an input of discrete segmental or syllabic intervals in order to work, but, as explained above, it can make use of such standard segmentation information when available. The actual preferred strategy in this respect should always be tied to a specific task. For example, a different preference should be made if it is important to avoid discrete assumption in the model, or, if it is more important to target a specific syllable in a corpus of elicited speech. Another consideration in this respect is related to statistical power. With a relatively small dataset, small deviations can have a big impact on the results, so a separate syllabic segmentation may be a good way to reduce inconsistencies that could result from problematic boundary placement. However, if a relatively big amount of data is considered, small deviations due to suboptimal boundary detection should be more easily identified as noise, and the ability to process big data without a separate segmentation process can become a crucial advantage.
+
+\subsection{Mass}\label{sec:mass}
+
+Once interval boundaries are finalized, it is possible to characterize different aspects of the signal based on the syllable-sized intervals,
+the most immediate of which is the estimation of prosodic strength.
+The area under the periodic energy curve between two boundaries is termed \emph{mass} in ProPer \citep{albert2022improved}. It is the integral of duration and power, that are often measured as two separate cues to prominence. Typically, acoustic intensity is measured for its contribution to prominence rather than periodic energy. The switch to periodic energy instead of the more general intensity is supported by 
+the current proposal that periodic energy is related to sonority (\sectref{sec:pitchintelligibility}), and the relatively established link between sonority and syllable weight (Section~\ref{sec:attraction}), 
+sharing, among others, the idea that
+%highlighting the idea that 
+voiceless obstruents hardly contribute to syllable weight and prosodic prominence.\footnote{Note that emphasis in service of prosodic prominence (where lexical \emph{stress} and post-lexical \emph{accents} play a role) is different from a selective emphasis that is intended to improve clarity of communication by reducing potential ambiguity. In the latter case, any portion of the speech signal -- including voiceless portions -- may be the target of emphasis, depending on various contextual variables that have little to do with prosodic prominence.}
+%the assumption that voiceless elements in marginal positions hardly contribute to \emph{prosodic prominence}, a notion that chiefly concerns aspects such as lexical stress and post-lexical pitch accents.
+
+Typical usages of intensity in order to measure cues to prominence or sonority tend to employ them within regions of interest in one of the following two ways: (i) extracting peak values from the intensity curve (either minima or maxima, e.g.~\citealt{parker2008sound}); or (ii) calculating an average value over the intensity curve (probably the more common strategy of the two). These kinds of measurements either ignore the interaction of duration and power (i), or normalize over the contribution of duration (ii). The periodic energy mass employs a different strategy of summing -- rather than averaging or peak tracking -- which accounts for duration and power together in a single variable that attempts to capture the overall prosodic strength. This move towards summing was discussed in \sectref{sec:napbu} citing seminal works that provided evidence for the interaction of duration with sonority \citep{price1980sonority} and with the perception of loudness in linguistic contexts \citep{turk1996processing}.
+
+It is noteworthy to add that duration and power are two abstract aspects of acoustic quantity. They are abstract in the sense that we never experience one without the other. In perception, acoustic quantity is always expressed by the combination of duration and power. The mass measurement in ProPer aims to capture that, while retaining the ability to  disintegrate mass into the two sub-components: interval duration and mean periodic energy (which remain, indeed, interesting to observe as well).
+
+\citet{roessig2022tracing} found ProPer's mass measurement to be the second best predictor of the occurrence of pitch accent (second only to \textit{F0 mean}). Mass was tested in that part of the study alongside 14 other competing acoustic and articulatory measurements. Those included also what might be considered as the two sub-components of mass, \textit{RMS amplitude} and \textit{vowel duration}.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-CoMass-1-png.png} 
+\caption{A demonstration of \emph{Mass} and \emph{center of mass} (CoM) with the same speech example as above. Mass values (relative scale) are presented in numbers below each syllabic interval. The dashed vertical red lines show the position of the CoM within intervals. Other details are the same as for the previous plots.}\label{fig:proper-CoMass}
+\end{figure}
+
+Note that the raw mass values are, in and of themselves, not very informative. The absolute values are contingent on various degrees of freedom in the adjustment of the periodic energy curve (see \sectref{sec:obtainingProPer}), and on the resolution of the dataset (e.g.~a data point every 1\,ms should yield mass values that are about ten times higher than a data point every 10\,ms).
+In order to calculate the mass values in an informative way, it is useful to calculate relative mass values, representing the prosodic strength of syllables relative to other syllables in the utterance. To achieve this, the area under the periodic energy curve of the entire utterance is calculated and then divided by the number of syllabic intervals in the utterance. The resulting value is the utterance's average mass for a single syllable, which can then be compared against each syllable by calculating the mass of each observed syllable relative to the average value (i.e.~observed mass divided by average mass). The resulting values are centered around \(1\), which is exactly average, such that weak syllables exhibit mass values lower than \(1\) and strong syllables exhibit mass values higher than \(1\). \figref{fig:proper-CoMass} presents the mass values of each syllabic interval at the bottom of the plot.
+
+The dashed vertical red lines in the middle of syllabic intervals in \figref{fig:proper-CoMass} denote the \emph{center of mass} (CoM) at each interval. This is a weighted average calculation which finds the average time point weighted by the corresponding periodic energy curve, within each syllabic interval.
+The center of mass splits the area under the periodic energy curve into two equal parts (within an interval).
+CoM was introduced in the implementation of the NAP\textsubscript{bu} model (\sectref{sec:napbu}) and equation \eqref{eq:com}, repeated here in \eqref{eq:com2}. Note that \(\per\) = periodic energy and \(t\) = time. As we shall see below, the center of mass is an essential landmark for many ProPer tools.
+\begin{equation}
+ \text{CoM} = \frac{\sum_i \per_i t_i}{\sum_i \per_i}  \label{eq:com2}
+\end{equation}
+
+\subsection{Speech rate}\label{sec:speechRate}
+
+In line with the PRiORS framework, presented in \chapref{sec:priors} (and specifically Section~\ref{sec:shiftRhythm}), the ProPer toolbox views rhythm in speech much like F0 on a slower timescale, that is, as a moving target that exploits dynamic change for communicative effect. Rhythm in speech according to this understanding should be adequately modeled as a trajectory, reminiscent of the local speech rate curves in \citet{pfitzinger2001phonetischesk}.
+
+In keeping with the PRiORS understanding that rhythm trajectories are mechanically related to F0,
+the speech rate measurements in ProPer are based on temporal distances between anchors rather than on the duration of the intervals. This difference should yield similar results in the majority of cases, but differences are also to be expected (and are yet to be explored).
+
+The speech rate trajectory (see thick green curve in \figref{fig:proper-sRate}) is calculated from the temporal distance between successive CoMs, which serve as robust anchors in this context.
+The continuous curve is based on a smoothed interpolation over these CoM-distance values.
+The speech rate curve goes up to designate faster rates (shorter distance from the previous CoM) and down for slower rates (larger distance from the previous CoM).
+The full implementation is available at the public ProPer repository.
+Note that the speech rate curve starts at the first CoM in \figref{fig:proper-sRate}, even though it has no previous CoM to calculate distance from. To overcome this problem, the first syllable is measured for its duration relative to the duration of the longest interval in the same utterance. The status of this initial value should be therefore considered as speculative and experimental at this stage.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-sRate-1-png.png} 
+\caption{A demonstration of the speech rate curve in green, based on the distance between successive CoMs (up = faster; down = slower). Other details are the same as for the previous plots.}\label{fig:proper-sRate}
+\end{figure}
+
+\section{Interactions between F0 and periodic energy}\label{sec:interactions}
+
+The ProPer tools considered thus far were based solely on the periodic energy curve. As was already mentioned in the opening of this chapter, there are further advantages for the study of prosody that can be unlocked when considering the interaction of periodic energy with the corresponding F0 of the speech signal.
+These advantages include improvements of the visual representation of F0 data with \emph{periograms} (Section~\ref{sec:periograms}), as well as novel methods to characterize the F0 trajectory between syllables with ∆F0 (Section~\ref{sec:DeltaF0}) and within syllables with \emph{synchrony} (Section~\ref{sec:synchrony}).
+
+\subsection{Periograms}\label{sec:periograms}
+
+The first type of interaction between periodic energy and F0 is designed to enrich visual representations of pitch by adding a 3rd informative dimension to the standard visual representations of F0. We call these representations \emph{periograms} \citep{albert2018usingsk} to echo the 3 dimensions of the spectrogram representation which shows time and frequency on the x/y axes, while representing power in terms of color differences.
+Most standard visual representations of pitch show a 2-dimensional plot of the F0 trajectory, whereby the x-axis represents time and the y-axis represents frequency. The F0 trajectory in itself is binary -- it is either present or absent (\emph{on} or \emph{off}).
+\figref{fig:binaryF0} shows the running example with a standard F0 representation.
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-binaryF0-1-png.png} 
+\caption{Standard \enquote{binary} F0 representation. F0 in blue is either present or absent across the 2-dimensional plane, with time on the x-axis and frequency on the y-axis. Other details are the same as for the previous plots.}\label{fig:binaryF0}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-periogram-1-png.png} 
+\caption{A periogram representation. Note how the red periodic energy curve in the lower half of the plot modulates the appearance of the F0 curve in blue in the upper half of the plot. Note also that the frequency values on the y-axis correspond only to F0 at the upper half, not to periodic energy at the lower half. Other details are the same as for the previous plots.}\label{fig:proper-periogram}
+\end{figure}
+
+Periograms enrich the standard representation by adding the power dimension in terms of intuitive changes in visual appearance of the F0 curve. In periograms, the width and darkness of the F0 curve change to reflect the underlying periodic energy. The F0 curve changes gradually from thin and transparent on the weak end (when the corresponding periodic energy curve is low), to wide and dark on the strong end (when the corresponding periodic energy curve is high). \figref{fig:proper-periogram} shows a periogram representation of the running example.
+
+
+\subsection{∆F0}\label{sec:DeltaF0}
+
+The following ProPer tools, ∆F0 and \emph{synchrony}, are designed to characterize F0 shape within and across syllables using metrics that build on the interaction between F0 and periodic energy. The first one is rather straightforward: ∆F0 (Delta F0) extracts the F0 values at the centers of mass and measures the difference in frequency between successive syllables. The ∆F0 values therefore reflect the change in F0 between syllables by computing the difference from the previous syllable. The ∆F0 values are computed in absolute terms (Hz), but they are also transformed to a speaker-specific relative scale where we divide the raw ∆F0 values by the speaker's F0 range, considering all tokens from that speaker. The relative measurement is presented in percentages (see demonstration of ∆F0 in \figref{fig:proper-DeltaF0}).
+
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-DeltaF0-1-png.png} 
+\caption{A demonstration of ∆F0 data reflecting change in F0 between syllables. The location of the CoMs is indicated by a short red dashed line on the F0 trajectory, to show where F0 values were extracted. ∆F0 values are superimposed above the F0 curve (note the negative and positive signs, which extend also to the values in percentages). Other details are the same as for the previous plots.}\label{fig:proper-DeltaF0}
+\end{figure}
+
+Note that this measurement shares methodological aspects with the measurement of speech rate (see Section~\ref{sec:speechRate}), as both speech rate and ∆F0 focus on differences between successive CoMs, regarding either their temporal distance (for speech rate) or their spectral distance in F0 (for ∆F0).
+Relatedly, the utterance-initial syllable cannot provide ∆F0 data that is based on the difference from the previous syllable. Instead, the ∆F0 of the first syllable computes the difference in F0 from the speaker's median F0 value, considering all tokens from that speaker.
+In this way, the ∆F0 of the first syllable can quite reliably show when speakers start an utterance with low or, more commonly, high pitch.
+
+\subsection{Synchrony}\label{sec:synchrony}
+\begin{sloppypar}
+While ∆F0 is a good indication of long-distance outcomes in terms of pitch change, it is not able to characterize the shape of the F0 trajectory locally, within syllables. For this we designed the complementary measurement termed \emph{synchrony} \citep{cangemi2019modellingsk}, which is capable of characterizing the trend of F0 within syllables (rising/falling/level pitch) by taking the non-linear shape of the curves into account.
+\end{sloppypar}
+
+To achieve this goal, another landmark needs to be extracted from the F0 curve within each syllabic interval. This is very similar to the CoM measurement, being an average point in time, weighted by corresponding curves of acoustic data. The methodology takes inspiration from the \emph{tonal center of gravity} \citep{barnes2012tonal}, for which an average time point, weighted by F0, is computed to replace the more typical landmark of the F0 peak in standard intonation research.\footnote{The F0 peak is commonly used in measurements of \emph{tonal alignment} (e.g.~\citealt{arvaniti2006tonalsk}), which calculate temporal distance from a selected F0 peak to an anchor in the segmented speech stream (usually the stressed syllable). The F0 peak is likewise used in standard \emph{scaling} measurements, which calculate the spectral distance in F0 between a selected F0 peak and a previous low turning point on the F0 curve (or any other anchor in the annotation of segmented speech).}
+
+It is important to note that periodic energy and F0 curves are essentially very different. The periodic energy curve represents a quantity that goes all the way down to zero, while the F0 curve represents a quality with values typically between 50--600\,Hz. The interpretation of the periodic energy contribution to our CoM procedure is therefore straightforward, as can be seen in the CoM function in \eqref{eq:com2}. However, since F0 does not represent a quantity it needs to be used with caution as it is not immediately clear what it means to sum and average over qualities rather than quantities. For that reason, it makes good sense to call this measurement the \emph{center of gravity} (CoG), in keeping with \citet{barnes2012tonal}, and retaining a useful distinction between \emph{mass}, which relates to quantity, and \emph{gravity}, which relates to the shape of the F0 slope.
+Importantly, to reliably reflect the general slope of the non-linear F0 curve, the CoG measurement requires a few adjustments.
+
+The function for CoG is given in \eqref{eq:cog}. As before, \(t\) is time and \(\per\) stands for periodic energy. There are two adjustments in the CoG function:
+(i) we multiply F0 by the corresponding periodic energy (using a normalized 0--1 scale) to account for the strength of F0 at each observed point in time; and
+(ii) instead of directly using
+F0 we subtract the constant F0floor, %\(F0\text{floor}\),
+which corrects for the problematic distance between the floor of the F0 curve and the never-attained zero value.
+The first adjustment makes sure that the magnitude of an F0 inflection and its influence on the outcome can be diminished when the signal is weak, based on the underlying periodic energy. For the second adjustment we need to define the F0floor variable as detailed below.
+\begin{equation}
+ \text{CoG} = \frac{\sum_i (\text{F0}-\text{F0floor})_i \per_i t_i}{\sum_i (\text{F0}-\text{F0floor})_i \per_i}  \label{eq:cog}
+\end{equation}
+
+Once we have extracted the two landmarks of CoM and CoG within each syllabic interval we can compute synchrony simply by measuring the temporal distance between these two centers (see examples in \figref{fig:proper-sync}). 
+More rightward displacement of CoG relative to CoM reflects a more rising F0 trend. Likewise, more leftward displacement of CoG relative to CoM reflects a more falling F0 trend.
+%The more rightward displaced the CoG is relative to the CoM the more rising the F0 trend. Likewise, the more leftward displaced the CoG is relative to the CoM the more falling the F0 trend. 
+At values around zero the two centers are in synchrony, meaning that the F0 contour is either level, or includes a symmetric rise-fall or fall-rise F0 movement syllable-internally (the additional measure of ∆F0 is needed for complete interpretations of zero synchrony values).
+
+Note that the raw synchrony values are given in absolute terms of milliseconds (ms) and are therefore affected by the overall duration of the interval. To eliminate this effect, relative synchrony values in percentage are given, by dividing the raw synchrony value with the duration of the interval. This allows a more reliable and consistent representation of the angles of the F0 slope.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-proper-sync-1-png.png} 
+\caption{A demonstration of synchrony data reflecting change in F0 within syllables. The location of the CoMs is indicated by dashed red vertical lines (under the periodic energy curve and on top of the F0 trajectory). The location of the CoGs is indicated by short blue vertical lines on top of the F0 trajectory. The distance between the two centers yields the synchrony values that are superimposed above the F0 curve (note the negative and positive signs, which extend also to the values in percentages). Other details are the same as the previous plots.}\label{fig:proper-sync}
+\end{figure}
+
+Without setting any floor for the F0 curve in the CoG function, the values of CoG would show very little sensitivity to the F0 slope. For example, a noticeably rising F0 slope of 50\,Hz from 400 to 450\,Hz will be computed as having a fixed “quantity” of 400\,Hz and a much smaller change of 50\,Hz on top of that. Correcting the floor here would mean to designate the minimum F0 as the relevant zero of this interval (400\,Hz in this example), so that the change in 50\,Hz will become noticeable in the CoG function (50\,Hz out of 50 rather than 450\,Hz). In fact, it may easily become too noticeable since any change in a trajectory that has its minimal F0 value set to zero can greatly affect the result of the CoG function. Even a negligible rise of 5\,Hz would be exaggerated in scale if we simply choose the minimum F0 value as our zero for each interval. To solve this problem, the F0floor variable in the CoG function computes a certain fixed size to take the floor slightly below the local minimum F0 in each interval. This fixed size is set at 10\% of a speaker's F0 range, relative to all tokens produced by that same speaker.
+
+\citet{roessig2022tracing} found the synchrony measurement to be the third best predictor of different types of pitch accents (closely following two classic measurements, \textit{peak alignment} and \textit{tonal onglide}, that are both based on annotated segmental landmarks and F0 turning points). 
+Synchrony was tested in that part of their  study alongside 18 other competing acoustic and articulatory measurements.
+%that also included what might be considered as the two sub-components of mass, “RMS amplitude” and “Vowel duration”.
+
+
+\section{ProPer prospects}\label{sec:prospects}
+
+A brief overview of the ProPer toolbox was shown here to present the benefits of incorporating periodic energy into prosodic research. ProPer is a work in progress but a number of studies have already used the ProPer toolbox in various ways, which can help to evaluate the methodology: \citet{albert2018usingsk, albert2018tonalsk, albert2019cansk, albert2022improved, cangemi2019modellingsk, ventura2019perceptualsk, Lialiou2021periodicsk, savino2021nativesk, jeon2022investigating, sbranna2023prosodic} %sbranna2021developingsk, sbranna2021prosodicmarkingsk, 
+and
+\citet{roessig2022tracing}.  %\citet{sbranna2021prosodicsk}; 
+The presentation of ProPer in this chapter is an important opportunity to present the ProPer tools in a context that fully illustrates the rationale behind them, as well as the rationale behind this work: from the theoretical PRiORS framework presented in \chapref{sec:priors}, which suggests new ways to conceptualize perception models in speech, to the proposals that redefine sonority as a measure of pitch intelligibility in perception, with periodic energy as its acoustic correlate (\chapref{sec:sonPitch}),
+all the way to the relevant contribution that periodic energy can make for the study of various prosodic phenomena using the ProPer toolbox (\chapref{sec:properintroduction}).

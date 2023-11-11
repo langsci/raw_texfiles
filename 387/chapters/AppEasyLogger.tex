@@ -1,0 +1,557 @@
+% Appendix C
+
+\chapter{EasyLogger script}
+
+%\label{app:AppendixC} % For referencing the chapter elsewhere, use \chapref{ch:name} 
+
+%\begin{adjustbox}{minibox=\textwidth,angle=180}
+
+\begin{Verbatim}[fontsize=\tiny]
+# EasyLogger.praat v.0.1 (2019)
+# by Jan Fliessbach
+# with special thanks to Timo Buchholz and Clara Huttenlauch. 
+#
+#		DESCRIPTION
+#
+# This is a tool that takes individual sentences that have first been annotated with EasyAlign (Goldman 2011) 
+# (phone,syllable,word,phono,ortho tiers) and then labeled with Eti_ToBI (Elvira-García et al. 2013--2015)
+# (Tones, Tones II, Standardization). It logs prosodic information to a table file called 
+# "easy_log.txt" in a format that is centered around the last pitch accent of the respective sentence.
+# If applied to sentences with main (nuclear) stress in non-final position, modifications are required.
+# Contact Jan Fliessbach for support.
+#
+#		INSTRUCTIONS
+#	The script needs 
+#		a)	a folder with sounds (one sentence in each wav)
+#		b)	a folder with textgrids with the same name as the sound files that contain
+#			phone labels, syllable labels marked for lexical accent, word labels, a sentence label 
+#			(Easy Align output), and ToBI labels (Eti_ToBI output), of which the last pitch accent 
+#			(label containing an asterisk *) needs to correspond to a nuclear pitch accent 
+#			(followed by one tone label, which would end in a percent sign % 
+#			or labels a missing value with NA or ?)
+#		c)	a folder with/for pitch-objects
+#		d)	a folder for the results file
+#
+#
+#		LICENSE
+# Copyright (C) 2019  Jan Fliessbach
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You can find the terms of the GNU General Public License here
+# http://www.gnu.org/licenses/gpl-3.0.en.html
+#
+
+
+###############FORM########################
+
+form Select directories (with slash at the end, Windows: backslash, OSX: forward slash)
+
+comment Please indicate the label for empty intervals (if there is one).
+word empty_interval _
+
+comment Please indicate the label for lexically accented syllables (word accent or stress).
+word stress_label '
+
+comment Where are the WAV files kept?
+sentence wav_dir C:\Users\USER\Desktop\
+
+comment Where are the TextGrid files kept?
+sentence txt_dir C:\Users\USER\Desktop\
+
+comment Where should the results (easy_log) file be kept?
+sentence directory C:\Users\USER\Desktop\
+
+comment Where are the pitch files kept? 
+sentence pitch_dir C:\Users\USER\Desktop\
+
+comment Which is the tier with the phone labels?
+integer phonetier 1
+
+comment Which is the tier with the syllable labels?
+integer syllabletier 2
+
+comment Which is the tier with the word labels?
+integer wordtier 3
+
+comment Which is the tier with the label for the entire sentence (maximum length of analysis)?
+integer sentencetier 4
+
+comment Which is the tier with the ToBI labels?
+integer tonetier 10
+endform
+
+############FILES, TABLE AND STRING LISTS###################
+
+# Check for and then delete any pre-existing variant of the easy_log results file
+Create Strings as file list... list 'directory$'*.txt
+numberOfResultsFiles = Get number of strings
+if 'numberOfResultsFiles' > 0
+pauseScript: "There are txt files in your results folder. Save them to another folder or overwrite them."
+filedelete 'directory$'easy_log.txt
+endif
+
+
+# List all pitch files
+Create Strings as file list... list 'pitch_dir$'*.Pitch
+numberofPitchfiles = Get number of strings
+
+# List all WAV files (they determine the number of loops)
+Create Strings as file list... list 'wav_dir$'*.wav
+numberOfFiles = Get number of strings
+
+# Create table with columns (n=numberOfFiles)
+Create Table with column names... easy_log numberOfFiles fileName recording speaker target_word 
+... condition sentence_label tonelabel_8_to_final tonelabel_7_to_final tonelabel_6_to_final 
+... tonelabel_5_to_final tonelabel_4_to_final tonelabel_3_to_final tonelabel_2_to_final 
+... tonelabel_1_to_final tonelabel_0_to_final 
+... duration_sentence meanF0_sentence_Hz meanF0_sentence_st maxF0_sentence_Hz 
+... maxF0_sentence_st minF0_sentence_Hz minF0_sentence_st 
+... syll_label_start1 duration_syll_start1 syll_stress_start1 meanF0_syll_Hz_start1 
+... meanF0_syll_st_start1 maxF0_syll_Hz_start1 maxF0_syll_st_start1 time_maxF0_syll_start1 
+... minF0_syll_Hz_start1 minF0_syll_st_start1 time_minF0_syll_start1
+... syll_label_start2 duration_syll_start2 syll_stress_start2 meanF0_syll_Hz_start2 
+... meanF0_syll_st_start2 maxF0_syll_Hz_start2 maxF0_syll_st_start2 time_maxF0_syll_start2 
+... minF0_syll_Hz_start2 minF0_syll_st_start2 time_minF0_syll_start2
+... syll_label_start3 duration_syll_start3 syll_stress_start3 meanF0_syll_Hz_start3 
+... meanF0_syll_st_start3 maxF0_syll_Hz_start3 maxF0_syll_st_start3 time_maxF0_syll_start3 
+... minF0_syll_Hz_start3 minF0_syll_st_start3 time_minF0_syll_start3
+... syll_label_start4 duration_syll_start4 syll_stress_start4 meanF0_syll_Hz_start4 
+... meanF0_syll_st_start4 maxF0_syll_Hz_start4 maxF0_syll_st_start4 time_maxF0_syll_start4 
+... minF0_syll_Hz_start4 minF0_syll_st_start4 time_minF0_syll_start4
+... syll_label_start5 duration_syll_start5 syll_stress_start5 meanF0_syll_Hz_start5 
+... meanF0_syll_st_start5 maxF0_syll_Hz_start5 maxF0_syll_st_start5 time_maxF0_syll_start5 
+... minF0_syll_Hz_start5 minF0_syll_st_start5 time_minF0_syll_start5
+... syll_label_start6 duration_syll_start6 syll_stress_start6 meanF0_syll_Hz_start6 
+... meanF0_syll_st_start6 maxF0_syll_Hz_start6 maxF0_syll_st_start6 time_maxF0_syll_start6 
+... minF0_syll_Hz_start6 minF0_syll_st_start6 time_minF0_syll_start6
+... syll_label_start7 duration_syll_start7 syll_stress_start7 meanF0_syll_Hz_start7 
+... meanF0_syll_st_start7 maxF0_syll_Hz_start7 maxF0_syll_st_start7 time_maxF0_syll_start7 
+... minF0_syll_Hz_start7 minF0_syll_st_start7 time_minF0_syll_start7
+... syll_label_start8 duration_syll_start8 syll_stress_start8 meanF0_syll_Hz_start8 
+... meanF0_syll_st_start8 maxF0_syll_Hz_start8 maxF0_syll_st_start8 time_maxF0_syll_start8 
+... minF0_syll_Hz_start8 minF0_syll_st_start8 time_minF0_syll_start8
+... syll_label_start9 duration_syll_start9 syll_stress_start9 meanF0_syll_Hz_start9 
+... meanF0_syll_st_start9 maxF0_syll_Hz_start9 maxF0_syll_st_start9 time_maxF0_syll_start9 
+... minF0_syll_Hz_start9 minF0_syll_st_start9 time_minF0_syll_start9
+... syll_label_start10 duration_syll_start10 syll_stress_start10 meanF0_syll_Hz_start10 
+... meanF0_syll_st_start10 maxF0_syll_Hz_start10 maxF0_syll_st_start10 time_maxF0_syll_start10 
+... minF0_syll_Hz_start10 minF0_syll_st_start10 time_minF0_syll_start10
+... syll_label_start11 duration_syll_start11 syll_stress_start11 meanF0_syll_Hz_start11 
+... meanF0_syll_st_start11 maxF0_syll_Hz_start11 maxF0_syll_st_start11 time_maxF0_syll_start11 
+... minF0_syll_Hz_start11 minF0_syll_st_start11 time_minF0_syll_start11
+... syll_label_start12 duration_syll_start12 syll_stress_start12 meanF0_syll_Hz_start12 
+... meanF0_syll_st_start12 maxF0_syll_Hz_start12 maxF0_syll_st_start12 time_maxF0_syll_start12 
+... minF0_syll_Hz_start12 minF0_syll_st_start12 time_minF0_syll_start12
+... syll_label_start13 duration_syll_start13 syll_stress_start13 meanF0_syll_Hz_start13 
+... meanF0_syll_st_start13 maxF0_syll_Hz_start13 maxF0_syll_st_start13 time_maxF0_syll_start13 
+... minF0_syll_Hz_start13 minF0_syll_st_start13 time_minF0_syll_start13
+... syll_label_start14 duration_syll_start14 syll_stress_start14 meanF0_syll_Hz_start14 
+... meanF0_syll_st_start14 maxF0_syll_Hz_start14 maxF0_syll_st_start14 time_maxF0_syll_start14 
+... minF0_syll_Hz_start14 minF0_syll_st_start14 time_minF0_syll_start14
+... syll_label_start15 duration_syll_start15 syll_stress_start15 meanF0_syll_Hz_start15 
+... meanF0_syll_st_start15 maxF0_syll_Hz_start15 maxF0_syll_st_start15 time_maxF0_syll_start15 
+... minF0_syll_Hz_start15 minF0_syll_st_start15 time_minF0_syll_start15
+... syll_label_start16 duration_syll_start16 syll_stress_start16 meanF0_syll_Hz_start16 
+... meanF0_syll_st_start16 maxF0_syll_Hz_start16 maxF0_syll_st_start16 time_maxF0_syll_start16 
+... minF0_syll_Hz_start16 minF0_syll_st_start16 time_minF0_syll_start16
+... syll_label_start17 duration_syll_start17 syll_stress_start17 meanF0_syll_Hz_start17 
+... meanF0_syll_st_start17 maxF0_syll_Hz_start17 maxF0_syll_st_start17 time_maxF0_syll_start17 
+... minF0_syll_Hz_start17 minF0_syll_st_start17 time_minF0_syll_start17
+... syll_label_start18 duration_syll_start18 syll_stress_start18 meanF0_syll_Hz_start18 
+... meanF0_syll_st_start18 maxF0_syll_Hz_start18 maxF0_syll_st_start18 time_maxF0_syll_start18 
+... minF0_syll_Hz_start18 minF0_syll_st_start18 time_minF0_syll_start18
+... syll_label_start19 duration_syll_start19 syll_stress_start19 meanF0_syll_Hz_start19 
+... meanF0_syll_st_start19 maxF0_syll_Hz_start19 maxF0_syll_st_start19 time_maxF0_syll_start19 
+... minF0_syll_Hz_start19 minF0_syll_st_start19 time_minF0_syll_start19
+... syll_label_nuclear_minus14 duration_syll_nuclear_minus14 syll_stress_nuclear_minus14 
+... meanF0_syll_Hz_nuclear_minus14 meanF0_syll_st_nuclear_minus14 maxF0_syll_Hz_nuclear_minus14 
+... maxF0_syll_st_nuclear_minus14 time_maxF0_syll_nuclear_minus14 minF0_syll_Hz_nuclear_minus14 
+... minF0_syll_st_nuclear_minus14 time_minF0_syll_nuclear_minus14
+... syll_label_nuclear_minus13 duration_syll_nuclear_minus13 syll_stress_nuclear_minus13 
+... meanF0_syll_Hz_nuclear_minus13 meanF0_syll_st_nuclear_minus13 maxF0_syll_Hz_nuclear_minus13 
+... maxF0_syll_st_nuclear_minus13 time_maxF0_syll_nuclear_minus13 minF0_syll_Hz_nuclear_minus13 
+... minF0_syll_st_nuclear_minus13 time_minF0_syll_nuclear_minus13
+... syll_label_nuclear_minus12 duration_syll_nuclear_minus12 syll_stress_nuclear_minus12 
+... meanF0_syll_Hz_nuclear_minus12 meanF0_syll_st_nuclear_minus12 maxF0_syll_Hz_nuclear_minus12 
+... maxF0_syll_st_nuclear_minus12 time_maxF0_syll_nuclear_minus12 minF0_syll_Hz_nuclear_minus12 
+... minF0_syll_st_nuclear_minus12 time_minF0_syll_nuclear_minus12
+... syll_label_nuclear_minus11 duration_syll_nuclear_minus11 syll_stress_nuclear_minus11 
+... meanF0_syll_Hz_nuclear_minus11 meanF0_syll_st_nuclear_minus11 maxF0_syll_Hz_nuclear_minus11 
+... maxF0_syll_st_nuclear_minus11 time_maxF0_syll_nuclear_minus11 minF0_syll_Hz_nuclear_minus11 
+... minF0_syll_st_nuclear_minus11 time_minF0_syll_nuclear_minus11
+... syll_label_nuclear_minus10 duration_syll_nuclear_minus10 syll_stress_nuclear_minus10 
+... meanF0_syll_Hz_nuclear_minus10 meanF0_syll_st_nuclear_minus10 maxF0_syll_Hz_nuclear_minus10 
+... maxF0_syll_st_nuclear_minus10 time_maxF0_syll_nuclear_minus10 minF0_syll_Hz_nuclear_minus10 
+... minF0_syll_st_nuclear_minus10 time_minF0_syll_nuclear_minus10
+... syll_label_nuclear_minus9 duration_syll_nuclear_minus9 syll_stress_nuclear_minus9 
+... meanF0_syll_Hz_nuclear_minus9 meanF0_syll_st_nuclear_minus9 maxF0_syll_Hz_nuclear_minus9 
+... maxF0_syll_st_nuclear_minus9 time_maxF0_syll_nuclear_minus9 minF0_syll_Hz_nuclear_minus9 
+... minF0_syll_st_nuclear_minus9 time_minF0_syll_nuclear_minus9
+... syll_label_nuclear_minus8 duration_syll_nuclear_minus8 syll_stress_nuclear_minus8 
+... meanF0_syll_Hz_nuclear_minus8 meanF0_syll_st_nuclear_minus8 maxF0_syll_Hz_nuclear_minus8 
+... maxF0_syll_st_nuclear_minus8 time_maxF0_syll_nuclear_minus8 minF0_syll_Hz_nuclear_minus8 
+... minF0_syll_st_nuclear_minus8 time_minF0_syll_nuclear_minus8
+... syll_label_nuclear_minus7 duration_syll_nuclear_minus7 syll_stress_nuclear_minus7 
+... meanF0_syll_Hz_nuclear_minus7 meanF0_syll_st_nuclear_minus7 maxF0_syll_Hz_nuclear_minus7 
+... maxF0_syll_st_nuclear_minus7 time_maxF0_syll_nuclear_minus7 minF0_syll_Hz_nuclear_minus7 
+... minF0_syll_st_nuclear_minus7 time_minF0_syll_nuclear_minus7
+... syll_label_nuclear_minus6 duration_syll_nuclear_minus6 syll_stress_nuclear_minus6 
+... meanF0_syll_Hz_nuclear_minus6 meanF0_syll_st_nuclear_minus6 maxF0_syll_Hz_nuclear_minus6 
+... maxF0_syll_st_nuclear_minus6 time_maxF0_syll_nuclear_minus6 minF0_syll_Hz_nuclear_minus6 
+... minF0_syll_st_nuclear_minus6 time_minF0_syll_nuclear_minus6
+... syll_label_nuclear_minus5 duration_syll_nuclear_minus5 syll_stress_nuclear_minus5 
+... meanF0_syll_Hz_nuclear_minus5 meanF0_syll_st_nuclear_minus5 maxF0_syll_Hz_nuclear_minus5 
+... maxF0_syll_st_nuclear_minus5 time_maxF0_syll_nuclear_minus5 minF0_syll_Hz_nuclear_minus5 
+... minF0_syll_st_nuclear_minus5 time_minF0_syll_nuclear_minus5
+... syll_label_nuclear_minus4 duration_syll_nuclear_minus4 syll_stress_nuclear_minus4 
+... meanF0_syll_Hz_nuclear_minus4 meanF0_syll_st_nuclear_minus4 maxF0_syll_Hz_nuclear_minus4 
+... maxF0_syll_st_nuclear_minus4 time_maxF0_syll_nuclear_minus4 minF0_syll_Hz_nuclear_minus4 
+... minF0_syll_st_nuclear_minus4 time_minF0_syll_nuclear_minus4
+... syll_label_nuclear_minus3 duration_syll_nuclear_minus3 syll_stress_nuclear_minus3 
+... meanF0_syll_Hz_nuclear_minus3 meanF0_syll_st_nuclear_minus3 maxF0_syll_Hz_nuclear_minus3 
+... maxF0_syll_st_nuclear_minus3 time_maxF0_syll_nuclear_minus3 minF0_syll_Hz_nuclear_minus3 
+... minF0_syll_st_nuclear_minus3 time_minF0_syll_nuclear_minus3
+... syll_label_nuclear_minus2 duration_syll_nuclear_minus2 syll_stress_nuclear_minus2 
+... meanF0_syll_Hz_nuclear_minus2 meanF0_syll_st_nuclear_minus2 maxF0_syll_Hz_nuclear_minus2 
+... maxF0_syll_st_nuclear_minus2 time_maxF0_syll_nuclear_minus2 minF0_syll_Hz_nuclear_minus2 
+... minF0_syll_st_nuclear_minus2 time_minF0_syll_nuclear_minus2
+... syll_label_nuclear_minus1 duration_syll_nuclear_minus1 syll_stress_nuclear_minus1 
+... meanF0_syll_Hz_nuclear_minus1 meanF0_syll_st_nuclear_minus1 maxF0_syll_Hz_nuclear_minus1 
+... maxF0_syll_st_nuclear_minus1 time_maxF0_syll_nuclear_minus1 minF0_syll_Hz_nuclear_minus1 
+... minF0_syll_st_nuclear_minus1 time_minF0_syll_nuclear_minus1
+... syll_label_nuclear duration_syll_nuclear 
+... meanF0_syll_Hz_nuclear meanF0_syll_st_nuclear maxF0_syll_Hz_nuclear 
+... maxF0_syll_st_nuclear time_maxF0_syll_nuclear minF0_syll_Hz_nuclear 
+... minF0_syll_st_nuclear time_minF0_syll_nuclear
+... syll_label_nuclear_plus1 duration_syll_nuclear_plus1 syll_stress_nuclear_plus1 
+... meanF0_syll_Hz_nuclear_plus1 meanF0_syll_st_nuclear_plus1 maxF0_syll_Hz_nuclear_plus1 
+... maxF0_syll_st_nuclear_plus1 time_maxF0_syll_nuclear_plus1 minF0_syll_Hz_nuclear_plus1 
+... minF0_syll_st_nuclear_plus1 time_minF0_syll_nuclear_plus1
+... syll_label_nuclear_plus2 duration_syll_nuclear_plus2 syll_stress_nuclear_plus2 
+... meanF0_syll_Hz_nuclear_plus2 meanF0_syll_st_nuclear_plus2 maxF0_syll_Hz_nuclear_plus2 
+... maxF0_syll_st_nuclear_plus2 time_maxF0_syll_nuclear_plus2 minF0_syll_Hz_nuclear_plus2 
+... minF0_syll_st_nuclear_plus2 time_minF0_syll_nuclear_plus2
+... syll_label_nuclear_plus3 duration_syll_nuclear_plus3 syll_stress_nuclear_plus3 
+... meanF0_syll_Hz_nuclear_plus3 meanF0_syll_st_nuclear_plus3 maxF0_syll_Hz_nuclear_plus3 
+... maxF0_syll_st_nuclear_plus3 time_maxF0_syll_nuclear_plus3 minF0_syll_Hz_nuclear_plus3 
+... minF0_syll_st_nuclear_plus3 time_minF0_syll_nuclear_plus3
+
+############FILE LOOP###################
+
+# loop that will iterate once for every .wav file
+
+for ifile to numberOfFiles
+select Strings list
+fileName$ = Get string... 'ifile'
+baseName$ = fileName$ - ".wav"
+
+# Write info from filename to variables
+recording$ = left$(baseName$,8)
+speaker$ = mid$(baseName$,10,3)
+target_word$ = mid$(baseName$,14,1)
+condition$ = mid$(baseName$,15,1)
+
+# Fill variables in table
+select Table easy_log
+Set string value... 'ifile' fileName 'baseName$'
+Set string value... 'ifile' recording 'recording$'
+Set string value... 'ifile' speaker 'speaker$'
+Set string value... 'ifile' target_word 'target_word$'
+Set string value... 'ifile' condition 'condition$'
+
+# Read in the Sound files with that base name
+Read from file... 'wav_dir$''baseName$'.wav
+Read from file... 'txt_dir$''baseName$'.TextGrid
+
+# Save table 
+select Table easy_log
+Write to table file... 'directory$'easy_log.txt
+
+if 'numberofPitchfiles' = 'numberOfFiles' 
+Read from file... 'pitch_dir$''baseName$'.Pitch
+else
+select Sound 'baseName$'
+Pause "No pitch file found for 'baseName$'.wav - create one (To pitch (ac)...) or cancel."
+endif
+
+
+#################TONE LOOP###################
+
+# Select the TextGrid corresponding to our current wav
+select TextGrid 'baseName$'
+
+# Determine the number of labels on the tone tier.
+number_of_tonelabels = Get number of points... 'tonetier'
+
+# Get the tone labels and calculate the number of boundary tones
+for ilabel from 1 to number_of_tonelabels
+select TextGrid 'baseName$'
+
+tonelabel$ = Get label of point... 'tonetier' 'ilabel'
+
+#Determine the distance to the last point on the tone tier.
+distance_to_final_tone = 'number_of_tonelabels' - 'ilabel' 
+
+number_of_boundarytones = 0
+number_of_phraseaccents = 0
+if index_regex(tonelabel$,".*%")
+number_of_boundarytones = 'number_of_boundarytones'+1
+elif index_regex(tonelabel$,".*-") 
+number_of_phraseaccents = 'number_of_phraseaccents'+1
+endif
+
+# Write tone labels to table
+select Table easy_log
+column_tonelabel$ = "tonelabel_'distance_to_final_tone'_to_final"
+Set string value... 'ifile' 'column_tonelabel$' 'tonelabel$'
+# Save table
+Write to table file... 'directory$'easy_log.txt
+
+endfor
+
+#################NUCLEAR SYLLABLE LOOP###################
+
+if 'number_of_boundarytones' = 0
+Pause "No boundary tone in file."
+endif
+
+if 'number_of_boundarytones' = 1 and 'number_of_phraseaccents' = 0
+distance_to_boundarytone = 1
+elif if 'number_of_boundarytones' = 1 and 'number_of_phraseaccents' > 0
+# Determine if phraseaccent directly precedes boundary tone
+tonelabelpenult$ = Get label of point... 'tonetier' 'number_of_tonelabels'-1
+if index_regex(tonelabelpenult$,".*-")
+distance_to_boundarytone = 2
+else
+distance_to_boundarytone = 1
+endif
+else
+Pause "Two or more boundary tones in file. Easy_logger can only handle one."
+endif
+
+# Determine the position of the last pitch accent
+last_pitchaccent = 'number_of_tonelabels' - 'distance_to_boundarytone'
+
+# Determine the position of the last pitch accent.
+select TextGrid 'baseName$'
+time_nuclear = Get time of point... 'tonetier' 'last_pitchaccent'
+
+# Determine the accented syllable with the last pitch accent.
+syll_nuclear = Get interval at time... 'syllabletier' 'time_nuclear'
+
+# Determine the label of the accented syllable with which the last pitch acccent is aligned.
+syll_nuclear_label$ = Get label of interval... 'syllabletier' 'syll_nuclear'
+
+#################SENTENCE LOOP################### 
+
+# Determine the number of intervals in the syllable tier.
+number_of_syllables = Get number of intervals... 'syllabletier'
+
+# Determine the number of intervals in the sentence tier.
+number_of_intervals_sentence = Get number of intervals... 'sentencetier'
+
+for a from 1 to number_of_intervals_sentence
+select TextGrid 'baseName$'
+
+sentence_label$ = Get label of interval... 'sentencetier' 'a'
+
+# We exclude empty intervals from our analysis. 
+if sentence_label$ <> "'empty_interval$'"
+
+begin_sentence = Get starting point... 'sentencetier' 'a'
+end_sentence = Get end point... 'sentencetier' 'a'
+duration_sentence = (end_sentence - begin_sentence) * 1000
+intervalsentence = Get interval at time... 'sentencetier' 'begin_sentence'+0.0001
+
+# Move on to pitch object 
+select Pitch 'baseName$'
+
+meanF0_sentence_Hz = Get mean... 'begin_sentence' 'end_sentence' Hertz
+meanF0_sentence_st = Get mean... 'begin_sentence' 'end_sentence' semitones re 100 Hz
+maxF0_sentence_Hz = Get maximum: 'begin_sentence', 'end_sentence', "Hertz", "Parabolic"
+maxF0_sentence_st = Get maximum: 'begin_sentence', 'end_sentence', "semitones re 100 Hz", "Parabolic"
+time_maxF0_sentence = Get time of maximum: 'begin_sentence', 'end_sentence', "Hertz", "Parabolic"
+minF0_sentence_Hz = Get minimum: 'begin_sentence', 'end_sentence', "Hertz", "Parabolic"
+minF0_sentence_st = Get minimum: 'begin_sentence', 'end_sentence', "semitones re 100 Hz", "Parabolic"
+time_minF0_sentence = Get time of minimum: 'begin_sentence', 'end_sentence', "Hertz", "Parabolic"
+
+# Fill variables in table
+select Table easy_log
+Set string value... 'ifile' sentence_label 'sentence_label$'
+Set string value... 'ifile' duration_sentence 'duration_sentence:3'
+Set string value... 'ifile' meanF0_sentence_Hz 'meanF0_sentence_Hz:2'
+Set string value... 'ifile' meanF0_sentence_st 'meanF0_sentence_st:2'
+Set string value... 'ifile' maxF0_sentence_Hz 'maxF0_sentence_Hz:2'
+Set string value... 'ifile' maxF0_sentence_st 'maxF0_sentence_st:2'
+Set string value... 'ifile' minF0_sentence_Hz 'minF0_sentence_st:2'
+Set string value... 'ifile' minF0_sentence_st 'minF0_sentence_st:2'
+
+# Save table
+Write to table file... 'directory$'easy_log.txt
+
+##################SYLLABLE LOOP###################
+
+for b from 1 to number_of_syllables
+select TextGrid 'baseName$'
+syll_label$ = Get label of interval... 'syllabletier' 'b'
+
+#Determine the distance to the syllable to which the last pitch accent is aligned.
+distance_to_nuclear = 'syll_nuclear' - 'b' 
+
+# Exclude empty syllables
+if syll_label$ <> "'empty_interval$'"
+
+begin_syll = Get starting point... 'syllabletier' 'b'
+end_syll = Get end point... 'syllabletier' 'b'
+duration_syll = (end_syll - begin_syll) * 1000
+intervalsyll = Get interval at time... 'syllabletier' 'begin_syll'+0.0001
+
+# Check if syllable is stressed
+if index_regex(syll_label$,"'stress_label$'.*")
+syll_stress$ = "stressed"
+else
+syll_stress$ = "unstressed"
+endif
+
+
+#move on to Pitch object
+select Pitch 'baseName$'
+
+meanF0_syll_Hz = Get mean... 'begin_syll' 'end_syll' Hertz
+meanF0_syll_st = Get mean... 'begin_syll' 'end_syll' semitones re 100 Hz
+maxF0_syll_Hz = Get maximum: 'begin_syll', 'end_syll', "Hertz", "Parabolic"
+maxF0_syll_st = Get maximum: 'begin_syll', 'end_syll', "semitones re 100 Hz", "Parabolic"
+time_maxF0_syll = Get time of maximum: 'begin_syll', 'end_syll', "Hertz", "Parabolic"
+minF0_syll_Hz = Get minimum: 'begin_syll', 'end_syll', "Hertz", "Parabolic"
+minF0_syll_st = Get minimum: 'begin_syll', 'end_syll', "semitones re 100 Hz", "Parabolic"
+time_minF0_syll = Get time of minimum: 'begin_syll', 'end_syll', "Hertz", "Parabolic"
+
+# Fill variables in table according from the start of the sentence
+
+select Table easy_log
+column_syll_label$ = "syll_label_start'b'"
+column_syll_stress$ = "syll_stress_start'b'"
+column_duration_syll$ = "duration_syll_start'b'"
+column_meanF0_syll_Hz$ = "meanF0_syll_Hz_start'b'"
+column_meanF0_syll_st$ = "meanF0_syll_st_start'b'"
+column_maxF0_syll_Hz$ = "maxF0_syll_Hz_start'b'"
+column_maxF0_syll_st$ = "maxF0_syll_st_start'b'"
+column_time_maxF0_syll$ = "time_maxF0_syll_start'b'"
+column_minF0_syll_Hz$ = "minF0_syll_Hz_start'b'"
+column_minF0_syll_st$ = "minF0_syll_st_start'b'"
+column_time_minF0_syll$ = "time_minF0_syll_start'b'"
+
+Set string value... 'ifile' 'column_syll_label$' 'syll_label$'
+Set string value... 'ifile' 'column_syll_stress$' 'syll_stress$'
+Set string value... 'ifile' 'column_duration_syll$' 'duration_syll:3'
+Set string value... 'ifile' 'column_meanF0_syll_Hz$' 'meanF0_syll_Hz:3'
+Set string value... 'ifile' 'column_meanF0_syll_st$' 'meanF0_syll_st:3'
+Set string value... 'ifile' 'column_maxF0_syll_Hz$' 'maxF0_syll_Hz:3'
+Set string value... 'ifile' 'column_maxF0_syll_st$' 'maxF0_syll_st:3'
+Set string value... 'ifile' 'column_time_maxF0_syll$' 'time_maxF0_syll:3'
+Set string value... 'ifile' 'column_minF0_syll_Hz$' 'minF0_syll_Hz:3'
+Set string value... 'ifile' 'column_minF0_syll_st$' 'minF0_syll_st:3'
+Set string value... 'ifile' 'column_time_minF0_syll$' 'time_minF0_syll:3'
+
+# Fill variables in table according to distance to the nuclear accent syllable
+
+if distance_to_nuclear > 0
+select Table easy_log
+column_syll_label$ = "syll_label_nuclear_minus'distance_to_nuclear'"
+column_syll_stress$ = "syll_stress_nuclear_minus'distance_to_nuclear'"
+column_duration_syll$ = "duration_syll_nuclear_minus'distance_to_nuclear'"
+column_meanF0_syll_Hz$ = "meanF0_syll_Hz_nuclear_minus'distance_to_nuclear'"
+column_meanF0_syll_st$ = "meanF0_syll_st_nuclear_minus'distance_to_nuclear'"
+column_maxF0_syll_Hz$ = "maxF0_syll_Hz_nuclear_minus'distance_to_nuclear'"
+column_maxF0_syll_st$ = "maxF0_syll_st_nuclear_minus'distance_to_nuclear'"
+column_time_maxF0_syll$ = "time_maxF0_syll_nuclear_minus'distance_to_nuclear'"
+column_minF0_syll_Hz$ = "minF0_syll_Hz_nuclear_minus'distance_to_nuclear'"
+column_minF0_syll_st$ = "minF0_syll_st_nuclear_minus'distance_to_nuclear'"
+column_time_minF0_syll$ = "time_minF0_syll_nuclear_minus'distance_to_nuclear'"
+
+Set string value... 'ifile' 'column_syll_label$' 'syll_label$'
+Set string value... 'ifile' 'column_syll_stress$' 'syll_stress$'
+Set string value... 'ifile' 'column_duration_syll$' 'duration_syll:3'
+Set string value... 'ifile' 'column_meanF0_syll_Hz$' 'meanF0_syll_Hz:3'
+Set string value... 'ifile' 'column_meanF0_syll_st$' 'meanF0_syll_st:3'
+Set string value... 'ifile' 'column_maxF0_syll_Hz$' 'maxF0_syll_Hz:3'
+Set string value... 'ifile' 'column_maxF0_syll_st$' 'maxF0_syll_st:3'
+Set string value... 'ifile' 'column_time_maxF0_syll$' 'time_maxF0_syll:3'
+Set string value... 'ifile' 'column_minF0_syll_Hz$' 'minF0_syll_Hz:3'
+Set string value... 'ifile' 'column_minF0_syll_st$' 'minF0_syll_st:3'
+Set string value... 'ifile' 'column_time_minF0_syll$' 'time_minF0_syll:3'
+
+elsif distance_to_nuclear = 0
+select Table easy_log
+Set string value... 'ifile' syll_label_nuclear 'syll_label$'
+Set string value... 'ifile' duration_syll_nuclear 'duration_syll:3'
+Set string value... 'ifile' meanF0_syll_Hz_nuclear 'meanF0_syll_Hz:3'
+Set string value... 'ifile' meanF0_syll_st_nuclear 'meanF0_syll_st:3'
+Set string value... 'ifile' maxF0_syll_Hz_nuclear 'maxF0_syll_Hz:3'
+Set string value... 'ifile' maxF0_syll_st_nuclear 'maxF0_syll_st:3'
+Set string value... 'ifile' time_maxF0_syll_nuclear 'time_maxF0_syll:3'
+Set string value... 'ifile' minF0_syll_Hz_nuclear 'minF0_syll_Hz:3'
+Set string value... 'ifile' minF0_syll_st_nuclear 'minF0_syll_st:3'
+Set string value... 'ifile' time_minF0_syll_nuclear 'time_minF0_syll:3'
+else
+select Table easy_log
+#convert negative distance to positive value (square and square root)
+distance_to_nuclear = (('distance_to_nuclear') ^ 2) ^ 0.5
+column_syll_label$ = "syll_label_nuclear_plus'distance_to_nuclear'"
+column_syll_stress$ = "syll_stress_nuclear_plus'distance_to_nuclear'"
+column_duration_syll$ = "duration_syll_nuclear_plus'distance_to_nuclear'"
+column_meanF0_syll_Hz$ = "meanF0_syll_Hz_nuclear_plus'distance_to_nuclear'"
+column_meanF0_syll_st$ = "meanF0_syll_st_nuclear_plus'distance_to_nuclear'"
+column_maxF0_syll_Hz$ = "maxF0_syll_Hz_nuclear_plus'distance_to_nuclear'"
+column_maxF0_syll_st$ = "maxF0_syll_st_nuclear_plus'distance_to_nuclear'"
+column_time_maxF0_syll$ = "time_maxF0_syll_nuclear_plus'distance_to_nuclear'"
+column_minF0_syll_Hz$ = "minF0_syll_Hz_nuclear_plus'distance_to_nuclear'"
+column_minF0_syll_st$ = "minF0_syll_st_nuclear_plus'distance_to_nuclear'"
+column_time_minF0_syll$ = "time_minF0_syll_nuclear_plus'distance_to_nuclear'"
+
+Set string value... 'ifile' 'column_syll_label$' 'syll_label$'
+Set string value... 'ifile' 'column_syll_stress$' 'syll_stress$'
+Set string value... 'ifile' 'column_duration_syll$' 'duration_syll:3'
+Set string value... 'ifile' 'column_meanF0_syll_Hz$' 'meanF0_syll_Hz:3'
+Set string value... 'ifile' 'column_meanF0_syll_st$' 'meanF0_syll_st:3'
+Set string value... 'ifile' 'column_maxF0_syll_Hz$' 'maxF0_syll_Hz:3'
+Set string value... 'ifile' 'column_maxF0_syll_st$' 'maxF0_syll_st:3'
+Set string value... 'ifile' 'column_time_maxF0_syll$' 'time_maxF0_syll:3'
+Set string value... 'ifile' 'column_minF0_syll_Hz$' 'minF0_syll_Hz:3'
+Set string value... 'ifile' 'column_minF0_syll_st$' 'minF0_syll_st:3'
+Set string value... 'ifile' 'column_time_minF0_syll$' 'time_minF0_syll:3'
+endif
+
+# Save table
+Write to table file... 'directory$'easy_log.txt
+endif
+endfor
+endif
+endfor
+
+# Clean up before going on with next file
+select Sound 'baseName$'
+plus TextGrid 'baseName$'
+plus Pitch 'baseName$'
+Remove
+endfor
+
+
+
+# clean up and a message before exiting script
+select all
+Remove
+clearinfo
+printline All files have been processed.
+printline The results are now stored in 'directory$'
+
+\end{Verbatim}
+
+%\end{adjustbox}

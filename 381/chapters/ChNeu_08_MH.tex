@@ -1,0 +1,923 @@
+\chapter{Corpus study}\label{sec:diachronic}
+
+A useful aspect of the symbolic interpretation of NAP is that it can be employed for diachronic descriptions of historical sound change, where processes tend to be phonologized over time in ways that lend themselves to symbolic descriptions such as deletion, insertion and category change of individual segments. Thus, NAP-based predictions can be tested against the prevailing SSP-based predictions in cases of diachronic sound change where syllabic well-formedness is assumed to play a role.
+
+Traditional sonority-based principles have often been invoked with relation to Modern Hebrew (MH) phonotactics, as they have been for many other languages that were studied with the toolbox of mainstream phonological research in recent decades (for examples from MH see \citealt{adam2002variable, asherov2019syllablesk, bat1994stemsk, bat1996selectingsk, bat2002truesk, batel2012sonoritysk, bolozky1978somesk, bolozky2006notesk, bolozky2009colloquialsk, cohen2009role, faust2014wheresk, faust2015novelsk, kreitman2008phoneticssk, laks2015paradigmsk, schwarzwald2005modernsk}).
+One prominent feature of MH is that complex onsets of consonant clusters are often formed morpheme-initially in the plural inflection of many nouns, where sonority seems to play a crucial role in determining which sequences of consonants would be considered well-formed enough to allow complex onset clusters to occur.
+
+The data for this corpus study are derived from the \emph{Living Lexicon of Hebrew Nouns} (LLHN; \citealt{bolozky2006livingsk}). The LLHN is a tabulated collection of
+12,043 Hebrew nouns based on a normative MH dictionary, the \emph{Even-Shoshan Dictionary} \citep{evenshoshan2003milonsk}, with phonemic transcriptions in IPA of colloquial singular and plural forms, provided by the LLHN authors as a highly generalized depiction of MH around the turn of the century.
+
+This study targets the \emph{Segholate} class, which comprises a very large group of Hebrew nouns, with 1,016
+entries in the LLHN (close to 10\% of the entire list). Segholates feature many frequently used words like \emph{ké.lev} (`dog'), \emph{pé.ʁaχ} (`flower') and \emph{jé.led} (`kid').
+Consonant clusters appear morpheme-initially in the plural inflections of Segholates if the two initial consonants can be syllabified together in a well-formed complex onset. To illustrate this with the three examples above, consider the potential sequences /kl/ and /pʁ/ from \emph{\textbf{k}é.\textbf{l}ev} and
+\emph{\textbf{p}é.\textbf{ʁ}aχ}
+(respectively), that make a well-formed complex onset (rising sonority), in contrast to the potential sequence /jl/ from \emph{\textbf{j}é.\textbf{l}ed}, that makes an ill-formed complex onset (falling sonority). As a result, the plural forms \emph{\textbf{kl}a.v-ím} (`dog-\Pl{}') and \emph{\textbf{pʁ}a.χ-ím} (`flower-\Pl{}') allow a complex onset cluster, while the plural form \emph{\textbf{j}e.\textbf{l}a.d-ím} (`kid-\Pl{}') does not (*\emph{\textbf{jl}a.d-ím}).
+
+In the remainder of this chapter, I provide the relevant background on MH (Sections~\ref{sec:historic}--\ref{sec:segholatesinmh}) and outline the preparation of the study corpus (Sections~\ref{sec:epentheticver}--\ref{sec:diachronicstudyset}), before presenting a descriptive analysis of the data (Sections~\ref{sec:descriptive}--\ref{sec:mAnal}) and concluding with a short discussion in \sectref{sec:discussMH}. I start in the next section (\ref{sec:corpusLimits}) with a description of the goals and limitations of the corpus, to help clarify the scope of this study.
+
+%Important notes:
+Important notes with respect to the following chapter:
+
+\begin{itemize}
+%   \tightlist
+\item
+  Major parts of this chapter were also published in \citet{albert2022sonority}.
+\item
+  The corpus study is fully replicable from the LLHN public data file and the R code made available in an \emph{Open Science Framework} repository at the following link: %\\
+  \url{https://osf.io/wuf3j/}.
+\end{itemize}
+
+\section{Goals and limitations of the corpus study}\label{sec:corpusLimits}
+
+It is important to clarify the goals and limitations of this corpus study at the outset. This is not a survey of MH phonotactics, nor can it be regarded as such. The point of this study is to observe sonority-related phonotactics in phonologized MH forms, based on systematic divergence from the Biblical Hebrew norm. The class of Segholate nouns presents an opportunity to limit the scope of this question and make it more
+manageable in terms of the size of the dataset.
+Segholates are both unique and abundant at the same time. Their uniqueness makes it easier to cover an exhaustive list of confounding factors to screen out forms that are not informative with respect to the question at hand. Their abundance assures us that even after we reduce the size of the Segholate set due to exclusions, we will still remain with a rich enough set of tokens that contains many varied examples of the systematic alternation of interest for the study of sonority-related phonotactics.
+
+Segholates are frequent nouns that are distinctively of older Hebrew origin. The Segholate class is not a productive host for new nouns (see \citealt{bolozky2020dictionarysk}). As such, Segholates may reflect some facts about the phonology of
+Biblical Hebrew
+rather than MH. For example, only sibilants are possible fricatives in C\textsubscript{1} of Segholates and the bilabial stops /p, b/ never occur in the C\textsubscript{2} position of Segholates. These generalizations are a legacy of the old spirantization rule of Biblical Hebrew, which is mostly maintained as a morphological alternation in MH (see \citealt{albert2019statesk}). It should not be taken to mean that there are no /f/-initial and /χ/-initial nouns in MH, or that bilabial stops are illicit in C\textsubscript{2} positions in MH.
+
+This corpus is, therefore, very useful for the following type of observation: given that MH tends to delete the reduced vowel of Biblical Hebrew (the \emph{mobile schwa}; see \sectref{sec:mhphon}), we can learn about the phonotactics of MH by systematically tracking which types of consonants around this position allow a cluster formation or, otherwise, block it with an epenthetic vowel.
+
+\section{Historical sound change and the Hebrew languages}\label{sec:historic}
+
+One very interesting diachronic process in the context of sonority is cluster formation due to loss of vocalic elements, such as the loss of \emph{yers} in the Slavic language family (e.g.~\citealt{rubach1990edgesk, gouskova2013nonce, scheer2007statussk}). The loss of vocalic elements creates new phonological environments where often two consonants that where initially in different syllabic positions and/or different syllables end up as members of a tautosyllabic cluster, forming complex onsets or complex codas. Phonotactic principles are expected to restrict certain clusters such that some segmental sequences will end up following a different path of historical sound change in order to prevent illicit clusters from occurring. This is often achieved by inserting the language's default vocalic element -- its epenthetic vowel -- between the two consonants.
+
+Historical loss of vocalic elements can therefore serve as a window into lan\-guage-specific criteria for syllabic well-formedness in terms of licit and illicit consonantal combinations.
+In what follows, NAP-based and SSP-based predictions are tested against data from MH, which -- given the characteristics detailed below -- serves as a hotbed for the emergence of phonotactic universals (see \citealt{adam2002variable, albert2014phonotacticsk, batel2005phonologysk}).
+
+This situation in MH is unique. On the one hand, MH is based on centuries-old classical Hebrew varieties that were preserved via writing systems and niche roles that spoken Hebrew traditions kept filling (chiefly in religious contexts). On the other hand, as a natural language with a community of native speakers, MH is a brand new language from the late nineteenth century, with only few generations of native speakers. Thus, unlike more typical historical trajectories, MH cannot be described as the result of direct evolution from classical Hebrew varieties (see \citealt{blanc1957hebrewsk, fellman1973concerningsk, morag1959plannedsk}).
+
+The reliance of MH on textual sources (see \citealt{myhill2004parameterized}) contributed greatly to the perseverance of old Hebrew morphology, but was less determinant in preserving the phonology of old Hebrew.
+The resolution of MH phonology by the new Hebrew speakers, especially given the rich morphological structure of Hebrew grammar, provides us with a rare opportunity to observe accelerated and well-documented phonological patterns that resemble historical sound-change, which -- under more typical conditions -- would have taken many generations to establish.
+
+Note that there are different periods of old Hebrew that contributed to MH: Biblical Hebrew (spoken around 1200--300 BCE), Mishnaic or Rabbinic Hebrew (from around 300 BCE to 600 CE) and Medieval Hebrew (mostly written around 600--1300 CE).
+An important role during Medieval Hebrew was played by what is known as Tiberian Hebrew or Masoretic Hebrew (7th to 10th century CE) which was crucial in developing the intricate writing system that is still in use in MH to a large extent.
+Since this study does not deal with historical Hebrew varieties and the differences between them, in what follows I simply refer to all the old varieties of Hebrew under the cover term \emph{Biblical Hebrew}, which is abbreviated as BH.
+
+\section{Consonantal clusters in Modern Hebrew}\label{sec:mhphon}
+
+The phonology of MH can be roughly described as a combination of the native phonologies of the new MH speakers (varieties of Yiddish, as well as a myriad of Slavic, Arabic, Germanic, Romance, and other languages), and their various traditions for mapping Hebrew graphemes to sounds in religious reading contexts, where Hebrew often remained in use.
+
+%Regardless of the sources of MH phonotactic patterns, MH speakers produce many complex onset clusters (C\textsubscript{1}C\textsubscript{2}V) across the lexicon. Moreover, the variety of possible onset clusters in MH is relatively large, allowing more combinations than most Germanic and Romance languages exhibit, including practically any combination of two obstruents in a complex onset cluster (i.e.~\emph{stop-stop}, \emph{stop-fricative}, \emph{fricative-fricative} and \emph{fricative-stop}).
+
+One striking feature of MH phonology that sets it apart from BH is its much broader tolerance towards consonantal clusters.
+%This broader tolerance towards consonantal clusters is one of the striking features of MH phonology that sets it apart from BH.
+In BH, tautosyllabic consonantal clusters were limited to final coda positions as a result of morpho-phonological processes, most often when the suffix \emph{-t} was attached to a consonant-final base of a verb in the feminine inflection (e.g.~\emph{ka.tá\textbf{v}-\textbf{t}} `write.\Pst{}-\Second{}\Sg{}.\F{}'). Morpheme-initial consonants in BH were regularly separated by a vowel to avoid complex (tautosyllabic) onset clusters.\footnote{Consonantal sequences in middle positions of BH words occur frequently, yet they are mostly considered as belonging to two different syllables (i.e.~\emph{heterosyllabic}), not forming a tautosyllabic complex cluster.} In contrast to the restrictive phonology of BH with respect to complex onset clusters, MH speakers seem to prefer clusters in many unstressed morpheme-initial positions, as various studies have already noted before (e.g.~\citealt{rosen1956haivritsk, albert2013hebrewsk, asherov2019syllablesk, bat2008morphologicallysk, bolozky1978somesk, bolozky2006notesk, cohen2015syllablesk, laufer1991phonemesk, schwarzwald2005modernsk}).
+
+BH featured a reduced (short) vowel in unstressed positions, which the Tiberian scholars marked with a unique diacritic termed \emph{schwa}, which inspired the naming of the phonetic schwa, although they are quite different (see \citealt{laufer2019originsk} for a short overview of the two terms).
+The schwa in the Tiberian writing system has two main interpretations: it is either a short vowel (\emph{mobile schwa}) or no vowel (\emph{silent schwa}). The silent schwa is restricted to coda positions, to indicate that the consonantal grapheme has no following vowel. The mobile schwa occurs in onsets, indicating a reduced vowel after the consonantal grapheme.
+In MH there are no phonologically reduced vowels in unstressed positions (not considering post-lexical prosody) such that the reduced vowel of BH -- the mobile schwa -- tends to be deleted in MH.
+
+Hebrew words typically combine affixation with vocalic changes in the base morpheme when inflected. This also includes the movement of stress towards the suffix in order to keep the strong syllable at the final edge of the prosodic word. This regular stress shift towards the final edge has implications for the beginning of the prosodic structure as well, considering that unstressed initial syllables are more prone to reduction processes. Furthermore, when an inflectional suffix is added to a base morpheme, the deletion of a vowel from the base can offset the overall increase in the size of the prosodic word due to affixation. These are perhaps the main contributors to the relative abundance of morpheme-initial complex clusters in MH (\citealt{asherov2019syllablesk, bat2008morphologicallysk}).
+
+Regardless of the sources of MH phonotactic patterns, MH speakers produce many complex onset clusters (C\textsubscript{1}C\textsubscript{2}V) across the lexicon. Moreover, the variety of possible onset clusters in MH is relatively large, allowing more combinations than most Germanic and Romance languages exhibit, including practically any combination of two obstruents in a complex onset cluster (i.e.~\emph{stop-stop}, \emph{stop-fricative}, \emph{fricative-fricative} and \emph{fricative-stop}).
+
+\begin{sloppypar}
+Importantly, the tendency towards cluster formation can be blocked with MH's epenthetic vowel /e/ to avoid certain ill-formed CC combinations in complex onsets, thus serving as a window into the phonology of MH, with a specific view to its phonotactic landscape. The literature on the subject of clusters in MH points at the crucial role that sonority seems to play in blocking cluster formation. For example, it has often been noticed that the sonorant consonants of the system (/m, n, l, ʁ, j/)\footnote{The historical labiovelar glide /w/, which was native to BH phonology, has merged with the voiced labiodental fricative /v/ in MH. That said, the glide /w/ has a marginal phonemic status in MH as a distinctive consonant in many common loanwords from both English (e.g.~\emph{\textbf{w}áj.faj} `WiFi') and Arabic (e.g.~\emph{\textbf{w}á.la} `indeed').} do not form a cluster with a following consonant whenever they are morpheme-initial, i.e.~in C\textsubscript{1} position (e.g.~\citealt{rosen1956haivritsk, asherov2019syllablesk, bolozky2006notesk, schwarzwald2005modernsk}).
+\end{sloppypar}
+
+\begin{exe} 
+\ex \emph{\textbf{k}a.\textbf{χ}ól} $\to$ \emph{\textbf{kχ}u.l-ím} (`blue-\Pl{}.\M{}') \label{ex:lmnr1} 
+\ex \emph{\textbf{j}a.\textbf{ʁ}ók} $\to$ \emph{\textbf{j}e.\textbf{ʁ}u.k-ím} (`green-\Pl{}.\M{}') \label{ex:lmnr2}
+\end{exe}
+
+Examples (\ref{ex:lmnr1}--\ref{ex:lmnr2}) demonstrate this with two color adjectives that share the same vocalic template -- C\textsubscript{1}a.C\textsubscript{2}óC\textsubscript{3} -- while differing in their consonantal makeup. The base morpheme of inflected adjectives in the C\textsubscript{1}a.C\textsubscript{2}óC\textsubscript{3} pattern deletes its first vowel /a/ and changes the quality of its second vowel, which is no longer in the stressed syllable, by raising from /o/ to /u/. As a result, C\textsubscript{1}\textbf{a}.C\textsubscript{2}\textbf{ó}C\textsubscript{3} becomes C\textsubscript{1}C\textsubscript{2}\textbf{u}.C\textsubscript{3}-ím.
+This is apparent in (\ref{ex:lmnr1}) but note that in (\ref{ex:lmnr2}) the epenthetic vowel /e/ is inserted between C\textsubscript{1} and C\textsubscript{2} in the plural inflection, yielding trisyllabic C\textsubscript{1}\textbf{e}.C\textsubscript{2}u.C\textsubscript{3}-ím. This is done in order to avoid an otherwise ill-formed onset cluster that would be headed by a highly sonorant glide /j/ (*\emph{\textbf{jʁ}u.kím}).
+
+\section{Segholates in Modern Hebrew}\label{sec:segholatesinmh}
+
+Segholates form a special class of Hebrew nouns due to their unique stress pattern (see \citealt{bat2012prosodicsk}). In citation form, when the base morpheme is devoid of affixes (the singular masculine forms by default), Segholates exhibit a penultimate stress unlike typical nouns of Hebrew origin, which standardly exhibit a final stress (\emph{iambic} pattern). At the same time, Segholates do behave like typical Hebrew nouns in that they exhibit the standard final stress pattern with inflected forms, whereby the stress shifts from the base morpheme to the suffix. This divergence from the norm in the bare citation form of Segholates is related to historical processes within BH (see \citealt{yeverechyahu2020biblicalsk}) and is maintained by the lexical stress system of MH, which tolerates varying stress assignments, including some apparent tendencies towards penultimate stress (\emph{trochaic} pattern), despite the strong iambic preference of BH \citep{batel2005phonologysk}.
+
+
+\begin{table}
+\caption{\label{tab:segholbasiccomb1}Cluster formation in MH Segholates. Here and elsewhere, the \enquote{Complex onset} column refers to the data in the LLHN such that “\ding{51}” indicates a complex onset cluster in plural inflections and “\ding{55}” indicates that a vowel appears between C\textsubscript{1} and C\textsubscript{2} in the plural inflection.}
+\begin{tabular}{lllcc}%{cclcclcclcclccl}
+\lsptoprule
+
+Singular & Plural &  Gloss & C\textsubscript{1}C\textsubscript{2} & Complex onset\\\midrule
+{\emph{\textbf{p}é.\textbf{ʁ}aχ}} & {\emph{\textbf{pʁ}a.χ-ím}} & {`flower'} & {pʁ} & {\ding{51}}\\
+{\emph{\textbf{d}é.\textbf{l}et}} & {\emph{\textbf{dl}a.t-ót}} & {`door'} & {dl} & {\ding{51}}\\
+{\emph{\textbf{p}á.\textbf{χ}ad}} & {\emph{\textbf{pχ}a.d-ím}} & {`fear'} & {pχ} & {\ding{51}}\\
+{\emph{\textbf{k}ó.\textbf{t}el}} & {\emph{\textbf{kt}a.l-ím}} & {`wall'} & {kt} & {\ding{51}}\\
+{\emph{\textbf{ʃ}é.\textbf{k}a}} & {\emph{\textbf{ʃk}a.-ím}} & {`socket'} & {ʃk} & {\ding{51}}\\
+{\emph{\textbf{s}é.\textbf{f}eʁ}} & {\emph{\textbf{sf}a.ʁ-ím}} & {`book'} & {sf} & {\ding{51}}\\
+{\emph{\textbf{ʃ}é.\textbf{m}eʃ}} & {\emph{\textbf{ʃm}a.ʃ-ót}} & {`sun'} & {ʃm} & {\ding{51}}\\
+{\emph{\textbf{v}é.\textbf{ʁ}ed}} & {\emph{\textbf{vʁ}a.d-ím}} & {`rose'} & {vʁ} & {\ding{51}}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+When the default plural suffixes \emph{-im} or \emph{-ot} are added to typical Segholates, the stress shifts to the end, and the first vowel of the base morpheme is deleted. As a result, the first two consonants of Segholates tend to form a complex onset cluster morpheme-initially when plural suffixes are added. However, if the resulting C\textsubscript{1}C\textsubscript{2} sequence constitutes an ill-formed complex onset cluster, the formation of a cluster is blocked by the epenthetic vowel of MH, /e/. See Tables~\ref{tab:segholbasiccomb1}--\ref{tab:segholbasiccomb2} for various examples of these two main routes in plural inflections of disyllabic Segholates, resulting in either onset clusters (\tabref{tab:segholbasiccomb1}) or epenthesis (\tabref{tab:segholbasiccomb2}) morpheme-initially.
+
+
+
+\begin{table}
+\caption{\label{tab:segholbasiccomb2}Vowel epenthesis in MH Segholates}
+\begin{tabular}{lllcc}%{cclcclcclcclccl}
+\lsptoprule
+Singular & Plural & Gloss & C\textsubscript{1}C\textsubscript{2} & Complex onset\\\midrule
+{\emph{\textbf{ʁ}é.\textbf{g}eʃ}} & {\emph{\textbf{ʁ}e.\textbf{g}a.ʃ-ót}} & {`feeling'} & {ʁg} & \ding{55}\\
+{\emph{\textbf{ʁ}ó.\textbf{t}ev}} & {\emph{\textbf{ʁ}e.\textbf{t}a.v-ím}} & {`sauce'} & {ʁt} & \ding{55}\\
+{\emph{\textbf{l}é.\textbf{χ}em}} & {\emph{\textbf{l}e.\textbf{χ}a.m-ím}} & {`bread'} & {lχ} & \ding{55}\\
+{\emph{\textbf{m}á.\textbf{χ}at}} & {\emph{\textbf{m}e.\textbf{χ}a.t-ím}} & {`needle'} & {mχ} & \ding{55}\\
+{\emph{\textbf{n}é.\textbf{m}eʃ}} & {\emph{\textbf{n}e.\textbf{m}a.ʃ-ím}} & {`freckle'} & {nm} & \ding{55}\\
+{\emph{\textbf{m}é.\textbf{l}aχ}} & {\emph{\textbf{m}e.\textbf{l}a.χ-ím}} & {`salt'} & {ml} & \ding{55}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+The vast majority of Segholates are disyllabic. The most common vocalic pattern in Segholates is the C\textbf{é}.C\textbf{e}(C) pattern with two /e/ vowels in the citation form (e.g.~\emph{d\textbf{é}.l\textbf{e}t} in Table 13). Other vocalic patterns in citation form in Tables~\ref{tab:segholbasiccomb1}--\ref{tab:segholbasiccomb2} include C\textbf{á}.C\textbf{a}(C) (e.g., \emph{m\textbf{á}.χ\textbf{a}t}, \emph{p\textbf{á}.χ\textbf{a}d}), C\textbf{ó}.C\textbf{e}(C) (e.g., \emph{ʁ\textbf{ó}.t\textbf{e}v}, \emph{k\textbf{ó}.t\textbf{e}l}) and C\textbf{é}.C\textbf{a}(C) (e.g.~\emph{p\textbf{é}.ʁ\textbf{a}χ}, \emph{m\textbf{é}.l\textbf{a}χ}, \emph{ʃ\textbf{é}.k\textbf{a}}). 
+%Note that the different vocalic patterns of the singular form in Tables~\ref{tab:segholbasiccomb1}--\ref{tab:segholbasiccomb2}, generally denoted with an underspecified skeleton, C\textsubscript{1}V́.C\textsubscript{2}V(C), take a more restrictive form in the plural inflection, where the second vowel is always /a/ and the first vowel either deletes or appears mostly as the epenthetic /e/ where applicable, yielding the more specified vocalic pattern, C\textsubscript{1}(\textbf{e}.)C\textsubscript{2}\textbf{a}.(C)-ím/-ót.
+
+\section{Epenthesis verification}\label{sec:epentheticver}
+
+The epenthetic status of the vowel that appears between C\textsubscript{1} and C\textsubscript{2} in inflected Segholates can be independently verified via systematic resyllabification processes in MH. For example, when preceded by a proclitic such as the definite article \emph{(h)a-}, the epenthetic vowel can disappear if C\textsubscript{1} resyllabifies as the coda of \emph{(h)a-} leaving C\textsubscript{2} in a \emph{simple onset} position: /ha-C\textsubscript{1}.C\textsubscript{2}V\ldots{}/.
+This scenario allows consonantal sequences to surface without an intervening vowel as they no longer constitute a tautosyllabic complex onset (see \cite[227]{bolozky2006notesk}). This procedure yields forms like those given in \tabref{tab:segholresyll}, demonstrating heterosyllabic sequences for all the same cases that exhibit an epenthetic vowel to block a tautosyllabic onset cluster in \tabref{tab:segholbasiccomb2}.
+
+Importantly, if a non-epenthetic vowel appears between C\textsubscript{1} and C\textsubscript{2} of Segholates, as detailed in the following section, it will not be deleted in any of these environments, including environments that do not require a vowel to break complex tautosyllablic clusters, as demonstrated for the forms in \tabref{tab:segholnoresyll}.\largerpage[2]
+
+\begin{table}[H]
+\caption{\label{tab:segholresyll}Number inflection in Segholates with epenthtic vowels. The epenthetic vowels between C\textsubscript{1} and C\textsubscript{2} are not mandatory in the Det+Plural forms, where they are not required to break a complex onset cluster, and they 
+can be deleted
+%are free to delete 
+as shown here.}
+\begin{tabular}{llllccc}
+\lsptoprule
+Singular & Plural & Det+Plural & Gloss & {{{C}\textsubscript{1}{C}\textsubscript{2}}} & CO\footnote{Complex onset} & EV\footnote{Epenthetic vowel}\\\midrule
+{\emph{ʁ\textbf{é}.geʃ}} & {\emph{ʁ\textbf{e}.ga.ʃ-ót}} & {\emph{(h)a-ʁ\textbf{.}ga.ʃ-ót}} & {`feeling'} & {ʁg} & \ding{55} & {\ding{51}}\\
+{\emph{ʁ\textbf{ó}.tev}} & {\emph{ʁ\textbf{e}.ta.v-ím}} & {\emph{(h)a-ʁ\textbf{.}ta.v-ím}} & {`sauce'} & {ʁt} & \ding{55} & {\ding{51}}\\
+{\emph{l\textbf{é}.χem}} & {\emph{l\textbf{e}.χa.m-ím}} & {\emph{(h)a-l\textbf{.}χa.m-ím}} & {`bread'} & {lχ} & \ding{55} & {\ding{51}}\\
+{\emph{m\textbf{á}.χat}} & {\emph{m\textbf{e}.χa.t-ím}} & {\emph{(h)a-m\textbf{.}χa.t-ím}} & {`needle'} & {mχ} & \ding{55} & {\ding{51}}\\
+{\emph{n\textbf{é}.meʃ}} & {\emph{n\textbf{e}.ma.ʃ-ím}} & {\emph{(h)a-n\textbf{.}ma.ʃ-ím}} & {`freckle'} & {nm} & \ding{55} & {\ding{51}}\\
+{\emph{m\textbf{é}.laχ}} & {\emph{m\textbf{e}.la.χ-ím}} & {\emph{(h)a-m\textbf{.}la.χ-ím}} & {`salt'} & {ml} & \ding{55} & {\ding{51}}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\caption{\label{tab:segholnoresyll}Number inflection in Segholates with non-epenthtic vowels. The non-epenthetic vowels between C\textsubscript{1} and C\textsubscript{2} are mandatory. They are expected to surface regardless of syllabic structure.}
+\begin{tabular}{llllccc}
+\lsptoprule
+Singular & Plural & Det+Plural & Gloss & {{{C}\textsubscript{1}{C}\textsubscript{2}}} & CO & EV\\\midrule
+{\emph{ʁ\textbf{ó}.maχ}} & {\emph{ʁ\textbf{o}.ma.χ-ím}} & {\emph{(h)a-.ʁ\textbf{o}.ma.χ-ím}} & {`lance'} & {ʁm} & \ding{55} & \ding{55}\\
+{\emph{n\textbf{ó}.feʃ}} & {\emph{n\textbf{o}.fa.ʃ-ím}} & {\emph{(h)a-.n\textbf{o}.fa.ʃ-ím}} & {`vacation'} & {nf} & \ding{55} & \ding{55}\\
+{\emph{n\textbf{ó}.saχ}} & {\emph{n\textbf{o}.sa.χ-ím}} & {\emph{(h)a-.n\textbf{o}.sa.χ-ím}} & {`wording'} & {ns} & \ding{55} & \ding{55}\\
+{\emph{χ\textbf{é}.ʁev}} & {\emph{χ\textbf{a}.ʁa.v-ót}} & {\emph{(h)a-.χ\textbf{a}.ʁa.v-ót}} & {`sword'} & {χʁ} & \ding{55} & \ding{55}\\
+{\emph{k\textbf{ó}.va}} & {\emph{k\textbf{o}.va.(ʔ)-ím}} & {\emph{(h)a-.k\textbf{o}.va.(ʔ)-ím}} & {`hat'} & {kv} & \ding{55} & \ding{55}\\
+{\emph{ʃ\textbf{ó}.ʁeʃ}} & {\emph{ʃ\textbf{o}.ʁa.ʃ-ím}} & {\emph{(h)a-.ʃ\textbf{o}.ʁa.ʃ-ím}} & {`root'}  & {ʃʁ} & \ding{55} & \ding{55}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+It is of interest to note that consonantal sequences which cannot appear as word-initial tautosyllabic clusters (e.g.~/lχ/ in illicit *\emph{\textbf{lχ}a.m-ím}) can, at the same time, appear as sequences with no intervening vowel if they are heterosyllabic (e.g.~\emph{(h)a\textbf{l.χ}a.m-ím}). This is an independent validation that the ill-formedness of the structures in the corpus is not simply due to adjacency, but involves restrictions on adjacency in the context of syllabic structure. Hence, this verification process also serves as an independent validation that syllabic well-formedness, and more specifically sonority, are justifiably invoked in this case.
+
+Crucially, the Segholate forms that reveal sensitivity to sonority-related phonotactics must be those that either allow a complex onset cluster in the plural inflection, thus deleting the first vowel that surfaces in the singular form (as in \tabref{tab:segholbasiccomb1}), or, alternatively, require a vowel that can be shown to be an epenthetic vowel (as shown in \tabref{tab:segholresyll}). 
+%In any of these cases, no mandatory vowel is expected between C\textsubscript{1} and C\textsubscript{2} when the Segholate noun is preceded by a (C)V proclitic 
+%(in contrast with the forms in \tabref{tab:segholnoresyll}).
+
+\section{Confounding factors}\label{sec:confounding}
+
+The forms that fail in the general epenthetic vowel test (see Section~\ref{sec:epentheticver}) were ultimately excluded from the corpus study since their behavior across the number inflection is not expected to be reflective of sonority-based phonotactics. Apart from a few idiosyncratic forms which are covered in Section~\ref{sec:other}, the vast majority of these exclusions stem from structural and segmental factors, not related to sonority, which I consider as \emph{confounding factors}. The following Sections~\ref{sec:finalrime}--\ref{sec:other} cover the various confounding factors that lead to exclusion from the study corpus.
+
+\subsection{Final rime merge}\label{sec:finalrime}
+
+As described above, the condition for cluster formation in Segholates is related to a morpheme-initial adjustment (vowel deletion) that offsets the additional vowel of suffixes when inflected to plural forms. While this pattern is the most prominent in Segholates, it is not the only one. A large subset of Segholates (336 nouns, about a third of all LLHN Segholates) makes the adjustment morpheme-finally, mostly replacing the final VC rime of the singular form with the VC suffix \emph{-im} or \emph{-ot}.
+
+This final rime merge happens almost exclusively with Segholates that end in /Vt/ (\emph{et} or \emph{at}), that is, either with a feminine suffix such as \emph{-et} in \emph{gvé.ʁ\textbf{et}} (`lady'; lit. `man-\Sg{}.\F{}') or with a templatic particle such as C\textsubscript{1}a.C\textsubscript{2}é.C\textsubscript{3}\textbf{et} in \emph{da.lé.k\textbf{et}} (`inflammation'). The plural suffix in these cases is almost always \emph{-ot} such that it either replaces the singular-feminine suffix \emph{-Vt} with the plural-feminine suffix \emph{-ot}, or, alternatively, it merges with the templatic final \emph{-Vt} of the base morpheme rather than being concatenated to it. These two processes are superficially identical in that the change from singular to plural requires only the replacement of the final vowel while retaining the following coda /t/, and without altering the morpheme-initial structure (see examples in \tabref{tab:rimerge}).
+
+Note that due to the fact that this final \emph{-Vt} particle is appended to the default triconsonantal root, these Segholates tend to stand out because they are mostly either trisyllabic or include a complex onset cluster in their singular citation form to accommodate this extra material (see examples in \tabref{tab:rimerge}).
+
+\begin{table}
+\caption{\label{tab:rimerge}Fixed morpheme-initial forms: changes in final rather than initial vowel. Parentheses in the “Complex onset” condition are due to the lack of morpheme-initial change between the singular and plural inflections.}
+\begin{tabular}{lllcc}%{cclcclcclcclccl}
+\lsptoprule
+Singular & Plural & Gloss & C\textsubscript{1}C\textsubscript{2} & Complex onset\\\midrule
+
+{\emph{\textbf{k}a.\textbf{s}é.f\textbf{et}}} & {\emph{\textbf{k}a.\textbf{s}a.f-\textbf{ót}}} & {`safe'} & {ks} & {(\ding{55})}\\
+{\emph{\textbf{ʁ}a.\textbf{k}é.v\textbf{et}}} & {\emph{\textbf{ʁ}a.\textbf{k}a.v-\textbf{ót}}} & {`train'} & {ʁk} & {(\ding{55})}\\
+{\emph{\textbf{d}a.\textbf{l}é.k\textbf{et}}} & {\emph{\textbf{d}a.\textbf{l}a.k-\textbf{ót}}} & {`inflamation'} & {dl} & {(\ding{55})}\\
+{\emph{\textbf{kt}ó.v\textbf{et}}} & {\emph{\textbf{kt}o.v-\textbf{ót}}} & {`address'} & {kt} & {(\ding{51})}\\
+{\emph{\textbf{gv}é.ʁ\textbf{et}}} & {\emph{\textbf{gv}a.ʁ-\textbf{ót}}} & {`lady'} & {gv} & {(\ding{51})}\\
+{\emph{\textbf{kn}é.s\textbf{et}}} & {\emph{\textbf{kn}a.s-\textbf{ót}}} & {`assembly'} & {kn} & {(\ding{51})}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+One Segholate exception in the LLHN uses the plural suffix \emph{-im} to replace the final \emph{et} portion of the base morpheme:
+\emph{ʃi.bó.l\textbf{et}} \(\to\) \emph{ʃi.bo.l-\textbf{ím}} `stalk (of grain)-\Pl{}'. Two other Segholate exceptions in the LLHN delete the final vowel of base morphemes that end with \emph{en} and take \emph{-im} as their plural suffix, yielding:
+\emph{ci.pó.ʁ\textbf{en}} \(\to\) \emph{ci.poʁ.n-\textbf{ím}} `clove-\Pl{}' and
+\emph{mik.tó.ʁ\textbf{en}} \(\to\) \emph{mik.toʁ.n-\textbf{ím}} `jacket-\Pl{}'.
+These, and the more typical patterns where the final -Vt portion of the base morpheme is replaced by the plural suffix \emph{-ot}, are excluded from the study as they do not exhibit morpheme-initial epenthesis or cluster formation when the plural suffix is added.
+
+\subsection{Non-typical plurals}\label{sec:noplurals}\largerpage
+
+Segholate nouns that lack any plural inflection were excluded from the study. The LLHN lists 49 of 1,016 Segholates (about 5\%) without plurals. These include mass nouns like \emph{ʃá.χat} `hay' and \emph{té.va} `nature'.
+Moreover, there are nine Segholates in the LLHN with an irregular plural inflection, derived from the old dual inflection of Hebrew. These trigger adjustments of the base morpheme that differ from the regular pattern. MH retained this restricted version of the dual morphology of BH, a number inflection that is common in Semitic languages, alongside the more general singular and plural inflections. The dual suffix is used in MH with a limited set of nouns of Hebrew origin, with varying semantics (either general plural, exactly two, or even a mass noun interpretation).
+
+The \emph{-á(j)im} dual suffix features two vowels with inherent penultimate stress, unlike the regular \emph{-ot} or \emph{-im} of the plural suffixes, that appear within the (typically stressed) word-final syllable. Importantly, the effect of the dual suffix on morpheme-initial cluster formation cannot be related to sonority. Four of the nine Segholates with dual suffixes in the LLHN exhibit a potentially well-formed obstruent-sonorant cluster, yet only one of those four exhibits a cluster in the plural inflection with the dual suffix since these forms evidently allow the deletion of the second vowel from the base morpheme, thus exhibiting C\textsubscript{2}C\textsubscript{3} clusters rather than C\textsubscript{1}C\textsubscript{2}, regardless of sonority (see \tabref{tab:nootyplural}).
+
+\begin{table}
+\caption{\label{tab:nootyplural}Segholates with the historical dual suffix}
+\begin{tabular}{lllcc}%{cclcclcclcclccl}
+\lsptoprule
+Singular & Plural & Gloss & C\textsubscript{1}C\textsubscript{2} & Complex onset\\\midrule
+{\emph{\textbf{t}é.\textbf{l}ef}} & {\emph{\textbf{tl}a.f-á.(j)im}} & {`hoof'} & {tl} & {\ding{51}}\\
+{\emph{\textbf{g}é.\textbf{ʁ}ev}} & {\emph{\textbf{g}a\textbf{ʁ}.b-á.(j)im}} & {`sock'} & {gʁ} & \ding{55}\\
+{\emph{\textbf{b}é.\textbf{ʁ}eχ}} & {\emph{\textbf{b}i\textbf{ʁ}.k-á.(j)im}} & {`knee'} & {bʁ} & \ding{55}\\
+{\emph{\textbf{k}é.\textbf{ʁ}en}} & {\emph{\textbf{k}a\textbf{ʁ}.n-á.(j)im}} & {`horn'} & {kʁ} & \ding{55}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Gutturals}\label{sec:gutturals}\largerpage
+
+A major confounding factor to consider with respect to the expected phonotactics of Segholates is related to the segmental identity of the first two consonants, C\textsubscript{1} and C\textsubscript{2}. Specifically, consider cases in which C\textsubscript{1} features one of the four historical gutturals of BH -- /ʔ, h, ʕ, ħ/ -- or if C\textsubscript{2} features a member of the glottal(ized) subset of the historical gutturals: /ʔ, h, ʕ/. The exception to this broad generalization concerns the historical voiceless pharyngeal fricative /ħ/, which typically surfaces in MH as the dorsal fricative /χ/ that can participate in MH Segholate clusters when it is in the C\textsubscript{2} position (see Tables~\ref{tab:segholguttc1}--\ref{tab:segholguttc2}).
+
+\begin{table}
+\caption{\label{tab:segholguttc1}Cluster avoidance with historical gutturals in C\textsubscript{1}. Consonants within parentheses are optional; starred consonants denote historical sounds; \enquote{\textgreater{}} marks change.}
+\begin{tabular}{lllcc}%{cclcclcclcclccl}
+\lsptoprule
+Singular & Plural & Gloss & C\textsubscript{1}C\textsubscript{2} & Complex onset\\\midrule
+{\emph{(\textbf{ʔ})é.ʁec}} & {\emph{(\textbf{ʔ})a.ʁa.c-ót}} & {`land'} & {(ʔ)ʁ} & \ding{55}\\
+{\emph{(\textbf{h})é.vel}} & {\emph{(\textbf{h})a.va.l-ím}} & {`nonsense'} & {(h)v} & \ding{55}\\
+{\emph{(*\textbf{ʕ}>\textbf{ʔ})é.ʁev}} & {\emph{(*\textbf{ʕ}>\textbf{ʔ})a.ʁa.v-ím}} & {`evening'} & {(ʔ)ʁ} & \ding{55}\\
+{\emph{(*\textbf{ħ}>)\textbf{χ}é.ʁev}} & {\emph{(*\textbf{ħ}>)\textbf{χ}a.ʁa.v-ót}} & {`sword'} & {χʁ} & \ding{55}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\caption{\label{tab:segholguttc2}Cluster avoidance with glottal(ized) historical gutturals in C\textsubscript{2} (the details are the same as \tabref{tab:segholguttc1} above).}
+\begin{tabular}{lllcc}%{cclcclcclcclccl}
+\lsptoprule
+Singular & Plural & Gloss & C\textsubscript{1}C\textsubscript{2} & Complex onset\\\midrule
+{\emph{tó.(\textbf{ʔ})aʁ}} & {\emph{te.(\textbf{ʔ})a.ʁ-ím}} & {`title'} & {t(ʔ)} & \ding{55}\\
+{\emph{sá.(\textbf{h})aʁ}} & {\emph{se.(\textbf{h})a.ʁ-ím}} & {`crescent'} & {s(h)} & \ding{55}\\
+{\emph{ʃá.(*\textbf{ʕ}>\textbf{ʔ})aʁ}} & {\emph{ʃe.(*\textbf{ʕ}>\textbf{ʔ})a.ʁ-ím}} & {`gate'} & {ʃ(ʔ)} & \ding{55}\\
+{\emph{ʃá.(*\textbf{ħ}>)\textbf{χ}af}} & {\emph{\textbf{ʃ(*ħ>)χ}a.f-ím}} & {`seagull'} & {ʃχ} & {\ding{51}}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+The cause of this peculiar behavior is related to the fact that the historical gutturals of BH have undergone major phonological changes in MH, where they are still denoted by unique graphemes in the writing system (see \citealt{bolozky1978somesk, faust2019gutturalssk, gafter2019modernsk, schwarzwald2005modernsk}).
+The historical glottal stop /ʔ/ and the voiced pharyngeal fricative /ʕ/ both tend to have no consonantal interpretation in MH, mostly alternating between no consonant and a glottal stop on phonetic rather than phonological grounds. Likewise, the glottal fricative /h/ alternates between a glottal fricative or stop, or no consonant. Therefore, these glottal(ized) gutturals do not canonically participate in consonantal clusters in MH, as they simply do not even have a stable consonantal interpretation.
+
+The fate of the voiceless pharyngeal fricative /ħ/ is different as it merged with the uvular-velar fricative /χ/ of MH, which also corresponds to the historical spirantized counterpart of /k/ (\citealt{adam2002variable, albert2019statesk, barkai1975phonological, bolozky1978somesk, bolozky2013bgdkptsk}).
+Importantly, /ħ/ is the only historical guttural in this set that is consistently mapped to a consonant in MH. Furthermore, unlike the glottal stop and the fricative, which are restricted to simple onsets in MH, /χ/ can also be found in complex onsets and codas (e.g.~\emph{s\textbf{χ}a.vá} `rag', \emph{ma.tá\textbf{χ}-t} `stretch.\Pst{}-\Second{}\Sg{}.\F{}'), although rarely at the margins of clusters. This general behavior of /χ/ is apparent also in MH Segholates. When /χ/ is in C\textsubscript{1} position of a Segholate it behaves like the other historical gutturals, essentially avoiding /χC/ complex onset clusters with /χ/ at their margin (see \tabref{tab:segholguttc1}). However, when /χ/ is in C\textsubscript{2} position it behaves much like a typical obstruent in MH, potentially forming clusters with other obstruents in C\textsubscript{1} (see \tabref{tab:segholguttc2}).
+
+To conclude, Segholates featuring one of the four historical gutturals -- /ʔ, h, ʕ, ħ/ -- in C\textsubscript{1}, or one of the three historical gutturals -- /ʔ, h, ʕ/ -- in C\textsubscript{2}, were excluded from this study. Out of the 1,016 Segholate entries in the LLHN, 125 feature historical gutturals in C\textsubscript{1} and 68 Segholates feature historical /ʔ, h, ʕ/ in C\textsubscript{2}. One word, \emph{(ʔ)ó.(h)el} `tent', exhibits historical gutturals in both C\textsubscript{1} and C\textsubscript{2} positions, bringing the total of guttural exclusions to 192 out of 1,016 Segholates (about 19\%) in the LLHN.
+
+\subsection{Glides}\label{sec:c2glide}
+
+Segholates with the glide /j/ in C\textsubscript{2} position should also be excluded from the study corpus, as they inconsistently vary between allowing and avoiding a morpheme-initial cluster in plurals, regardless of sonority. For instance, consider the following two examples with a voiceless stop in C\textsubscript{1}: (i) \emph{ˈka.(j)ic} \(\to\) \emph{k\textbf{e}j.ˈc-im} `summer-\Pl{}'; (ii) \emph{ˈta.(j)iʃ} \(\to\) \emph{\textbf{tj}a.ˈʃ-im} `billy goat-\Pl{}'. A cluster is formed in (ii) with /tj/ but not in (i) with comparable /kj/. The disyllabic structure is maintained in both scenarios thanks to the glide's ability to occupy the coda of the first syllable in plural inflections as in (i). Segholates with /j/ in C\textsubscript{2} were thus completely excluded from the study. The LLHN lists 19 such Segholates with a glide in C\textsubscript{2} (three of which also have a guttural in C\textsubscript{1}).
+
+\subsection{Other exclusions}\label{sec:other}
+
+\subsubsection{Loanwords}\label{loanwords}\largerpage
+
+Segholates are defined for the purpose of this study as in the LLHN, that is, as nouns with penultimate stress in their bare (citation) form and with a stress shift towards the suffix under inflection. Only words of Hebrew origin demonstrate this type of behavior, as loanwords do not shift the stress to the final syllable with plural inflections. For example, the word \emph{\textbf{m}é.\textbf{t}eʁ},
+which is the adapted form of the loanword `meter', fits with the most common Segholate pattern, Cé.CeC, yet as a loanword it retains the position of stress on the initial syllable when inflected to plural (i.e.~\emph{\textbf{m}é\textbf{t}.ʁ-im} `meter-\Pl{}'),
+therefore not giving way to the deletion of the initial vowel and deleting the second vowel instead (although note that the sequence /mt/ is nevertheless not expected to form a cluster).{\interfootnotelinepenalty=10000\footnote{Two further notes regarding `meter-\Pl{}' in MH: (i) the choice between the two potential syllabifications -- \emph{mé\textbf{.}tʁim} vs.~\emph{mét\textbf{.}ʁim} -- is inconsequential for this study and it will not be pursued here; (ii) the Hebraized version of the plural \emph{met.ʁím}, where the stress does move to the final position as it does with nouns of Hebrew origin, may also be attested in hypercorrect speech. The latter could be due to the fact that this loanword has an exceptional Hebrew-like form and is widely used (moreover, it is very often used with number inflections), thus increasing the probability that speakers will not treat it like other loanwords.}} Thus, even when superficial similarities to Hebrew Segholates are striking, loanwords follow a different path in MH morpho-phonology (see \citealt{bat1994stemsk, cohen2009role}). Loanwords are not considered as Segholates in the LLHN, such that no further exclusion was needed. Furthermore, I am not aware of another example of a Segholate-like loanword beyond \emph{meter}, as detailed above.
+
+\subsubsection{Obligatory Contour Principle (OCP)}\label{sec:ocp}
+
+Another confounding factor is related to dissimilatory processes in articulation rather than sonority, often linked to the notion of the \emph{Obligatory Contour Principle} (OCP) in the phonological literature going back to \citet{leben1973suprasegmental, goldsmith1976autosegmental} and \citet{mccarthy1979formalsk}. According to this, clusters are avoided if both consonants are identical. However, since voicing differences between otherwise identical obstruents do not appear to have a relevant effect on coordination of articulatory gestures, any cluster in which the two consonants share the same place and manner of articulation is avoided, essentially also targeting sequences of two near-identical stops or fricatives as they may still differ in voicing.
+
+Of all the Segholates in the LLHN, only the noun \emph{té.deʁ} `frequency' exhibits two consonants that share the same manner and place of articulation, /t/ and /d/. Here, the epenthetic vowel in the plural inflection, \emph{te.da.ʁ-ím} `frequency-\Pl{}', should be attributed to OCP rather than to sonority. This single case was excluded from the study corpus.
+It is in fact not surprising that only one case was found to exhibit this problem, as Hebrew, along with other Semitic languages, tends to keep the first two consonants of lexical \emph{roots} phonetically distinct \citep{yeverechyahu2019consonantsk}.
+
+\subsubsection{Idiosyncrasies}\label{idiosyncrasies}
+
+After considering structural and segmental generalizations that can affect the phonotactics of inflected Segholates irrespective of sonority, there are still 35 Segholates that feature a non-epenthetic vowel in the plural inflection, without an apparent independent explanation for this behavior, other than, perhaps, lexicalized exceptions (although note that 33 of the 35 Segholates feature /o/ as the first vowel of the base morpheme).
+
+
+\begin{table}
+\caption{\label{tab:nonepenthetic}Segholates with and without non-epenthetic vowels in the plural inflection. Forms that either allow a complex onset cluster or, alternatively, introduce an epenthtic vowel in the plural inflection are considered as valid forms in this study. The two invalid forms in this example (\emph{nó.feʃ} and \emph{ʃó.ʁeʃ}) feature a non-epenthetic vowel.}
+\begin{tabular}{llllccc}
+\lsptoprule
+Singular & Plural & Det+Plural &  Gloss & {{{C}\textsubscript{1}{C}\textsubscript{2}}} & CO\footnote{{Complex onset}} & EV\footnote{{Epenthetic vowel}}\\
+\midrule
+{\emph{\textbf{n}é.\textbf{f}eʃ}} & {\emph{\textbf{n}e.\textbf{f}a.ʃ-ót}} & {\emph{(h)a-\textbf{n}.\textbf{f}a.ʃ-ót}} & {`soul'} & {nf} & \ding{55} & {\ding{51}}\\
+{\emph{\textbf{n}ó.\textbf{f}eʃ}} & {\emph{\textbf{n}o.\textbf{f}a.ʃ-ím}} & {\emph{(h)a-.\textbf{n}o.\textbf{f}a.ʃ-ím}} & {`vacation'} & {nf} & \ding{55} & \ding{55}\\
+{\emph{\textbf{ʃ}é.\textbf{ʁ}ec}} & {\emph{\textbf{ʃʁ}a.c-ím}} & {\emph{(h)a-\textbf{ʃ}.\textbf{ʁ}a.c-ím}} & {`vermin'} & {ʃʁ} & {\ding{51}} & {(-)}\\
+{\emph{\textbf{ʃ}ó.\textbf{ʁ}eʃ}} & {\emph{\textbf{ʃ}o.\textbf{ʁ}a.ʃ-ím}} & {\emph{(h)a-.\textbf{ʃ}o.\textbf{ʁ}a.ʃ-ím}} & {`root'} & {ʃʁ} & \ding{55} & \ding{55}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+For example, consider the items in \tabref{tab:nonepenthetic}. Compare the expected \emph{obstruent-sonorant} cluster /ʃʁ/ in \emph{\textbf{ʃ}é.\textbf{ʁ}ec} \(\to\) \emph{\textbf{ʃʁ}a.c-ím} (`vermin-\Pl{}') with the non-epenthetic vowel in the exact same consonantal sequence type when it appears in the noun \emph{\textbf{ʃ}ó.\textbf{ʁ}eʃ} \(\to\) \emph{\textbf{ʃ}o.\textbf{ʁ}a.ʃ-ím} (`root-\Pl{}'). Likewise, compare the opposite \emph{sonorant-obstruent} sequence /nf/ with a typical epenthetic vowel in \emph{\textbf{n}é.\textbf{f}eʃ} \(\to\) \emph{\textbf{n}e.\textbf{f}a.ʃ-ót} (`soul-\Pl{}') and with the non-epenthetic vowel in the same cluster type in \emph{\textbf{n}ó.\textbf{f}eʃ} \(\to\) \emph{\textbf{n}o.\textbf{f}a.ʃ-ím} (`vacation-\Pl{}'). Note also how the forms with non-epenthetic vowel in the plural inflection are accordingly not expected to change their initial vowel across inflections in \tabref{tab:nonepenthetic}, even when resyllabification of an initial consonantal sequence is possible following the proclitic \emph{(h)a-}, which results in related examples like in \emph{(h)a-.\textbf{ʃ}o.\textbf{ʁ}a.ʃ-ím} and \emph{(h)a-.\textbf{n}o.\textbf{f}a.ʃ-ím}, not *\emph{(h)a-\textbf{ʃ.ʁ}a.ʃ-ím} or *\emph{(h)a-\textbf{n.f}a.ʃ-ím} (compare with \emph{(h)a-\textbf{ʃ.ʁ}a.c-ím} and \emph{(h)a-\textbf{n.f}a.ʃ-ót} in cases where the plural exhibits a cluster or an epenthetic vowel).\footnote{The determination of syllabic boundaries in the case of \emph{obstruent-sonorant} sequences in the middle of a prosodic word (like \emph{(h)a-\textbf{ʃ.ʁ}a.c-ím} in the examples discussed) is potentially arguable as it could also be \emph{(h)a-\textbf{.ʃʁ}a.c-ím}. However, these discrepancies have no implications for the current observation.}
+
+\section{Final corpus of Modern Hebrew Segholates}\label{sec:diachronicstudyset}\largerpage
+
+
+\begin{table}\small
+\caption{\label{tab:typetoken}C\textsubscript{1}C\textsubscript{2} types and tokens in the Segholate study corpus. Superscript numbers represent the number of word tokens per C\textsubscript{1}C\textsubscript{2} type. Colored cells mark sequences of obstruents that differ in voicing (see Section~\ref{sec:vaNote}). Legend: {S−} = voiceless stops; {S+} = voiced stops; {A−} = voiceless affricates; {F−} = voiceless fricatives; {F+} = voiced fricatives; {N} = nasals; {L} = liquids, {G} = glides; {Frics.} = fricatives; {Affrics.} = affricates. See Appendix~\ref{appendix:b} for the full list of word tokens.}
+\resizebox{\textwidth}{!}{\begin{tabular}{lccccccc}
+\lsptoprule
+
+& \multicolumn{7}{c}{{C\textsubscript{2}}}\\\cmidrule(lr){2-8}
+& \multicolumn{3}{c}{{Voiceless}} & \multicolumn{2}{c}{{Voiced}} & \multicolumn{2}{c}{{Sonorants}}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+{C\textsubscript{1}} & {{{Stops}}} & {{{Affrics.}}} & {{{Frics.}}} & {{{Stops}}} & {{{Frics.}}} & {{{Nasals}}} & {{{Liquids}}}\\\midrule
+{S−} & 
+{kt\textsuperscript{9} pt\textsuperscript{5}} & 
+{kc\textsuperscript{4} pc\textsuperscript{1}} & 
+{kf\textsuperscript{3} ks\textsuperscript{4} kʃ\textsuperscript{6}} & 
+{\cellcolor[rgb]{.73,.84,1}kd\textsuperscript{1} pg\textsuperscript{3}} & 
+{\cellcolor[rgb]{.73,.84,1}kv\textsuperscript{8} tv\textsuperscript{2}} & 
+{km\textsuperscript{5} kn\textsuperscript{1}} & 
+{kl\textsuperscript{7} kʁ\textsuperscript{11}}\\
+
+& {tk\textsuperscript{4}} & 
+{} & 
+{kχ\textsuperscript{1} ps\textsuperscript{4} pʃ\textsuperscript{2}} & 
+\multicolumn{2}{c}{} & 
+{tm\textsuperscript{2} tn\textsuperscript{2}} & 
+{pl\textsuperscript{6} pʁ\textsuperscript{5}}\\
+
+& & & {pχ\textsuperscript{2} tf\textsuperscript{5} tχ\textsuperscript{3}} & 
+\multicolumn{2}{c}{} & & 
+{tl\textsuperscript{1} tʁ\textsuperscript{4}} \\
+
+& & & {tʃ\textsuperscript{1}} & 
+\multicolumn{2}{c}{} & & \\
+
+& \multicolumn{3}{c}{} & \multicolumn{2}{c}{} & \multicolumn{2}{c}{}\\
+
+{A−} & 
+{--} & 
+{--} & 
+{cf\textsuperscript{4}} & 
+{\cellcolor[rgb]{.73,.84,1}cd\textsuperscript{1}} & 
+{\cellcolor[rgb]{.73,.84,1}cv\textsuperscript{3}} & 
+{cm\textsuperscript{4}} & 
+{cl\textsuperscript{1} cʁ\textsuperscript{1}} \\
+
+& \multicolumn{3}{c}{} & \multicolumn{2}{c}{} & \multicolumn{2}{c}{}\\
+
+& \multicolumn{3}{c}{} & \multicolumn{2}{c}{} & \multicolumn{2}{c}{}\\
+
+{F−} & 
+{sk\textsuperscript{1} st\textsuperscript{1}} & 
+{ʃc\textsuperscript{1}} & 
+{sf\textsuperscript{3} sχ\textsuperscript{7} ʃf\textsuperscript{3}} & 
+{\cellcolor[rgb]{.73,.84,1}sd\textsuperscript{2} sg\textsuperscript{4}} & 
+{\cellcolor[rgb]{.73,.84,1}sv\textsuperscript{2} ʃv\textsuperscript{3}} & 
+{sm\textsuperscript{2} ʃm\textsuperscript{4}} & 
+{sl\textsuperscript{2} sʁ\textsuperscript{3}}\\
+
+& {ʃk\textsuperscript{7} ʃt\textsuperscript{4}} & 
+{} & 
+{ʃs\textsuperscript{1} ʃχ\textsuperscript{6}} & 
+{\cellcolor[rgb]{.73,.84,1}ʃd\textsuperscript{1} ʃg\textsuperscript{1}} & 
+{} & 
+{ʃn\textsuperscript{2}} & 
+{ʃl\textsuperscript{5} ʃʁ\textsuperscript{1}}\\
+
+{S+} & 
+{\cellcolor[rgb]{.95,.73,1}bk\textsuperscript{1} bt\textsuperscript{1}} & 
+{\cellcolor[rgb]{.95,.73,1}bc\textsuperscript{1}} & 
+{\cellcolor[rgb]{.95,.73,1}bs\textsuperscript{1} bχ\textsuperscript{1} df\textsuperscript{4}} & 
+{bd\textsuperscript{1} bg\textsuperscript{1}} & 
+{dv\textsuperscript{2} gv\textsuperscript{4}} & 
+{dm\textsuperscript{2} gm\textsuperscript{1}} & 
+{bʁ\textsuperscript{2} dl\textsuperscript{4}}\\
+
+& {\cellcolor[rgb]{.95,.73,1}dk\textsuperscript{1}} & & 
+{\cellcolor[rgb]{.95,.73,1}dʃ\textsuperscript{2} dχ\textsuperscript{4} gf\textsuperscript{2}} & 
+{dg\textsuperscript{2} gd\textsuperscript{3}} & 
+{gz\textsuperscript{4}} & & 
+{dʁ\textsuperscript{2} gl\textsuperscript{2}}\\
+
+& & & {\cellcolor[rgb]{.95,.73,1}gʃ\textsuperscript{2} gχ\textsuperscript{1}} & & & & 
+{gʁ\textsuperscript{2}}\\
+
+{F+} & 
+{\cellcolor[rgb]{.95,.73,1}vt\textsuperscript{1}} & 
+{--} & 
+{\cellcolor[rgb]{.95,.73,1}vs\textsuperscript{1} vʃ\textsuperscript{1}} & 
+{--} & 
+{zv\textsuperscript{2}} & 
+{zm\textsuperscript{1}} & 
+{vʁ\textsuperscript{1} zl\textsuperscript{1}}\\
+
+& {} & 
+{} & 
+{\cellcolor[rgb]{.95,.73,1}zf\textsuperscript{2} zχ\textsuperscript{2}} & & 
+{} & & 
+{zʁ\textsuperscript{5}}\\
+
+{N} & 
+{mt\textsuperscript{3} nk\textsuperscript{3}} & 
+{mc\textsuperscript{1} nc\textsuperscript{2}} & 
+{ms\textsuperscript{2} mʃ\textsuperscript{2} } & 
+{mg\textsuperscript{1} nd\textsuperscript{1}} & 
+{mz\textsuperscript{2} nv\textsuperscript{3}} & 
+{mn\textsuperscript{1} nm\textsuperscript{2}} & 
+{ml\textsuperscript{4} mʁ\textsuperscript{3}}\\
+
+& {nt\textsuperscript{6}} & 
+{} & 
+{mχ\textsuperscript{5} nf\textsuperscript{4} ns\textsuperscript{1} } & 
+{ng\textsuperscript{4}} & 
+{nz\textsuperscript{3}} & 
+{} & 
+{}\\
+
+& & & {nʃ\textsuperscript{5} nχ\textsuperscript{5}} & & & & \\
+
+{L} & 
+{lk\textsuperscript{2} lt\textsuperscript{1}} & 
+{ʁc\textsuperscript{2}} & 
+{lf\textsuperscript{1} ls\textsuperscript{1} lʃ\textsuperscript{1}} & 
+{ʁg\textsuperscript{3}} & 
+{lv\textsuperscript{2} ʁv\textsuperscript{3}} & 
+{ʁm\textsuperscript{3}} & 
+{--}\\
+
+& {ʁk\textsuperscript{\textsuperscript{3}} ʁt\textsuperscript{5}} & & 
+{lχ\textsuperscript{1} ʁf\textsuperscript{2} ʁs\textsuperscript{3}} & & & 
+{} & \\
+
+& & & {ʁʃ\textsuperscript{3} ʁχ\textsuperscript{6}} & & & & \\
+
+{G} & 
+{jk\textsuperscript{1} jt\textsuperscript{1}} & 
+{jc\textsuperscript{1}} & 
+{jf\textsuperscript{1} jʃ\textsuperscript{1} jχ\textsuperscript{1}} & 
+{jd\textsuperscript{1} jg\textsuperscript{1}} & 
+{jz\textsuperscript{1}} & 
+{--} & 
+{jl\textsuperscript{1} jʁ\textsuperscript{1}}\\
+
+\lspbottomrule
+\end{tabular}}
+\end{table}
+
+The preparation of the Segholate dataset, using the different criteria detailed in Sections~\ref{sec:epentheticver}--\ref{sec:confounding}, resulted in 381 different singular--plural pairs of Segholates that represent 381 C\textsubscript{1}C\textsubscript{2} tokens in the study (see \tabref{tab:typetoken} for a summary of this distribution, and see Appendix~\ref{appendix:b} for the full list of words). Note that in this context, C\textsubscript{1}C\textsubscript{2} refers to the two initial consonants of alternating Segholates, without making reference to potential clusters and epenthetic vowels, which will be examined in the following \textit{Descriptive analysis} (\sectref{sec:descriptive}). These tokens consist of 144 unique C\textsubscript{1}C\textsubscript{2} types at the level of segmental description (i.e.~144 unique C\textsubscript{1}C\textsubscript{2} combinations in \tabref{tab:typetoken}), and 50 unique C\textsubscript{1}C\textsubscript{2} types at the level of segmental-class description (i.e.~50 unique non-empty cells in \tabref{tab:typetoken}).
+
+The 144 types and 381 tokens in \tabref{tab:typetoken} provide a large and diverse set of C\textsubscript{1}C\textsubscript{2} combinations that behave in one of two possible ways in the plural inflection: either they form a complex onset cluster, or they introduce an epenthetic vowel. Crucially, the working hypothesis for the set in \tabref{tab:typetoken} is that the choice between a cluster or epenthesis in the plural inflection is directly related to syllabic well-formedness in terms of sonority-based restrictions, serving as a window into the top-down, sonority-based phonotactics of MH. Thus, there should be a cut-off point of well-formedness in the predictions of symbolic sonority models that is linked to the tendency to either form a complex onset cluster or break the sequence with an epenthetic vowel.
+
+\section{Descriptive analysis}\label{sec:descriptive}
+
+The MH data exhibit a binary distinction between two phonotactic alternatives, either permitting or avoiding complex onset clusters in the initial position of Segholate plural inflections. For the current analysis, this binary distinction is mapped onto the N-ary scores of the different sonority models (Sections~\ref{sec:sonHierarchyMH}--\ref{sec:mappingbinary}). This mapping makes it possible to provide a descriptive observation and analysis of the fit between each of the competing sonority models and the MH data (Sections~\ref{sec:mFits}--\ref{sec:mAnal}).
+Before the analysis itself, I will also present an explanation of the treatment of voicing assimilation processes in Section~\ref{sec:vaNote}.
+A discussion in \sectref{sec:discussMH} concludes this chapter.
+
+\subsection{Sonority hierarchies with Modern Hebrew considered}\label{sec:sonHierarchyMH}
+
+\tabref{tab:hierarchy} in \sectref{sec:hierandprince} (which is included below in \tabref{tab:hierarchyMH}) demonstrated two sonority hierarchies that represent two ends of the spectrum of potential (and common) treatments of the obstruent class in sonority hierarchies: the \emph{H}\textsubscript{col} hierarchy, which collapses all obstruents into a single class; and the \emph{H}\textsubscript{exp} hierarchy, which expands obstruents by employing both \emph{voicing} distinctions and \emph{manner of articulation} distinctions between \emph{fricatives} and \emph{stops}.
+
+Since the following analysis concerns MH, a few specific additions are in place. First, the class of \emph{affricates} was added to the subtypes of obstruents in order to account for the MH affricate -- the voiceless alveolar /c/ (also regularly annotated as t͡s in standard IPA).
+The voiced counterpart, /d͡z/,
+is also taken into account in the following study (see Section~\ref{sec:vaNote}).
+
+Second, another hierarchy is suggested in anticipation of the most suitable obstruent configuration for MH: the \emph{H}\textsubscript{MH} hierarchy, which partially expands obstruents by employing only \emph{voicing} distinctions. This is in line with the fact that MH tolerates various \emph{obstruent-obstruent} complex clusters such that differences between stops and fricatives do not appear to play a role (see \sectref{sec:mhphon}). At the same time, MH is known to exhibit voicing assimilation between obstruents (see Section~\ref{sec:vaNote}) such that this distinction does appear to be playing a role, as the descriptions and analyses in Sections~\ref{sec:mFits}--\ref{sec:mAnal} reveal.
+
+\tabref{tab:hierarchyMH} presents all the above-mentioned additions to the sonority hierarchies that were considered thus far. It demonstrates the three different hierarchies, \emph{H}\textsubscript{col}, \emph{H}\textsubscript{exp} and \emph{H}\textsubscript{MH}, and it shows them all with the addition of the affricates class between stops and fricatives, although note that this is consequential only in the case of the \emph{H}\textsubscript{exp} hierarchy.
+
+
+Note also that the symbolic NAP-based model, NAP\textsubscript{td}, remains unchanged from when it was introduced in Section~\ref{sec:naptdmodel} (see \tabref{tab:napscale}, repeated below in \tabref{tab:re-napscale}). This is the case because the addition of the affricate class plays no role in the sonority hierarchy of the symbolic NAP\textsubscript{td} model, which only considers voicing to be distinctive between obstruents. Furthermore, the NAP\textsubscript{td} model assumes one basic, fixed and universal sonority hierarchy. Contrary to the typical approach in SSP-based models, NAP-based models are not compatible with the notion of language-specific sonority hierarchies.
+Instead, NAP is committed to a universal view of sonority which is explicitly based on pitch intelligibility in perception and periodic energy in the acoustic signal. NAP\textsubscript{td} links this quality with different symbolic discrete speech sounds in terms of their potential to deliver periodic energy, yielding a relatively coarse separation of all speech sounds into four groups (see Section~\ref{sec:naptdmodel}).
+
+\begin{table}
+\caption{\label{tab:hierarchyMH}Traditional sonority hierarchies (with MH-related information). Index values reflect the ordinal ranking of categories in different sonority hierarchies. The voiced affricate in parentheses is the voiced allophone of the voiceless /c/ in MH (see text for details).}
+\begin{tabular}{cccll}%{cclcclcclcclccl}
+\lsptoprule
+\multicolumn{3}{c}{{Sonority index}} & Segmental class & Phonemic examples (MH)\\\cmidrule(lr){1-3}
+\multicolumn{1}{c}{\emph{H}\textsubscript{col}} & \multicolumn{1}{c}{\emph{H}\textsubscript{MH}} & \multicolumn{1}{c}{\emph{H}\textsubscript{exp}} & & \\\midrule
+\multicolumn{1}{c}{5} & \multicolumn{1}{c}{6} & \multicolumn{1}{c}{10} & \multicolumn{1}{l}{Vowels} & \multicolumn{1}{l}{/u, i, o, e, a/}\\
+\multicolumn{1}{c}{4} & \multicolumn{1}{c}{5} & \multicolumn{1}{c}{9} & \multicolumn{1}{l}{Glides} & \multicolumn{1}{l}{/w, j/}\\
+\multicolumn{1}{c}{3} & \multicolumn{1}{c}{4} & \multicolumn{1}{c}{8} & \multicolumn{1}{l}{Liquids} & \multicolumn{1}{l}{/l, ʁ/}\\
+\multicolumn{1}{c}{2} & \multicolumn{1}{c}{3} & \multicolumn{1}{c}{7} & \multicolumn{1}{l}{Nasals} & \multicolumn{1}{l}{/m, n/}\\
+\multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{2}} & \multicolumn{1}{c}{\textbf{6}} & \multicolumn{1}{l}{Voiced Fricatives} & \multicolumn{1}{l}{/v, z/}\\
+\multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{2}} & \multicolumn{1}{c}{\textbf{5}} & \multicolumn{1}{l}{Voiced Affricates} & \multicolumn{1}{l}{(d͡z)}\\
+\multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{2}} & \multicolumn{1}{c}{\textbf{4}} & \multicolumn{1}{l}{Voiced Stops} & \multicolumn{1}{l}{/b, d, g/}\\
+\multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{3}} & \multicolumn{1}{l}{Voiceless Fricatives} & \multicolumn{1}{l}{/f, s, χ/}\\
+\multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{2}} & \multicolumn{1}{l}{Voiceless Affricates} & \multicolumn{1}{l}{/c/}\\
+\multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{c}{\textbf{1}} & \multicolumn{1}{l}{Voiceless Stops} & \multicolumn{1}{l}{/p, t, k/}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\caption{\label{tab:re-napscale}The symbolic sonority hierarchy in NAP\textsubscript{td} (repeated from \tabref{tab:napscale}). Index values reflect the ordinal ranking of categories in the sonority hierarchy. The distinctions between categories in the symbolic NAP hierarchy are based on the characteristic ratio between periodic and aperiodic energy, and on articulatory contact, both taken to reflect the potential of the periodic energy mass, i.e. the potential for nucleus attraction.}
+\begin{tabular}{clcc}
+\lsptoprule
+Sonority &  & Periodic: & Articulatory\\
+index & Segmental classes & Aperiodic & contact\\\midrule
+4 & Sonorant vocoids (\emph{glides}, \emph{vowels}) & \multicolumn{1}{c}{1:0} & $-$\\
+3 & Sonorant contoids (\emph{nasals}, \emph{liquids}) & \multicolumn{1}{c}{1:0} & $+$\\
+2 & Voiced obstruents (\emph{stops}, \emph{fricatives})& \multicolumn{1}{c}{1:1} & $+$\\
+1 & Voiceless obstruents (\emph{stops}, \emph{fricatives})  & \multicolumn{1}{c}{0:1} & $+$\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+
+
+\subsection{Mapping sonority scores to Modern Hebrew data}\label{sec:mappingbinary}
+
+Traditional SSP-based models focus on the sonority slope of the consonantal sequence, which they rate with a ternary ordinal scale capturing the distinction between sonority slope types: \emph{falls}, \emph{rises} and \emph{plateaus}.
+As discussed in \citet{asherov2019syllablesk}, the location of the SSP cut-off point for well-formedness in MH should be found between onset falls on the one hand, and plateaus and rises on the other hand, since \emph{stop-stop} and \emph{fricative-fricative} clusters are known to be licit in MH.
+Therefore, onset sonority plateaus and rises should be well-formed in MH (thus allowing complex onset clusters), while onset sonority falls should be ill-formed (thus promoting vowel epenthesis to break illicit clusters).\footnote{Note that since the cut-off point for SSP-based models includes both rises and plateaus within the set of well-formed clusters, we can ignore the Minimum Sonority Distance (MSD), which only adds irrelevant distinctions for MH within the set of sonority rises.}
+
+In contrast to the SSP-based models that provide scores on a ternary ordinal scale, the scores in NAP\textsubscript{td} give a numerical estimation of competition potential based on symbolic representations. The formula used here to derive NAP\textsubscript{td} scores (see Sections~\ref{sec:naptdmodel}--\ref{sec:ordinalscores} and \tabref{tab:ordinalscores}) assigns higher numerical values to better-formed combinations, assuming that they represent a weaker competition potential for the nucleus. The search for a cut-off point with NAP\textsubscript{td} is therefore the search for a number that reliably separates well-formed cluster formations (higher scores) from ill-formed epenthesis cases (lower scores). For the case of MH and the NAP\textsubscript{td} scale, the cut-off point was found between 1 and 2 such that NAP\textsubscript{td} scores equal to 1 and below (down to $-3$) are ill-formed, while NAP\textsubscript{td} scores that are equal to 2 and above (up to 5) are well-formed, as we shall see in \sectref{sec:mFits}.
+
+
+
+\begin{table}
+\caption{\label{tab:segholcutoff}Sonority cut-off points for well-formed complex onsets in MH}
+\begin{tabular}{ccc}
+\lsptoprule
+SSP\textsubscript{col/exp/MH} & NAP\textsubscript{td} & Complex onset\\\midrule
+\rowcolor[rgb]{.3,.68,.34} \multicolumn{1}{c}{plateau/rise} & \multicolumn{1}{c}{2 -- 5} & \multicolumn{1}{c}{\ding{51}}\\
+\rowcolor[rgb]{.9,.24,.24} \multicolumn{1}{c}{fall} & \multicolumn{1}{c}{(--3) -- 1} & \multicolumn{1}{c}{\ding{55}}\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+\tabref{tab:segholcutoff} summarizes this expected mapping scheme with color codes that will remain effective throughout this chapter: green for well-formed sequences and red for ill-formed ones.
+Recall that well-formed cases are those found in the LLHN-based study corpus that have a complex cluster in plural Segholates. The ill-formed cases are the rest of the plural Segholates found in the LLHN-based study corpus, which appear with an epenthetic vowel.
+\sectref{sec:mFits} observes this mapping from a \enquote{bird's eye view} via bar plots, before going into a more in-depth analysis of the successes and failures of the models with respect to the segmental content of the sequences (\sectref{sec:mAnal}).
+
+\subsection{A note about voicing assimilation processes}\label{sec:vaNote}
+
+\tabref{tab:typetoken} above consisted of colored cells with obstruent sequences that differ in voicing. Purple cells feature voiced-initial sequences that are followed by a voiceless obstruent, while blue cells feature voiceless-initial sequences that are followed by a voiced obstruent. MH is typically considered to exhibit regressive voicing assimilation between adjacent obstruents (see \citealt{barkai1972problemssk}). The picture is in fact more complex and less dichotomous, not only in terms of the likelihood, but also the degree and even directionality of voicing assimilation in MH (see \citealt{bolozky2006notesk, kreitman2010mixed, mizrachi2019notesk}).
+
+Be that as it may, all of the sequences with obstruents that differ in voicing have the potential to agree in voicing as a result of voicing assimilation processes. \tabref{tab:vaScenarios} summarizes the possible effects of voicing assimilation processes on the well-formedness predictions of the different sonority models. The top row, \emph{No V.A.}, demonstrates the well-formedness status of those sequences when no voicing assimilation takes place. The two bottom rows, \emph{Reg. V.A.} and \emph{Prog. V.A.}, demonstrate the results of regressive and progressive voicing assimilation (respectively). As can be seen, the two possible directions yield identical results vis-à-vis the well-formedness predictions of the different models. In other words, what matters in this context is only whether the sequences of obstruents do or do not agree in voicing.
+
+The color codes of the fonts in \tabref{tab:vaScenarios} are in line with the coloring of cells in \tabref{tab:typetoken}: the purple sequences are canonically \emph{voiced-voiceless} and the blue sequences are canonically \emph{voiceless-voiced}. Note that the predictions of the SSP\textsubscript{col} model (right column in \tabref{tab:vaScenarios}) are the same for all the sequences in all conditions. This is the case because the \emph{H}\textsubscript{col} hierarchy considers all obstruents as a single sonority class, regardless of voicing and manner distinctions between stops and fricatives. As a result, all of these sequences are evaluated as sonority plateaus (which are well-formed in this context; see Section~\ref{sec:mappingbinary}).
+
+The picture is different in all the other sonority models since they are based on sonority hierarchies that use voicing distinctions. When no voicing assimilation takes place (top row in \tabref{tab:vaScenarios}), the blue \emph{voiceless-voiced} clusters are considered as well-formed in all these models. The SSP\textsubscript{exp} and SSP\textsubscript{MH} models evaluate them as well-formed onset sonority rises and NAP\textsubscript{td} scores for these clusters are larger than 1 (which is the NAP\textsubscript{td} threshold of well-formedness in this context; see Section~\ref{sec:mappingbinary}). At the same time, the purple \emph{voiced-voiceless} clusters are considered ill-formed since they are onset falls in SSP\textsubscript{exp} and SSP\textsubscript{MH} terms, and the NAP\textsubscript{td} score of these clusters is not larger than 1.
+
+
+
+
+\begin{table}\small
+\caption{\label{tab:vaScenarios}Voicing assimilation scenarios. Legend: \textbf{V.A.} = Voicing Assimilation; \textbf{Reg.} = Regressive; \textbf{Prog.} = Progressive. Sequences in parentheses are not very likely (/χ/ does not tend to alternate in voicing). The symbols “\ding{55}” and “\ding{51}” reflect the binary model predictions for well-formedness: in SSP models, plateaus and rises are well-formed while falls are ill-formed; in the NAP\textsubscript{td} model, scores larger than 1 are considered well-formed (see Section~\ref{sec:mappingbinary}). The color codes are consistent with \tabref{tab:typetoken}. Bold purple font in the regressive voicing assimiliation scenario in the middle (Reg. V.A.) is used to highlight the C\textsubscript{1} devoicing process that was eventually taken into account. See text in Section~\ref{sec:vaNote} for more details.}
+\resizebox{\textwidth}{!}{\begin{tabular}{lccccc}%{cclcclcclcclcclccl}
+\lsptoprule
+\multicolumn{1}{r}{} & 
+\multicolumn{2}{c}{{SSP\textsubscript{exp}}} & 
+\multicolumn{2}{c}{{SSP\textsubscript{MH} / NAP\textsubscript{td}}} & 
+{{SSP\textsubscript{col}}}\\\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}
+{} & \ding{55} & \ding{51} & \ding{55} & \ding{51} & \ding{51}\\\midrule
+
+\multirow{7}{*}{{\shortstack[l]{No\\V.A.}}} & 
+{\color[rgb]{.65,.19,.77}bk bt dk bc} & 
+{\color[rgb]{.19,.42,.77}kd pg kv tv} & 
+{\color[rgb]{.65,.19,.77}bk bt dk bc} & 
+{\color[rgb]{.19,.42,.77}kd pg kv tv} & 
+{\color[rgb]{.19,.42,.77}kd pg kv tv} \\
+
+& {\color[rgb]{.65,.19,.77}bs bχ df dʃ} & 
+{\color[rgb]{.19,.42,.77}cd cv sd sg} & 
+{\color[rgb]{.65,.19,.77}bs bχ df dʃ} & 
+{\color[rgb]{.19,.42,.77}cd cv sd sg} & 
+{\color[rgb]{.19,.42,.77}cd cv sd sg} \\
+
+& {\color[rgb]{.65,.19,.77}dχ gf gʃ gχ} & 
+{\color[rgb]{.19,.42,.77}ʃd ʃg sv ʃv} & 
+{\color[rgb]{.65,.19,.77}dχ gf gʃ gχ} & 
+{\color[rgb]{.19,.42,.77}ʃd ʃg sv ʃv} & 
+{\color[rgb]{.19,.42,.77}ʃd ʃg sv ʃv} \\
+
+& {\color[rgb]{.65,.19,.77}vt vs vʃ zf zχ} & 
+{} & 
+{\color[rgb]{.65,.19,.77}vt vs vʃ zf zχ} & 
+{} & 
+{\color[rgb]{.65,.19,.77}bk bt dk bc} \\
+
+& {\color[rgb]{.65,.19,.77}} & 
+{} & 
+{\color[rgb]{.65,.19,.77}} & 
+{} & 
+{\color[rgb]{.65,.19,.77}bs bχ df dʃ} \\
+
+& \multicolumn{2}{c}{} & \multicolumn{2}{c}{} & 
+{\color[rgb]{.65,.19,.77}dχ gf gʃ gχ} \\
+
+& \multicolumn{2}{c}{} & \multicolumn{2}{c}{} & 
+{\color[rgb]{.65,.19,.77}vt vs vʃ zf zχ} \\
+& \multicolumn{2}{c}{} & \multicolumn{2}{c}{} & {} \\
+\hline
+& \multicolumn{2}{c}{} & \multicolumn{2}{c}{} & {} \\
+\multirow{7}{*}{\shortstack[l]{Reg.\\V.A.}} & 
+{\color[rgb]{.19,.42,.77}d͡zd zd zg} & 
+{\color[rgb]{.19,.42,.77}gd bg gv dv} & 
+{} & 
+{\color[rgb]{.19,.42,.77}gd bg gv dv} & 
+{\color[rgb]{.19,.42,.77}gd bg gv dv} \\
+
+& {\color[rgb]{.19,.42,.77}ʒd ʒg} & 
+{\color[rgb]{.19,.42,.77}d͡zv zv ʒv} & 
+{} & 
+{\color[rgb]{.19,.42,.77}d͡zd d͡zv zd zg} & 
+{\color[rgb]{.19,.42,.77}d͡zd d͡zv zd zg} \\
+
+& {\color[rgb]{.65,.19,.77}\textbf{ft}} &
+{\color[rgb]{.65,.19,.77}\textbf{pk pt tk pc}} &
+{} & 
+{\color[rgb]{.19,.42,.77}ʒd ʒg zv ʒv} & 
+{\color[rgb]{.19,.42,.77}ʒd ʒg zv ʒv} \\
+
+& {} & {\color[rgb]{.65,.19,.77}\textbf{ps pχ tf tʃ}} & {} & 
+{\color[rgb]{.65,.19,.77}\textbf{pk pt tk pc}} & 
+{\color[rgb]{.65,.19,.77}\textbf{pk pt tk pc}} \\
+
+& {} & {\color[rgb]{.65,.19,.77}\textbf{tχ kf kʃ kχ}} & {} & 
+{\color[rgb]{.65,.19,.77}\textbf{ps pχ tf tʃ}} & 
+{\color[rgb]{.65,.19,.77}\textbf{ps pχ tf tʃ}} \\
+
+& {} & {\color[rgb]{.65,.19,.77}\textbf{fs fʃ sf sχ}} & {} & 
+{\color[rgb]{.65,.19,.77}\textbf{tχ kf kʃ kχ}} & 
+{\color[rgb]{.65,.19,.77}\textbf{tχ kf kʃ kχ}} \\
+
+& {} & {} & {} & 
+{\color[rgb]{.65,.19,.77}\textbf{ft fs fʃ sf sχ}} & 
+{\color[rgb]{.65,.19,.77}\textbf{ft fs fʃ sf sχ}} \\
+
+& \multicolumn{2}{c}{} & \multicolumn{2}{c}{} & {} \\
+\hline
+
+& \multicolumn{2}{c}{} & \multicolumn{2}{c}{} & {} \\%& \multicolumn{5}{c}{} \\
+{\multirow{7}{*}{\shortstack[l]{Prog.\\V.A.}}} & 
+{\color[rgb]{.19,.42,.77}ct st sk} & 
+{\color[rgb]{.19,.42,.77}kt pk kf tf} & 
+{} & 
+{\color[rgb]{.19,.42,.77}kt pk kf tf} & 
+{\color[rgb]{.19,.42,.77}kt pk kf tf} \\
+
+& {\color[rgb]{.19,.42,.77}ʃt ʃk} & 
+{\color[rgb]{.19,.42,.77}cf sf ʃf} & 
+{} & 
+{\color[rgb]{.19,.42,.77}ct cf st sk} & 
+{\color[rgb]{.19,.42,.77}ct cf st sk} \\
+
+& {\color[rgb]{.65,.19,.77}vd} &
+{\color[rgb]{.65,.19,.77}bg bd dg bd͡z} &
+{} & 
+{\color[rgb]{.19,.42,.77}ʃt ʃk sf ʃf} & 
+{\color[rgb]{.19,.42,.77}ʃt ʃk sf ʃf} \\
+
+& {} & {\color[rgb]{.65,.19,.77}bz (bʁ) dv dʒ} &
+{} & 
+{\color[rgb]{.65,.19,.77}bg bd dg bd͡z} & 
+{\color[rgb]{.65,.19,.77}bg bd dg bd͡z} \\
+
+&{} & {\color[rgb]{.65,.19,.77}(dʁ) gv gʒ (gʁ)} &
+{} & 
+{\color[rgb]{.65,.19,.77}bz (bʁ) dv dʒ} & 
+{\color[rgb]{.65,.19,.77}bz (bʁ) dv dʒ} \\
+
+& {} & {\color[rgb]{.65,.19,.77}vz vʒ zv (zʁ)} &
+{} & 
+{\color[rgb]{.65,.19,.77}(dʁ) gv gʒ (gʁ)} & 
+{\color[rgb]{.65,.19,.77}(dʁ) gv gʒ (gʁ)} \\
+
+& {} & {} & {} & 
+{\color[rgb]{.65,.19,.77}vd vz vʒ zv (zʁ)} & 
+{\color[rgb]{.65,.19,.77}vd vz vʒ zv (zʁ)} \\
+
+\lspbottomrule
+\end{tabular}}
+\end{table}
+
+\tabref{tab:vaScenarios} shows the potential implications of voicing assimilation on the well-formedness predictions of the different models. The crucial effect is that in all the models that make voicing distinctions, the purple \emph{voiced-voiceless} clusters have the potential to change from ill-formed to well-formed. This is a complete description of events for both the SSP\textsubscript{MH} and the NAP\textsubscript{td} models. The picture is slightly more complex for the SSP\textsubscript{exp} model, which makes a further manner-based distinction between obstruents, namely separating fricatives from stops. This means that in the SSP\textsubscript{exp} model, all \emph{fricative-stop} sequences are evaluated as ill-formed onset falls in sequences that agree in voicing. As a result, one of the canonically ill-formed purple sequences remains ill-formed after voicing assimilation and five canonically well-formed sequences become ill-formed (left column and two bottom rows in \tabref{tab:vaScenarios}).
+
+The vast majority of consequences summarized in \tabref{tab:vaScenarios} are unchanged or improved in terms of well-formedness, when considering the switch from no voicing assimilation (top row) to one of the two voicing assimilation patterns (regressive or progressive). 
+Only a small subset of cases exhibits the few worse-formed scenarios when voicing assimilation occurs.
+%Only a small subset of cases, and only for a single sonority model (SSP\textsubscript{exp}), yield a few worse-formed scenarios. 
+Considering that voicing assimilation is an optional process in MH, the pressure to assimilate in voicing should be weaker if the result is a substantially worse-formed syllable. A reasonable simplification of these facts is to consider the potential of C\textsubscript{1} to devoice, as would be most typically expected in MH.
+\citet[232]{bolozky2006notesk} already noted this systematic alternation between MH word-initial \emph{voiced-voiceless} sequences. According to his account, the voiced obstruent in C\textsubscript{1} can retain its voicing with a following epenthetic vowel (resembling a more archaic and prescriptively correct pronunciation), but in most speech contexts when the sequence appears as a cluster, there is a devoicing of C\textsubscript{1}.
+
+The outcome of this consideration can be seen in \tabref{tab:vaScenarios}. Devoicing potentials of C\textsubscript{1} are marked in bold for the purple sequences in the middle row of the regressive assimilation scenario. This means that the corpus does not consider the theoretical possibility of the five \emph{fricative-stop} sequences in blue, at the left column of the SSP\textsubscript{exp} model, to change from well-formed to ill-formed (essentially not disadvantaging the SSP\textsubscript{exp} model for this less likely and rather negligible possibility).
+
+The propensity to devoice C\textsubscript{1} in \emph{voiced-voiceless} sequences of obstruents is therefore taken into account in the following analysis. In order to consider this variation, the study corpus used here elaborates on the data sourced from the LLHN by providing two forms for plural inflections with a \emph{voiced-voiceless} sequence of obstruents: plurals with an epenthetic vowel, whereby C\textsubscript{1} remains voiced; and plurals with a complex onset cluster, whereby C\textsubscript{1} is devoiced. For example, the singular \emph{\textbf{z}á.\textbf{χ}al} `larva' is expected to yield two possible plural forms: \emph{\textbf{z}e.\textbf{χ}a.l-ím} or \emph{\textbf{sχ}a.l-ím} `larva-\Pl{}'. In this way, both potential options can be accounted for, regardless of any independent determination about the frequency and likelihood of certain devoiced forms.\footnote{Note that in the LLHN, most Segholates with \emph{voiced-voiceless} C\textsubscript{1}C\textsubscript{2} sequences of obstruents appear with a complex onset cluster in their plural inflections. The only exceptions that appear with an epenthetic vowel in their plural inflections are the sequence types \emph{bc}, \emph{vs}, \emph{vʃ} and \emph{vt}.}
+
+\section{Model fits}\label{sec:mFits}
+
+The following plots in Figures~\ref{fig:LLHNtypes-SSPcol}--\ref{fig:LLHNtypes-NAPtd} show the 144 different CC types %(there was no variation between tokens of the same type) 
+distributed along the scores of each sonority model. The x-axis in each plot displays the different scores of the given model while the y-axis reflects the amount of CC types that received this score. The color codes reflect the status of C\textsubscript{1} and C\textsubscript{2} in plural Segholates in the LLHN, with the addition of the Variable category in orange, to account for the CC types that can potentially devoice their C\textsubscript{1}, and thus change from ill-formed to well-formed complex onset clusters (see Section~\ref{sec:vaNote}).
+
+For simplicity and clarity, the plots in Figures~\ref{fig:LLHNtypes-SSPcol}--\ref{fig:LLHNtypes-NAPtd} show only the distribution of different CC \emph{types} in the corpus. For completeness, the same distribution is presented using the 381 different CC \emph{tokens} (i.e.~different lexical items) in Appendix~\ref{appendix:c}.
+Importantly, the differences between the two descriptions of the data are negligible.
+
+The distribution of the data in the following plots (Figures~\ref{fig:LLHNtypes-SSPcol}--\ref{fig:LLHNtypes-NAPtd}) shows that all of the sonority models have a relatively good fit with the bulk of the data. This is true even for the worst fitting models that employ the two extreme sonority hierarchies, i.e.~\emph{H}\textsubscript{col}, which collapses all obstruents into one class, resulting in the SSP\textsubscript{col} model (see \figref{fig:LLHNtypes-SSPcol}), and \emph{H}\textsubscript{exp}, which expands the class of obstruents to include all distinctions based on manner of articulation (\emph{stop} \textless{} \emph{affricate} \textless{} \emph{fricative}) and on voicing (\emph{voiceless} \textless{} \emph{voiced}), resulting in the SSP\textsubscript{exp} model (see \figref{fig:LLHNtypes-SSPexp}).
+
+
+
+\begin{figure}
+\centering \includegraphics[width=\textwidth]{figures/graphics-LLHNtypes-SSPcol-1} 
+\caption{Fit of CC types between the SSP\textsubscript{col} model (x-axis) and the corpus data (color). The symbols in parenthesis indicate which categories are considered 
+%ill-formed (\ding{55}) or well-formed (\ding{51}).
+ill-formed (\emph{X}) or well-formed (\emph{√}).}\label{fig:LLHNtypes-SSPcol}
+\end{figure}
+
+\figref{fig:LLHNtypes-SSPcol} shows that the SSP\textsubscript{col} model manages to allocate all of the well-formed onset clusters in the data (green color) to either sonority plateaus or sonority rises, as expected. It exhibits a marginal failure with the allocation of the ill-formed onset clusters (red color) to sonority falls, evident from the red portions at the top of the Plateau and Rise bars. These are, in fact, the sequences of the types /ml, mʁ/ (sonority rises) and /mn, nm/ (sonority plateaus), that all the traditional sonority models fail to predict here.
+Furthermore, SSP\textsubscript{col} is incapable of reflecting the potential variation due to voicing assimilation processes (orange color) since any obstruent sequence in SSP\textsubscript{col} has to be considered a plateau, which, in the context of MH, means that a well-formed onset cluster is expected, irrespective of voicing assimilation.
+
+The fit of SSP\textsubscript{exp} in \figref{fig:LLHNtypes-SSPexp} has the same marginal problem that SSP\textsubscript{col} exhibits with respect to allocation of the ill-formed onset clusters (red color) to sonority falls, given the red portions at the top of the Plateau and Rise bars. SSP\textsubscript{exp} introduces a new marginal problem given that some well-formed onset clusters are now allocated to the ill-formed sonority fall category (green portion at the bottom of the Fall bar). These are, in fact, the \emph{fricative-stop} sequences which are all \emph{/s/-stop} clusters here. On the other hand, SSP\textsubscript{exp} succeeds where the SSP\textsubscript{col} failed in accounting for variation due to voicing assimilation.
+The potentially varying items (in orange) are allocated to F↔P or F↔R (excluding one case at the very bottom of the Fall bar), indicating their ability to change between an ill-formed sonority fall and a well-formed sonority plateau or rise, respectively.
+
+Not surprisingly, the combination of the \emph{H}\textsubscript{col} and \emph{H}\textsubscript{exp} hierarchies into a hierarchy that is more specifically tailored to account for distinctions relevant to MH speakers manages to yield the best SSP model in this study: SSP\textsubscript{MH}. As evident from the plot in \figref{fig:LLHNtypes-SSPmh}, the only problem that persists in SSP\textsubscript{MH} is the incomplete allocation of ill-formed clusters in red to the falling onset category, resulting in some of them being allocated to the supposedly well-formed categories of sonority plateaus and falls (these are the nasal-initial plateaus and rises, as mentioned above).
+At the same time, SSP\textsubscript{MH} manages to retain the success of SSP\textsubscript{col} (\figref{fig:LLHNtypes-SSPcol}) in allocating all the well-formed clusters (in green) to either sonority plateaus or rises. Furthermore, SSP\textsubscript{MH} manages to retain the success of SSP\textsubscript{exp} (\figref{fig:LLHNtypes-SSPexp}) in accounting for variation due to voicing assimilation, where devoiced CC clusters can change score from ill-formed falls to well-formed plateaus.
+
+The most successful fit among the four models in this comparison is found with the NAP\textsubscript{td} model in \figref{fig:LLHNtypes-NAPtd}. As expected, all the well-formed clusters in the data (green) are allocated to well-formedness scores of 2 and above, while all the ill-formed clusters in the data (red) are allocated to scores of 1 and below. Likewise, the potentially varying clusters (orange) switch from an ill-formed value of 1 with the voiced-initial clusters to a well-formed value of 3 with the devoiced versions.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-LLHNtypes-SSPexp-1} 
+\caption{Fit of CC types between the SSP\textsubscript{exp} model (x-axis) and the corpus data (color). \emph{F↔P} can vary between \emph{Fall} and \emph{Plateau} and \emph{F↔R} can vary between \emph{Fall} and \emph{Rise} %(both \emph{\ding{55}\,↔\,\ding{51}}) 
+(both \emph{X\,↔\,√}) due to voicing assimilation.}\label{fig:LLHNtypes-SSPexp}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-LLHNtypes-SSPmh-1}
+\caption{Fit of CC types between the SSP\textsubscript{MH} model (x-axis) and the corpus data (color). \emph{F↔P} can vary between \emph{Fall} and \emph{Plateau} %(\emph{\ding{55}\,↔\,\ding{51}}) 
+(\emph{X\,↔\,√}) due to voicing assimilation.}\label{fig:LLHNtypes-SSPmh}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/graphics-LLHNtypes-NAPtd-1} 
+\caption{Fit of CC types between the NAP\textsubscript{td} model (x-axis) and the corpus data (color). \emph{1↔3} can vary between scores \emph{1} and \emph{3} %(\emph{\ding{55}\,↔\,\ding{51}}) 
+(\emph{X\,↔\,√}) due to voicing assimilation.}\label{fig:LLHNtypes-NAPtd}
+\end{figure}
+
+\section{Model analyses}\label{sec:mAnal}
+
+In what follows, the general model fits reported above are examined for the segmental content that underlies their successes and failures, starting with cases that successfully predict the data and are shared by all models (Section~\ref{sec:congPred}), and moving on to the subsets of cases in which SSP models are incongruent with the data (Section~\ref{sec:incongPred}).
+
+\subsection{Congruent predictions}\label{sec:congPred}
+
+\tabref{tab:segholcong} exhibits all the cases that are fully congruent between the data and all the different sonority models. These represent about 82\% of the types (118/144) and about 86\% of the tokens (329/381) in the dataset. Evidently, for the vast majority of the items in the corpus, all the sonority models are capable of explaining the data and provide scores that are congruent with the data.
+
+
+\begin{table}
+\caption{\label{tab:segholcong}Congruence between all sonority models and complex onsets in the MH data. See Appendix~\ref{appendix:b} for the full list of word tokens.}
+\begin{tabular}{lccccc}%{cclcclcclcclcclccl}
+\lsptoprule
+& \multicolumn{1}{c}{\multirow{2}{*}{{SSP\textsubscript{col}}}} & 
+\multicolumn{1}{c}{\multirow{2}{*}{{SSP\textsubscript{exp}}}} & 
+\multicolumn{1}{c}{\multirow{2}{*}{{SSP\textsubscript{MH}}}} & 
+\multicolumn{1}{c}{\multirow{2}{*}{{NAP\textsubscript{td}}}} &
+\multicolumn{1}{c}{\multirow{2}{*}{{\shortstack[c]{Complex \\ onset}}}}\\
+\multicolumn{6}{c}{}\\
+\midrule
+
+\multicolumn{1}{l}{I.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{rise}} &
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{rise}} &
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{rise}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{3 -- 5}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}\ding{51}}\\
+& \multicolumn{5}{l}{bʁ, cl, cm, cʁ, dl, dm, dʁ, gl, gm, gʁ, kl, km, kn, kʁ, pl, pʁ}\\
+& \multicolumn{5}{l}{pʁ, sl, sm, sʁ, ʃl, ʃm, ʃn, ʃʁ, tl, tm, tn, tʁ, vʁ, zl, zm, zʁ}\\
+\multicolumn{6}{l}{}\\
+
+\multicolumn{1}{l}{II.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{rise}} &
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{rise}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{2 -- 4}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}\ding{51}}\\
+& \multicolumn{5}{l}{cd, cv, kd, kv, pg, sd, sg, sv, ʃd, ʃg, ʃv, tv}\\
+\multicolumn{6}{l}{}\\
+
+\multicolumn{1}{l}{III.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{rise}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{2 -- 4}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}\ding{51}}\\
+& \multicolumn{5}{l}{cf, dv, gv, gz, kc, kf, ks, kʃ, kχ, pc, ps, pʃ, pχ, tf, tʃ, tχ}\\
+\multicolumn{6}{l}{}\\
+
+\multicolumn{1}{l}{IV.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{2 -- 3}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}\ding{51}}\\
+& \multicolumn{5}{l}{bd, bg, dg, gd, kt, pt, sf, sχ, ʃf, ʃs, ʃχ, tk, zv}\\
+\multicolumn{6}{l}{}\\
+
+\multicolumn{1}{l}{V.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{fall}} & \multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{fall}} &
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{fall}} & \multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{(-3) -- 1}} & \multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}X}\\
+& \multicolumn{5}{l}{jc, jd, jf, jg, jk, jl, jʁ, jʃ, jt, jz, jχ, lf, lk, ls, lʃ, lt, lv, lχ, mc}\\
+& \multicolumn{5}{l}{mg, ms, mʃ, mt, mz, mχ, nc, nd, nf, ng, nk, ns, nʃ, nt, nv}\\
+& \multicolumn{5}{l}{nz, nχ, ʁc, ʁf, ʁg, ʁk, ʁm, ʁs, ʁʃ, ʁt, ʁv, ʁχ}\\
+
+\lspbottomrule
+\end{tabular}
+%\begin{tablenotes}[para]
+%\normalsize{\textit{Note.} See Appendix~\ref{appendix:b} for the full list of word tokens.}
+%\end{tablenotes}
+\end{table}
+
+The items in Subsets (I--IV) in \tabref{tab:segholcong} are all well-formed given that they are either analyzed as having sonority plateaus or rises in SSP models, or obtain a well-formedness score of 2 and above in the NAP\textsubscript{td} model. The differences between those sets concern specific assignments and scores, but are redundant in the binary distinction of ill-formed vs.~well-formed onsets.
+
+\subsection{Incongruent predictions}\label{sec:incongPred}
+
+\tabref{tab:segholincong} focuses on the relatively fewer cases of incongruence between scores obtained from the different SSP models and the corpus data (only the scores of the NAP\textsubscript{td} model were fully congruent with the corpus, see \sectref{sec:mFits}). These incongruent cases account for 18\% of the types (26/144) and 14\% of the tokens (52/381) in the dataset.
+
+
+
+
+\begin{table}
+\caption{\label{tab:segholincong}Incongruence between SSP models and complex onsets in the MH data. See Appendix~\ref{appendix:b} for the full list of word tokens.}
+\begin{tabular}{lccccc}%{cclcclcclcclcclccl}
+\lsptoprule
+
+& \multicolumn{1}{c}{\multirow{2}{*}{{SSP\textsubscript{col}}}} & 
+\multicolumn{1}{c}{\multirow{2}{*}{{SSP\textsubscript{exp}}}} & 
+\multicolumn{1}{c}{\multirow{2}{*}{{SSP\textsubscript{MH}}}} & 
+\multicolumn{1}{c}{\multirow{2}{*}{{NAP\textsubscript{td}}}} &
+\multicolumn{1}{c}{\multirow{2}{*}{{\shortstack[c]{Complex \\ onset}}}}\\
+\multicolumn{6}{c}{}\\
+
+\midrule
+
+\multicolumn{1}{c}{I.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{\textcolor{black}{fall}}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{3}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}\ding{51}}\\
+& \multicolumn{5}{l}{sk, st, ʃc, ʃk, ʃt} \\
+\multicolumn{6}{c}{}\\
+
+\multicolumn{1}{c}{IIa.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{\textcolor{black}{plateau}}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{fall\leftrightarrow rise}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{fall\leftrightarrow plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{1 \leftrightarrow~3}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}X \leftrightarrow~√}\\
+& \multicolumn{5}{l}{bc, bs, bχ, df, dʃ, dχ, gf, gʃ, gχ} \\
+\multicolumn{6}{c}{}\\
+
+\multicolumn{1}{c}{IIb.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{\textcolor{black}{plateau}}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{fall\leftrightarrow plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{fall\leftrightarrow plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{1 \leftrightarrow~3}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}X \leftrightarrow~√}\\
+& \multicolumn{5}{l}{bk, bt, dk, vs, vʃ, zf, zχ} \\
+\multicolumn{6}{c}{}\\
+
+\multicolumn{1}{c}{IIc.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{\textcolor{black}{plateau}}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{fall}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{fall\leftrightarrow plateau}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}{1 \leftrightarrow~3}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.67,.31}X \leftrightarrow~√}\\
+& \multicolumn{5}{l}{vt} \\
+\multicolumn{6}{c}{}\\
+
+\multicolumn{1}{c}{III.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{{plateau}}} &  
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{{plateau}}} &  
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{{plateau}}} &  
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{1}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}X}\\
+& \multicolumn{5}{l}{mn, nm} \\
+\multicolumn{6}{c}{}\\
+
+\multicolumn{1}{c}{IV.} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{{rise}}} &  
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{{rise}}} &  
+\multicolumn{1}{c}{\cellcolor[rgb]{.3,.68,.34}{{rise}}} &  
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}{1}} & 
+\multicolumn{1}{c}{\cellcolor[rgb]{.9,.24,.24}X}\\
+& \multicolumn{5}{l}{ml, mʁ} \\
+
+\lspbottomrule
+\end{tabular}
+%\begin{tablenotes}[para]
+%\normalsize{\textit{Note.} See Appendix~\ref{appendix:b} for the full list of word tokens.}
+%\end{tablenotes}
+\end{table}
+
+The items in Subset (I) in \tabref{tab:segholincong} are all types of licit \emph{/s/-stop} clusters in MH that are produced as complex onset clusters in the plural inflection. Subset (I) is correctly predicted to be well-formed by the SSP\textsubscript{col} model, in which all the different combinations of obstruent clusters are considered as plateaus. Likewise, the SSP\textsubscript{MH} model successfully predicts the well-formedness of Subset (I) since it does not make a distinction between stops and fricatives (only voicing is distinctive between obstruents in SSP\textsubscript{MH}). The SSP\textsubscript{exp} model fails with Subset (I) as it predicts that the clusters will be ill-formed due to the onset sonority fall they incur when stops and fricatives pattern separately on the corresponding sonority scale.
+
+The case of Subsets (IIa--c) in \tabref{tab:segholincong} is of particular interest and requires some elaboration. The sequences in these sets exhibit a \emph{voiced-voiceless} pattern of obstruents that is prone to devoice C\textsubscript{1} due to typical voicing assimilation processes (associated with a switch between ill-formed and well-formed complex onset clusters; see Section~\ref{sec:vaNote}). The SSP\textsubscript{col} model cannot capture this variation since all obstruents belong to the same level in this model. All the other models that do indeed make a distinction between voiceless and voiced (obstruents) succeed in capturing this variation to a large extent. However, because the SSP\textsubscript{exp} model also makes the distinction between stops and fricatives, it fails to capture the potentially devoiced sequence \emph{vtV}↔\emph{ftV} in Subset (IIc).
+The SSP\textsubscript{MH} model, in slight contrast, provides a more uniform picture of a switch between \emph{fall} and \emph{plateau} for all the items in Subsets (IIa--c), much like the successful prediction of the NAP\textsubscript{td} model, where the values for all items in Subset (IIa--c) uniformly switch from 1 to 3, below and above the threshold of well-formedness, respectively. 
+Essentially, SSP\textsubscript{MH}, NAP\textsubscript{td} and to a certain extent also SSP\textsubscript{exp} reflect the expected variation whereby the clusters in Subsets (IIa--c) are predicted to block cluster formation if no voicing assimilation takes place, yet allow complex onsets if devoicing occurs.
+
+Lastly, as reflected in the persistent red portions at the top of the Plateau and Rise bars in Figures~\ref{fig:LLHNtypes-SSPcol}--\ref{fig:LLHNtypes-SSPmh}, all three SSP-based models tested here fail in predicting the ill-formedness of the sonorant plateaus in Subset (III) and the sonorant-initial rises in Subset (IV). Both cases are blocked from surfacing as complex clusters in MH, even though all SSP models consider them as well-formed.\footnote{Note that even if the NAP\textsubscript{td} hierarchy would have been used with the SSP, the epenthetic vowel in the cases of /ml, mʁ, mn, nm/ would not have been successfully predicted as all of these sequence types would have been regarded as well-formed onset plateaus.}
+In contrast, NAP\textsubscript{td} assigns a low score of 1 to these clusters (putting them in the range of ill-formed onset clusters), thus correctly predicting that they will be systematically avoided through insertion of an epenthetic vowel.
+
+\section{Discussion}\label{sec:discussMH}
+
+Formal sonority models can do a lot of heavy lifting with a very simple principle which reduces sonority-based phonotactics to the angle of the sonority slope, but this simplicity comes at a price. It gives the notion of slopes either too much or too little power. Thus, sonority slopes at the lower ends of the sonority hierarchy, such as the notorious \emph{/s/-stop} clusters, receive too much power in traditional sonority models, which mostly judge them to be ill-formed, despite their relative abundance (\citealt{goad2016sonority, morelli2003relative, steriade1999alternativessk}).
+Likewise, sonority slopes at the higher ends of the hierarchy, such as the highly uncommon sonorant rises and plateaus, are considered to be well-formed although they are quite rare \citep{greenberg1978some}.
+
+This corpus study showed that the strictly symbolic model NAP\textsubscript{td} is the appropriate model for dealing with annotated corpus data of highly abstracted prototypical phonemic transcriptions.
+The failures of the SSP models compared to NAP\textsubscript{td} in analyzing the MH data are marginal in quantity, but they are not randomly distributed. These failures were also evident in the experimental study in \chapref{sec:experiments}, and they exhibit the same distinct problems that were highlighted as being an inherent part of traditional sonority sequencing principles in \sectref{sec:problems}.
+These problems can be demonstrated with failures to predict the ill-formedness of sonorant-initial onset clusters, which do not present a falling sonority slope (e.g.~/nm, ml/), as well as difficulties to predict the well-formedness of some obstruent-initial onset clusters that do not present a rising sonority slope (e.g.~\emph{/s/-stop} clusters).
+Note that although SSP\textsubscript{col} and SSP\textsubscript{MH} are capable of considering \emph{/s/-stop} clusters as well-formed, they still score them with the borderline well-formedness of plateaus, which may not be the best reflection of the relatively robust well-formed behavior of \emph{/s/-stop} clusters.
+The NAP\textsubscript{td} model consistently fares better in accounting for these cases, while at the same time replicating the success of traditional models for the vast majority of cases in which the SSP already provides useful predictions.
