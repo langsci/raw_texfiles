@@ -1,0 +1,35 @@
+\newcommand{\orcid}[1]{}
+
+
+\newbool{lsCompileStandalone}
+\NewDocumentCommand{\ConditionalImport}{O{localbibliography.bib}}
+  {%
+    \ifbool{lsCompileStandalone}
+           {\input{localmetadata.tex}
+            \input{localpackages.tex}
+            \input{localhyphenation.tex}
+            \input{localcommands.tex}
+            \addbibresource{#1}}
+           {}
+  }
+% \booltrue{lsCompileStandalone}
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\makeatother
+
+\providecommand{\togglepaper}[1][0]{
+   \bibliography{../localbibliography}
+   \papernote{\scriptsize\normalfont
+     \theauthor.
+     \titleTemp.
+     To appear in:
+     E. Di Tor \& Herr Rausgeberin (ed.).
+     Booktitle in localcommands.tex.
+     Berlin: Language Science Press. [preliminary page numbering]
+   }
+   \pagenumbering{roman}
+   \setcounter{chapter}{#1}
+   \addtocounter{chapter}{-1}
+}
