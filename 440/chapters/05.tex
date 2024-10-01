@@ -1,0 +1,587 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998639}
+
+
+\author{Voula Giouli\orcid{0000-0002-1501-9754}\affiliation{Institute for Language and Speech Processing, ATHENA Research Center, Greece} and 
+Vera Pilitsidou\orcid{}\affiliation{National and Kapodistrian University of Athens, Greece} and
+Hephestion Christopoulos\orcid{}\affiliation{National and Kapodistrian University of Athens, Greece}}
+
+\title{A FrameNet approach to deep semantics for MWEs}
+\abstract{We present work aimed at enhancing a semantic lexical resource for Modern Greek with multiword expressions and at manually annotating a corpus with semantic roles with a view to supporting the lexical encoding with corpus evidence. The research was conducted within a larger initiative to construct a Greek FrameNet and corresponding corpus. The ultimate purpose was to provide a shallow semantic representation for multiword lexical units that is similar to the semantic representation of single-word predicates. We focus on both verbal and nominal multiword predicates. Specifically, we address the following questions: (a) what discrepancies seem to be prevalent between single- and multiword entries that are classified under the same frame (in terms of the realisation of Frame Elements), and (b) how to encode these discrepancies.}
+
+
+
+\begin{document}
+\maketitle
+\section{Introduction}
+Multiword expressions (MWEs) are word combinations that present morphological, lexical, syntactic, semantic, and pragmatic idiosyncrasies \citep{gross_1982,Baldwin/Kim:10}. In terms of meaning, they do not abide by the semantic interpretation rules of the language by which the meanings of phrases can be constructed out of the meanings of their constituents. In this respect, they appear on a continuum of compositionality: some expressions are analyzable (in that one can “analyze” their constituents in order to understand their meaning), whereas others are partially analyzable or ultimately non-analyzable at all \citep{Nunberg_etal_1994}. The mismatch between their phrasal structure and their deep semantics renders them “a pain in the neck for Natural Language Processing” \citep{Sag:Baldwin:2002}. In that regard, the community has been spending considerable effort to model them in a way that facilitates their robust treatment with a view to various applications. However, most MWE-specific lexical resources focus only on the representation of their lexical, morphological, and syntactic properties. Similarly, although several annotated corpora have been developed with the view to training and evaluating algorithms for MWE discovery and classification, little work has been devoted to their semantic representation in corpora with respect to developing applications that require deep semantics. Through our work, we seek to bridge this gap by providing a semantic representation for MWEs in a frame-based lexical resource for Modern Greek.
+
+The chapter is structured as follows: in Section \ref{sec:objectives} we present the rationale, main objectives, and scope of our work; Section \ref{sec:background} gives an account of the theoretical framework within which our work is placed, as well as previous work on MWEs and their representation in large lexical resources and corpora. Section \ref{sec:methodology} outlines the methodological principles adopted for creating a frame-based lexical resource for Modern Greek and for treating MWEs. The MWEs that belong to the grammatical categories of noun and verb and their treatment within frames are presented in Section \ref{sec:MWEs-in-FN-el}. In Section \ref{sec:05-annotation}, we discuss our findings from the annotation we performed focusing on the discrepancies between single and multiword predicates. Finally, in Section \ref{sec:conclusions}, we outline our conclusions and plans for future research.
+
+\section{Main objectives}
+\label{sec:objectives}
+In this chapter, we present work aimed at (i) enhancing a semantic lexical resource for Modern Greek with nominal and verbal MWEs and (ii) manually annotating a corpus with attestations of the lexical units to the end of supporting the lexical encoding with further corpus evidence. The research was conducted within a larger initiative to construct a Greek FrameNet (FN-el) and corresponding corpus \citep{giouli_etal_2020,pilitsidou_giouli_2020}. The main objective is to provide a semantic representation for MWEs in a way that is comparable to the one provided for single-word predicates. The goal was to develop a lexical resource coupled with corpus annotation that also treats complex predicates of various kinds; the resource will be useful for numerous Natural Language Processing (NLP) applications.
+Therefore, to better account for the deep semantics of complex predicates, we wanted to define their argument structure and provide their lexical-semantic descriptions within the theoretical framework of frame semantics. Our dataset comprises a list of nominal and verbal MWEs extracted from corpora and existing resources in Modern Greek. In the paper, we give an account of their encoding by assigning them to a frame and defining their arguments along with the semantic roles they assume. The construction of the lexicon is based on corpus evidence and the performed annotation.
+
+Finally, in our study, we address two questions: (a) What discrepancies seem to be prevalent between single- and multiword lexical units that are classified under the same frame in terms of Frame Elements assignment and syntactic realization? and (b) How are these discrepancies reflected in the encoding of MWEs and single-word predicates? In other words, what are the discrepancies between, for instance, the single word lexical unit (el) {{αποφασίζω}} \textit{apofasizo} `to decide' and the MWE (el) {{παίρνω απόφαση}} \textit{perno apofasi} (lit. `take decision') `to decide' in terms of the Frame Elements that are realized? We will demonstrate that the differences between synonymous single- and multiword predicates involve not only variations in the syntactic realization of their (core and non-core) Frame Elements but also in the number of Frame Elements realized. Overall, analyzing these discrepancies might provide insights into how the choice between using a single word predicate and a MWE can influence the syntactic and semantic structure of a sentence, thereby impacting the realization of Frame Elements.
+
+\section{Theoretical framework and previous work}
+\label{sec:background}
+Our work draws upon the theory of {\em{Frame Semantics}} \citep{fillmore_1976,fillmore_1977,fillmore_1982,fillmore_1985} as well as the principles and methodologies established by pioneering research in lexical resources, that is inspired by the theory. Frame Semantics is an approach that does not rely on relations like hyperonymy and homonymy, but rather, draws upon the whole of human experience in order to organise the lexicon of any given language. This cognitive approach to the representation of meaning is based on the assumption that, in order to comprehend the meaning of any given utterance, one has to draw on their own experience and knowledge, thus evoking certain schemata. %As such, any utterance urges the recipient to resort to a series of extra-textual elements, which are of equal importance as the text per see. 
+The theory focuses on the continuity that exists between language and experience \citep{petruck_1997}. In this context, words gain their meaning within a semantic {\em{frame}}. %A semantic frame schematises an event or a relation and refers to any system of meanings that are connected in a way that, to understand any one of those meanings, we must be able to understand the whole structure to which it belongs; when one of the elements of such a structure is used in a text or a discussion, then all the other elements automatically become available \citep{fillmore_1982}.
+A semantic frame schematises an event or a relation, encompassing a system of interconnected meanings. Understanding any one meaning within the frame necessitates grasping all the others. Thus, when any element of this frame is evoked in text or discussion, all other elements become accessible automatically \citep{fillmore_1982}.
+
+Based on Fillmore’s theory, the Berkeley FrameNet (BFN, \citealt{baker_etal_1998}) is a general-purpose lexical semantic resource for English, and it is the earliest and most complete attempt to organise and categorise lexical units in a lexicon based on frames. Frames are seen, thus, as conceptual structures describing specific types of objects, events, or states along with their components, the so-called {\em{Frame Elements}} (FEs) of the frame \citep{baker_etal_1998, ruppenhofer_etal_2016}, whereas the words that evoke a semantic frame are the {\em{Lexical Units}} (LUs) of that frame and are unique pairings of a word form and a meaning. Polysemous words typically evoke different frames. LUs pertain to the grammatical categories of verb, noun, adjective, or adverb.
+In other words, BFN provides a semantic representation that uses frames (or scenes) as its core, and LUs are ultimately organised around frames. Each frame is defined via a gloss that roughly describes the scene represented and a set of FEs; the latter are usually referred to in the gloss. FEs correspond to {\em{semantic roles}} specifically defined within each frame and provide finer distinctions of meaning compared to standard semantic roles. The resulting frame annotation scheme is therefore fine-grained. For each frame, the core FEs are generally assumed as central to the meaning conveyed by the frame.
+Frames are then populated with lexical units (LUs) -- both single- and multiword ones. BFN is therefore a means for the semantic representation of LUs within frames regardless of the grammatical category they belong to (noun, adjective, verb, adverb). A set of typed frame-to-frame relations are used to link frames to one another, giving BFN a net-like structure, and -- to some extent -- a hierarchical organisation. Figure \ref{fig:lending} depicts the frame \texttt{Lending}, its FEs -- both core (i.e., \GiouliHighlightFrame{LENDER}, \GiouliHighlightFrame{BORROWER}, and \GiouliHighlightFrame{THEME}) and non-core (i.e., \GiouliHighlightFrame{DURATION}, \GiouliHighlightFrame{TIME}, \GiouliHighlightFrame{PURPOSE}, etc) -- and the LUs that evoke the frame. A definition of the frame is provided as well as definitions for all the FEs.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/05/lending.png}
+    \caption{The frame \texttt{Lending} in BFN}
+    \label{fig:lending}
+\end{figure}
+
+Besides English, various FrameNets have been developed for other languages, for example, Japanese \citep{ohara_etal_2003, saito_etal_2008}, Chinese \citep{you_liu_2005}, German \citep{erk-etal-2003-towards, boas_2002}, Brazilian Portuguese \citep{Salomão2009, TorrentEllsworth2013}, Spanish \citep{suribats_2009}, Italian \citep{lenci_etal_2010}, Swedish \citep{borin_etal_2010}, French \citep{candito_etal_2014}, Hebrew \citep{hayoun_elhadad_2016}, Korean \citep{kim_etal_2016}, Finnish \citep{Linden_etal_2017}, and Modern Greek \citep{giouli_etal_2020, pilitsidou_giouli_2020}. In this context, a rather recent initiative, namely, the Global FrameNet Shared Task \citep{Torrent_etal_2018} seeks to investigate whether frames are universal – and to what extent – and whether BFN can cover the needs of most languages.
+
+
+Similar to the general-purpose frame-based resources, other domain-specific ones have been implemented depicting language for specific purposes. For example, the language of sports and football has been modeled within the frame semantics paradigm in the so-called Kicktionary database \citep{schmidt_kicktionary_2009}, as well as the Copa-2014 FrameNet Brasil, a frame-based trilingual electronic dictionary covering the domains of Football, Tourism, and the World Cup in three languages, namely, English, Spanish and Brazilian Portuguese \citep{torrent-etal-2014-copa}; similarly, the BioFrameNet database is a lexical resource built around frames in the domain of molecular biology \citep{DolbeyES06}, whereas frameNets tailored to model the legal \citep{Venturi2009}, financial \citep{pilitsidou_giouli_2020} or aviation \citep{ostroski2022} domains have also been developed for languages other than English. Going further, FrameNets that are capable of taking other semiotic modes as input data, for example pictures, and videos have recently been implemented \citep{torrent_etal_2022}.
+
+The theory of Frame Semantics has been further utilised for the formulation of the Frame-based Terminology (FBT) theory \citep{faber_dynamics_2011, faber_2015} and for the concomitant creation of frame-based terminological databases, like Ecolexicon \citep{ELX2014-045}. Being a cognitive approach to terminology that is based on frame-like representations in the form of conceptual templates underlying the knowledge encoded in specialised texts, FBT directly connects specialised knowledge with Cognitive Linguistics and Semantics \citep{faber_2015}. Specialised language concepts cannot be activated in isolation unless they are part of a larger structure or event. Our knowledge about a concept initially gives us the context or the event in which the concept retains its meaning. In this approach, frames are viewed as situated knowledge structures and are linguistically reflected in the lexical relations that arise from terminographic definitions. Concepts within a thematic field are thus inter-connected with each other based on the events of the field and the frames evoked. These frames are the context in which FBT specifies the semantic, syntactic, and pragmatic behavior of specialised language units. Consequently, instead of being described as static entities out of context, concept representations are treated as dynamic entities within the relevant context \citep{faber_dynamics_2011}.
+
+Our work builds on the theory of Frame Semantics, Frame-based Terminology, and prior work on BFN, to create a lexical resource that incorporates LUs and frames that belong to language for general purposes (LGP) as well as to language for specific purposes (LSP). To elaborate, we have dealt so far with the grammatical categories of verbs and nouns. Both single and multiword entries have been included in the resource. It is worth mentioning that the majority of the MWE nouns in this work belong to LSP, in other words, they are terms, that is, lexical items characterised by their reference to a scientific field and constitute the (specialised) vocabulary of that field \citep{Sager1990}.
+
+\subsection{MWEs in lexical resources}
+\label{subsec:MWEs-in-LRs}
+Two types of lexical resources may be identified with respect to MWEs: MWE-dedicated, that is, resources that have been developed with a primary focus on modeling MWEs, and MWE-aware ones that take MWEs into account in addition to other lexical units. Most MWE-dedicated lexical resources are primarily focused on the encoding of their lexical, morphological, and syntactic idiosyncrasies. Recommendations for representing MWEs in mono- and multilingual computational lexica \citep{calzolari_etal_2002, copestake_etal_2002} aim at creating a shared model that is suitable for representing MWEs across different languages~-- yet, they focus mainly on the syntactic and semantic properties of support verbs and noun compounds and their proper encoding thereof. Similarly, \citet{villavicencio_etal_2004} discuss the requirements for the efficient representation of English idioms and verb-particle constructions (VPCs) in lexica by means of augmenting existing single-word dictionaries with specific tables.
+
+%In this respect, 
+In this regard, within the Lexicon-Grammar framework \citep{gross_methodes_1975}, French verbal MWEs were classified in the so-called Lexicon-Grammar tables \citep{gross_1982}, where their syntactic and distributional properties and selectional restrictions were represented formally. In this approach, the surface structure of a verbal MWE is represented as a Part-of-Speech sequence of constituents, either continuous or not. The labels N, A, Adv, and PP are used to denote non-lexicalised constituents headed by a Noun, Adjective, Adverb, or Preposition respectively. Lexicalised elements are denoted as \textit{C}. Modification, possible alternations, and distributional properties are encoded as binary properties within the Lexicon-Grammar tables. 
+Along the same lines, similar lexical resources based on the same formal principles and linguistic criteria have been created for verbal idiomatic expressions in other languages, including Greek \citep{Fotopoulou1993, Mini2009}. The same approach has been adopted for the representation of adverbial MWEs in French by \citet{LaporteVoyatzi_2008} and nominal MWEs in Greek by \citet{Anastasiadis-Symeonidis1986}.
+
+Over the years, MWE-specific lexicons of various types have provided elaborate linguistic information for morphological, structural, and lexical properties of MWEs including variation and internal modification of MWEs. \citet{shudo_etal_2011} report on the representation of Japanese MWEs in a comprehensive dictionary that provides detailed descriptions of their syntactic structure (dependencies), internal modification, and functional information. Similarly, \citet{zaninello_nissim_2010} propose a representation of MWEs in Italian based on their morphosyntactic properties and lexico-semantic information acquired semi-automatically from corpora. \citet{odijk_2013} reports on the successful experiments and semi-automatic expansion of DuELME \citep{gregoire_duelme_2010}, a lexical database for Dutch MWEs; in the database, MWEs are classified in the so-called equivalence classes based on their syntactic structure, seen as syntactic patterns that occur frequently in a dependency parsed corpus of Dutch. 
+
+Recently, MWE-aware lexical resources provide elaborate representations of the structure of MWEs (cf. \citetv{chapters/03, chapters/02}) by making use of the Universal Dependencies formalism \citep{NIVRE16.348}. Similarly, the notion of the catena provides a mechanism for representing the structure of MWEs
+(cf. \citetv{chapters/04}). All these representations are aimed at the development of reliable gold standards to aid the task of MWE identification in running text.
+
+In contrast, semantic MWE-aware lexicons, for example, WordNet \citep{fellbaum_wordnet_1998}, Verbnet \citep{kipper_etal_2008}, SAID \citep{kuiper_etal_2003}, and WikiMwe \citep{hartmann_etal_2012} give an account of various types of MWEs – yet they are solely focused on their semantic representation, overlooking other aspects. More recently, \mbox{VerbAtlas} \citep{di_fabio_etal_2019}, a large-scale handcrafted lexical-semantic resource aimed at bringing together all verbal synonym sets from WordNet into semantically coherent frames, also treats verb-particle constructions (i.e., \GiouliHighlight{{take off}}) as well as fully lexicalised idiomatic expressions (i.e, \GiouliHighlight{{kick}} one’s \GiouliHighlight{{heels}}, \GiouliHighlight{{take a}} firm \GiouliHighlight{{stand}}, etc.), one of its main contributions being the definition of a set of explicit and cross-frame semantic roles that are linked to the selectional preferences of the verbal predicates.
+
+Moreover, \citet{fotopoulou_etal_2014} propose a model for encoding MWEs of all grammatical categories (noun, verb, adjective, and adverb) providing information on their syntactic structure, morphological and grammatical idiosyncrasies, variation, as well as information about their degree of fixedness. In addition, they provide lexical semantic relations (i.e., synonymy, antonymy, part-hole) giving an account of idiomatic expressions that also bear a literal meaning. To further account for the properties of Greek verbal MWEs, \citet{markantonatou-etal-2019-idion} have developed an infrastructure that accounts for the variability attested and the need for maximal generalisation.
+
+\subsection{MWEs in corpora and the corpus-lexicon interface}
+\label{subsec:MWEs-in-corpora}
+Besides lexical resources, the modeling of MWEs (i.e., their variations, internal modification, etc.) has also been attempted in both MWE-dedicated and MWE-aware corpora. Notably, the PARSEME initiative features corpora in more than 26 languages from different families that bear annotations for verbal MWEs (VMWEs) facilitating their discovery and identification in running text \citep{savary_etal_2017, ramisch_etal_2018, ramisch_etal_2020, savary_etal_2023}. The annotation is performed based on guidelines that are as universal as possible, but which still allow for language-specific categories and tests. The DiMSUM 2016 shared task for joint identification and supersense tagging of nominal and verbal MWEs \citep{schneider_etal_2016} developed training and test data in English (tweets, service reviews, and TED talk transcriptions). Similarly, a MWE-related dataset in English, Portuguese, and Galician was released within the SemEval-2022 Task 2 \citep{tayyar_madabushi_etal_2022} on multilingual idiomaticity detection: the task was aimed at identifying whether a sentence contains an idiomatic expression, and at representing potentially \mbox{idiomatic} expressions in context based on semantic text similarity.
+
+Other attempts at MWE semantic annotation in corpora include the annotation of MWEs in the Proposition Bank (PropBank), one of the earliest attempts to develop semantically annotated corpora \citep{palmer_etal_2005}. Support verb constructions and idiomatic expressions in PropBank were later assigned one or more semantic role(s) depending on their meaning \citep{bonial_propbank_2014, bonial_etal_2014}. Support verb constructions in PropBank were treated in two consecutive annotation iterations: initially, the light verbs were annotated as appropriate by selecting (or creating) the relevant support verb roleset; annotation proper was then performed on the predicative noun. However, one of the main drawbacks of PropBank is that the roleset used is too generic, thus leading to inconsistencies in labelling.
+
+In between the corpus and the lexicon, \citet{Giouli.2023} proposes a model for representing the semantics of VMWEs by (a) taking into account their inherent idiosyncrasies: lexical, syntactic, and semantic, and (b) linking lexicon entries with their occurrences in a corpus that bears rich linguistic annotations (including Semantic Role Labelling). The model is claimed to entail a holistic approach to VMWE representation.
+
+By default, BFN is placed in the lexicon-corpus and syntax-semantics interface. Therefore, it accounts for the semantics of lexical entries also considering context within frames. This holds true for single and multiword entries. Lexicalised noun-noun compounds (i.e., \GiouliHighlight{{wheel chair}}.n), verb-particle constructions (i.e., \GiouliHighlight{{help out}}.v), as well as idiomatic expressions (i.e., \GiouliHighlight{{aid and abet}}.v, and \GiouliHighlight{{cook}} someone’s \GiouliHighlight{{goose}}.v) are treated on their own as LUs, that pertain to the grammatical categories of noun or verb. For example, the verbal MWEs \GiouliHighlight{{aid and abet}}.v and \GiouliHighlight{{help out}}.v are both assigned to the frame \texttt{Assistance}, and their FEs along with their syntactic realisation are attested as shown in Table \ref{tab:help-out.v}.
+
+\begin{table}
+\caption{Encoding of the MWE LU help out.v in BFN}
+\label{tab:help-out.v}
+ \begin{tabularx}{.8\textwidth}{X rr}
+  \lsptoprule
+  Frame Element         & syntactic realisation  & n. of occurences \\
+  \midrule
+  {BENEFITED-PARTY}  &   NP.Obj  &    3  \\
+  {FOCAL-ENTITY}  &   PP(of).Dep &   1   \\
+  GOAL  &   DNI &   2  \\
+ HELPER  & NP.subj   &	3 \\
+  \lspbottomrule
+ \end{tabularx}
+ \end{table}
+
+%\begin{figure}
+%    \centering
+%    \includegraphics{figures/05/help-out.v.png}
+%    \caption{Encoding of the MWE LU help out.v in BFN}
+%    \label{fig:help-out.v}
+%\end{figure}
+
+While BFN includes MWEs in the database, it does not analyze them internally. However, sentences in BFN bear a multi-layer annotation: Frame Element, Grammatical Function, and Phrase Type, and thus constitute clear examples of basic combinatorial possibilities (valence patterns) for each target LU. In this regard, all BFN annotations are constellations of triples that make up the FE realisation for each annotated sentence, each consisting of a FE or semantic role that is relevant to the frame itself (i.e., Agent, Experiencer, Cogniser, etc.), a grammatical function (i.e., Subject, Object) and a phrase type (i.e., Noun Phrase (NP), Verb Phrase (VP), Prepositional Phrase (PP), etc.). As a result, the syntactic realisation of the FEs is revealed via the annotation performed on the LUs and their FEs. This annotation provides us with a description of the syntactic valence properties of LUs, that is, the syntagmatic types that co-occur in the syntactic locality of the lexical item plus the grammatical functions they assume, as shown in (\ref{ex:help-out}):
+
+\ea
+\label{ex:help-out}
+
+ $[$All these commissions$\GiouliCategory{HELPER}$$]$ \GiouliHighlight{{helped}} $[$me$\GiouliCategory{BENEFITED-PARTY}$$]$ \GiouliHighlight{{out}} $[$of the pains$\GiouliCategory{FOCAL-ENTITY}$$]$  \\
+
+ $[$All these commissions.\textsc{np-Subj}$]$ \GiouliHighlight{{helped}} $[$me.\textsc{np-Obj}$]$ \GiouliHighlight{{out}} $[$of the pains.\textsc{PP}$]$  \\
+ \z
+
+Building on the dichotomy between the syntactic and semantic heads of expressions, only relatively recently has BFN given an account of the representation of support verb constructions in the database \citep{petruck-ellsworth-2016-representing}. In this approach, the semantically empty support verb is assigned the tag \textit{Supp}, whereas both frame assignment and annotation are performed with the predicative noun as the target as shown in (\ref{ex:support-BFN}).
+
+\ea
+\label{ex:support-BFN}
+$[$Horatio$\GiouliCategory{PROTAGONIST}$$]$ \textit{took}\textsuperscript{Supp} a \GiouliHighlight{{dirty nap}}. \citep{petruck-ellsworth-2016-representing}
+\z
+
+FrameNets for other languages, for example, German, also treat MWEs of various types including support or light verb constructions, idioms, and metaphors \citep{BurchardtPinkal2009}. Finally, \citet{Borin-Lars2021-311388} discusses the inclusion of MWEs in the Swedish FrameNet++, also elaborating on the description of MWEs from a broad typological point of view. In this study, we elaborate on the idiosyncrasies of MWEs and the issues raised during annotation.
+
+
+\section{Methodology}\label{sec:methodology}\largerpage
+In this section we present the methodology we adopted for building our frame-based lexical resource, outlining the different steps taken in the development process. It should be noted that the approach taken to FrameNet development is not uniform: teams have adopted various methodologies, ranging from manual construction entirely from scratch (in a way that is similar to the lexicographic process followed in BFN) to projecting translations from BFN to the target language, and even to semi-automatically grouping LUs for creating frames using data-driven techniques. In all these cases, the question raised is whether the frames defined in BFN for the English language are generally applicable to other languages as well, given the cultural differences entailed, as well as the idiosyncrasies and grammatical peculiarities of each language, and how and to what extent mappings from one FrameNet to another are feasible. From another perspective, there are three approaches to frame development \citep{ruppenhofer_etal_2016, candito_etal_2014, virk_etal_2021}, namely, the lexicographic frame-to-frame strategy, the corpus-based lemma-to-lemma approach, and the full-text strategy. The lexicographic frame-to-frame strategy is aimed at documenting the range of syntactic and semantic combinatorial possibilities of words in each of their senses. Thus, annotation is performed on selected sentences of the corpus, that is, sentences that best record the valences of words. In this approach, annotation is relative to one lexical unit per sentence: the target. In general, we select sentences for annotation where, with the exception of subjects, all frame elements are realised locally by constituents that are part of the maximal phrase headed by the target word. The frame-by-frame strategy enforces coherence of annotations within a frame \citep{candito_etal_2014}. By contrast, in the full-text annotation mode, all content words, that is, words bearing a lexical meaning, are treated as targets, and annotation is directed toward their dependents. In between the two strategies, the lemma-by-lemma annotation mode is focused on lemmas -- possibly polysemous ones -- rather than frames, and the annotation of these lemmas within different frames. 
+
+Although BFN was constructed as a general framework for applying semantic annotations on textual data cross-linguistically, certain frames need to be adapted to fit other languages. To this end, prior to annotation proper, a pilot annotation phase was carried out \citep{giouli_etal_2020} in which translations from BFN were projected to the Greek data. As shown in Table \ref{tab:BFN-to-FN-el}, in most cases, the BFN frames were applicable to the Greek data. However, we could not account for 12.3\% of LUs, due to either a \textit{frame shift} (i.e., a frame change) or a missing frame (i.e., a frame that is not provided for English). Researchers working on other languages also report frame shifts \citep{yong-etal-2022-frame}. To avoid shortcomings and gaps, we opted for constructing the Greek FrameNet manually from scratch instead of projecting annotations.
+
+\begin{table}
+\caption{From BFN to FN-el: appropriateness of BFN to Greek.}
+\label{tab:BFN-to-FN-el}
+ \begin{tabular}{l rr}
+  \lsptoprule
+            & number  & percent \\
+  \midrule
+  perfect fit  &   549  &    87.70\%  \\
+  non perfect fit  &   54 &   8.63\%   \\
+  missing frame  &   23 &   3.67\%  \\
+ total  & 626   &	100.00\% \\
+  \lspbottomrule
+ \end{tabular}
+\end{table}
+
+After a closer inspection of the data, the following reasons for frame shifts were identified (in order of occurrence):\footnote{These tags were to a great extent adopted from Global FrameNet annotation.}
+
+\begin{itemize}
+\item \textit{Too specific}: the LU requires a frame more generic than the one available in the original database;
+\item \textit{Too generic}: the LU requires a frame more specific than the one available in the original database;
+\item \textit{Different causative alternation}: the LU requires a causative interpretation that is not present in the original frame, which may be either inchoative or stative;
+\item \textit{Different inchoative alternation}: the LU requires an inchoative interpretation that is missing in the original frame, which may be either causative or stative;
+\item \textit{Missing FE}: the original frame lacks a FE that is required in the target frame;
+\item \textit{Extra FE}: there is a FE in the original frame that is not required in the target frame;
+\item \textit{Different perspective}: the LU was proved to impose a perspective that is different from the one in the original frame;
+\item \textit{Different stative alternation}: the LU requires a stative interpretation that is not present in the original frame, which may be either causative or inchoative;
+\item \textit{Different entailment}: the LU has different entailments from the ones foreseen by the original frame;
+\item \textit{Different coreness status}: some non-core FE should be core in the target language.
+\end{itemize}
+
+Within the FN-el project, we adopted a modular approach to lexicon development, in the sense that predicates pertaining to a pre-defined set of semantic classes (namely, emotion, cognition, communication) or domains (finance, health) were selected and accounted for, thus opting for a domain-by-domain strategy.\footnote{This is the approach taken to the French FrameNet construction \citep{candito_etal_2014} and is assumed to enforce the coherence of frame delimitations.}  More precisely, micro-projects were run towards treating predicates that pertain to each semantic class and/or domain. In this regard, we adopted the lemma-to-lemma strategy followed by a frame-to-frame one; multiple iterations of this procedure were conducted.
+
+The task was organised as a four-stage procedure: (a) corpus creation and LU selection; (b) frame schematisation based on the syntactic and semantic properties of the selected LUs; (c) corpus annotation with a view to confirming or rejecting our initial intuitive decisions; and (d) frame validation and adjudication, where appropriate, and their extension with new LUs. More precisely, custom-made corpora of newswire texts, as well as corpora with a high term ratio that pertain to specialised domains were created to identify and extract words pertaining to the grammatical categories of noun and verb -- also coupled with statistical information. An effort was made to extract the MWEs (verbal and nominal) from the corpora. N-grams were then extracted using SketchEngine \citep{Kilgarriff2014}, whereas terms were extracted semi-automatically using AntConc \citep{anthony2005antconc}.\footnote{Available online: \url{http://www.laurenceanthony.net/}.}
+
+After sense discrimination for polysemous words, meaningful groupings of word-sense pairings were performed -- initially based solely on dictionary definitions. Frames were then constructed and populated with LUs; polysemous words fall under different frames, depending on their meaning within a given context. Each frame was further enhanced via the definition of the schema evoked and schematised via its FEs (core and non-core). Stipulating FEs was perhaps the most challenging aspect of the work. Note that core FEs grant a frame its uniqueness. Moreover,  relations between frames were defined, the most important being \textit{Inheritance}, \textit{Perspective-on}, \textit{Using}, \textit{Subframe}, and \textit{Precedes}.
+
+This procedure for lexicon building is seen as the bottom-up part of the hybrid methodology we adopted: from corpora and lexical units to the definition of frames. The bottom-up approach to lexicon creation process was then complemented with a top-down one, according to which the frames were then populated with new LUs, that is, single- and multiword entries that are synonymous to the existing ones. The two approaches are complementary and were initiated in cycles during the project.
+
+
+
+\section{The treatment of MWEs in FN-el}
+\label{sec:MWEs-in-FN-el}
+
+Currently, our FN-el database contains c. 2,500 LUs organised around 62 frames. Of these, a total of 561 LUs are terms in the domain of finance, their term\-hood being determined based on specific criteria; we ended up with 39 frames (9 scenes) for the domain of finance. The remaining LUs are treated under frames in the semantic classes of activity, cognition, communication, and emotion. Numerical data regarding the current status of FN-el is depicted in Table \ref{tab:FN-el-nubers}.
+
+
+\begin{table}
+\caption{LUs in FN-el: numerical data.}
+\label{tab:FN-el-nubers}
+ \begin{tabular}{l rrr}
+  \lsptoprule
+            & single & multiword  & total\\
+  \midrule
+  nouns  &   823  &    205  &    1028\\
+  verbs  &   671 &   572  &    1243\\
+  adjectives  &   127 &   32  &    159\\
+  adverbs  &   84 &   3  &    87\\
+  total  &   1705 &   812  &    2517\\
+  \lspbottomrule
+ \end{tabular}
+\end{table}
+
+Each frame contains a definition of the scenario (gloss), the FEs (both core and non-core) along with the LUs that populate it. LUs that pertain to the grammatical categories of noun and verb have been extensively treated so far; both single and multiword lexical units are included in the resource and encoded as appropriate. An example of a frame in FN-el, namely, the \texttt{Agreement-or-Disagreement} one is presented in Figure \ref{fig:agreement-el}. As shown, the gloss (definition) showcases the FEs of the frame -- both core and non-core ones; FEs are also coupled with glosses. The LUs that evoke the frame are also provided. In our resource, we retain the respective terminology: names of frames, FEs, frame-to-frame relations, and glosses are all in English. In effect, using English as metadata ultimately facilitates the alignment of FN-el to BFN.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/05/agreement-el.png}
+    \caption{The \texttt{Agreement-or-disagreement} frame in FN-el}
+    \label{fig:agreement-el}
+\end{figure}
+
+MWEs that are listed as LUs in a frame appear in their {\em{canonical form}}: for nominal MWEs (NMWEs), that is, MWEs headed by a noun, the canonical form entails that the head noun is in the nominative case, singular number. A VMWE in its canonical form is a verbal phrase whose head verb is in a lemma form and whose other lexicalised components depend either on the verb or on another lexicalised component; non-lexicalised elements and open slots are not included in the canonical form. 
+Since lexicon building is based on pre-processed data, we are no longer interested in the representation of the internal structure of the MWEs and their syntactic variations; these are depicted via the annotated instances that are included as examples in the database. We will elaborate on the treatment of MWEs and the representation of their valences in Sections \ref{subsec:nmwes} and \ref{subsec:vmwes}.
+
+\subsection{Nominal MWEs}
+\label{subsec:nmwes}
+So far, 205 NMWEs have been included as LUs in the database and were assigned a frame based on their meaning. Currently, a large portion of the NMWEs encoded in FN-el are terms pertaining to the specialised language of finance and banking (133 LUs out of 205). The NMWEs for the financial domain were extracted semi-automatically from domain corpora using the methodology presented in Section \ref{sec:methodology}. However, since these LUs belong to LSP, we had to diverge from BFN’s frames in many ways described below.
+In terms of their structure, the NMWEs included in FN-el are constructions that have been extensively discussed in the literature on Modern Greek, namely, Adjective Noun (A N), Adjective Adjective Noun (A A N), Noun Noun (N N), and Noun Noun in the genitive (N N\textsc{gen}) sequences \citep{Anastasiadis-Symeonidis1986, Ralli2007, gavriilidou_nn_2013}. In this regard, the NMWE in (\ref{ex:kokino-danio}) is an A N construction headed by the N, whereas, the NMWE in (\ref{ex:foros-isodimatos}) falls in the category of N N\textsc{gen} constructions, where the second, non-head constituent is assigned the genitive case. The NMWE in (\ref{ex:kathara-entoka-esoda}) is an A A N continuous structure, where the third constituent, the noun, functions as the head, while (\ref{ex:diktis-DAX}) is an example of a N N structure, with its first constituent being the head.\largerpage
+
+\ea
+\label{ex:kokino-danio}
+\glll 
+\GiouliHighlight{{κόκκινο}}       	\GiouliHighlight{{δάνειο}}\\
+kokkino        	danio\\
+red             loan\\
+\glt ‘non-performing loan’
+\ex
+\label{ex:foros-isodimatos}
+\glll
+\GiouliHighlight{{φόρος}}           	\GiouliHighlight{{εισοδήματος}}\\
+foros             	isodimatos\\
+tax                	income.\textsc{gen}\\
+\glt ‘income tax’
+\ex
+\label{ex:kathara-entoka-esoda}
+\glll
+\GiouliHighlight{{καθαρά}}  \GiouliHighlight{{έντοκα}}       \GiouliHighlight{{έσοδα}}\\
+kathara          	entoka                     	esoda\\
+net.\textsc{{pl}}            	interest.bearing.\textsc{{pl}}  	earnings.\textsc{{pl}}\\
+\glt ‘net interest income’
+\ex
+\label{ex:diktis-DAX}
+\glll
+\GiouliHighlight{{δείκτης}}       	\GiouliHighlight{{DAX}}\\
+diktis            	DAX\\
+index            	DAX\\
+\glt ‘DAX index’\\
+\z
+
+These [A N] and [N N\textsc{gen}] sequences are LUs with a non-compositional meaning, in that their meaning is not the product of the meaning of their parts. In this regard, the NMWE depicted in (\ref{ex:kokino-danio}) is not a loan colored red, but a non-performing one. They are phrasal, and thus syntactic entities, sharing some features with (morphological) compounds, and are inaccessible for the syntactic operations that phrases normally allow. In that respect, they are continuous structures, in the sense that the order of their constituents is fixed, and no other elements can be inserted in between; in some cases, they do not even allow modification. Therefore, as in other lexicographic projects, one of the most challenging issues while creating the resource has been the recognition of NMWEs based on linguistic criteria, and their inclusion in a frame thereof.
+
+Once they were assigned to a frame, the annotation of running text was performed. We aimed to find the syntactic structures MWEs occur in and the valences of MWEs. We will elaborate on the annotation and the issues raised in Section \ref{sec:05-annotation}. The output of this annotation reveals the FEs that are specific to the LU at hand in the specific frame as well as their syntactic realisations. An example of the representation of a NMWE is provided in Table \ref{tab:LU-kokino-danio.n}. Namely the multiword LU (el) κόκκινο δάνειο.nmwe \textit{kokino danio} (lit. `red loan') `non-performing loan' evokes the \texttt{Lending} frame to which it has been assigned as a LU of the grammatical category nmwe. Its definition (gloss) is provided in Greek as a paraphrase: (el) μη εξυπηρετούμενο δάνειο \textit{mi exipiretumeno danio} `non-performing loan'; it has also been assigned FEs as appropriate along with their realisations attested in the annotated corpus.
+
+
+\begin{table}
+\caption{he LU \textit{κόκκινο δάνειο}.nmwe (`non-performing loan') in FN-el.}
+\label{tab:LU-kokino-danio.n}
+ \begin{tabular}{llc}
+  \lsptoprule
+  Frame element         & Syntactic realisation  & Occurences \\
+  \midrule
+  \GiouliHighlightFrame{BORROWER}  &   NP.Dep  &    3  \\
+  \GiouliHighlightFrame{BORROWER}  &   PP(σε).Dep &   1   \\
+  \GiouliHighlightFrame{LENDER}  &   NP.Dep &   1  \\
+  \GiouliHighlightFrame{LENDER}  &   PP(από) &   1  \\
+  \GiouliHighlightFrame{AMOUNT}  & NP.Dep   &	1 \\
+  \GiouliHighlightFrame{DURATION}  & PP(για)   &	1 \\
+  \GiouliHighlightFrame{DURATION}  & NP.Dep   &	1 \\
+  \GiouliHighlightFrame{TIME}  & NP(μέχρι)   &	2 \\
+  \GiouliHighlightFrame{CAUSE} & AJP.Dep & 1 \\
+  \GiouliHighlightFrame{CAUSE} & N.Dep & 1 \\
+  \lspbottomrule
+ \end{tabular}
+ \end{table}
+
+
+%\begin{figure}
+%    \centering
+%    \includegraphics{figures/05/LU-kokino-danio.png}
+%    \caption{The LU \textit{κόκκινο δάνειο}.nmwe (non-performing loan) in FN-el.}
+%    \label{fig:LU-kokino-danio}
+%\end{figure}
+
+As shown in (\ref{ex:kokina-dania-annot-1}), the FE \GiouliHighlightFrame{BORROWER} is realised either as a NP in the genitive or as a PP headed by the preposition σε \textit{se} `to' as shown in (\ref{ex:kokina-dania-annot-1}) and (\ref{ex:kokina-dania-annot-2}) respectively. Once the \GiouliHighlightFrame{BORROWER} is realised as a NP in the genitive, the FE \GiouliHighlightFrame{LENDER} is instantiated by a PP headed by the preposition {από} \textit{apo} `by' as shown in (\ref{ex:kokina-dania-annot-1}); otherwise, it is realised as a NP in the genitive (\ref{ex:kokina-dania-annot-2}):
+
+\ea
+\label{ex:kokina-dania-annot-1}
+\glll
+\GiouliHighlight{{κόκκινα}} \GiouliHighlight{{δάνεια}} {$[$επιχειρήσεων$\GiouliCategory{BORROWER}$$]$} $[$από την ΕΤΕ$\GiouliCategory{LENDER}$$]$\\
+{kokkina} {dania} {epichiriseon} {apo} {tin} {ETE}\\
+{red.\textsc{pl}} {loan.\textsc{pl}} {enterprise.\textsc{pl.gen}} {from} {the.\textsc{sg.acc}} {NBG.\textsc{sg.acc}}\\
+\glt ‘non-performing loans to households from NBG’
+\ex
+\label{ex:kokina-dania-annot-2}
+\glll
+\GiouliHighlight{{κόκκινα}} \GiouliHighlight{{δάνεια}} {$[$τραπεζών$\GiouliCategory{LENDER}$$]$} {$[$σε επιχειρήσεις$\GiouliCategory{BORROWER}$$]$} \\
+{kokkina} {dania} {trapezon} {se epichirisis} \\
+{red.\textsc{pl}} {loan.\textsc{pl}} {bank.\textsc{pl.gen}} {to enterprise.\textsc{pl.acc}} \\
+\glt ‘non-performing loans to enterprises from NBG’
+\z
+
+\begin{sloppypar}
+Notably, shifts or subtle differences in meaning or differences in perspective between LUs are made evident via their FEs. For example, both the multiword term (el) {{πιστωτικό}} {{γεγονός}}.nmwe \textit{pistotiko γeγonos} (lit. `credit event') `bank\-ruptcy' and its near synonym (el) πτώχευση.n \textit{ptochefsi} `bankruptcy' evoke the frame \texttt{Wealth} with \GiouliHighlightFrame{INSTITUTION} and \GiouliHighlightFrame{PERSON} being defined as core FEs of the frame. However, differences in the realisation of FEs shed light on the nuances of the two near-synonymous LUs; as shown in (\ref{ex:ptochefsi-1}) and (\ref{ex:ptochefsi-2}), the LU (el) πτώχευση accepts both \GiouliHighlightFrame{PERSON} and \GiouliHighlightFrame{INSTITUTION} as FEs, whereas the multiword term (el) {{πιστωτικό}} {{γεγονός}} accepts only \GiouliHighlightFrame{INSTITUTION} as displayed in (\ref{ex:pistotiko-gegonos-1}) and (\ref{ex:pistotiko-gegonos-2}).
+\end{sloppypar}
+
+\ea[]{
+\label{ex:ptochefsi-1}
+\glll
+η \GiouliHighlight{{πτώχευση}} $[$της Thomas Cook$\GiouliCategory{INSTITUTION}$$]$\\
+i ptochefsi tis Thomas Cook \\
+the bankruptcy the.\textsc{sg.gen} Thomas Cook \\
+\glt ‘the bankruptcy of Thomas Cook'}
+\ex[]{
+\label{ex:ptochefsi-2}
+\glll
+η \GiouliHighlight{{πτώχευση}} $[$ενός εκ των συζύγων$\GiouliCategory{PERSON}$$]$\\
+i ptochefsi enos ek ton sizigon \\
+the bankruptcy one.\textsc{sg.gen} of the.\textsc{pl.gen} spouse.\textsc{pl.gen} \\
+\glt ‘the bankruptcy of one of the spouses'}
+\ex[]{
+\label{ex:pistotiko-gegonos-1}
+\glll
+\GiouliHighlight{{{πιστωτικό}}} \GiouliHighlight{{{γεγονός}}} {$[$για} {την} {Ελλάδα$\GiouliCategory{INSTITUTION}$$]$}\\
+{pistotiko} {γeγonos} {gia} {tin} {Elada} \\
+{credit} {event} {for} {the.\textsc{sg.gen}} {Greece.\textsc{sg.gen}}  \\
+\glt ‘A credit event for Greece'}
+\ex[*]{\label{ex:pistotiko-gegonos-2}
+\glll
+\GiouliHighlight{{πιστωτικό}} \GiouliHighlight{{γεγονός}} {$[$για} {τον} {σύζυγο$\GiouliCategory{PERSON}$$]$}\\
+{pistotiko} {γeγonos} {gia} {ton} {sizigo} \\
+{credit} {event} {for} {the.\textsc{sg.acc}} {spouse.\textsc{sg.acc}}  \\
+\glt ‘A credit event for the spouse'}
+\z
+
+\subsection{Encoding Verbal MWEs}
+\label{subsec:vmwes}
+
+Following the typology and criteria defined in the PARSEME initiative \citep{savary_etal_2017, ramisch_etal_2018, ramisch_etal_2020, savary_etal_2023}, four types of verbal MWEs have been included in the resource: (a) verbal idiomatic expressions (VIDs), that bear a meaning that cannot be computed based on the meaning of their constituents and the rules used to combine them, for example, (el) {{βάζω}} {{πλώρη}} \textit{vazo plori} (lit. `put.\textsc{prs.1sg} prow.\textsc{sg.acc}') `to set forth'; (b) light verb constructions (LVCs), i.e., expressions with a rather transparent meaning that comprise a support or light verb that is semantically empty and a predicative noun or a predicative adjective or a prepositional phrase, for example, (el) {{δίνω}} {{υπόσχεση}} \textit{dino yposchesi} (lit. `give.\textsc{prs.1sg} promise.\textsc{sg.acc}') `to promise'; (c) multi-verb constructions (MVCs), that is, expressions with coordinated lexicalised head verbs, for example, (el) {{απορώ}} {{και}} {{εξίσταμαι}} \textit{aporo ke existame} (lit. `wonder.\textsc{prs.1sg} and be.very.surprised.\textsc{prs.1sg}') `to be very surprised'; and (d) verb-particle constructions (VPCs) comprising a verb and one of the adverbs (el) {μπροστά} \textit{brosta} `in front, forward', {μπρος} \textit{bros} `in front, forward', \textit{πίσω} piso `back', \textit{πάνω} pano `up', \textit{κάτω} kato `down', \textit{μέσα} mesa `in', \textit{έξω} exo `out, outside' in Greek. These adverbs are not morphologically derived from adjectives and exhibit most, if not all, of the properties that particles in other languages have \citep{giouli_etal_2019}. Moreover, they have two distinct functions: as adverbs denoting time or location, they are used as modifiers; combined with prepositions, they form complex prepositions \citep{holton_etal_1997}, as for example (el) {{μπροστά από}} \textit{brosta apo} (lit. `in-front from') `in front of', (el) {{μέσα σε}} \textit{mesa se} (lit. `in to') `in', (el) {{πάνω από}} \textit{pano apo} (lit. `over of') `over', etc. Given their resemblance with VPCs in other languages in terms of their properties, we decided to retain the latter class for Greek as well, and therefore expressions as the ones depicted in (\ref{ex:pefto-mesa.vpc}) and (\ref{ex:vazo-bros}) were classified as VPCs. In terms of their semantics, VPCs were identified as non-compositional in meaning. As previously shown \citep{savary_etal_2019}, these constructions are the most ambiguous. Depending on the context, they can be used literally and have a fully compositional meaning. In that case, they are not VMWEs.
+
+\ea
+\label{ex:pefto-mesa.vpc}
+\glll
+\GiouliHighlight{{πέφτω$_i$}} \GiouliHighlight{{μέσα}} στις προβλέψεις μου$_i$\\
+pefto 		mesa stis provlepsis mu\\
+fall.\textsc{prs.1sg} in
+to-the.\textsc{pl.acc} 
+prediction.\textsc{pl.acc} 
+my.\textsc{1sg}\\
+\glt ‘to succeed in my predictions’
+\ex
+\label{ex:vazo-bros}
+\glll
+\GiouliHighlight{{βάζω}} \GiouliHighlight{{μπρος}} {τη} {μηχανή}\\
+{vazο} {bros} {ti} {michani}\\
+{put.\textsc{prs.1sg}} {forward} {the.\textsc{sg.acc}} {engine.\textsc{sg.acc}} \\
+\glt ‘to start the engine’
+\z
+
+Once they were selected for inclusion, they were assigned a frame based on their semantics. As mentioned above, we have so far treated VMWEs that belong to the semantic domains of emotion, cognition, and communication -- and the respective frames. For example, the LVCs  (el) {{κάνω μάθημα}}.lvc \textit{kano mathima} (lit. `make.\textsc{prs.1sg} lesson.\textsc{sg.acc}') `to teach', (el) {{δίνω μάθημα}}.lvc \textit{dino mathima} (lit. `give.\textsc{prs.1sg} lesson.\textsc{sg.acc}') `to teach', (el) {{δίνω συμβουλή}}.lvc \textit{dino symvuli} (lit. 'give.\textsc{prs.1sg} advice.\textsc{sg.acc}') `to advice' and (el) {{δίνω οδηγία}}.lvc \textit{dino odigia} (lit. `give.\textsc{prs.1sg} instruction.\textsc{sg.acc}') `to instruct', have been included in the resource within the \texttt{Transferring-knowledge} frame which also includes the single word LUs \textit{διδάσκω}.v \textit{didasko} (`to teach'), \textit{μαθαίνω}.v \textit{matheno} (`to teach'), etc. Variants of the selected VMWEs were included in the database as separate LUs and encoded as appropriate. For example, the LVC (el) {{παίρνω}} {{απόφαση}} \textit{perno apofasi} (lit. `take.\textsc{prs.1sg} decision.\textsc{sg.acc}') `to decide' and its variant form (el) {{λαμβάνω}} {{απόφαση}} \textit{lamvano apofasi} (lit. `take.\textsc{prs.1sg} decision.\textsc{sg.acc}') `to decide' are both treated as LUs in the \texttt{Deciding} frame; the latter has a formal register.
+
+At the next stage, the arguments of the semantic predicate, that is, the VMWE taken as a whole, were identified and assigned FEs as appropriate. In this respect, we are no longer interested in the internal structure of the VMWE, that is, its fixed or lexicalised elements and the grammatical functions they assume, but rather in the non-fixed ones. Thus, FEs realised as arguments or adjuncts of the VMWE (taken as a whole) were identified and encoded.
+
+
+\section{Corpus annotation}
+\label{sec:05-annotation}
+Corpus annotation in BFN and related projects is aimed at documenting the range of syntactic and semantic combinatorial possibilities, or valences, of words in each of their senses. FrameNet annotation is always done relative to one particular lexical unit, the target, which is most often a single-word but can also be a multiword expression such as a phrasal verb (for example, \GiouliHighlight{{give in}}) or an idiom (e.g., \GiouliHighlight{{take into account}}). In this respect, the final step in our work was the annotation of selected instances of the MWEs used in context. One consideration, therefore, has been the selection of sentences from the corpus that will serve as ideal examples to annotate. This procedure resulted in the validation of frame definition and assignment and led to revisions and amendments where needed. The annotated corpus currently amounts to ca. 2600 sentences. 
+
+Annotation was performed on top of textual data that were pre-processed automatically via UDPipe \citep{straka_strakova_2017} at the levels of lemmatisation, part-of-speech (POS) tagging, and dependency parsing. Annotation on the lexical level was performed manually. Two students annotated selected sentences using the web annotation tool WebAnno \citep{yimam_etal_2013}. Annotation was performed as a two-step procedure taking both verb and noun as targets. At the first stage, MWEs that constitute semantic predicates mapped onto a concept were selected. The selected markables were then annotated at the SemPred layer which is available as a WebAnno built-in module. According to the guidelines set, the markable was assigned a Part-of-Speech tag as appropriate, and the canonical form of the MWE at hand. A second span layer, namely, SemArg, represents slot fillers. The arguments and modifiers of the MWE (taken as a whole) were identified, and the semantic roles they assume were further specified. An instance of the annotation tool is illustrated in Figure \ref{fig:webanno}.
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figures/05/webanno-4.png}
+    \caption{Annotating MWEs in Webanno.}
+    \label{fig:webanno}
+\end{figure}
+
+Annotations were carried out independently by the two annotators; however, in order to ensure the highest quality of the dataset created, extended discussions followed each annotation cycle and adjudication of the annotations was performed where needed.
+
+At this point, in order to better account for the properties of MWEs in Greek and their idiosyncrasies, a short description of the Greek language is in order. Modern Greek is a highly inflected language: nouns, adjectives, and certain pronouns show a rich inflectional system that features three grammatical genders (masculine, feminine, neuter), singular and plural numbers, and four cases (nominal, genitive, accusative, and vocative). The verbal inflectional system is equally rich: verbs inflect for person, number, tense, aspect, etc. Moreover, in terms of syntax, Greek is a language with a relatively free order of main constituents in a clause. The basic or unmarked order mainly follows the verb-subject-(object) pattern \citep[426]{holton_etal_1997}; however, other variations are also attested, but these alternatives are appropriate in certain discourse contexts \citep{holton_etal_1997}. This flexibility is due to case marking that signals the function of nominals: subjects are attested in the nominative case, whereas objects are most often in the accusative or in the genitive case; nominal complements of prepositions are also either in the accusative or the genitive. Finally, being a pro-drop language, Greek allows null subjects; the absence of a full or weak subject pronoun is accommodated by verbal morphology. 
+
+Following the above, MWEs often occur in various configurations. As a guideline, we tried to select sentences for annotation in which all FEs of the frame are realised by constituents that are part of the maximal phrase headed by the target word, including subjects -- if possible. It should be noted that the BFN uses the Constructional Null Instantiation (CNI) tag as a mechanism to model the omitted constituents. Cases of CNI include the omitted subject of imperative sentences, the omitted agent of passive sentences, and of course null subjects, or the PRO-elements; we only adopted the afore-mentioned approach for the null subjects in cases where we had to include such sentences in the corpus.
+
+\subsection{Annotation with NMWEs as targets}\largerpage
+Annotation with NMWEs as targets was relatively easy, as most NMWEs are continuous structures; modifiers of these NMWEs are realisations of their FEs.
+For example, the NMWEs (el) {{φόρος}} {{εισοδήματος}}.nmwe \textit{foros isodimatos} (lit. `tax income.\textsc{sg.gen}') `income tax' and (el) {{τέλη}} {{κυκλοφορίας}}.nmwe \textit{teli kykloforias} (lit. `tax.\textsc{pl} circulation.\textsc{sg.gen}') `road tax' which are subsumed under the \texttt{Tax-payment} frame, are annotated as taking the FEs \GiouliHighlightFrame{TAXPAYER} and \GiouliHighlightFrame{AMOUNT}, as shown in (\ref{ex:fysiko-prosopo}):
+
+\ea
+\label{ex:fysiko-prosopo}
+\glll
+\GiouliHighlight{{φόρος}} \GiouliHighlight{{εισοδήματος}} {$[$φυσικών} {προσώπων$\GiouliCategory{TAXPAYER}$ $]$} {$[$3,7 δισ. ευρώ$\GiouliCategory{AMOUNT}$$]$ }\\
+{foros} {isodimatos} {fysikon} {prosopon} {3.7 disekatomiria evro} \\
+{tax} {income}.\textsc{sg.gen} {natural.\textsc{pl.gen}} {person.\textsc{pl.gen}} {3.7 billion.\textsc{pl.acc} euro.\textsc{pl.acc}}\\
+\glt ‘personal income tax amounting to 3.7 billion euros’
+\z
+
+In some cases, NMWEs come in the form of structures with shared heads as nested expressions, raising issues during annotation. As they are encoded as separate LUs in the database, annotation uses the feature \textit{Null} retained for non-lexicalised constituents, and annotation is performed for each MWE separately.
+
+\ea
+\label{ex:shared}
+\glll
+{Τα} {$[$κόκκινα$\GiouliCategory{TYPE}$$]$} \GiouliHighlight{{{στεγαστικά}}} \GiouliHighlight{{{δάνεια}}} \\
+{ta} {kokina} {stegastika} {dania} \\
+{the.\textsc{pl}} {red.\textsc{pl}} {home.\textsc{pl}} {loan.\textsc{pl}} \\
+\glt ‘the non-performing home loans’
+\z
+
+When annotation was performed with a verb as targets, occurences of NMWEs were annotated as FEs of the respective frames. As shown in (\ref{ex:kentriki-trapeza}), the NMWE (el) {{κεντρική}} {{τράπεζα}}.nmwe \textit{kentriki trapeza} `central bank' is realised in the sentence as the \GiouliHighlightFrame{BORROWER} of the frame \texttt{Lending} in which the LU {δανείζω}.v \textit{danizo} `lend' occurs, whereas, the NMWE LU (el) {{εμπορικές τράπεζες}} \textit{eborikes trapezes} `commercial banks' (headed by the preposition από \textit{apo} `by') is realised as the \GiouliHighlightFrame{LENDER}.
+
+
+\ea
+\label{ex:kentriki-trapeza}
+\glll
+{$[$Η} {\GiouliHighlight{{κεντρική}}} {\GiouliHighlight{{τράπεζα}}$\GiouliCategory{BORROWER}$$]$} {δανείζεται} {$[$χρήματα$\GiouliCategory{THEME}$$]$} {$[$από} {τις} {\GiouliHighlight{{εμπορικές}}} {\GiouliHighlight{{τράπεζες}}$\GiouliCategory{LENDER}$$]$} \\
+{I} {kentriki} {trapeza} {danizete} {chrimata} {apo} {tis} {eborikes} {trapezes} \\
+{The.\textsc{sg.nom}} {central.\textsc{sg.nom}} {bank.\textsc{sg.nom}} {borrow.\textsc{prs.3sg}} {money.\textsc{pl.acc}} {from} {the.\textsc{pl.acc}} {commercial.\textsc{pl.acc}} {bank.\textsc{pl.acc}} \\
+\glt ‘The central bank borrows money from the commercial banks’ \\
+\z 
+
+%\ea
+%\label{anadiarthrosi}
+%\glll
+%$[$Η Ελλάδ$α\GiouliCategory{FACILITATED}$$]$ σε οποιαδήποτε σενάριο $[$αναδιάρθρωσης χρέου$ς\GiouliCategory{FACILITATION}$$]$ δεν μπορεί να ζητήσει [MANNER μείωση επιτοκίων] \\
+%I       	Ellada          	se     	opiodiopote  	senario anadiarthrosis           	chreoys		den  	mpori           	na    zitisi 	miosi            	epitokion \\
+%The  	Greece         	in     	any              	scenario restructuring.SG.GEN	 debt.SG.GEN 	not        can.3.sg        	to     ask   	reduction.acc rates.pl.gen\\
+%\glt ‘Greece, in any scenario of debt restructuring, cannot ask for a rate reduction.’
+%\z
+\subsection{Annotation with VMWEs as targets}
+
+Annotation of VMWEs proved to be challenging. Only VMWEs in an idiomatic use were taken into account, whereas literal occurrences of MWEs were not annotated. Literal occurrences of MWEs, also referred to as their literal readings or literal meanings, have received considerable attention equally from the linguistic and the computational communities. In an experiment run for German, Greek, Basque, Polish, and Brazilian Portuguese, \citet{savary_etal_2019} report almost 11.5\% of the VMWE occurrences in the Greek corpus to be literal readings of the VMWE surface forms -- a phenomenon referred to as the \textit{literal-idiomatic ambiguity}.\footnote{For a definition of the literal-idiomatic ambiguity, see \citep{savary_etal_2019}.} Other VMWEs were found to be semantically ambiguous (17\% of the VMWEs), bearing different meanings based on the context. Usually, VIDs that comprise a verb predicate and the weak form of a personal pronoun are ambiguous, whereas LVCs and VPCs were also found to have more than one sense or usage.
+
+In our database, 31 out of the 671 LUs that are VMWEs (4.77\%) are also instances of polysemous entries. Following standard lexicographic practices, the latter were subsumed under different frames based on their meaning. For example, the LVC (el) {{δίνω απάντηση}} \textit{dino apantisi} (lit. `give answer') `to answer' in (\ref{ex:dino-apantisi-1}) has been included in the \texttt{Communicating-response} frame; in a broader sense depicted in (\ref{ex:dino-apantisi-2}), it also evokes the \texttt{Expressing-opinion} one. The two frames are defined via two distinct sets of FEs as shown in Table \ref{tab:evoke-frame}.
+
+\begin{table}
+\caption{The \texttt{Communicating a response} and \texttt{Communicating an opinion} frames.}
+\label{tab:evoke-frame}
+\centering
+ \begin{tabularx}{\textwidth}{ >{\raggedright}p{\widthof{\texttt{Communicating}}} Q p{\widthof{Enquirer}}}
+  \lsptoprule
+Frame         & Definition  & FEs\\
+  \midrule
+\texttt{Communicating a response} & A Speaker uses language (oral or written) to answer a certain Question that might be asked by an Enquirer. The Manner and Means might be mentioned.&  Speaker\newline Enquirer\newline Topic\newline Manner \\\addlinespace
+\texttt{Communicating an opinion}  & A Speaker or Statement uses language in order to share or make public their Opinion about a  certain Topic. Their Strength of Opinion might be present as an adverb.&   Speaker\newline Opinion\newline Topic\newline Strength \\
+\lspbottomrule
+\end{tabularx}
+\end{table}
+
+Once their sense was disambiguated, encoding and annotating them posed no serious problems. Like single-word verb predicates, issues that arise during the annotation of VMWEs of all types are relevant to the granularity of the role-set employed or the specification of the appropriate role. Our approach to MWEs in FN-el is comparable to the approach taken in BFN – especially for the LVCs. Annotation was performed with the semantic head, that is, the predicative noun, as the target as shown in (\ref{ex:dino-apantisi-1}) and (\ref{ex:dino-apantisi-2}). 
+
+\ea
+\label{ex:dino-apantisi-1}
+\glll
+Η υπουργός \GiouliHighlight{{έδωσε\textsuperscript{\normalfont Supp}}} σαφή \GiouliHighlight{{{απάντηση}}} στους μαθητές.\\
+i ypurgos edose safi apantisi stus mathites \\
+The.\textsc{sg.nom} minister.\textsc{sg.nom} give.\textsc{pst.3sg}  clear.\textsc{sg.acc} answer.\textsc{sg.acc} to.the.\textsc{pl.acc} students.\textsc{pl.acc}\\
+\glt ‘The minister gave clear answers to the students.’
+\ex
+\label{ex:dino-apantisi-2}
+\glll
+Το κείμενο \GiouliHighlight{{δίνει\textsuperscript{\normalfont Supp}}} πειστικές \GiouliHighlight{{{απαντήσεις}}} σε αιώνια προβλήματα.\\
+To kimeno dini pistikes apantisis se eonia provlimata \\
+The.\textsc{sg.nom} text.\textsc{sg.nom} give\textsc{.prs.3sg}  convincing.\textsc{pl.acc} answer.\textsc{pl.acc} to eternal.\textsc{pl.acc} problem.\textsc{pl.acc} \\
+\glt ‘The text provides answers to eternal issues.’
+\z
+
+
+Similarly, VIDs, MVCs, and VPCs were treated as a whole. The major issue we encountered, however, is due to the fact that, unlike NMWEs, VMWEs are highly discontinuous structures leading to issues in annotation, as shown in (\ref{ex:discontinuities}). To overcome this obstacle, layers of annotation provide the dependency graphs that are relative to a sentence. These may be retrieved to account for the structure of the MWE. 
+
+\ea
+\label{ex:discontinuities}
+\glll
+Δεν είναι διαφανής η \GiouliHighlight{{απόφαση}} που τελικά \GiouliHighlight{{έλαβαν}}. \\
+Den ine diafanis i apofasi pou telika elavan \\
+Not is.\textsc{prs,3sg} transparent.\textsc{sg.nom} the.\textsc{sg.nom} decision.\textsc{sg.nom} that finally take.\textsc{pst.3pl} \\
+\glt ‘The decision that they finally made was not transparent.’
+\z
+
+Discrepancies between the single- and multiword LUs are abundant and need to be identified based on corpus evidence. In the remainder of the section, we will present the mismatches found in our data, which were depicted in the encoding. VMWEs were systematically found to have fewer FEs realised than their single-word counterparts. This is especially true for LVCs as opposed to their single-word counterparts. In most occurrences, the predicative noun is realised in plural, indicating, thus, an aspectual reading of the LVC, i.e., repetition. In these cases, it is not the verb, but the nominal predicate that triggers the aspectual reading of the whole construction, whereas the verb remains bleached. For example, the multiword LU (el) {{παίρνω}} {{απόφαση}}.lvc \textit{perno apofasi} (lit. `take decision') ‘to make a decision, to decide' and the single verb (el) {αποφασίζω}.v \textit{apofasizo} `to decide' both evoke the \texttt{Deciding} frame defined via the \GiouliHighlightFrame{COGNISER} and \GiouliHighlightFrame{DECISION FE}s. In our corpus, the LVC at hand was found to systematically realise only the \GiouliHighlightFrame{COGNISER FE} in the form of a NP in Subject position (in the nominative case), whereas it consistently lacks the \GiouliHighlightFrame{DECISION} one, as shown in (\ref{ex:perno-apofasi}); non-core FEs are usually realised as modifiers of the nominal predicate. By contrast, the \GiouliHighlightFrame{FE DECISION} is realised only in the single word LU as a to-clause, as depicted in (\ref{ex:apofasizo}). 
+
+\ea
+\label{ex:perno-apofasi}
+\glll
+$[$Οι ηγέτες$\GiouliCategory{COGNISER}$$]$ {\GiouliHighlight{παίρνουν}} $[$υπεύθυνες$\GiouliCategory{MANNER}$$]$ {\GiouliHighlight{αποφάσεις}}. \\
+i igetes pernun ypeythines apofasis \\
+the.\textsc{pl.nom} leader.\textsc{pl.nom} take.\textsc{prs.3pl} responsible.\textsc{pl.acc} decision.\textsc{pl.acc} \\
+\glt ‘the leaders make decisions in a responsible way.'
+\ex
+\label{ex:apofasizo}
+\glll
+$[$Ο Γιάννης$\GiouliCategory{COGNISER}$$]$ \GiouliHighlight{αποφάσισε} $[$να φύγει$\GiouliCategory{DECISION}$$]$. \\
+O Gianis apofasise na figi \\
+The.\textsc{sg.nom} John.\textsc{sg.nom} decide.\textsc{pst.3sg} to leave \\
+\glt ‘John decided to leave.'
+\z
+
+
+Notably, certain VIDs bear a meaning that also incorporates one of their elements, most often intensifiers, but also other arguments as well. In this respect, the VPC in (\ref{ex:pefto-mesa}) incorporates the FE \GiouliHighlightFrame{MANNER} that is realised as the adjunct (el) σωστά \textit{sosta} ‘correctly' assumed by its single word counterpart {μαντεύω}.v \textit{mantevo} ‘to guess'. This is due to the fact that the VMWE (el) {{πέφτω}} {{μέσα}}.vpc \textit{pefto mesa} (lit. `fall in') ‘to guess correctly', bears a positive reading in contrast to its single-word counterpart (el) {μαντεύω}.v \textit{madevo} ‘to guess' that bears a neutral reading. In these cases, we retain the FE at hand in the frame, but we encode it as being realised only in the single-word predicate based on corpus evidence.
+
+\ea
+\label{ex:pefto-mesa}
+\glll
+πέφτω μέσα \\
+pefto 		mesa \\
+fall.\textsc{prs.1sg}	in \\
+\glt ‘to guess correctly'
+\z
+
+In most cases, the argument structure of complex predicates deviates from the patterns assumed by their single-word counterparts. This is particularly true about VIDs, due to the fact that they generally follow the valence of their syntactic verb head. For example, the single-word verbal predicate (el) {εξοργίζω}.v \textit{exorgizo} ‘to enrage' is an Object Experiencer verb, that is, a verb which assumes the FE \GiouliHighlightFrame{EXPERIENCER} (i.e. the entity that experiences the denoted emotion event); this FE is realised as a NP in the accusative case and in Object position. The CAUSE of the event is realised as an argument, that functions as the Subject of the verb, as shown in (\ref{ex:exorgizo}) \citep{giouli_2020}. In contrast, in the case of the VID (el) {{ανεβάζω}} {{το}} {{αίμα}} {{στο}} {{κεφάλι}} \textit{anevazo to ema sto kefali} (lit. ‘raise.\textsc{prs.1sg} the.\textsc{sg.acc} blood.\textsc{sg.acc} to-the.\textsc{sg.acc} head.\textsc{sg.acc}') ‘to enrage', the core FE \GiouliHighlightFrame{EXPERIENCER} is the non-lexicalised element of the VMWE and is realised as a nominal complement (usually, the weak form of the personal pronoun) in the genitive case, whereas the \GiouliHighlightFrame{CAUSE} of the emotion is realised as a NP in Subject position, as depicted in (\ref{ex:anevazo-to-aima}). The weak pronoun (el) {μου} \textit{moy} ‘my' in the genitive case is due to the valence pattern entailed by the syntactic head of the VMWE; yet, it is annotated as \GiouliHighlightFrame{EXPERIENCER}.
+
+\ea
+\label{ex:exorgizo}
+\glll
+$[$Ο Γιάννης$\GiouliCategory{CAUSE}$$]$ $[$με$\GiouliCategory{EXPERIENCER}$$]$ εξοργίζει. \\
+O     Giannis       		     me 	exorγizi \\
+The\textsc{sg.nom}   John\textsc{sg.nom}  	me\textsc{1sg.acc} enrage.\textsc{prs.3sg} \\
+\glt ‘John makes me furious.’
+\ex
+\label{ex:anevazo-to-aima}
+\glll
+$[$Ο Γιάννης$\GiouliCategory{CAUSE}$$]$ $[$μου$\GiouliCategory{EXPERIENCER}$$]$ \GiouliHighlight{{ανέβασε}} \GiouliHighlight{{το}} \GiouliHighlight{{αίμα}} \GiouliHighlight{{στο}} \GiouliHighlight{{κεφάλι}}. \\
+O Giannis moy anevase to ema sto kefali \\
+The.\textsc{sg.nom}  John.\textsc{sg.nom} 	me\textsc{1sg.gen} raise.\textsc{pst.3sg}   	the.\textsc{sg.acc} blood.\textsc{sg.acc} to.the.\textsc{sg.acc} head.\textsc{sg.acc} \\
+\glt ‘John made me furious.’
+\z
+
+\begin{sloppypar}
+\noindent
+Similar discrepancies are attested for other types of MWEs, for example, LVCs. Note that whereas the FE \GiouliHighlightFrame{THEME} is realised as a NP in the single word LU (el) {αναφέρω}.v \textit{anafero} ‘to mention’, in (\ref{ex:mnimonevo}), the same FE is realised as a PP headed by the preposition (el) σε \textit{se} ‘to’ in the LVC (el) {{κάνω μνεία}} \textit{kano mnia} (lit. ‘make.\textsc{prs.1sg} mention.\textsc{sg.acc}’) ‘to mention’ as shown in (\ref{ex:kano-mnia}).
+These discrepancies between single- and multiword LUs in the realisation of their FEs have been studied and accounted for in the database based on corpus evidence.
+\end{sloppypar}
+
+\ea
+\label{ex:mnimonevo}
+\glll
+$[$Οι Times$]$ \GiouliHighlight{αναφέρουν} $[$τις αντιδράσεις$\GiouliCategory{THEME}$$]$. \\
+I Times anaferoyn tis antidrasis \\
+The.\textsc{pl.nom} Times refer.\textsc{prs.3pl} the.\textsc{pl.acc} reaction.\textsc{pl.acc} \\
+\glt ‘The Times refer to the reactions.’
+\ex
+\label{ex:kano-mnia}
+\glll
+$[$Οι Times$]$ \GiouliHighlight{{κάνουν}} \GiouliHighlight{{μνεία}} $[$στις αντιδράσεις$\GiouliCategory{THEME}$$]$. \\
+I Times kanun mnia stis antidrasis \\
+The.\textsc{pl.nom} Times make.\textsc{prs.3pl} reference.\textsc{sg.acc} to.the.\textsc{pl.acc} reaction.\textsc{pl.acc} \\
+\glt ‘The Times refer to the reactions.’
+\z
+
+Finally, syntactic alternations (i.e., passivisation, causative-inchoative alternation, etc.) that are attested for the single-word predicates of a frame are also attested for their VMWE counterparts, yet with different verbs as syntactic heads. This holds true for VIDs and LVCs alike. Indeed, LVCs which comprise the light verbs (el) βγάζω \textit{vgazo} ‘to take out’ and (el) βγαίνω \textit{vgeno} ‘to be taken out’ combined with the same predicative noun signal the causative – inchoative alternation and, in most cases, are assumed under the same frame. They predominately differ in the syntactic function of their lexicalised elements; as a result, the difference between the two is also depicted via their FEs and the grammatical function they assume. For example, the LVCs (el) {{βγάζω}} {{συμπέρασμα}}.lvc \textit{vgazo symperasma} (lit. ‘take-out.\textsc{prs.1sg} conclusion.\textsc{sg.acc}') ‘to conclude' and (el) {{βγαίνει}} {{συμπέρασμα}}.lvc \textit{vgeni symperasma} (lit. ‘is-taken-out.\textsc{3sg}   conclusion.\textsc{sg.nom}') ‘it is concluded' enter in the causative-inchoative alternation. In the former, the lexicalised element is the argument in object position (and following the rules of the language, it is realised as a NP in the accusative case); on the contrary, the latter has an argument in subject position as the lexicalised element. They are both assigned in the same \texttt{Coming-to-Beleive} frame, yet different FEs are realised for each one of them, since the two multiword LUs differ in the perspective: for the former, the \GiouliHighlightFrame{COGNISER} is realised, whereas the latter occurs with the \GiouliHighlightFrame{THEME} as shown in (\ref{ex:vgazo-symperasma}) and (\ref{ex:vgeni-symperasma}):\largerpage[2]
+
+\ea
+\label{ex:vgazo-symperasma}
+\glll
+$[$Οι πολίτες$\GiouliCategory{COGNISER}$$]$ \GiouliHighlight{{βγάζουν}} τα \GiouliHighlight{{συμπέρασματά}} τους. \\
+I polites vgazun ta	simperasmata tus\\
+The.\textsc{pl.nom} citizen.\textsc{pl.nom} take.out.\textsc{prs.3sg} the.\textsc{pl.acc} conclusion.\textsc{pl.acc} their\textsc{3sg}\\
+\glt ‘Citizens come to a conclusion.’
+\ex
+\label{ex:vgeni-symperasma}
+\glll
+\GiouliHighlight{{Βγαίνει}} το \GiouliHighlight{{συμπέρασμα}} $[$ότι η χώρα κινδυνεύει$\GiouliCategory{THEME}$$]$. \\
+vgeni to simperasma oti i chora kindinevi\\
+go.out.\textsc{prs.3sg}.\textsc{pres} the.\textsc{sg.nom} conclusion.\textsc{sg.nom} that the country is-in-danger\\
+\glt ‘It is concluded that the country is in danger.’
+\z
+
+
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have presented work aimed at encoding MWEs that pertain to the grammatical categories of noun and verb to a frame-based lexical resource for Modern Greek. The work reported here is part of a larger initiative to construct a lexical database for Modern Greek with an inventory of language-specific frames around which to organise lexical units along the principles already set by BFN and other frame-based resources. Our MWE exploration has also taken into account multiword terms that pertain to the financial domain besides MWEs from the general language.
+For each MWE, we wish to provide information with respect to frame membership, valence, and access to a large number of annotated examples. Relations with other LUs (both single- and multiword ones) via the frame-to-frame relations already available in the resource have also been defined.  The internal structure of the MWEs and their syntactic variations are depicted by means of the annotation layers that are available as pre-processing of the corpus; the focus is no longer on the representation of the internal structure of MWEs and their lexicalised elements, but on their valences; these are depicted via the annotated instances that are included as examples in the database. 
+
+Our contribution is two-fold: on the one hand, we provide an overview of the treatment of various types of MWEs in the Greek FrameNet aimed at mapping form onto meaning; on the other hand, we focus on the discrepancies between MWEs and their single-word counterparts. As we have shown, VMWEs were systematically found to have fewer FEs realised than their single-word counterparts bearing the same meaning. Moreover, in LVCs when the predicative noun is realised in plural an aspectual reading of the LVC is possible, i.e., repetition; this aspectual reading is also due to the missing FEs that denote a change in perspective. In a way, this type of representation allows us to provide the deep semantics of MWEs in a way that is comparable to the treatment of single-word lexical entries. For cases of polysemy and near synonymy, the strong apparatus of frame semantics allows us to explore distinct meanings of MWEs that pertain to LSP (terms) and general language lexical entries alike via frame assignment and FE definition.
+
+The work on FN-el is still in progress, and encoding is continuously subject to refinements and modification. Future work has already been planned towards enriching FN-el with new frames and LUs, both single and multiword ones. In another line of research, the alignment of FN-el frames with the BFN ones is currently underway. Finally, since this lexical resource provides the representation of the lexical and syntactic properties of the MWEs only via the annotated data, we plan to link FN-el to an existing lexical resource for Modern Greek that bears this information.
+
+
+\section*{Abbreviations}
+\begin{tabular}{@{}ll@{}}
+BFN  & Berkley FrameNet\\
+FE & Frame element\\
+FN-el & Greek FrameNet \\
+LU & Lexical unit\\
+LVC & Light verb construction \\
+MWE & Multiword expression\\
+NMWE & Nominal multiword expression\\
+NP & Noun phrase \\
+PP & Prepositional phrase \\
+VID & Verbal idiomatic expression \\
+VMWE & Verbal multiword expression\\
+VP & Verb phrase \\
+VPC & Verb-particle construction\\
+\end{tabular}
+
+
+\section*{Acknowledgements}
+The authors would like to thank the editors and the anonymous reviewers for their comments and insightful suggestions that contributed to improving the manuscript. The research leading to the results presented in this chapter was partially funded by the project “AIO-ILSP: Lexical Resource Infrastructures”, which was financed by the Institute for 
+Language and Speech Processing, ATHENA Research Centre. Corpus annotation and frame assignment were performed by V. Pilitsidou and H. Christopoulos within the framework of the Postgraduate Programme \textit{Translation and Interpreting} of the National and Kapodistrian University of Athens, Faculty of Turkish Studies and Modern Asian Studies.
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}

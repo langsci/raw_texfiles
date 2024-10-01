@@ -1,0 +1,243 @@
+\SetupAffiliations{output in groups = false,
+                   orcid placement = after,
+                   separator between two = {\bigskip\\},
+                   separator between multiple = {\bigskip\\},
+                   separator between final two = {\bigskip\\}
+                   }
+
+% ORCIDs in langsci-affiliations 
+\definecolor{orcidlogocol}{cmyk}{0,0,0,1}
+\RenewDocumentCommand{\LinkToORCIDinAffiliations}{ +m }
+  {%
+    \,\orcidlink{#1}%
+  }
+
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\makeatother
+
+% Cite and cross-reference other chapters
+\newcommand{\crossrefchaptert}[2][]{\citet*[#1]{chapters/#2}, Chapter~\ref{chap-#2} of this volume} 
+\newcommand{\crossrefchapterp}[2][]{(\citealp*[#1]{chapters/#2}, Chapter~\ref{chap-#2} of this volume)}
+\newcommand{\crossrefchapteralt}[2][]{\citealt*[#1]{chapters/#2}, Chapter~\ref{chap-#2} of this volume}
+\newcommand{\crossrefchapteralp}[2][]{\citealp*[#1]{chapters/#2}, Chapter~\ref{chap-#2} of this volume}
+
+\newcommand{\crossrefcitet}[2][]{\citet*[#1]{chapters/#2}} 
+\newcommand{\crossrefcitep}[2][]{\citep*[#1]{chapters/#2}}
+\newcommand{\crossrefcitealt}[2][]{\citealt*[#1]{chapters/#2}}
+\newcommand{\crossrefcitealp}[2][]{\citealp*[#1]{chapters/#2}}
+
+
+\newcommand{\sub}[1]{\textsubscript{\scriptsize\textrm{#1}}}
+% Müller
+\newcommand{\page}{}
+
+\let\citew\citet
+\def\underRevision{Revise and resubmit}
+\let\textbfemph\emph
+
+%% % taken from https://tex.stackexchange.com/a/95079/18561
+\newbox\usefulbox
+
+\makeatletter
+\def\getslant #1{\strip@pt\fontdimen1 #1}
+
+\def\skoverline #1{\mathchoice
+ {{\setbox\usefulbox=\hbox{$\m@th\displaystyle #1$}%
+    \dimen@ \getslant\the\textfont\symletters \ht\usefulbox
+    \divide\dimen@ \tw@ 
+    \kern\dimen@ 
+    \overline{\kern-\dimen@ \box\usefulbox\kern\dimen@ }\kern-\dimen@ }}
+ {{\setbox\usefulbox=\hbox{$\m@th\textstyle #1$}%
+    \dimen@ \getslant\the\textfont\symletters \ht\usefulbox
+    \divide\dimen@ \tw@ 
+    \kern\dimen@ 
+    \overline{\kern-\dimen@ \box\usefulbox\kern\dimen@ }\kern-\dimen@ }}
+ {{\setbox\usefulbox=\hbox{$\m@th\scriptstyle #1$}%
+    \dimen@ \getslant\the\scriptfont\symletters \ht\usefulbox
+    \divide\dimen@ \tw@ 
+    \kern\dimen@ 
+    \overline{\kern-\dimen@ \box\usefulbox\kern\dimen@ }\kern-\dimen@ }}
+ {{\setbox\usefulbox=\hbox{$\m@th\scriptscriptstyle #1$}%
+    \dimen@ \getslant\the\scriptscriptfont\symletters \ht\usefulbox
+    \divide\dimen@ \tw@ 
+    \kern\dimen@ 
+    \overline{\kern-\dimen@ \box\usefulbox\kern\dimen@ }\kern-\dimen@ }}%
+ {}}
+\makeatother
+
+% 1_intro.tex
+
+% For the block quote:
+\definecolor{linequote}{RGB}{224,215,188}
+\definecolor{backquote}{RGB}{249,245,233}
+
+\NewDocumentEnvironment{myquote}{ +m }
+  {%
+    \begin{tblsfilled}{}[black!12]
+    #1%
+  }
+  {\end{tblsfilled}}
+
+% 2_gibson.tex
+
+
+% Example(s) Environments
+% 12pt, No new-lines after example number is printed
+
+\newcounter{examplectr}
+\newcounter{fnexamplectr}
+
+% Note: don't use subexamples in footnotes.
+
+% This line is to overcome a bug in cmu-art style: it prints counter
+% values to the aux file using \theaux... rather than using \the...
+\def\theauxexamplectr{\theexamplectr}
+
+\newcounter{subexamplectr}
+\def\theauxsubexamplectr{\thesubexamplectr}
+\def\theauxfnexamplectr{\thefnexamplectr}
+
+\renewcommand{\theexamplectr}{\arabic{examplectr}}
+% This command causes example numbers to appear without following periods
+
+\renewcommand{\thefnexamplectr}{\roman{fnexamplectr}}
+% This command causes example numbers to appear without following periods
+
+\renewcommand{\thesubexamplectr}{\theexamplectr\alph{subexamplectr}}
+% This command gives the number of an example and subexample as e.g. 1a, 2b
+
+\newlength{\wdth}
+\newcommand{\strike}[1]{\settowidth{\wdth}{#1}\rlap{\rule[.5ex]{\wdth}{1pt}}#1}
+
+\newcommand{\exref}[1]{(\ref{#1})}
+% This command puts reference numbers with parentheses
+% surrounding them 
+
+% The environment ``examples'' gives a list of examples, one on each line,
+% numbered with a lower case alphabetic character
+\newenvironment{examples}%
+   { \vspace{-\baselineskip}
+     \begin{list}%
+     \textrm{\alph{subexamplectr}.}%
+     {\usecounter{subexamplectr}
+     \setlength{\topsep}{-\parskip}
+     \setlength{\itemsep}{-2pt}
+     \setlength{\leftmargin}{0.5in}
+     \setlength{\rightmargin}{0in} } }%
+   { \end{list}}
+
+% The environment ``myexample'' outputs an arabic counter ``examplectr''
+% surrounded by parentheses.
+\newenvironment{myexample}
+   { \vspace{20pt}
+     \noindent
+     \begin{minipage}{\textwidth}    % minipage environment disallows
+                 % breaks across pages
+
+     \refstepcounter{examplectr}     % step the counter and cause this
+                 % section to be referenced by the
+                 % counter ``examplectr''
+     (\arabic{examplectr})}%
+   { \vspace{20pt}
+     \end{minipage}}
+
+\newenvironment{myfnexample}
+   { \vspace{2pt}
+     \noindent
+     \begin{minipage}{\textwidth}    % minipage environment disallows
+                 % breaks across pages
+
+     \refstepcounter{fnexamplectr}     % step the counter and cause this
+                 % section to be referenced by the
+                 % counter ``examplectr''
+     (\roman{fnexamplectr})}%
+   { \vspace{2pt}c
+     \end{minipage}}
+    
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+\newcommand{\data}[1]{\textit{#1}}
+\newcommand{\nodata}[1]{#1}
+\newcommand{\blank}{\rule{1.2em}{0.5pt}}
+\newcommand{\pt}[1]{\ensuremath{\mathsf{#1}}}
+\newcommand{\ptv}[1]{\ensuremath{\textsf{\textsl{#1}}}}
+\newcommand{\sv}[1]{\ensuremath{\mathcal{#1}}}
+
+\newcommand{\sX}{\sv{X}}
+\newcommand{\sF}{\sv{F}}
+\newcommand{\sG}{\sv{G}}
+\newcommand{\greekp}{\upvarphi}
+\newcommand{\greekr}{\uprho}
+\newcommand{\greeks}{\upsigma}
+\newcommand{\MultiLine}[1]{\ensuremath{\begin{array}[b]{@{}l@{}}#1\end{array}}}
+\newcommand{\LexEnt}[3]{#1; \ensuremath{#2}; \syncat{#3}}
+
+\newcommand{\LexEntBroken}[3]
+  {\Shortstack
+      {%
+        {#1;} 
+        {\ensuremath{#2};} 
+        {\syncat{#3}}%
+      }%
+  }
+
+\newcommand{\grey}[1]{\colorbox{mycolor}{#1}}
+\definecolor{mycolor}{gray}{0.8}
+
+\newcommand{\gap}{\longrule}
+\newcommand{\gp}{\gap}
+\newcommand{\vs}{\raisebox{.05em}{\ensuremath{\,\upharpoonright}}}
+
+\newcommand{\E}{ε}
+
+\newcommand{\EBob}[1]{\textsl{#1}}
+
+\newcommand{\B}{\textbf}
+\newcommand{\f}{{\color{green}f}}  % Question what does f do? It does not have any output in the
+                                % original PDF
+%\newcommand{\Lemma}{{\color{pink}Lemma}}
+\newcommand{\Lemma}{\ensuremath{\vdots\hskip.5cm\vdots}\noLine}
+
+%\newcommand{\calP}{{\color{pink}calP}} % Sebastian
+\newcommand{\calP}{\ensuremath{\mathcal{P}}}
+
+
+\newcommand{\maru}[1]{\ooalign{\hfil#1\/\hfil\crcr
+      \raise.05ex\hbox{\LARGE\mathhexbox20D}}}
+
+
+%\newcommand{\sem}[2][M\!,g]{\mbox{$[\![ \mathrm{#2} ]\!]^{#1}$}}
+\newcommand{\sem}{\ensuremath}
+
+%
+\newcommand{\trns}[1]{\textbf{#1}\xspace}
+\newcommand{\bs}{{\textbackslash}}
+\newcommand{\bsl}{{\bs}}
+\newcommand{\fb}[1]{\textsubscript{#1}}
+\newcommand{\syncat}[1]{\ensuremath{\mathrm{#1}}}
+\newcommand{\term}[1]{\textit{#1}}
+\newcommand{\LemmaAlt}{\ensuremath{\vdots\hskip.5cm\vdots}}
+\NewDocumentCommand{\VanLabel}{m}{\MakeUppercase{#1}}
+
+
+\newcommand{\togglepaper}[1][0]{
+   \bibliography{../localbibliography}
+   \papernote{\scriptsize\normalfont
+     \theauthor.
+     \titleTemp.
+     To appear in:
+     Edward Gibson \& Moshe Poliak (eds.).
+     From fieldwork to linguistic theory: A tribute to Dan Everett.
+     Berlin: Language Science Press. [preliminary page numbering]
+   }
+   \pagenumbering{roman}
+   \setcounter{chapter}{#1}
+   \addtocounter{chapter}{-1}
+}
+
+\newbool{bookcompile}
+\booltrue{bookcompile}
+\newcommand{\bookorchapter}[2]{\ifbool{bookcompile}{#1}{#2}}

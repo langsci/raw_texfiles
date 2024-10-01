@@ -1,0 +1,144 @@
+\usepackage{langsci-optional}
+\usepackage{langsci-gb4e}
+\usepackage{langsci-lgr}
+
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily,tabsize=2,breaklines=true}
+
+% afterpage
+\usepackage{afterpage}
+
+% biblatex
+% Possessive's (2023) citation, except for German
+\DeclareNameWrapperFormat{labelname:poss}{#1s}
+\DeclareFieldFormat{shorthand:poss}{%
+  \ifnameundef{labelname}{#1s}{#1}}
+\DeclareFieldFormat{citetitle:poss}{\mkbibemph{#1}s}
+\DeclareFieldFormat{label:poss}{#1s}
+\newrobustcmd*{\posscitealias}{%
+  \AtNextCite{%
+    \DeclareNameWrapperAlias{labelname}{labelname:poss}%
+    \DeclareFieldAlias{shorthand}{shorthand:poss}%
+    \DeclareFieldAlias{citetitle}{citetitle:poss}%
+    \DeclareFieldAlias{label}{label:poss}}}
+\newrobustcmd*{\posscite}{%
+  \posscitealias%
+  \textcite}
+\newrobustcmd*{\Posscite}{\bibsentence\posscite}
+\newrobustcmd*{\posscites}{%
+  \posscitealias%
+  \textcites}
+
+% biblatex
+% Make divider for multicites and multipostnotes semicolon instead of colon
+\renewcommand{\multicitedelim}{\addsemicolon\addspace}
+\renewcommand{\multipostnotedelim}{\addsemicolon\addspace}
+
+% biblatex
+% No punctuation after question mark
+% cf. https://github.com/dcpurton/biblatex-sbl/issues/7#issuecomment-172309750
+\DefineBibliographyExtras{german}{%
+  \DeclarePunctuationPairs{colon}{*}%
+}
+
+% biblatex
+% Use sane date format as specified in LangSci Generic Style Rules:
+% (Accessed YYYY-MM-DD) => (Zugriff am DD.MM.YYYY)
+% Essentially, undefine redefinition from langsci-unified.bbx. Copied from
+% biblatex/biblatex.def and modified from biblatex/lbx/german.lbx.
+\DefineBibliographyStrings{german}{%
+  % Defaults to "gesehen am" per biblatex/lbx/german.lbx
+  urlseen = {Zugriff am},
+}
+\renewbibmacro*{url+urldate}{%
+  \usebibmacro{url}%
+  \iffieldundef{urlyear}
+    {}
+    {\setunit*{\addspace}%
+     \usebibmacro{urldate}}}
+
+% csquotes
+% Quotations
+\usepackage{csquotes}
+\SetCiteCommand{\autocite}
+\SetBlockEnvironment{quote}
+\let\q\textquote
+
+% csquotes Centrally handle quotation style for word definitions:
+% object language ‘Objektsprache’ (preferred by AHL also for German)
+\DeclareQuoteStyle{wdef}%
+  {\textquoteleft}{\textquoteright}
+  {\textquotedblleft}{\textquotedblright}
+\newcommand{\wdef}[1]{{\setquotestyle{wdef}\enquote{#1}}}
+
+% csquotes
+% Redefine \textins in accordance with \ob … \cb from langsci-optional.sty
+\renewcommand{\mktextins}[1]{{\ob}#1{\cb}}
+
+% enumitem
+\usepackage{enumitem}
+
+% forest
+% Ability to draw tree diagrams
+\usepackage[linguistics]{forest}
+
+% forest
+% Forest styles to apply to trees for formatting
+\forestset{shorter edges/.style={
+  for tree={l sep-=.5em, l=0}
+}}
+\forestset{narrower nodes/.style={
+  for tree={s sep-=1em, s=0}
+}}
+\forestset{italic leaves/.style={
+  where n children=0{font=\itshape}{}
+}}
+\forestset{align text/.style={
+  where n children=0{tier=words}{}
+}}
+\forestset{nice empty nodes/.style={
+  for tree={fit=band}, % {calign=fixed edge angles},
+    delay={where content={}{for parent={for children={anchor=north}}}{}}
+}}
+
+% langsci-avm
+\usepackage{langsci-avm}
+\avmsetup{values=\normalfont}
+
+% makecell
+\usepackage{makecell}
+
+% microtype
+\usepackage{microtype}
+
+% multicols
+\usepackage{multicol}
+
+% multirow
+\usepackage{multirow}
+
+% relsize
+\usepackage{relsize}
+
+% tikz
+\usetikzlibrary{decorations}
+\usetikzlibrary{tikzmark}
+
+% tikz
+% Private style settings
+\tikzset{myarrow/.style={
+  -latex, shorten >= 2pt, shorten <= 2pt, min distance=.5cm, black!50
+}}
+\tikzset{mynodefont/.style={
+  font={\smaller\scshape}
+}}
+\tikzset{avmcontainer/.style n args={1}{
+  right=#1 of current bounding box.north east,
+  anchor=north west
+}}
+
+% threeparttable
+\usepackage{threeparttable}
+
+
+\usepackage{langsci-branding}

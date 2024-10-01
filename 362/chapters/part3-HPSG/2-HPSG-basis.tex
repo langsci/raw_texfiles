@@ -1,0 +1,889 @@
+In this work I adopt the HPSG framework, based mostly on the general principles laid out in \citet{Pollard.1994}, and updated more recently in \citet*{HPSG.2020}. This framework allows for a precise formal representation of all aspects of linguistic utterances (morphology, syntax, semantics and information structure) and provides a construction-based approach to extraction constructions \citep{Sag.1997,Sag.2010,Ginzburg.2000}. There is already considerable work on French in HPSG, which allowed me to build on a large body of detailed analyses for French syntax and semantics.\footnote{I.e.\ \citet{Miller.1997} and \citet{Abeille.2002} on clitics and auxiliaries, \citet{Abeille.2004} and \citet{Abeille.2006.AandDe} on \emph{de} and \emph{à} prepositions, \citet{Sag.1994.Godard} and \citet{Godard.1996} on dependents of nouns, \citet{Abeille.2003.Flexibility} and \citet{Abeille.2006.Correlatives} for extraction out of specifiers (with degree adverbs and comparative correlatives, respectively), \citet{Abeille.1997} and \citet{Kim.2002} on negation, as well as \citet{Abeille.2008.NP-preposing} and \citet{Marandin.2011} on information structure in French.} 
+\citet{Abeille.2007.Grammaires} gives an overview of an HPSG grammar for French which I partially adopt here, though with a binary branching approach.\footnote{HPSG implementations, such as the CoreGram Project \citep{Mueller.S.2015} and the DELPH-IN (DEep Linguistic Processing with HPSG) consortium (\url{http://www.delph-in.net}) use binary branching. However, many HPSG accounts do not, including several I use as the basis of my own analysis here \citep[a.o.][]{Sag.1997,Ginzburg.2000}. 
+Traditionally, researchers working on French in HPSG assume a flat structure (a.o., \citealt{Abeille.2002} for tense auxiliaries), but this has recently faced some criticism by \citet{Aguila-Multner.2020} who argue in favor of a binary analysis of VPs in French in order to better account for modification and coordination. I consider that the debate about the appropriate branching in French is still an open one, and choose binary branching as a default that would allow straightforward implementation (e.g.\ the French fragment of the CoreGram project). On the other hand, this choice has, to my knowledge, no major implication for my analysis, especially because I only consider headed structures. A conversion of the present analysis into flat structures is possible: Instead of applying to the object in the non-head daughters, the rules would merely have to apply to all objects in the list of non-head daughters.} The formalism that I adopt for semantics is the Minimal Recursion Semantics (MRS, \citealt{Copestake.2005}) and the formalism for the information structure is based on \citegen{Song.2017} proposal.
+
+\section{General principles of an HPSG grammar}
+\label{ch:hpsg-basis}
+
+In HPSG, linguistic entities are modeled by feature structures that are described by feature descriptions (or attribute-value matrices, AVMs). Feature structures are of a certain type, and this type defines which features the sign has and what type of values its features have. Types are ordered in a type hierarchy and every type inherits the properties of its supertype. Values are themselves of a certain type, which is also contained in the type hierarchy of the grammar. A value is either a feature-value description if it is complex, or an atomic value.
+
+A simplified hierarchy of French signs is given in \figref{fig:hrch-sign}, from \citet[19]{Ginzburg.2000}. For example, the subtype \textit{word} inherits the characteristics from the type \emph{lexical-sign} (e.g.\ having a feature \textsc{arg-st}, see below).
+
+\begin{figure}
+\begin{forest}
+[\textit{sign}
+    [\textit{lexical-sign}
+        [\textit{lexeme}]
+        [\textit{word}]
+    ]
+    [\textit{clause} [\dots]]
+    [\textit{phrase}
+        [\textit{non-headed-structure}]
+        [\textit{headed-structure} [\dots]]
+    ]
+]
+\end{forest}
+    \caption{Type hierarchy of \emph{sign}}
+    \label{fig:hrch-sign}
+\end{figure}
+
+
+The lexicon of a given language consists of lexical items. Lexical entries are signs of type \emph{lexeme}. Words are derived from these lexemes through lexical rules (unitary branching structures). Phrases are derived through schemata. 
+Not only lexical entries, but also constraints and lexical rules are formalized using AVMs. Constraints define the characteristics of the different types and the conditions the linguistic objects have to satisfy in order to be valid in the given language. Lexical rules define how a lexical item licenses another lexical item.\largerpage[2]
+
+A sign has at least two main features: \textsc{phonology (phon)} and \textsc{syntax-se\-man\-tics (synsem)}. The value of \textsc{phon} is a list of phonemes.{\interfootnotelinepenalty=10000\footnote{For the sake of simplicity, I will follow common practice in HPSG and give as value of the feature \textsc{phon} the orthographic representation of the sign, not its phonetic transcription. 
+Some researchers encode more information under \textsc{phon} than its mere phonetic transcription. \textsc{phon} may for example contain information about accents and prosody (\citealt[11]{Engdahl.1996}, \citealt[166]{DeKuthy.2002}, \citealt{Bonami.2006}, \citealt[Chapter~3]{Bildhauer.2008}). Even though prosody plays an important role in information structure, I have little to say about it with respect to the topic of this work. For this reason, I assume a minimal structure for \textsc{phon}.}} The value of \textsc{synsem} is a feature structure of type \textit{synsem}. 
+
+\ea Definition of \emph{sign}\nopagebreak:
+
+\avm{[\type*{sign}\\
+phon & list of phonemes\\
+synsem & synsem]}
+\z 
+
+From the syntactic point of view, in the present work I will mostly consider headed structures, i.e.\ structures in which the mother node structure-shares its \emph{pos} value with one of its daughters. An example of a non-headed structure is coordination (at least in most of the recent HPSG analyses, see \citealt{Abeille.2020.HPSG.Coord}). Signs of the type \emph{headed-structure} have as additional features \textsc{head-daughter (head-dtr)} and \textsc{non-head-daughters (nhead-dtrs)}.\footnote{I adopt the terminology from \citet{Sag.1997}. Other HPSG accounts may use another terminology \citep[e.g., \textsc{daughters} in][Section~2.5]{Ginzburg.2000}.}
+The feature \textsc{head-dtr} contains the AVM of type \emph{sign} of the head. The feature \textsc{nhead-dtrs} contains a list of feature structures of the type \emph{sign}. For example, in a headed structure, and assuming a binary analysis, this list constrains only one element, i.e.\ the non-head element (specifier, complement, modifier or filler).\largerpage[2]
+
+\ea Head Feature Principle from \citet[34]{Pollard.1994}: \nopagebreak
+
+\textit{headed-structure} \avm{$\Rightarrow$
+[synsem|loc|cat|head & \1 \\ 
+head-dtr [synsem|loc|cat|head & \1]]
+}
+\label{avm:head-feature-principle}
+\z 
+
+\begin{figure}
+\avm{[\type*{synsem}\\
+loc & [\type*{loc}\\
+       cat & cat\\
+       cont & cont]\\
+nonloc & nonloc]}
+    \caption{Definition of \emph{synsem} and \emph{loc}}
+    \label{fig:synsem-loc-def}
+\end{figure}
+
+The feature \textsc{synsem} encodes every piece of information concerning syntax and semantics, see \figref{fig:synsem-loc-def}. Features that concern local dependencies are encoded under the feature \textsc{local (loc)}, in an AVM of type \textit{loc}. Features that concern non-local dependencies are encoded under \textsc{nonlocal (nonloc)}, in an AVM of type \textit{nonloc}. I describe the feature \textsc{nonloc} in Section~\ref{ch:hpsg-extraction}, where I present the details of an HPSG analysis of extractions. Under \textsc{loc}, the features related to semantics (but also pragmatics, as we will see) are encoded under the feature \textsc{content (cont)}. The feature \textsc{category (cat)} contains the features related to (local) syntax.\footnote{Most HPSG versions assume a third local feature \textsc{context} \citep[a.o.][16--21]{Pollard.1994}, where information related to the pragmatics of the sign is encoded. The features of \emph{context} objects are for example \textsc{c-indices} (e.g.\ who is the addressor, who is the addressee) and \textsc{background} (related to what is usually called Common Ground, see Chapter~\ref{ch:discourse}). In my fragment of French, pragmatics is part of \textsc{content}, as assumed by \citet{Song.2016,Song.2017}.}
+
+I will now define how syntax and semantics work on the local level. This includes the encoding of information structure, which is part of \textsc{content} in my formalization. In Section~\ref{ch:hpsg-extraction}, I will then turn to non-local dependencies.
+
+\subsection{Syntax}
+\label{ch:hpsg-syntax}
+
+The value of \textsc{cat} is an AVM of the type \emph{cat}. It contains a feature \textsc{head}, whose value is an AVM of the type \textit{part-of-speech} (\textit{pos}). The fragment developed in this book uses seven parts of speech: \textit{noun}, \textit{verb}, \textit{determiner} (\textit{det}), \textit{adjective} (\textit{adj}), \textit{adverb} (\textit{adv}), \textit{preposition} (\textit{prep}) and \textit{complementizer} (\textit{comp}). The hierarchy of \emph{pos} is given in \figref{fig:hrch-pos}. The structure of \textsc{head} varies depending on the part of speech. For example, verbs have a verb form (\textsc{vform}), while other parts of speech do not.
+
+\begin{figure}[ht]
+\centering
+    \begin{forest}
+where n children=0{tier=word}{}
+[\textit{pos}
+    [\textit{verbal}
+        [\textit{comp}]
+        [\textit{verb}, name = verb]
+    ]
+    [\textit{non-comp}
+        [\textit{noun-or-verb}, name = nv [{}, no edge]]
+        [\textit{non-verbal}
+        [\textit{noun}, name = noun]
+            [\textit{det}]
+            [\textit{adj}]
+            [\textit{adv}]
+            [\textit{prep}]
+        ]
+    ]
+]
+\draw[thin] (noun.north)--(nv.south);
+\draw[thin] (verb.north)--(nv.south);
+\end{forest}
+    \caption{Type hierarchy of \emph{pos}}
+    \label{fig:hrch-pos}
+\end{figure}
+
+Arguments can be realized or non-realized (e.g.\ \textit{I cooked.}\slash\textit{I cooked lasagne.}). In French, realized arguments or adjuncts can be realized as XPs (e.g.\ NPs, PPs) or as clitics. Following \citet{Miller.1997}, \citet{Abeille.2002} and \citet{Aguila-Multner.2020}, I assume that pronominal clitics in a non-subject function are affixes that attach to the verb. Lastly, arguments and adjuncts may be realized non-locally: this is what I have called ``extraction'' throughout this book. All these possibilities give rise to different subtypes of \emph{synsem}, i.e. \emph{canonical}, \emph{pro} (non-realized), \emph{affix} (realized as clitic) and \emph{gap} (non-locally realized). I adopt the hierarchy in \figref{fig:hrch-syssem}, adapted from \citet{Abeille.1998} and already presented in \citet[104]{Winckel.2020}.
+% so-called pronominal clitics sont considérés comme affixes (sauf pronoms sujet), clitic climbing, clitic doubling (sujet)
+
+\begin{figure}[ht]
+\centering
+\begin{forest}
+sn edges,
+[\textit{synsem}
+    [\textit{non-gap}, name = nong
+        [\textit{canonical}, name = canon]
+        [{}, no edge]
+        [{}, no edge]
+    ]
+    [\textit{non-canonical}, name=nonc
+        [\textit{pro}, name = pro] 
+        [\textit{gap}]
+        [\textit{aff}]
+    ]
+]
+\draw[thin] (pro.north)--(nong.south);
+\end{forest}
+    \caption{Type hierarchy of \emph{synsem}}
+    \label{fig:hrch-syssem}
+\end{figure}
+% aff=clitic ≠ pro = petit pro (j'ai mangé pro etc.)
+
+\subsubsection{Valence}\largerpage
+
+Signs of the type \emph{word} have a main feature \textsc{arg-st} that has as value a list of \emph{synsem}. This list is traditionally the list of the different arguments dependent on the lexeme.  
+In addition, the word selects its canonically realized complements (\avm{[synsem & canonical]}) via the feature \textsc{comps}, its subject via the feature \textsc{subj} and its specifier via the feature \textsc{spr}. This is captured in the Argument Realization Principle, see \figref{avm:arp}. Non-realized arguments (\avm{[synsem & pro]}) are present in \textsc{arg-st}, and can for example serve as semantic arguments, while no syntactic information is needed about them on the phrasal level. Clitic arguments (\avm{[synsem & aff]}) are realized morphologically through lexical rules, as just stated. Gaps (\avm{[synsem & gap]}) are realized through lexical rules and non-local dependencies; this will be explained in Section~\ref{ch:hpsg-extraction}.\largerpage
+
+\begin{figure}[ht]
+\avm{[\type*{cat}\\
+       head & pos\\
+       subj & list of one or less synsem\\
+       spr & list of one or less canonical\\
+       comps & list of canonical]}
+    \caption{Definition of \emph{cat}}
+    \label{fig:cat-definition}
+\end{figure}
+
+\begin{figure}[ht]
+\textit{word} \avm{$\Rightarrow$
+[cat & [subj & \1 \\
+        spr & \2 \\
+        comps & \3 ]\\
+arg-st & \1 $\oplus$ \2 $\oplus$ \3 $\bigcirc$ list of non-canonical]
+}
+    \caption{Argument Realization Principle (adapted from \citealt[171]{Ginzburg.2000})}
+    \label{avm:arp}
+\end{figure}
+
+The value of \textsc{comps} is a list of \emph{synsem} objects (only canonical ones), which is a sublist of the \textsc{arg-st} list. The value of \textsc{spr} is a list of \emph{canonical} objects as well, but this list contains at most one element. % Extraction of the specifier: Abeillé & Godard 2003 (combien), kakoi in Russian. Subextraction: "was für ein" in German. 
+Subjects need to be in \textsc{subj} even if they are extracted, in order to account for the so-called \emph{que-qui} rule in French, see below. The value of \textsc{subj} is a list of \emph{synsem} objects with one or no element. \figref{fig:cat-definition} summarizes how \textit{cat} is defined.
+
+The example in \figref{fig:ex:avm-enthousiasmer} illustrates how verbs state their arguments using the transitive verb \emph{enthousiasme} (`inspires') from example (\ref{ex:basis-sentence}), where both subject and direct object are realized canonically. 
+
+\ea \gll L' originalité de l' innovation enthousiasme mes collègues.\\
+the uniqueness of the innovation excites my colleagues\\
+\glt `The uniqueness of the innovation excites my colleagues.'
+\label{ex:basis-sentence}
+\z 
+
+\begin{figure}
+\avm{[\type*{word}\\
+      phon & < \type{enthousiasme} >\\
+      synsem|loc|cat & [head & verb\\
+                        subj & <\1 [loc|cat|head & noun]>\\
+                        spr & <>\\
+                        comps & <\2 [loc|cat|head & noun]>]\\
+     arg-st & < \1, \2 >]}
+\caption{\emph{enthousiasme} (`inspires') in (\ref{ex:basis-sentence}) \label{fig:ex:avm-enthousiasmer}}
+\end{figure}
+
+
+
+\subsubsection{Syntactic composition}
+
+After the selection mechanism, I will now present the mechanism in charge of the syntactic composition. For this, I assume the type hierarchy for \emph{headed-structure} presented in \figref{fig:hrch-headed-structure}, which enhances \figref{fig:hrch-sign}.
+
+\begin{figure}
+\begin{forest}
+[\textit{headed-structure}
+    [head-comps-\\structure, align=center, font=\itshape]
+    [head-subj-\\structure, align=center, font=\itshape]
+    [head-spr-\\structure, align=center, font=\itshape]
+    [head-mod-\\structure, align=center, font=\itshape]
+    [\dots]
+]
+\end{forest}
+    \caption{Type hierarchy of \emph{headed-structure} (incomplete)}
+    \label{fig:hrch-headed-structure}
+\end{figure}
+
+\citet[33]{Ginzburg.2000} a.o.\ define a Generalized Head Feature Principle (GHFP): by default, a headed-phrase's \textsc{synsem} features are the \textsc{synsem} features of its head daughter.\footnote{The Head Feature Principle (\ref{avm:head-feature-principle}) already specifies that a headed phrase's \textsc{head} features are the \textsc{head} features of its head daughter. Unlike the GHFP however, the Head Feature Principle is not a default principle.} This alternative analysis accounts, for example, for the fact that by default valence features remain unchanged from head daughter to mother.
+
+\ea Generalized Head Feature Principle (GHFP, adapted from \citealt[33]{Ginzburg.2000}) \nopagebreak
+
+\textit{headed-structure}
+\avm{$\Rightarrow$ [synsem & / \1\\
+              head-dtr & [synsem & / \1]]
+}
+\label{avm:ghfp}
+\z 
+
+We define a default value (represented with the sign / ) as follows: the default value (as well as all values that are subsumed by it) can only be overwritten by more specific subtypes \citep[85]{Lascarides.1999}. For the GHFP in (\ref{avm:ghfp}), this means that the values of all \textsc{synsem} features are by default the values of the \textsc{synsem} features of the head daughter, except if they are overwritten by some definition of subtypes of \textit{headed-structure}. This is the case for the definitions of \textit{head-comps-structure}, \textit{head-subj-structure}, \textit{head-spr-structure} and \textit{head-mod-structure}. I will now define each of these subtypes.
+
+In structures that are not a combination of a head with one of its complements, the GHFP (\ref{avm:ghfp}) guarantees that the value of the feature \textsc{comps} remains constant from daughter to mother. Structures that combine a head with one of its complements are of the type \emph{head-comps-structure}, defined in (\ref{avm:head-comps-str}). The value of the complement is ``subtracted'' from the \textsc{comps} list of the daughter.\footnote{Analyses not assuming binary branching do not need to use \textit{head-comps-structure} recursively until the \textsc{comps} list is empty, since all complements can be listed in \textsc{nhead-dtrs}. As mentioned above, a non-binary analysis would not affect the central aspects of my analysis.} Because French complements appear in free order, the ``subtracted'' element can be situated anywhere in the list (hence the shuffle $\bigcirc$ symbol). The AVM in \figref{fig:ex:avm-comps-verb} illustrates the case where \emph{enthousiasme} combines with the NP \emph{mes collègues} in (\ref{ex:basis-sentence}).
+
+\ea \textit{head-comps-structure}
+\avm{$\Rightarrow$ [comps & \1\\
+              head-dtr & [comps & \1 $\bigcirc$ <\2>]\\
+              nhead-dtrs & <[synsem & \2]>]
+}
+\label{avm:head-comps-str}
+\z 
+
+\begin{figure}[ht]
+\avm{[\type*{head-comps-structure}\\
+phon & <\type{enthousiasme mes collègues}>\\
+head & \1 \\
+subj & \2 \\
+comps & \3\\
+head-dtr & [\type*{word}\\
+            phon & <\type{enthousiasme}>\\
+            head & \1 verb\\
+            subj & \2 < NP >\\
+            comps & < \4 NP > $\oplus$ \3 <>\\
+            arg-st & < \2, \4 >]\\
+nhead-dtrs & <[\type*{head-spr-structure}\\
+             phon & <\type{mes collègues}>\\
+             synsem & \4]>]}
+\caption{Illustration of a \textit{head-comps-structure}, following example~(\ref{ex:basis-sentence})}
+\label{fig:ex:avm-comps-verb}
+\end{figure}
+
+Notice that in (\ref{avm:head-comps-str}) and \figref{fig:ex:avm-comps-verb} I am using shortcuts in my nomenclature: e.g.\ \textsc{head} stands for \textsc{synsem|loc|cat|head}, NP stands for a linguistics object with all the characteristics of an NP (\textsc{head} value is \emph{noun}, empty \textsc{comps} and \textsc{spr} lists). I will use this kind of shortcut throughout Part~\ref{part:3}.
+
+The mechanism is the same when the head combines with its subject. The sign is then of the type \emph{head-subj-structure} (\ref{avm:head-subj-str}) and the value of the subject is ``subtracted'' from the \textsc{subj} list of the head, leaving an empty \textsc{subj} list for the mother. For all other headed structures the value of \textsc{subj} remains constant from head-daughter to mother, as stated by the GHFP (\ref{avm:ghfp}). This is illustrated in \figref{fig:ex:avm-spr-verb} where the verb of  (\ref{ex:basis-sentence}) combines with its subject. 
+
+\ea \textit{head-subj-structure}
+\avm{$\Rightarrow$ [subj & <>\\
+              head-dtr & [subj & <\1>]\\
+              nhead-dtrs & <[synsem & \1]>]
+}
+\label{avm:head-subj-str}
+\z 
+
+\begin{figure}[ht]
+\avm{[\type*{head-subj-structure}\\
+phon & < \type{l'originalité de l'innovation enthousiasme mes collègues} >\\
+head & \1 \\
+subj & < > \\
+comps & \2\\
+head-dtr & [\type*{head-comps-structure}\\
+            phon & <\type{enthousiasme mes collègues}>\\
+            head & \1 verb\\
+            subj & < \3 \type{NP} >\\
+            comps & \2 <>]\\
+nhead-dtrs & <[\type*{head-spr-structure}\\
+             phon & <\type{l'originalité de l'innovation}>\\
+             synsem & \3]>]}
+\caption{Illustration of a \textit{head-subj-structure}, following example~(\ref{ex:basis-sentence})}
+\label{fig:ex:avm-spr-verb}
+\end{figure}
+
+\emph{head-spr-structure} (\ref{avm:head-spr-str}) defines the combination of the head with its specifier and follows the same mechanism, while the definition of the GHFP (\ref{avm:ghfp}) states that the value of \textsc{spr} is identical from head daughters to mother for the other headed structures. 
+
+\ea \textit{head-spr-structure}
+\avm{$\Rightarrow$ [spr & <>\\
+              head-dtr & [spr & <\1>]\\
+              nhead-dtrs & <[synsem & \1]>]
+}
+\label{avm:head-spr-str}
+\z 
+
+\noindent A complete syntactic analysis for (\ref{ex:basis-sentence}) can be seen in \figref{fig:avm--basis-sentence-syntax}.\largerpage
+
+
+
+\begin{figure}
+\resizebox{12cm}{!}{%
+\begin{forest}
+where n children=0{tier=word}{}
+[S \\
+\avm{[\type*{head-subj-str}\\
+      head & \1\\
+      subj & < >\\
+      comps & \2]}
+    [NP\\
+    \avm{[\type*{head-spr-str}\\
+      synsem & \3 [head & \4\\
+      spr & < >\\
+      comps & \5]]}
+        [Det \\ \avm{[\type*{word}\\
+      synsem \6]}
+        [l'\\the]]
+        [N$'$\\
+        \avm{[\type*{head-comps-str}\\
+      head & \4\\
+      spr & < \6 >\\
+      comps & \5]}
+        [N\\
+        \avm{[\type*{word}\\
+      head & \4 noun\\
+      spr & < \6 >\\
+      comps & < \7 > $\oplus$ \5 <> ]}
+        [originalité\\uniqueness]]
+        [PP\\
+        \avm{[\type*{head-comps-str}\\
+      synsem & \7 [head & \8\\
+      spr & < >\\
+      comps & \9]]}
+            [P\\
+            \avm{[\type*{word}\\
+                head & \8 prep\\
+                    spr & < >\\
+                comps & < \tag{10} > $\oplus$ \9 <>]}
+                [de\\of]
+            ]
+            [NP\\
+            \avm{[\type*{head-spr-str}\\
+                synsem & \tag{10} [head & \tag{11}\\
+                spr & < >\\
+                comps & \tag{12}]]}
+                [Det\\
+                \avm{[\type*{word}\\
+                    synsem & \tag{13}]} [l'\\the]]
+                [N\\
+                \avm{[\type*{word}\\
+                    head & \tag{11} noun\\
+                    spr & < \tag{13} >\\
+                    comps & \tag{12} <>]}
+                    [innovation\\innovation]
+                    ]
+            ]
+        ]
+    ]]
+    [VP\\
+    \avm{[\type*{head-comps-str}\\
+      head & \1\\
+      subj & < \3 >\\
+      comps & \2]}
+        [V\\
+        \avm{[\type*{word}\\
+      head & \1 verb\\
+      subj & < \3 >\\
+      comps & <\tag{14}> $\oplus$ \2 <> ]}
+            [enthousiasme\\excites]
+        ]
+        [NP\\
+        \avm{[\type*{head-spr-str}\\
+      synsem & \tag{14} [head & \tag{15}\\
+      spr & < >\\
+      comps & \tag{16}]]}
+            [Det\\
+            \avm{[\type*{word}\\
+      synsem & \tag{17}]} [mes\\my]]
+            [N\\
+            \avm{[\type*{word}\\
+      head & \tag{15} noun\\
+      spr & < \tag{17} >\\
+      comps & \tag{16} <>]} [collègues\\colleagues]]
+        ]
+    ]
+]
+\end{forest}}
+\caption{Syntactic representation for ``L'originalité de l'innovation enthousiasme mes collégues.'' (`The uniqueness of the innovation excites my colleagues.')}
+\label{fig:avm--basis-sentence-syntax}
+\end{figure}
+
+Adjuncts select the element they modify through a head feature \textsc{mod} defined for adjectives, adverbs, and verbs. The value of \textsc{mod} is an AVM of type \emph{none-or-synsem}, a supertype of \emph{synsem} (see \figref{fig:hrch-syssem}) and of \emph{none} (whenever the linguistic object is not an adjunct). The head and its adjunct combine via the \emph{head-mod-structure}. The element selected by the modifier can have an empty or a non-empty \textsc{comps} list (it is underspecified in this respect). Consequently, modifiers may appear either after (empty \textsc{comps}) or before (non-empty \textsc{comps} list) the complements of the element they modify. This is illustrated by (\ref{ex:comps-underspecified-adjective}) for adjectives and (\ref{ex:comps-underspecified-adverb}) for adverbs.
+
+\eal\label{ex:comps-underspecified-adjective} 
+\ex[]{\gll un livre sur les indiens intéressant\\
+a book on the Indians interesting\\
+\glt `a book about Indians interesting'}
+\ex[]{\gll un livre intéressant sur les indiens\\
+a book interesting on the Indians\\
+\glt `an interesting book about Indians'}
+\zl 
+
+\eal\label{ex:comps-underspecified-adverb} 
+\ex[]{\gll Ils sont enthousiastes souvent.\\
+they are thrilled often\\
+\glt `They are often thrilled.'}
+\ex[]{\gll Ils sont souvent enthousiastes.\\
+they are often thrilled\\
+\glt `They are often thrilled.'}
+\zl 
+
+\figref{fig:new:ex:avm-mod-noun-b} shows the combination of a noun and an adjective.
+
+\ea \label{ex:avm-mod-noun}
+\gll [l' [innovation formidable]$_{\text{N'}}$]$_{\text{NP}}$\\
+\sbar{}the \sbar{}innovation amazing\\
+\glt `the amazing innovation'
+\z
+
+\begin{figure}[h]
+N$'$ \avm{[\type*{head-mod-structure}\\
+phon & <\type{innovation formidable}>\\
+head & \1 \\
+head-dtr & [\type*{word}\\
+            phon & <\type{innovation}>\\
+            synsem & \2 [head & \1 {noun}]]\\
+nhead-dtrs & <[\type*{word}\\
+             phon & <\type{formidable}>\\
+             head & [\type*{adjective}\\
+                     mod & \2]]>]}
+\caption{Illustration of a \textit{head-mod-structure}, following example~(\ref{ex:avm-mod-noun})}
+\label{fig:new:ex:avm-mod-noun-b}
+\end{figure}
+
+\subsubsection{Word order}
+
+In French, specifiers precede the head and complements follow it. A linearization rule states that in \emph{head-comps-structure} objects the head element must precede the non-head element (the complement). Another linearization rule states that in \emph{head-spr-structure} objects the non-head element (the specifier) must precede the head element.
+
+Subject-verb inversion in French is a very complex phenomenon, and its proper treatment would require a long discussion. A complete HPSG analysis of subject-verb inversion can be found in \citet{Bonami.1998} and \citet{Bonami.2001}. For the present work, I assume that the linearization for \emph{head-subj-structure} is underspecified. Verbs bear a feature \textsc{inv} with a boolean value (+/$-$). In \emph{head-subj-structure}, the head precedes the non-head if it has the value \avm{[inv & \normalfont{+}]} and follows it if it has the value \avm{[inv & \normalfont{$-$}]}. 
+
+Modifiers can also precede or follow the modified element. I will illustrate this with adjectives: adjectives in French can be prenominal or postnominal, with some adjectives constrained to one or the other position. Example (\ref{ex:avm-mod-noun}) shows a postnominal adjective. I adopt the analysis of \citet{Abeille.1999.Weight,Abeille.1999.Adjectif} in which a feature \textsc{weight} with a value of type \emph{weight} (subtypes: \emph{lite} and \emph{nonlite}) accounts for the syntactic position of adjectives as follows: \emph{lite} adjectives are prenominal and \emph{nonlite} adjectives are postnominal. Modification and complementation of the adjective may cause a \emph{lite} adjective to become \emph{nonlite}. Coordination of two or more \emph{lite} adjectives may also turn the coordination into a \emph{nonlite} modifier. I refer the reader for more details to \citet{MyP.2015}, where we proposed an account of the adjective placement in French and Spanish based on semantic factors. The analysis of adverbs follows roughly the same principles. 
+Relative clauses are always \avm{[weight & nonlite]}, i.e.\ postnominal  \citep[343]{Abeille.1999.Weight}. I will come back to the analysis of relative clauses in Section~\ref{ch:hpsg-extraction}.
+
+The different linearization rules are summarized in (\ref{rule:linearization}).
+
+\begin{exe}\ex Linearizations rules:\label{rule:linearization}
+\begin{xlist}
+\ex \emph{head-spr-structure} $\Rightarrow$ \textsc{nhead-dtr} $<$ \textsc{head-dtr}
+\ex \emph{head-comps-structure} $\Rightarrow$ \textsc{head-dtr} $<$ \textsc{nhead-dtr}
+\ex \emph{head-subj-structure} $\Rightarrow$ \textsc{head-dtr} \avm{[inv & \normalfont{+}]} $<$ \textsc{nhead-dtrs}
+\ex \emph{head-subj-structure} $\Rightarrow$ \textsc{nhead-dtr} $<$ \textsc{head-dtr} \avm{[inv & \normalfont{$-$}]}
+\ex \emph{head-mod-structure} $\Rightarrow$ \textsc{nhead-dtr} \avm{[weight & lite]} $<$ \textsc{head-dtr}
+\ex \emph{head-mod-structure} $\Rightarrow$ \textsc{head-dtr} $<$ \textsc{nhead-dtr} \avm{[weight & nonlite]}
+\end{xlist}
+\end{exe}
+
+
+\subsection{Semantics}
+
+I adopt the Minimal Recursion Semantics (MRS) semantic representation as developed by \citet{Copestake.2005}. This representation is often used in HPSG implementations, e.g.\ the CoreGram Project \citep{Mueller.S.2015}. %cite LKB grammars, ERG for English
+Semantics is represented in an AVM of type \emph{mrs}. \citet{Copestake.2005} define three features for the \emph{mrs} objects: \textsc{hook, relations (rels)} and \textsc{handle-constraints (hcons)}.\footnote{\citet{Copestake.2005} define the value of \textsc{rels} and \textsc{hcons} as a ``bag'' rather than a list, but they represent them as lists.%We are going to ignore the difference between the two concepts here.
+} \citet{Song.2017} adds an additional feature to encode information about the discourse status of the different parts in an utterance: \textsc{icons}.
+
+\begin{figure}[h]
+\begin{floatrow}
+\captionsetup{margin=.05\linewidth}
+\ffigbox
+{\avm{[\type*{mrs}\\
+  hook & [\type* {hook}\\
+           gtop & handle\\
+           ltop & handle\\
+           clause-key & event\\
+           icons-key & info-str\\
+           index & index] \\
+  rels & list of relations\\ % list of EPs ?
+  hcons & list of qeq constraints\\
+  icons & list of icons]
+}}
+{\caption{Definition of \emph{mrs}}\label{avm:def-mrs}}
+
+\ffigbox{%
+\begin{forest}
+[\textit{index}
+    [\textit{individual}]
+    [\textit{event}]
+]
+\end{forest}}
+{\caption{Type hierarchy of \emph{index}}\label{fig:hrch-index}}
+\end{floatrow}
+\end{figure}
+
+In this section, I describe how MRS works, leaving the \textsc{icons} features aside. In section~\ref{ch:hpsg-is} dedicated to information structure in HPSG, I will come back to \textsc{icons} and the way information structure is encoded in my fragment of French.
+
+The reference marking feature \textsc{index}, embedded under \textsc{cont|hook} in MRS, can also be found in other semantic representations in HPSG \citep[see][24--26]{Pollard.1994}. The value of \textsc{index} is an AVM of type \emph{index} that has different subtypes in accordance with the type of referent concerned (individual or event). 
+
+Each lexeme with a semantic content introduces an ``Elementary Predication'' (EP) in the discourse. In the MRS representation, this is reflected by the fact that every lexeme has (at least) one object of type \emph{relation} in its \textsc{rels} list. Conventionally, the nomenclature for the different types of relations is \emph{lexeme\_rel}. For example, the lexical entry for \emph{collègue} (`colleague') contains in its \textsc{rels} list an object of type \emph{collegue\_rel}. The handle is the label of the EP. It is encoded under a feature \textsc{lbl} with a value of type \emph{handle}  (conventionally labeled \emph{h1}, \emph{h2}, \emph{h3}, etc.). The first argument of an EP is a variable (conventionally labeled \emph{i}, \emph{j}, \emph{k}, etc.\ for individuals and \emph{e1}, \emph{e2}, \emph{e3}, etc.\ for events), and is encoded under a feature \textsc{arg0} with a value of type \emph{index}. On the level of the lexeme, the value of \textsc{arg0} is coindexed with the value of \textsc{index}. The other arguments, if any, are handles, which are encoded under features \textsc{arg1}, \textsc{arg2}, etc.\ with values of type \emph{index}.\footnote{The order of the arguments follows the obliqueness of the arguments \citep{Keenan.1977}: less oblique $<$ more oblique \citep[287]{Copestake.2005}.} \citet{Copestake.2005} also define other possible features (e.g.\ \textsc{restr}, \textsc{body}) for scopal relations, which we do not need in this fragment. 
+
+The (simplified) semantic representation for \emph{collègue} (`colleague') is given in \figref{avm:collegue-semantics}. Being a noun, \emph{collègue} has an \textsc{index} of type \textit{individual}. Because \emph{collègue} is a relational noun, \mbox{\emph{collegue\_rel}} has a feature \textsc{arg1}. In \textsc{arg-st}, the value of \textsc{arg1} is identified with the index of the complement.
+
+\begin{figure}[h]
+\avm{[phon & < \type{collègue} >\\
+cont &
+[\type*{mrs}\\
+  hook & [ltop & \tag{h1}\\
+          index & \tag{i} individual] \\ % index plus détaillé
+  rels & < [\type*{collegue\_rel}\\
+           lbl & \tag{h1}\\
+           arg0 & \tag{i}\\
+           arg1 & \tag{j}] >]\\
+arg-st & < [index & \tag{j}] >  ]
+}
+\caption{Lexical entry for \emph{collègue} (`colleague') -- semantics}\label{avm:collegue-semantics}
+\end{figure}
+
+
+The value of the feature \textsc{handle-constraints (hcons)} is a list of AVMs of the type \emph{equality modulo quantifiers (qeq)}. They link the arguments with each other, especially for scope resolution. It is not absolutely necessary to take it into account for my analysis, so I will leave aside the feature \textsc{hcons} in this work.
+
+The feature \textsc{hook} has a value of type \emph{hook} that contains five features: \textsc{gtop}, \textsc{ltop}, \textsc{clause-key}, \textsc{icons-key} and \textsc{index}. \textsc{clause-key} is related to information structure and I will describe it in the next section. \textsc{gtop} states the global top handle: this is the EP in the sentence whose \textsc{arg0} value is not bound by any other EP. %The \textsc{gtop} -- or as the case may be \textsc{ltop} -- is linked with the label of the highest EP in an AVM of the type \emph{qeq}. 
+\textsc{ltop} states the local top handle, i.e.\ the EP of the head in headed structures. On the level of the lexeme, the value of \textsc{ltop} is identified with the value of the \textsc{lbl}, see \figref{avm:collegue-semantics}.
+
+In headed structures, the value of \textsc{gtop} is the same for the mother and its daughters. The mother inherits the value of the whole \textsc{hook} of the head daughter. 
+
+In structures with simple semantic composition, the value of the \textsc{rels} list of the mother is a concatenation of the lists of the daughters. In some structures however, the semantic contribution of the structure is more than the sum of the contributions of the daughters. Therefore, phrases have an additional \emph{loc} feature \textsc{c-cont} in which the contribution of the structure can be encoded. Like \textsc{cont}, \textsc{c-cont} takes as value an \emph{mrs} object. The value of the \textsc{cont|rels} (and \textsc{hcons}) list of the mother is an amalgamation of the lists of both daughters and of its own \textsc{c-cont|rels} (and \textsc{hcons}) list in structures with simple semantic composition.
+Headed structures are thus defined as in \figref{fig:new:semantic-composition}.
+
+\vfill
+\begin{figure}[H]
+\parbox[c]{\widthof{structure}}{\emph{headed-\\structure}} 
+\avm{$\Rightarrow$} % or head-non-filler-str ?
+\avm{[synsem|loc & [cont & [hook & \1 [gtop & \2] \\
+                       rels & \3 $\oplus$ \4 $\oplus$ \5 \\
+                       hcons & \6 $\oplus$ \7 $\oplus$ \8]\\
+                    c-cont & [rels & \5 \\
+                              hcons & \8]] \\
+  head-dtr & [synsem|loc|cont & [hook & \1\\
+                                   rels & \3 \\
+                                   hcons & \6 ] ]\\
+  nhead-dtrs & <[synsem|loc|cont & [hook & [gtop & \2 ]\\
+                                      rels & \4 \\
+                                      hcons & \7 ] ]> ]}
+\caption{Semantic composition}\label{fig:new:semantic-composition}
+\end{figure}
+\vfill
+\pagebreak
+
+A sentence is well-formed if all \emph{index} variables are bound, except for one. For the sake of simplicity, I assume that the \emph{handle} corresponding to this unbound variable is then unified with the value of \textsc{gtop}. At the sentence level, the value of \textsc{gtop} must be equal to the value of \textsc{ltop}.
+
+\textsc{clause-key} is a feature introduced by \citet{Song.2017}. Its value is structure-shared with the \textsc{index} value of the semantic head of the clause (usually the main verb). Only finite clauses are considered ``clauses'' for \textsc{clause-key}. For example, in (\ref{ex:many-clauses}), the value of \textsc{clause-key} is \emph{e2} for \emph{Sherry wants Minnie to bring her dog} and all its subtrees, because \emph{bring} is non-finite.
+
+\ea[]{[Maria wonders$_{e1}$ [why Sherry wants$_{e2}$ Minnie to bring$_{e3}$ her dog], [whereas Erica is$_{e4}$ allergic to them]].}
+\label{ex:many-clauses}
+\z 
+
+The lexical entry for a verb constrains the NPs and non-finite VPs in its \textsc{arg-st} list to structure-share the value of their \textsc{clause-key} feature with the value of its own \textsc{clause-key}. This ensures that all elements in a clause share the same \textsc{clause-key} value~-- except the finite sentential arguments, as I will explain in Section~\ref{ch:hpsg-basics-ldd}.\footnote{The mechanism is somewhat more sophisticated in \citet{Song.2017}, but this should not affect the analysis.} 
+On the clausal level, a constraint ensures that the \textsc{clause-key} value  of the clause  is structure-shared with the \textsc{index} value of the semantic head of the clause. Below I will describe the different clause types and the way the constraint is formalized.
+
+\figref{fig:avm--basis-sentence-semantics} gives a concrete example of how MRS's representation of semantics works for a whole sentence. I do not elaborate on the semantics of quantifiers, developed at length by \citet{Copestake.2005}, since they are not central to the topic of this book. Suffice it to say that I assume the distinction between definite articles (with a relation \emph{def\_rel}), indefinite articles (with a relation \emph{indef\_rel}) and possessives (with a relation \emph{poss\_rel}).
+
+\begin{sidewaysfigure}
+\oneline{%
+\begin{forest}
+where n children=0{tier=word}{}
+[S \\
+\avm{[hook & \1\\
+      rels & < \2, \3, \4, \5, \6, \7, \8 >]}
+    [NP\\
+    \avm{[hook & \9 \\
+          rels & < \2, \3, \4, \5 > ]}
+        [Det \\ \avm{[rels & < \2 \type{def\_rel} >]}
+        [l'\\the]]
+        [N$'$
+        \avm{[hook & \9\\
+              rels & < \3, \4, \5 >]}
+        [N\\
+        \avm{[hook & \9 [gtop & \tag{h1}\\
+                         ltop & \tag{h2}\\
+                         clause-key & \tag{e}\\
+                         index & \tag{i}]\\
+              rels & < \3 [\type*{originalite\_rel}\\
+                           lbl & \tag{h2}\\
+                           arg0 & \tag{i}\\
+                           arg1 & \tag{j}] >]}
+        [originalité\\uniqueness]]
+        [PP\\
+        \avm{[hook & [gtop & \tag{h1}\\
+                      ltop & \tag{h3}\\
+                      clause-key & \tag{e}\\
+                      index & \tag{j}]\\
+      rels & < \4 \type{def\_rel} , \5 [\type*{innovation\_rel}\\
+                           lbl & \tag{h3}\\
+                           arg0 & \tag{j}] >]}
+        [de l'innovation\\ of the innovation, roof]]
+    ]]
+    [VP\\
+    \avm{[hook & \1\\
+      rels & < \6 , \7 , \8 >]}
+        [V\\
+        \avm{[hook & \1 [gtop & \tag{h1}\\
+                      ltop & \tag{h1}\\
+                      clause-key & \tag{e}\\
+                      index & \tag{e}]\\
+      rels & < \6 [\type*{enthousiasmer\_rel}\\
+                           lbl & \tag{h1}\\
+                           arg0 & \tag{e}\\
+                           arg1 & \tag{i}\\
+                           arg2 & \tag{k}] >]}
+            [enthousiasme\\excites]
+        ]
+        [NP\\
+        \avm{[hook & [gtop & \tag{h1}\\
+                      ltop & \tag{h4}\\
+                      clause-key & \tag{e}\\
+                      index & \tag{k}]\\
+      rels & < \7 \type{poss\_rel}, 
+            \8 [\type*{originalite\_rel}\\
+                           lbl & \tag{h4}\\
+                           arg0 & \tag{k}\\
+                           arg1 & index] >]}
+            [mes collègues\\my colleagues, roof]
+        ]
+    ]
+]
+\end{forest}}
+\caption{Semantic representation for ``L'originalité de l'innovation enthousiasme mes collégues.'' (`The uniqueness of the innovation excites my colleagues.')}
+\label{fig:avm--basis-sentence-semantics}
+\end{sidewaysfigure}
+
+\subsection{Information structure}
+\label{ch:hpsg-is}
+
+The issue of an adequate representation of information structure in HPSG has not been settled yet, and before I present the representation I adopted in this work, I briefly discuss the other proposals in the literature. \citet{Song.2017} seems best suited for my aims, and I chose his proposal despite some minor problems and open questions that I leave for future work to resolve. 
+
+\subsubsection{Different representations of information structure in HPSG}
+
+As yet, there is no broad consensus on the way information structure should be represented and implemented in HPSG. The different proposals make different choices relative to: (i) how many and what discourse statuses they assume, (ii) on which level they encode information structure (e.g.\ main feature of \emph{sign}, \textsc{content} feature), (iii) what type of object is taken as value by the feature expressing discourse status (e.g.\ \emph{sign}, \emph{mrs}) and (iv) whether or not they allow for embedded clauses to have their own internal information structure. 
+See \citet[113--122]{Bildhauer.2008} and \citet{DeKuthy.2020} for an overview of the HPSG literature on information structure.
+
+The first solid attempt to develop an information structure representation was made by \citet{Engdahl.1996}, based on \citegen{Vallduvi.1992} theory of information structure. Instead of the double binary distinction Topic/Comment and Focus/Background that was presented in Section~\ref{ch:is}, \citegen{Vallduvi.1992} analysis relies on a binary distinction Focus\slash Background, in which the latter entails a binary distinction Link\slash Tail. The concept of Link is roughly equivalent to what I defined as Topic, and the concept of Tail applies to the elements in the utterance that are neither Link (Topic) nor Focus. \citet{Engdahl.1996} represent information structure under \textsc{context}. They propose a \textsc{context} feature \textsc{info-struc} that has as value an AVM
+with three features: \textsc{link}, \textsc{focus} and \textsc{tail} \citep[11]{Engdahl.1996}. They all take as value an object of type \emph{sign} even though \citeauthor{Engdahl.1999} assumes a value of type \emph{content} in her later accounts \citep{Engdahl.1999}.  
+In addition, \citeauthor{Engdahl.1996} account for the interface between prosody and information structure, but I leave this aspect of their analysis aside.
+
+\begin{figure}[h] 
+\avm{[\type*{sign}\\
+synsem|loc|context & [c-indices & cindices\\
+                 background & set\\
+                 info-struct & [focus & sign\\
+                                ground & [link & sign\\
+                                           tail & sign]]]]}
+\caption{Encoding of information structure in \citet[11]{Engdahl.1996}, adapted to a modern representation}
+\end{figure}
+
+\citet{DeKuthy.2002} makes a different proposal: she encodes information structure under a main feature of \emph{sign} \textsc{info-struc}, which takes as value a feature structure of type \emph{info-struc} with only two features: \textsc{focus} and \textsc{topic} \citep[161--165]{DeKuthy.2002}.
+Each of these features has as value a list of \emph{meaningful expression} objects (a semantic representation proposed by \citet{Richter.2000} that is closer to Montague Semantics \citep{Dowty.1981} than MRS). There is therefore no encoding of backgroundedness, even though it would be relatively easy to introduce it in her model if needed. Having a list as value enables her analysis to distinguish utterances with multiple foci or topics from utterances with one focus or topic.
+\citeauthor{DeKuthy.2002} accounts for the interface between prosody and information structure along the same lines as \citet{Engdahl.1996}. 
+
+\begin{figure}[h]
+\avm{[\type*{sign}\\
+phon & list\\
+synsem & synsem\\
+info-struc & [\type*{info-struc}\\
+              focus & list of meaningful expressions\\
+              topic & list of meaningful expressions]]}
+\caption{Encoding of information structure in \citet[161--165]{DeKuthy.2002} (summary)}
+\end{figure}
+
+% Wilcock 2005? list of relations 
+
+\citegen{Bildhauer.2008} proposal is relatively similar to \citet{DeKuthy.2002}. Information structure is encoded under the feature \textsc{is}, a main feature of \emph{sign} that takes as value an AVM object with  the two features \textsc{focus} and \textsc{topic}. The value of these two features is a list of lists of EPs (i.e.\ of objects of the type \emph{relation} as defined in MRS, see above). Here again, backgroundedness is not explicitly encoded, but it remains relatively easy to identify.\footnote{As pointed out by \citeauthor{Bildhauer.2008}, ``it will correspond to those EPs that are present on the \textsc{rels} list, but absent from the \textsc{foc} and \textsc{topic} list'' \citep[147]{Bildhauer.2008}. My definition of background would rather correspond to the EPs that are present on the \textsc{rels} list, but absent from the \textsc{foc} list.} Having as value a list of lists enables the analysis to identify multiple foci or topics, similarly to \citeauthor{DeKuthy.2002}.  \citeauthor{Bildhauer.2008} also develops a very elaborate representation of accents and tonality that can be mapped onto the information structure. 
+
+\begin{figure}[h]
+\captionsetup{margin=.05\linewidth}
+\begin{floatrow}
+\ffigbox{%
+\avm{[\type*{sign}\\
+phon & list\\
+synsem & synsem\\
+is & [foc & list\\
+      topic & list]]}}
+{\caption{Encoding of information structure in \citet[147]{Bildhauer.2008}}}
+\ffigbox
+{\avm{[\type*{sign}\\
+synsem & [loc & local\\
+nonloc & nonloc\\
+is & [\type*{is}\\
+       topic & list\\
+       focus & list]]]}}
+{\caption{Encoding of information structure in \citet[74]{Bildhauer.2010}}}
+\end{floatrow}
+\end{figure}
+
+\citet{Bildhauer.2010} and \citet*{Mueller.S.2020?.chapter5} use a sightly different variant of \citegen{Bildhauer.2008} proposal, where the feature \textsc{is} is a feature in \emph{synsem}.
+
+\citegen{Webelhuth.2007} proposal differs in many respects from other proposals in the literature. He represents information structure under \textsc{content}. The value of \textsc{content} is an AVM of type \emph{content} with two features, \textsc{background (bg)} and \textsc{focus (foc)}. The value of \textsc{focus} is a list of \emph{meaningful expression} objects \citep{Richter.2000}. The value of \textsc{bg} is an AVM with two features: \textsc{focus variables (fvars)} which takes a list of variables (based on \citet{Krifka.1992} in order to account for multiple foci or topics); and \textsc{core}, which takes an object of the type \emph{meaningful expression} and encodes the meaning of the sign.
+Furthermore, \citet[310]{Webelhuth.2007} makes a distinction between Focus\slash Topic\slash Background, which are mapped to prosody; and Theme, which is mapped to syntax. His concept of Theme is similar to what I defined as ``aboutness topic'', with an important aspect of gradience (one constituent being more or less thematic than another one). Thematicity is encoded in a meaningful expression.
+
+\begin{figure}[h] 
+\avm{[\type*{sign}\\
+synsem|loc|cont & [\type*{cont}\\
+                   bg & [\type*{bg}\\
+                         fvars & list of variables\\
+                         core & meaningful expression]\\
+                   foc & list of meaningful expressions]]}
+\caption{Encoding of information structure in \citet[312]{Webelhuth.2007}}
+\end{figure}
+
+\citet{Song.2017} encodes information structure inside \emph{mrs} objects, thus under \textsc{content}, with a feature called \textsc{icons}. The mechanism of \textsc{icons} mimics the mechanism of \textsc{rels}. The value is a list of objects of type \emph{info-struc}, and each word that introduces an EP also introduces such an object. The type hierarchy of \emph{info-struc} is fine-grained and contains subtypes like \emph{focus}, \emph{topic} and \emph{bg} (background). \emph{info-struc} objects have two features, \textsc{target} and \textsc{clause}, that make it possible to map the semantic variable bearing the discourse function to the clause with respect to which it has this discourse function. Embedded clauses can then have their own internal information structure independently of the main clause (e.g.\ a relative clause may be backgrounded with respect to the meaning of the main clause, but have its own topic or focus domain). I present \citegen{Song.2017} proposal in more detail below.
+
+\begin{figure}[h] 
+\avm{[\type*{sign}\\
+synsem|loc|cont & [\type*{mrs}\\
+                   hook & hook\\
+                   rels & list of relations\\
+                   hcons & list of qeq constraints\\
+                   icons & list([\type*{info-str}\\
+                                clause & individual\\
+                                target & individual]) $\bigcirc$ list of icons]]}
+\caption{Encoding of information structure in \citet[116]{Song.2017} (simplified)}
+\end{figure}
+
+\subsubsection{Desiderata for a representation of information structure}
+
+As shown by the variety of proposals, there is disagreement on many points, but especially on where the features for information structure should be embedded. Some define them at the level of the \emph{sign} \citep{DeKuthy.2002,Bildhauer.2008}, however, \citet*[145]{Mueller.S.2020?.chapter5} point out that discourse status must be accessible in \emph{synsem} objects because some elements, like focus particles (e.g.\ \emph{only}),  are sensitive to information structure, and must be able to select via the valence features an element with the appropriate information structure. \citet[160--161]{DeKuthy.2002} argues that \textsc{info-struc} should not be part of a \emph{local} object, otherwise this has undesirable consequences for focus projection in her analysis. Focus projection is a property of the interface between prosody and information structure: the word(s) bearing the main stress in the sentence may project this focus status to domains wider than where the stress falls. Focus projection is therefore the reason why the German sentence in (\ref{ex:focus-proj-insitu}) can have an all-focus reading (e.g.\ as an answer to the question \emph{What happened?}), while the main stress is on \emph{Auto}.
+
+\ea all-focus reading \citep[160]{DeKuthy.2002}\\
+\gll Hans hat ein AUTO gewonnen.\\
+Hans has a car won\\
+\glt `Hans won a car.'
+\label{ex:focus-proj-insitu}
+\z 
+
+If the word that receives the main stress appears in the prefield (before the finite verb), focus projection is blocked: (\ref{ex:focus-proj-VF}) cannot have an all-focus reading. 
+
+\ea all-focus reading \citep[160]{DeKuthy.2002}\\
+\# \gll Ein AUTO hat Hans \emph{t} gewonnen.\\
+a car has Hans {} won\\
+\glt `Hans won a car.'
+\label{ex:focus-proj-VF}
+\z 
+
+But \citeauthor{DeKuthy.2002} analyses the prefield position as a filler-gap dependency with a trace (\emph{t}) at the canonical position in the middlefield, and traces as empty categories that structure-share their \emph{loc} value with their filler. This is the reason why \citeauthor{DeKuthy.2002} argues against encoding information structure in \emph{loc} objects: otherwise, the information structure of (\ref{ex:focus-proj-insitu}) is indistinguishable from  the information structure of (\ref{ex:focus-proj-VF}), and the difference in available readings between the two sentences remains unexplained.
+
+For the formalization of the FBC constraint, however, it is crucial that the focus interpretation received by the extracted element be structure-shared with the noun that subcategorizes for this element. Hence, contra \citet{DeKuthy.2002}, I argue that information structure has to be encoded in \emph{loc} objects. I avoid the problem pointed out by \citet{DeKuthy.2002} because I adopt a traceless account of extraction along the lines of \citet{Bouma.2001}.\footnote{\citet{DeKuthy.2002} refers to it as a possible way to avoid focus projection in (\ref{ex:focus-proj-VF}), but says that it is otherwise incompatible with her own analysis of German.} Traceless analyses have been supported by \citet{Sag.1994.Fodor,Sag.1996} on grounds, among others, that they are more compatible with an incremental processing model \citep{Pickering.1991,Tanenhaus.2000}.%
+\footnote{On the other hand, traceless analyses may also have some drawbacks: as explained by \citet[570--574]{Mueller.S.2016}, more rules have to be added to the grammar, and especially the German V2 position seems to be hard to analyze without the use of a trace.} % Yiddish ?
+
+% Kuhn 1995 : the value of FOCUS should not be a syntactic object
+% Kuhn, Jonas. 1995a. Information Pa kaging in German - some motivation from HPSG-based translation. Theoreti al Linguisti s 2 (Syntax), Term Paper.
+
+Different accounts use different terminologies with respect to information structure, and this is especially true for ``background'', which may or may not include the topic, depending on the model. In \citegen{Engdahl.1996} analysis, \textsc{link} (Topic) is included in \textsc{(back)ground}, whereas for \citet{DeKuthy.2002}, \citet{Bildhauer.2008} and \citet{Song.2017}, Background, Topic and Focus are in complementary distribution, i.e.\ Background is what is neither Topic nor Focus. The FBC constraint in (\ref{rule:FBC-bis}) presupposes direct access to a list of the focused elements on the one hand, and to the ``backgrounded'' (i.e.\ non-focus) ones on the other hand. This is possible in all accounts that I have mentioned, though more straightforwardly so in \citegen{Engdahl.1996} model and in \citegen{Song.2017} model (which defines a supertype \emph{non-focus} for \emph{background} and \emph{topic}). 
+
+% no analysis seems to account for partial focus
+
+However, \citegen{Song.2017} proposal is the only one that offers the possibility to model different layers of information structure for each clause in an utterance, thanks to the pair of features \textsc{clause/target}. This means that any element in an embedded clause can be presupposed with respect to the main clause (e.g.\ if the whole clause is backgrounded, as in restrictive relative clauses) and still be the topic with respect to the embedded clause (e.g.\ the extracted element in a relative clause\footnote{``On the basis of the pervasive parallelism between topicalization and relativization, I proposed that in Japanese what is relativized is the theme of the relative clause.'' \citep[15]{Kuno.1987}}). This advantage is fundamental for my purposes, and the main reason for choosing his model.
+
+For consistency, I follow \citegen{Song.2017} representation whenever possible, even though it has some weaknesses. For example, this model does not distinguish between a clause with multiple foci or topics and one with a single focus or topic (an aspect addressed by \citet{DeKuthy.2002}, \citet{Webelhuth.2007}, \citet{Bildhauer.2008}, and \citet*{Mueller.S.2020?.chapter5}). It is beyond the scope of this work to define a new and more optimal representation of information structure in HPSG that incorporates all relevant aspects. In general, I am also confident that my analysis is compatible with any well thought-out representation of information structure. 
+
+\subsubsection{The representation of information structure adopted in this work}
+
+In this work, information structure is encoded under the \emph{mrs} feature \textsc{individual constraints (icons)}. The definition of \emph{mrs} presented in \figref{avm:def-mrs} is reproduced in \figref{avm:def-mrs-bis}.
+
+\begin{figure}[h]
+\avm{[\type*{mrs}\\
+  hook & [\type* {hook}\\
+           gtop & handle\\
+           ltop & handle\\
+           clause-key & event\\
+           icons-key & info-str-or-none\\
+           index & index] \\
+  rels & list of relations\\ % list of EPs ?
+  hcons & list of qeq constraints\\
+  icons & list of icons]
+}
+\caption{Definition of \emph{mrs}}
+\label{avm:def-mrs-bis}
+\end{figure} 
+
+The feature \textsc{icons} ``incorporate[s] discourse-related phenomena into semantic representations of sentences'' \citep[31]{Song.2016}.\footnote{\citet{Song.2012} credit Dan Flickinger and Ann Copestake with first suggesting the \textsc{icons} feature.} The feature \textsc{cont} thus encodes not only the semantics but also the pragmatics of the sign. This is the reason why \citet{Song.2016,Song.2017} does not define any \textsc{context} feature for \emph{local} objects. 
+
+The value of \textsc{icons} is a list of \emph{icons} objects. All \textsc{icons} objects express a binary relation between \emph{index} variables. For example, they express anaphora resolution either as an identity relation (``eq'') or a non-identity relation (``neq'') between two variables.
+
+\begin{exe}
+\ex \citep[31]{Song.2016}
+\begin{xlist}
+\ex John$_i$ likes himself$_j$. [\textit{i} eq \textit{j}]
+\ex John$_i$ likes him$_j$. [\textit{i} neq \textit{j}] 
+\end{xlist}
+\end{exe}
+
+Honorific relations are also encoded by means of \emph{icons} object, namely \emph{rank} objects, as a binary relation between the addressor and the addressee. Information structure is encoded in \emph{info-str} objects, in accordance with the hierarchy of \emph{icons} objects in \figref{fig:hrch-icons}, adapted from \textcites[36]{Song.2016}[114]{Song.2017}.
+
+\begin{figure}[ht]
+\centering
+\oneline{
+\begin{forest}
+sn edges,
+[\textit{icons}
+[\textit{non-is}
+    %[\textit{dialogue}
+    %    [\textit{addressor}]
+    %    [\textit{addressee}]
+    %]
+    [\dots]
+    [\textit{rank} [\dots]]
+]
+[\textit{is-status}
+[\textit{info-str}
+    [\textit{non-topic}, name = nontopic
+        [\textit{focus}, name = focus
+            [\textit{semantic-focus}]
+        ]
+    ]
+    [\textit{contrast-or-focus}, name = contrastorfocus]
+    [\textit{focus-or-topic}, name = focusortopic
+        [\textit{contrast}, name = contrast
+            [\textit{contrast-focus}, name = contrastfocus]
+            [\textit{bg},no edge, name = bg]
+            [\textit{contrast-topic}, name = contrasttopic]
+        ]
+    ]
+    [\textit{contrast-or-topic}, name = contrastortopic]
+    [\textit{non-focus}, name = nonfocus
+        [\textit{topic}, name = topic
+            [\textit{aboutness-topic}]
+        ]
+    ]
+]
+[\textit{i-empty}]
+]]
+\draw[thin] (nontopic.south)--(bg.north);
+\draw[thin] (contrastorfocus.south)--(focus.north);
+\draw[thin] (contrastorfocus.south)--(contrast.north);
+\draw[thin] (focusortopic.south)--(focus.north);
+\draw[thin] (focusortopic.south)--(topic.north);
+\draw[thin] (contrastortopic.south)--(contrast.north);
+\draw[thin] (contrastortopic.south)--(topic.north);
+\draw[thin] (nonfocus.south)--(bg.north);
+\draw[thin] (focus.south)--(contrastfocus.north);
+\draw[thin] (topic.south)--(contrasttopic.north);
+\end{forest}
+}
+\caption{Type hierarchy of \textit{icons}}
+\label{fig:hrch-icons}
+\end{figure}
+
+Objects of the type \emph{info-str} express a binary relation between a clause (an \emph{event} variable) and some element in the sentence (through its \emph{index} variable). Accordingly, they have two features, \textsc{clause} and \textsc{target}. Every word that introduces an EP in the semantic representation also introduces an \emph{info-str} object.\footnote{The corollary of this rule is that semantically empty words like expletives or copulas do not introduce any \emph{info-str} object. \citet[112]{Song.2017} also assumes that syncategorematic items, e.g.\ relative pronouns, are ``informatively empty'' and do not introduce any \emph{info-str} objects. He does not explain in detail how such words are analyzed in his model, and especially what the value of \textsc{icons-key} is. 
+I add the possibility of a value \emph{i-empty} to his hierarchy of \emph{icons}, and assume that semantically and informatively empty words are \avm{[icons-key & i-empty]}. This is not very elegant because all \emph{icons} objects are supposed to introduce a binary relation. Furthermore, an unfortunate consequence is that the \textsc{icons} list of a sign may contain  \emph{i-empty} elements. This could probably be avoided, but I leave the task of resolving this challenge for future work.
+%I assume that semantically and informatively empty words do not have a \textsc{icons-key} feature. This means that the definition in \figref{avm:def-mrs-bis} is not universal and that some \emph{mrs} objects are missing (at least) this feature. -> this does not work because icons-key is supposed to be inherited by the mother node
+} 
+The value of \textsc{target} is structure-shared with the value of the \textsc{index} of the word. The value of \textsc{clause} is structure-shared with the value of \textsc{clause-key}, which itself is the current clause's event variable.
+
+\ea Definition of \emph{info-str}: \nopagebreak
+
+\avm{[\type*{info-str}\\
+  clause & event\\
+  target & index]
+}
+\label{avm:def-infostr}
+\z 
+
+\figref{avm:collegue-info-str} illustrates how words in the lexicon introduce an underspecified object of type \emph{info-str}. \figref{avm:collegue-focus} is the AVM for \emph{collègues} (`colleagues') in (\ref{ex:basis-sentence-with-is}) where the direct object bears the informational focus of the utterance.
+
+\ea
+\gll [L' originalité de l' innovation]$_T$ enthousiasme [mes collègues]$_F$.\\
+\sbar{}the uniqueness of the innovation excites \sbar{}my colleagues\\
+\glt `The uniqueness of the innovation excites my colleagues.'
+\label{ex:basis-sentence-with-is}
+\z
+
+\begin{figure}[h] 
+\avm{[phon & < \type{collègue} >\\
+cont|hook & [index & \tag{i} individual\\
+             clause-key & \tag{e} event \\
+             icons-key & [\type*{info-str}\\
+                 clause & \tag{e}\\
+                 target & \tag{i}]]]
+}
+\caption{Lexical entry for \emph{collègue} (`colleague') -- information structure}\label{avm:collegue-info-str}
+\end{figure}
+
+\begin{figure}[h]
+\avm{[phon & < \type{collègues} >\\
+cont|hook & [index & \tag{i} individual\\
+             clause-key & \tag{e} event \\
+             icons-key & [\type*{semantic-focus}\\
+                 clause & \tag{e}\\
+                 target & \tag{i}]]]
+}
+\caption{Lexical entry for \emph{collègue} (`colleague') in example~(\ref{ex:basis-sentence-with-is}) -- focussed}\label{avm:collegue-focus}
+\end{figure}
+
+The feature \textsc{icons-key} encodes the ``main'' information structure of the head. The other \emph{icons} objects (the information structure for the rest of the phrase, or other pragmatic relations) are part of the \textsc{icons} list. There can be only one object for each \textsc{target-clause} pair in the \textsc{icons} list, i.e.\ an element may have different discourse statuses for different clauses but not different discourse statuses for one single clause.
+
+\ea Discourse-clash Avoidance Principle:\\
+The \textsc{icons} list can contain only one \emph{info-str} element for each \textsc{target-clause} pair. 
+\label{rule:discourse-clash-avoid}
+\z 
+
+As long as the word is the head of the structure, the values of \textsc{icons-key} and \textsc{clause-key} remain the same, as they are part of \textsc{hook}. In a headed structure, the \textsc{icons-key} of the non-head daughter is incorporated into the \textsc{icons} list of the mother node. The mother node also inherits the \textsc{icons} lists of its daughters and its own \textsc{c-cont}.\footnote{\citet{Song.2017} uses some mechanisms of the LKB grammars (e.g.\ difference lists) to formulate his constraint. I am using a more traditional approach and thus translate \citeauthor{Song.2017}'s idea into the constraint in (\ref{ex:avm-icons-accumulation}).}
+
+\begin{figure} 
+\textit{headed-structure} \avm{$\to$} 
+\avm{[cont|icons & \1 $\oplus$ <\2> $\oplus$ \3 $\oplus$ \4\\
+        c-cont & [icons & \4]\\
+        head-dtr  & [cont|icons & \1]\\
+        nhead-dtrs & <[cont & [hook|icons-key & \2\\
+                             icons & \3]]>]}
+\caption{\textsc{icons} Accumulation}
+\label{ex:avm-icons-accumulation}
+\end{figure}

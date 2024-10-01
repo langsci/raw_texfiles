@@ -1,0 +1,892 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10641183}
+
+\author{Alexander Pfaff\affiliation{University of Stuttgart} and Gerlof Bouma\affiliation{University of Gothenburg}}
+
+\title{The NPEGL noun phrase database: Design and construction} 
+
+\abstract{This chapter introduces NPEGL (\textbf{N}oun \textbf{P}hrases in \textbf{E}arly \textbf{G}ermanic \textbf{L}anguages), an annotated database of noun phrases taken from Early Germanic texts. We discuss the main aspects of the philosophy underlying our annotation model and the choice of materials. We also touch upon methodological issues pertaining to the conversion from the source corpora and the annotation process. Finally, we describe how the database is made available, as downloadable data as well as through two search interfaces.}
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[1]%%chapternumber
+}{}
+
+
+
+
+\begin{document}
+\maketitle
+
+
+\section{Introduction}
+
+ 
+ 
+The NPEGL \isi{database} is one major output of the project \textit{Constraints on syntactic \isi{variation}: \isi{Noun} phrases in early \ili{Germanic} languages} (Research Council of Norway, grant no.\ 261847).     
+As indicated by its title, one goal of that project was to study the scope of \isi{noun} phrase-internal \isi{variation} in Old \ili{Germanic} languages, with an \isi{emphasis} on \isi{word order} \isi{variation}, and to examine which factors have an impact on that \isi{variation}.  This goal is also reflected in the design of the NPEGL \isi{database}.  
+In this chapter, we describe the central features and some idiosyncrasies of NPEGL, 
+offer reflections on methodological issues, and illustrate some possible applications and advantages.  
+
+At the most general level, NPEGL is a \isi{database} specifically dedicated to \isi{noun} phrases (NPs), a specialization that makes it possible to annotate NPs at a greater level of granularity than what is feasible for a general text \isi{corpus}.  Every entry in NPEGL documents one NP, where this term should be understood in its general, theory-neutral sense.\footnote{In particular, our use of the term \textit{\isi{noun} phrase} for an entry should not be understood as taking position in the matter of whether this should be analyzed as DP, NP (in a narrow sense), QP, nP, etc, in any particular phrase structure-based theory.} 
+For practical reasons,  one-item NPs (bare nouns/names, pronouns, etc.), but also certain two-item NPs (e.g. \textsc{Det + CP, N + PP}, etc.)  were given low priority  (see Section~\ref{sec:DegInt}), which effectively means they were not manually annotated.
+
+One guiding principle of the annotation scheme employed in NPEGL is theory neutrality. NPEGL employs a surface-oriented flat annotation, which essentially means that every NP is linearly segmented, but not hierarchically structured, and that most NP-internal dependencies are not encoded. In fact, the annotation scheme does not generally assign head status to any of the parts of an NP. In other words, every  item in NPEGL is first and foremost a sequence of category labels.\footnote{\textcitetv{chapters/2Pattern} introduces a method that takes advantage of this kind of encoding. } To be able to capture enough information about each NP, NPEGL's annotation scheme has a rich inventory of categories and allows for annotation of syntactic, morphological, and semantic information at multiple levels.
+
+The rest of this chapter is structured as follows. Section~\ref{sec:annotscheme} describes the annotation scheme in more detail. The exposition largely follows the structure of a \isi{database} entry, by first discussing properties of the NP as a whole in its context (Section~\ref{sec:anno1}), then zooming in on the ontology of categories used to label each part of the NP (Section~\ref{sec:anno2}), and finally describing the system on category-dependent properties that is used to add detailed information to the NP parts (Section~\ref{sec:anno3}). Section~\ref{sec:sources} gives an overview of the source materials used to populate the \isi{database} with initial entries, to be corrected manually in a later stage of the annotation process. The web-based interfaces that make the \isi{database} available for annotation and search are described in Section~\ref{sec:interfaces}. Finally, Section~\ref{sec:availability} gives information on where and how the databases are made publicly available and summarizes this chapter. 
+
+\section{Annotation scheme\label{sec:annotscheme}}
+
+\begin{sloppypar}
+Noun phrases in the NPEGL \isi{database} are annotated for various properties and pieces of information, every one of which is searchable through one of the \isi{database} interfaces. The central labels are illustrated %with the entry for the \ili{Old Icelandic} example \textit{forn epli og stór} ``old apples and big'' 
+in Figure~\ref{fig:anotInt}. %\footnote{NB: Fig. \ref{anotInt} does not necessarily represent the eventual layout. } 
+\end{sloppypar}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/npegldb-figure1}
+\caption{Annotated noun phrase\label{fig:anotInt}}
+\end{figure}
+
+
+The four top labels provide meta-information about the origin of the NP and its context. The first one, \textsc{language}, obviously indicates the respective language; at the time of writing this chapter, potential values are: \ili{Old Icelandic}, Old \ili{English}, Old High \ili{German}, \ili{Old Swedish}, \ili{Old Saxon}, and \ili{Gothic}.
+
+The \textsc{db item id} field holds an identity number for each item in the \isi{database}: this number is unique to the entry and is never changed, so that it can be used to unambiguously refer to an entry. The example NPs in this chapter that are taken from the \isi{database} are all accompanied by their item id, so that they can be located easily in the \isi{database}. Together with a time stamp or a \isi{database} version number, the item id even identifies an NP with a specific annotation. The \textsc{db item id} must be distinguished from the \textsc{\isi{corpus} unit id}, which contains a reference to the entry's source \isi{corpus}. This link back to the source material means that all items have a transparent provenance, and this in turn gives us access to types of meta-information that are not directly part of the information encoded in the \isi{database}. 
+
+\largerpage
+The field labelled \textsc{context} provides the textual environment in which the NP (highlighted in red) occurs. The size of the \textsc{context} depends largely on the text segmentation in the respective source \isi{corpus}. 
+Note, incidentally, that the minimal segmentation units in the source corpora tend to be sentences (or even paragraphs); therefore,  \textsc{\isi{corpus} unit id} may refer to a piece of text containing more than one NP.
+
+In the following, the remaining labels will be discussed in somewhat more detail. 
+
+
+\subsection{Annotation I: Global properties and segmentation}
+\label{sec:anno1}
+
+The four  labels \textsc{gender, number, case} and \textsc{grammatical function}  indicate global properties, that is, properties of the NP as a whole, which are annotated only once. This means that the individual parts of NPs are not separately annotated for gender, number and case, even though  these properties are usually overtly marked via \isi{inflection}  on items like nouns, adjectives, demonstratives, and quantifiers in the Old \ili{Germanic} languages.
+
+\textsc{Grammatical function} gives the NP's syntactic status/role (argument, predicate; subject, object, etc.). It is encoded in an ``upward-entailing'' path notation, $x.y.z$, where the suffix $z$ gives a further specification of the path's prefix $x.y$. In Table~\ref{tab:Syntac} some potential values and sub-specifications are given for the grammatical function annotation.
+
+\begin{table}
+\begin{tabular}{l@{~~}c@{~~}l@{~~}c@{~~}ll}
+\lsptoprule
+\multicolumn{3}{l}{Label} & & & Description\\
+\midrule
+Arg &   &       &   &    & argument\\
+Arg & . & ofV   &   &    & argument of verb\\
+Arg & . & ofV   & . & Sb & subject of verb\\
+    &   &      & . & Ob & object of verb\\
+    & . & ofN   &  &     & argument of noun \\
+    & . & ofP   &   &    & argument (complement) of preposition \\\addlinespace
+Pred&   &       &   &    & predicative\\    
+Pred& . & Cop   &   &    & predicative, with copula\\
+    & . & Other &   &    & other predicative (secondary predicate, etc)\\\addlinespace
+App &   &      &   &    & apposition \\\addlinespace
+Voc &   &      &   &    & vocative \\
+\lspbottomrule
+\end{tabular}
+\caption{A selection of grammatical functions\label{tab:Syntac}\is{predicate}\is{vocative}\is{noun}}
+\end{table}
+
+This type of label hierarchies are employed more widely in NPEGL. 
+In general, we assume that an item is annotated with the most specific value possible. An eventual query, however, can target any level in the hierarchy. Consider the NP in Figure~\ref{fig:anotInt}, which has the grammatical function ``Arg.ofV.Sb''. This means that it is a subject of a verb (Arg.ofV\textbf{.Sb}), which entails that it is an argument of a verb  (Arg\textbf{.ofV}), which finally entails that is is an argument (\textbf{Arg}). Searching for a shorter path like Arg.ofV is an effective way of searching for the disjunction of all complete paths that are extensions of it. Running such a query should return the entry of Figure~\ref{fig:anotInt} and other subjects of verbs, as well as entries with the grammatical function ``object of verb'', and so on. The domain of category labels, discussed in Section~\ref{sec:cat}, is another prominent example of where these hierarchical labels are used in NPEGL. A complete overview of all annotation labels is given in the Appendix. %~\ref{sec:APPX};
+For an in-depth discussion of all the individual labels, we refer the reader to the annotation manual \citep{Pfaff2019Annot}. 
+
+\begin{sloppypar}
+Similar systems of hierarchical labels can be found in other annotation schemes. One example is the Stuttgart-Tübingen Tagset (STTS; \citealp{stts}) for \ili{German} part-of-speech annotation, which has categories and subcategories. For instance, pronouns in STTS are divided into \isi{demonstrative} pronouns, \isi{indefinite} pronouns, personal pronouns, etc; and \isi{demonstrative} pronouns in turn are divided into substitutive demonstratives and \isi{attributive} demonstratives, and so on. As mentioned, this hierarchical view is pervasive in NPEGL: it shows up in many different kinds of labels. In addition to their usefulness in search, we have also found that it can be practical to allow annotators to use more general labels in certain cases, for instance to facilitate faster and more reliable annotation of information types that are hard to determine.
+\end{sloppypar}
+
+Noun phrase-internal structure is encoded as a sequence of labelled segments. The segmentation itself is displayed in the field called \textsc{segmentation}. The labels attached to the segments are what we refer to as \textit{categories}, which are in the \textsc{annotation field}, and will be discussed in the next subsection. An NP like~(\ref{ex:sannan_vina}) is segmented as shown in~(\ref{ex:sannan_vinb}).
+\ea\label{ex:sannan_vin}
+    \ea \label{ex:sannan_vina} \gll sannan vin    kóngdómsins\\ % / 1325.ARNI.NAR-SAG,.912)}  \\ 
+             true   friend the.kingdom.\textsc{gen}\\
+        \glt `a true friend of the kingdom' 
+        (OIce.648.421)
+    \ex \label{ex:sannan_vinb} %\hspace*{-5pt}\raisebox{-3.5pt}{\includegraphics[height=1.25em]{figures/npegldb-seg1.png}}
+        \begin{tabular}[t]{@{}llllll@{}}
+        \textsc{segmentation} & \multicolumn{5}{l@{}}{%
+        [sannan]\textsubscript{sannur}
+        [vin]\textsubscript{vinur} 
+        [kóngdómsins]\textsubscript{\#}}\\
+    \end{tabular}
+
+    \z
+\z
+
+\begin{sloppypar}
+Inside the square brackets are the word forms such as they occur in the text (here: %\textit{sann-an} `true-\textsc{acc.sg}', \textit{vin-\kern1pt$\emptyset$} `friend-\textsc{acc.sg}'). 
+\textit{sannan} `true' and \textit{vin} `friend').
+Categories can be lexical, phrasal or clausal. Lexical segments are provided with a lemma (dictionary form, here:  \textit{sannur}, \textit{vinur}). Non-lexical segments, phrases and clauses, do not receive lemmata, which is signalled by marking them with a \#.\footnote{Notice that the \isi{genitive} \textit{kóngdómsins} is treated as a phrasal category, and as such it has no lemma. However, phrasal categories that themselves constitute an NP (esp. genitives, appositions) have separate \isi{database} entries of their own. This means that their lexical parts can receive lemma annotation in those entries instead.} Lemmatization greatly improves the ease with which the \isi{database} can be searched, especially in historic \ili{Germanic} material that shows great \isi{variation} in text forms, both because of morphological complexity and \isi{variation} in spelling.
+\end{sloppypar}
+
+
+As just illustrated, NPEGL employs a flat annotation system; that is, it merely encodes the linear sequence of individual categories. This in turn  is the result of project-internal purposes, notably, to study NP-internal \isi{word order} \isi{variation}. The main motivation was to produce a (largely) theory-neutral segmentation that imposes as little analysis as possible. On the other hand, (structurally richer) syntactic annotation is found in most source corpora, and can be retrieved by virtue of the \textsc{\isi{corpus} unit id}. 
+
+Strictly speaking, of course, the system is not completely void of prior analysis. After all, the segmentation is, in part, a consequence of the category inventory adopted for NPEGL (see Section \ref{sec:cat}). Moreover, there are  some ways in which syntactic dependencies can be encoded in our system, especially in order to capture discontinuities. In the DB entry OIce.644.764, partially illustrated in~(\ref{ex:theirra_hlodhi}), the \isi{genitive} phrase \textit{þeirra tveggja} `of those two' is discontinuous and  surrounds the head \isi{noun} \textit{hlj\'o\dh{}i}  `sound' (giving `the sound of those two').
+\ea\label{ex:theirra_hlodhi}
+   %\raisebox{-54pt}{\includegraphics[height=6em, trim=0 2em 0 0 0, clip]{figures/npegldb-ind1.png}}
+    \begin{tabular}[t]{@{}llllll@{}}
+    \textsc{segmentation} & \multicolumn{5}{l@{}}{%
+        [þeirra]\textsubscript{\#:a}
+        [hljóði]\textsubscript{hljóð} 
+        [tveggja]\textsubscript{\#:a}}\\\addlinespace
+    \textsc{annotation} & þeirra tveggja & GenP & Oth & Def & \\
+                        & hljóði & N.C & Abst.Oth & Rel \\
+    \end{tabular}
+\z
+
+In order to capture the constituency of the discontinuous elements in a linear system, we mark them with the same subscript in the segmentation field. In~(\ref{ex:theirra_hlodhi}), this is the index $a$, appearing on [\textit{þeirra}] and [\textit{tveggja}].
+All thusly co-indexed segments are construed as belonging to the same constituent.   
+In other words, both linearity and constituency (of categories) are encoded. In the case of discontinuous categories, the potential separate encoding becomes visible: in the \textsc{segmentation} field above, we see the mere linear sequence of segments, but in the field labeled \textsc{annotation}, the two discontinuous segments are represented together as one constituent (= GenP).
+
+Co-indexation in the segmentation allows us to handle discontinuous constituents without forcing us to say anything about the internal structure of the discontinuous constituent. There is a second method to indicate syntactic dependencies which we use when we wish to consider a segment to be a structural part of the NP, while at the same time marking that it, in functional terms, does not modify the NP or a segment that could be considered the NP's head, but rather another segment. Consider the example in~(\ref{ex:fridhur_madhura}). Here the \isi{dative} \isi{noun} \textit{sýnum} `sight\textsc{.dat}' modifies \textit{fríður} `fair', and not \textit{maður}. Because \isi{adjectival modification} is one of our central concerns, and we want to have detailed information available about the \isi{adjective} in the entry for this NP, we prefer to have the \isi{adjective} directly present as a lexical segment.\footnote{An alternative solution would be to assume an AP phrasal category, just like we have a GenP, and then use the first mechanism for discontinuous segments. However, since APs do not receive their own entries, we would effectively lose all information about the inner make-up of the AP and the characteristics of the head \isi{adjective}.} We therefore also allow the \isi{dative} \isi{noun} to appear as a separate segment in the flat analysis of this NP.
+\ea \label{ex:fridhur_madhur}
+    \ea \label{ex:fridhur_madhura} \gll fríður maður sýnum\\ % / 1260.JOMSVIKINGAR.NAR-SAG,.1060)}  \\ 
+             fair   man   sight.\textsc{dat}\\ 
+        \glt `a handsome man' (OIce.252.041)
+   %\ex\raisebox{0pt}{\includegraphics[height=7.5em, trim=0 1em 0 0 0, clip]{figures/npegldb-ind2a.png}}
+    \ex \label{ex:fridhur_madhurb}
+        \begin{tabular}[t]{@{}llllll@{}}
+        \textsc{segmentation} & \multicolumn{5}{l@{}}{%
+            [fríður]\textsubscript{fríður}
+            [maður]\textsubscript{maður} 
+            [sýnum]\textsubscript{\#}}\\\addlinespace
+        \textsc{annotation} & fr\'i\dh{}ur & Md.Aj.Lx.Pro & Eval, Str, Pos && 0\\
+                   & maður & N.C & Anim.Hind && \\
+                   & sýnum & Mdcm.N & && 0\\
+        \end{tabular}
+    \z
+\z
+
+The status of the \isi{dative} \isi{noun} as a subdependent is marked in two (interrelated) ways in the annotation field, as shown in~(\ref{ex:fridhur_madhurb}). The category for \textit{sýnum} is nominal complement of modifier (Mdcm.N). The co-indexation between \textit{sýnum} and \textit{fríður} (here the index 0 in the annotation field) encodes the dependency explicitly.
+
+
+
+
+
+
+
+
+\subsection{Annotation II: Categories }
+\label{sec:cat}
+\label{sec:anno2}
+
+The basic unit in our annotation system is the category. The way the term \textit{category} is used here deviates in some crucial respects from how it is commonly used in syntactic theory, but also from other part-of-speech (POS) based classifications. 
+\begin{sloppypar}
+\begin{enumerate}[(I)]
+   \item NPEGL categories are not strictly part-of-speech-based, and the category inventory comprises both what would correspond to X\textsuperscript{0} and to XP constituents in the X'-system. There are lexical categories (\isi{noun}, \isi{adjective}, \isi{demonstrative}, \ldots), phrasal categories (\isi{genitive}  phrase,  prepositional phrase, \ldots), and clausal categories (\isi{relative clause}, complement clause, \ldots).
+   
+
+    \item NPEGL categories partially conflate several pieces of  information. There are traditional POS categories (\isi{noun}, \isi{quantifier}, ...), categories defined by syntactic function (apposition,   \isi{coordination}, ...), but also (sub-)categorial  distinctions based on morpho-syntactic properties (finite vs. non-finite complement clause, basic vs. derived adjectives vs. participles, \ldots). 
+
+\item Many categories allow for further specification by using subcategories. The underlying logic is the same as with syntactic functions, as was already illustrated in Table~\ref{tab:Syntac}, and the information is encoded via path notation (e.g. ``N'' = \isi{noun}, ``N\textbf{.}C'' = \isi{common noun}, \ldots).
+\end{enumerate}
+\end{sloppypar}
+
+Because of the richness of our categorial ontology, we will not discuss every individual category here. For this we refer to the Appendix  and the annotation manual \citep{Pfaff2019Annot}. Instead we will discuss some general and representative issues. Some categories do not make any distinctions; that is to say, they have only one category label (e.g. demonstratives, quantifiers, relative clauses), while others have subcategories encoded via path notation. Up to four levels of subcategorial specification occur in our system, adding up to a total of  $19 + 16 + 4 + 7 = 46$ (sub-)category labels (see Tables \ref{tab:catLabels}--\ref{tab:subdependents} in the Appendix). 
+
+The most diversified category in NPEGL, with the most extensive range of distinctions, is the modifier category, which applies to adjectival elements in a very generous sense. It distinguishes, for instance, cardinal elements and adjectives (in a more narrow sense) as subcategories. The former, in turn, divide into the subsubcategories cardinal numerals and weak quantifiers (e.g. \textit{many}), while the latter distinguish between lexical and functional adjectives. Lexical adjectives in our system are those that have some descriptive content and include participles, while functional adjectives are those that lack such a content, and include determiner-like adjectives and ordinal numerals. Some illustrations using \ili{English} examples are given below:
+\ea
+    \ea \textit{many}: Md.Nu/WQ.WQ \hfill (cardinal element: weak \isi{quantifier})
+    \ex \textit{other}: Md.Aj.Fn.Dt   \hfill (determiner-like functional \isi{adjective})
+    \ex \textit{third}: Md.Aj.Fn.Ord   \hfill (functional \isi{adjective}: ordinal \isi{numeral})
+    \ex \textit{red}: Md.Aj.Lx.Pro  \hfill (prototypical lexical \isi{adjective})
+    \ex \textit{bloody}: Md.Aj.Lx.Der  \hfill (derived lexical \isi{adjective})
+    \ex \textit{dancing}: Md.Aj.Lx.Pre \hfill (lexical \isi{adjective}: present participle)
+    \z
+\z
+
+Some further comments on this classification are in order.    
+The decision to have one super-label for numerals and weak quantifiers is based on their common semantic properties and syntactic behaviour (e.g. complementary distribution). On the other hand, ordinal numerals are classified as a subcategory of functional adjectives, and strong quantifiers instantiate a separate category (``Q''). Thus,  cardinal numerals are not classified alongside ordinal numerals, and weak quantifiers are not simply classified as quantifiers. In both cases, the respective elements differ in a number of respects, most notably, syntactic distribution. Moreover, weak quantifiers often show adjective-like behaviour (they have \isi{comparative} and \isi{superlative} forms and  display strong/weak alternation, see Section \ref{sec:features}), and they can be coordinated with regular adjectives, cf. (\ref{morg}).
+\ea \label{morg}
+\gll mörg og  ágætlig   vopn  \\  
+         many   and excellent weapons\\
+    \glt `many excellent weapons' 
+    (OIce.935.277)
+\z 
+
+This justifies including these elements in the modifier category while treating them differently from other quantifiers. 
+
+In a similar vein, the observation that certain adjectives without descriptive content tend to occur further away from the \isi{noun}  motivated defining a separate subcategory of adjectives referred to as ``functional adjectives'' in the present system.  %it has been observed that \isi{adjective} stacking is rare in Old \ili{Germanic} (REFF, Kersti). For
+For \ili{Old Icelandic}, preliminary searches suggest that the majority of NPs with two adjectives (or more than two modifiers) involve a functional and a lexical \isi{adjective}, as in (\ref{AOR}).
+\ea \label{AOR}  
+    \gll margir aðrir ágætir menn\\
+         many   other     excellent    men \\
+    \glt `many other excellent men' 
+    (OIce.740.027)
+\z
+
+Thus, a categorial distinction between lexical and functional adjectives allows us to formulate more precise queries into the distribution of ``adjectives'', e.g. when examining apparent cases of \isi{adjective} stacking. 
+
+Nonetheless, as already pointed out, our system is not intended to suggest a particular analysis, but set up in such a way as to allow us to search for contexts that are likely to display \isi{variation} or different combinatorial possibilities that are of interest to the questions our project asks. %XXXXXXX
+It is always possible to search for more general contexts via a higher label, or to construct ad-hoc categories with the help of logical operators\footnote{The search interfaces described in Section \ref{sec:searching} trivially allow the \isi{combination} of categories exemplified in the main text; ``\textsc{or}" is to be understood as a Boolean operator.} for particular items such as for instance  \\ 
+
+\{``Md.Aj''\} \hfill $\rightarrow$ \ adjectives, 
+
+\{``Q'' \textbf{\textsc{or}}  ``Md.Nu/WQ.WQ''\}  \hfill $\rightarrow$ \ quantifiers, 
+
+ \{``Md.Nu/WQ.Nu'' \textbf{\textsc{or}} ``Md.Aj.Fn.Ord''\} \hfill $\rightarrow$ \ \isi{numeral} elements,
+
+ \{``Md.Aj.Lx.Pst'' \textbf{\textsc{or}} ``Md.Aj.Lx.Pre''\} \hfill $\rightarrow$ \ participles, 
+
+ etcetera.
+
+ 
+\subsection{Annotation III: Properties (features and tags)}
+\label{sec:features}
+\label{sec:anno3}
+
+In addition to the categorial information for every markable item in the \isi{database}, several categories allow for further (morphological, syntactic and semantic) specification via feature annotation. We distinguish two types of features:  on the one hand attribute--value pairs (henceforth simply referred to as ``{features}''), where some value must be specified in each relevant case  (e.g. \textsc{case: nom}), and on the other hand privative features  (henceforth: ``{tags}''),  which are  annotated where appropriate, otherwise they are absent. 
+
+\subsubsection{Modifiers}
+
+Modifiers (= the category ``Md'') are  annotated for the formal attributes degree and declension. The former specifies whether the modifier is in the positive, \isi{comparative} or \isi{superlative} form, while the latter allows specification for the values ``strong'',  ``weak'', ``zero'', and ``undec'' (= ``undecidable whether strong or weak'').   
+Since an attribute must always have a value, also for degree, ``positive'' is assigned as a default value to all modifiers -- even though this may seem counterintuitive for elements like numerals and functional adjectives. 
+
+
+The strong/weak alternation is a hallmark of the \ili{Germanic} adjectival system, and thus highly relevant in the context of NP-internal \isi{variation}. Old High \ili{German}, in addition, has a designated zero-ending/non-inflected form for adjectives (at least, for the \isi{nominative}); so here we potentially have a three-way distinction:  \textit{blint-er} `blind-\textsc{str}', \textit{blint-o} `blind-\textsc{wk}', \textit{blint}  `blind-$\emptyset$'. 
+The label ``zero'' is also used for indeclinable adjectives, that is adjectives without any endings, or adjectives that have the same form for all case, number and gender values. It applies to most numerals (other than \textit{one} to \textit{four}), but also includes certain petrified genitives, e.g. \ili{Old Icelandic} \textit{þesskonar} `such' (lit.\ `of this kind').  
+Finally,  a  modifier is assigned the label ``undec'' (= ``undecidable'')  if the item in question does have \isi{inflection}, but it cannot unambiguously be decided whether it is strong or weak. The \isi{comparative} \isi{inflection} in (Old) Icelandic is one paradigm example. 
+
+These two formal features, degree and declension, apply to the modifier class as a whole. Besides that, there is a semantic feature ``adjectival semantics" that only applies to lexical adjectives  (= the subcategory ``Md.Aj.Lx''). This feature allows us to specify whether the \isi{adjective} denotes e.g. origin (``\ili{English}''), dimension (``tall''), colour (``red'') or evaluation (``beautiful''). 
+
+
+\subsubsection{Nouns}
+
+Nouns (N) are assigned a value for the feature ``\isi{noun} semantics", which encodes a simplistic ontological classification of entities denoted by the respective head \isi{noun}.   We make a first broad distinction between ``{animate}'', (other) ``{tangible}'', and non-tangible, ``{abstract}'' entities. These, in turn, can be further distinguished via path notation; animate entities, for instance, distinguish human individuals (\textit{king}; \textit{poet}) from human collectives (\textit{family}; \textit{troops}) from non-human animals, while tangible entities divide into objects and substance (which roughly rehashes the classical $+$/$-$ count distinction). 
+
+Notice that this taxonomy is guided by linguistic, rather than  biological or theological,  considerations (e.g. plants are not included in the animate class, while gods and demons are human individuals, etc.). The primary tripartition is an attempt to avoid a notoriously vague and  ill-defined or ill-definable dichotomy ``concrete'' vs. ``abstract''. The designation ``tangible'', therefore, also entails an operational instruction: it applies if it is, in principle, possible (even though it may not be advisable) to touch the entity denoted by the \isi{noun} with a tactile impact.  
+
+In addition, nouns  allow  a range of property specifications via tags that are only assigned if applicable. One example is the suffixed \isi{article} tag, which is only relevant for the North \ili{Germanic} languages (here: \ili{Old Icelandic} and \ili{Old Swedish}) where the definite \isi{article} is realized as a suffix on the \isi{noun}:
+\ea 
+    \ea \gll allur flokkur-\textbf{inn}\\   %/1250.STURLUNGA.NAR-SAG,422.1125
+             all   group-\textsc{def} \\
+        \glt `the whole group'  
+        (OIce.997.623)
+    \ex \gll thæn del-\textbf{en} aff wærld-\textbf{enne}\\ % /  moses-b:25437 | Pentateuchparafrasen  (Moses B), enligt Holm A 1 / Del 1, sub 1, par 2 \\
+            that part-\textsc{def} of world-\textsc{def}\\
+        \glt `that part of the world' 
+        (OSwe.752.329)
+    \z
+\z
+
+Thus, in our system, the suffixed \isi{article} shows up as a tag on a segment, rather than a segment of its own. This contrasts, for instance, with IcePaHC \citep{IcePaHC,rognvaldsson-etal:2012} %\footnote{IcePaHC is our source \isi{corpus} for the \ili{Old Icelandic} data.} 
+where it is annotated as a \isi{determiner} on its own.  
+
+Relationality is another example; nouns taking an argument of some sorts receive a tag indicating that they are relational nouns. As a guiding principle, this feature is annotated  exactly when (i) the \isi{noun} involved lexically qualifies as relational (kinship terms and social relations; part--whole nouns; agent nominalizations, etc.)  \textit{and} (ii) the argument (typically a \isi{genitive} or possessive) is overtly realized. Due to these criteria, the nouns `brother' and `hand' in (\ref{rel}) are annotated as relational, whereas the same nouns in (\ref{norel}) are not.
+
+\newlength{\tempcolumnsep}
+\setlength{\tempcolumnsep}{\columnsep}
+\setlength{\columnsep}{-1em}
+\begin{multicols}{2}
+\ea \label{rel}
+    \ea \label{rela} \gll bróðir \textbf{hans}\\   
+             brother      his     \\
+        \glt `his brother' (OIce.733.106)
+    \ex \gll \textbf{sinni}    hendi\\
+             his.\textsc{refl} hand \\
+        \glt `his (own) hand' (OIce.032.638)
+    \z
+\z
+\end{multicols}
+\begin{multicols}{2}
+\ea \label{norel}
+    \ea \gll góðir bræður\\  
+             good        brothers\\
+        \glt `good brothers' (OIce.232.652)
+    %\setlength{\itemindent}{0pt}
+    \ex \gll  in  hægri hönd\\  
+              the right     hand\\
+        \glt `the right hand' (OIce.033.171)
+    \z
+\z
+\end{multicols}
+\setlength{\columnsep}{\tempcolumnsep}
+
+
+
+
+\subsubsection{Genitivals} 
+
+Both possessives (Poss) and \isi{genitive} phrases (GenP) are assigned a value for the feature ``genitival semantics". This feature specifies the nature of the relation between head \isi{noun} and genitival, which may be possession, kinship, argument, part--whole, etc. Notice that, in several cases, this feature interacts with the tag for relationality, e.g. (\ref{rela}) where the head \isi{noun} is relational and the the genitival relation is `kinship'.
+
+
+
+\section{Source material and data extraction}
+\label{sec:sources}
+\begin{sloppypar}
+The annotation scheme outlined above is meant for manual annotation of \isi{database} entries. However, the type of investigation that the \isi{database} is intended to support benefits from having access to large databases. Complete manual construction of such \isi{database} would be prohibitively time-consuming. To quickly populate the databases with enough items, we therefore extracted initial versions of the \isi{database} entries from existing annotated corpora in the language of interest. In the subsequent manual annotation, mistakes made in this semi-automatic procedure were corrected, and annotation that could not be extracted from the source treebanks was added. This approach allowed us to scale up the \isi{database} considerably. A possible downside is that the control of the choice of materials is placed outside of the project to some extent, as we are dependent on the availability of pre-annotated material. 
+\end{sloppypar}
+
+For the construction of our \isi{database}, we
+used the following sources, which can be divided into two families
+with respect to the style of annotation.
+
+\begin{sloppypar}
+\begin{itemize}
+\item Penn Treebank style \citep{marcus-etal:1993, taylor:2003}:
+  \begin{enumerate}[series=sources]
+  \item The \textit{York--Toronto--Helsinki Corpus of Old \ili{English} Prose}
+    (YCOE, Old \ili{English}, \citealp{YCOE});\footnote{The \isi{database} is constructed on the basis of version 3.}
+  \item Material from the first two centuries of the \textit{Icelandic
+    Parsed Historical Corpus} (IcePaHC, \citealp{IcePaHC,rognvaldsson-etal:2012});\footnote{Available from \url{https://hdl.handle.net/20.500.12537/62}, version 0.9, dated 2011.}
+  \item The \textit{Heliand Parsed Database} (HeliPaD,
+    \citealp{Walkden15, Walkden16});\footnote{Available as \href{https://doi.org/10.5281/zenodo.4395040}{doi:10.5281/zenodo.4395040} version 0.9, dated 2015.}
+  \item A development version of the \textit{Geneva Corpus of Early
+    German} (GeCeG).\footnote{This annotated material has remained
+  unpublished. We are grateful to Richard Zimmerman (University of
+  Geneva, currently University of Manchester) for letting us use the
+  preliminary versions for our \isi{database}.}
+  \end{enumerate}
+\item PROIEL style (\citealp{haug-johndal:2008}, information about the
+  individual resources can be found in the joint paper
+  \citealp{eckhoff-etal:2018}):
+  \begin{enumerate}[resume=sources]
+  \item The \ili{Gothic} part of the \textit{Pragmatic Resources in Old
+    \ili{Indo-European} Languages} treebank
+    (PROIEL);\footnote{Available from \url{https://dev.syntacticus.org/proiel.html},
+    version dated 2018-04-08.}
+    \item \ili{Old Swedish} (MAÞiR Trees);\footnote{Available from \url{https://spraakbanken.gu.se/en/resources/mathir-trad},
+      version dated 2018.}
+    \item[-\phantom{.}] In addition the Old \ili{English} part of the
+      treebank created as part of the project \textit{Information Structure
+      and Word Order Change in \ili{Germanic} and \ili{Romance} Languages}
+      (ISWOC),\footnote{Available from
+      \url{http://dev.syntacticus.org/proiel.html}, version dated
+      2016-06-20.} which was used as a source of additional information
+      about a selection of the Old \ili{English} \isi{database} materials.
+  \end{enumerate}
+\end{itemize}
+\end{sloppypar}
+
+\subsection{Penn Treebank style}
+
+
+The Penn Treebank-style corpora are annotated with syntactic structure in
+the form of phrase structures. The annotation builds upon a
+context-free phrase structure skeleton, which means that discontinuous
+phrases and structure sharing have to be encoded by non-structural
+means (traces). In addition to categories, phrases are
+annotated with additional information such as function labels. Lexical
+nodes are marked with parts of speech and may contain morphological
+information and lemmata.
+
+The annotation in our \isi{database} is a lot flatter overall than the
+annotation used in the Penn Treebank-style corpora. First, a lot of
+structure in the corpora is irrelevant to our cause, for instance the internal
+structure of sentences. This information is thus discarded. Secondly, even 
+syntactic units of interest typically
+receive a flatter structure in our \isi{database} than in the source
+corpora. For instance, all kinds of determining and modifying material
+inside NPs show up directly in the NP in our format, whereas the
+Penn Treebank style of annotation puts them in AdjPs, NumPs, QPs, etc.,
+inside the NP.
+
+Syntactic dependencies that cannot be captured directly in the
+context-free backbone are encoded using a system of typed traces. The
+phenomena annotated in this way include fronting,
+relativization/question formation, and extraposition. These
+dependencies can be of relevance for our \isi{database}. Take, for instance,
+the example given in~(\ref{ex:theirra_hlodhi}) above: \textit{(af) þeirra hljóði tveggja}
+`(of) the sounds of these two' (lit.~`[of] these.\textsc{gen}
+sound.\textsc{dat} two.\textsc{gen}') receives the annotation
+[[þeirra]\textsubscript{\#:a} [hljóði]\textsubscript{hljóð}
+  [tveggja]\textsubscript{\#:a}] in our \isi{database}, where the shared index $a$
+indicates that these two parts belong to one and the same segment. The \isi{database} also contains a further entry corresponding to this discontinuous segment,
+[[þeirra]\textsubscript{það} [tveggja]\textsubscript{tveir}]. The annotation in
+IcePaHC relates the two discontinuous parts with a trace-like element
+[\textsubscript{NP} [\textsubscript{NP} þeirra [\textsubscript{NumP} $\emptyset_1$]]
+  hljóði [\textsubscript{NumP} tveggja]$_1$]. For such cases, the conversion
+therefore involves reconstruction of the discontinuous phrases and
+restructuring of the \isi{syntax} graph. 
+
+  
+The presence of phrases in the source annotation facilitates the kind
+of extraction we need to do. In particular, we can rely directly on
+the sources for the decision of what counts as an NP, as they are
+simply annotated as such. The extraction and conversion stage for
+these corpora, in addition to the required graph restructuring
+outlined above, mostly consists of defining mappings of source \isi{corpus}
+labels to our target \isi{database} labels.
+
+At the lexical level, the corpora from this family differ in the
+detail of annotation. Whereas the YCOE basically only contains
+information about part-of-speech and case, the HeliPaD and GeCEG
+treebanks also contain number and gender information for the relevant
+categories. IcePaHC furthermore contains lemmata. We partially
+pre-annotated Old \ili{English} and \ili{Old Saxon} databases with lemmata on the
+basis of text form and part-of-speech. In addition, we used the ISWOC
+\isi{corpus} -- a PROIEL-style treebank -- to enrich part of the Old \ili{English}
+data with gender and number information and lemmata.
+
+\subsection{PROIEL style}
+
+Syntactic annotation in the PROIEL family corpora takes the form of
+dependency graphs. As PROIEL dependency trees are not required to
+be projective, these structures encode continuous and discontinuous
+groupings in the string with exactly the same means. Discontinuous
+segments can thus be read directly off the dependency tree. Just like
+the Penn Treebank-style phrase structures discussed above, the PROIEL
+dependency structures typically contain more embedding than our
+annotation model. Take for instance a structure consisting of an Adv,
+an Adj, and a N, where the adverb modifies the \isi{adjective} and the
+\isi{adjective} modifies the \isi{noun}. In the dependency structure there is no
+direct link between Adv and N. As discussed in Section~\ref{sec:anno1}, in our \isi{database} these
+three will be segments of the same entry, with the categories
+Mdmd\textsubscript{1} Md\textsubscript{1} N. The categories together with the
+indices encode the relation also present in the original dependency
+structure, but the overall structure is flat.
+
+A problem that shows up specifically in the extraction of NPs from
+dependency structure is that the annotation does not mark any NPs as
+such -- these have to be identified heuristically from the dependency
+annotation and from lexical properties of head words. Any dependency subtree headed by, say, a \isi{determiner}, an \isi{adjective} or a \isi{noun} could in principle correspond to an NP. So if we come across one of these, we try to form a \isi{database} entry on the basis of the head word and all its descendants. To reduce overgeneration of entries, we block potential entries that already are part of a larger NP. Consider the difference between~(\ref{ex:meraa}) and~(\ref{ex:merab}).
+\ea\label{ex:mera}
+  \ea \label{ex:meraa} {%
+    \gll
+    haffde \textbf{mere} krafft \textbf{æn} \textbf{hwarte} \textbf{konunghir} \textbf{ælla} \textbf{win}\\
+    had more strength than either king or wine\\
+    \glt
+    `was mightier than both king and wine' (OSwe.465.227) 
+  }
+  \ex \label{ex:merab} {%
+    \gll
+    ey \textbf{mera} sighia \textbf{æn} \textbf{morere}\\
+    no more say than morere\\
+    \glt
+    `only say ``morere'' (that is: die)'  (OSwe.494.988) 
+  }
+  \z
+\z
+
+\begin{sloppypar}
+The examples contain a superficially similar structure: \textit{more [\ldots] than [\ldots]}. However,
+only the highlighted material in~(\ref{ex:merab}) will appear as its own entry. The highlighted material in~(\ref{ex:meraa}) is already part
+of a larger entry, namely the one for \textit{more strength than [\ldots]} and is therefore blocked from forming a new entry. Not all entries that are
+contained in another are blocked, of course, since for instance a
+string forming a GenP in a larger entry also shows up as an independent
+entry. The difference is, however, that in these cases the independent
+entries contain additional information about the internal structure of the NP that shows up as a (unanalyzed) GenP segment in the larger NP.
+\end{sloppypar}
+
+The identification of NPs in the PROIEL family treebanks is effective,
+but it is more error prone than its Penn Treebank counterpart. We have
+written the heuristics in such a way that we are likely to
+overgenerate slightly. The spurious entries can be identified and
+marked as mistakes in the manual annotation step. Marking an entry as
+a mistake is quicker and more reliable than trying to identify missing
+entries and having to enter them by hand.\footnote{In computational terms, we favour \textit{recall} (finding as many relevant entries as possible) over \textit{precision} (finding as few irrelevant entries as possible).}
+
+The PROIEL family treebanks contain detailed lexical information, like
+declension, \isi{agreement} features and lemma. All this information is
+included in the conversion.
+
+\subsection{Degrees of interest and the extracted material in numbers}
+\label{sec:DegInt}
+
+Corpus material regularly follows a Zipfian distribution, which, briefly put, says there is a small set of very common types (of words, constructions, etc.) and a very large set of rare object types (see \citealp{baroni:2009} for an overview and references). In addition, the high frequency types tend to be short or simple. In practice this means that although inspecting a small amount of \isi{corpus} material already gives us a decent idea of the high frequency types, we need to look at a lot of data to get good insight into the breadth of types. If we randomly pick items to annotate, there is a real risk that most of the extracted entries are structurally simple
+and similar in structure to other entries. To allow the manual
+annotators to focus on complex entries and rich \isi{variation} instead, we
+devised a simple classification of entries into \textit{degrees of
+  interest} on the basis of their internal make-up. The degrees are
+roughly defined as in Table~\ref{tb:degrees_of_interest}. An annotator can now choose to focus on Green or Orange entries. The addition of the degree of interest Purple allows annotators to quickly mark an entry as a mistake.
+
+\begin{table}
+    \begin{tabularx}{\textwidth}{lX}\lsptoprule
+    Degree of interest & Type of entry\\\midrule
+    Green  & adjective with noun; adjective\slash noun with determiner or possessive\\ 
+    Orange & nouns with non-nominal modifiers or complements (clauses, PPs); determiners/pronouns with additional material; bare common nouns\\
+    Red    & bare pronouns; bare proper names; bare adjectives\\\addlinespace
+    (Purple & mistakes, blocked entries)\\\lspbottomrule
+    \end{tabularx}
+    \caption{Degrees of interest assigned to each entry\label{tb:degrees_of_interest}}
+\end{table}
+
+Table~\ref{tab:numbers} contains information about the size of the
+source corpora, and the number of extracted NPs, including their
+distribution over the three degrees of interest. As can be seen, the
+size of the source corpora varies greatly. The number of extracted
+entries per token lies at 0.35 for YCOE and IcePaHC and at around 0.40
+for the other corpora. The ratio for the PROIEL-style corpora is high,
+although it lies at the same level as for two of the Penn
+Treebank-style corpora. We therefore feel confident in concluding that
+the heuristic approach to extracting entries from the PROIEL-style corpora have not led to a gross over-identification of NPs.
+
+\begin{table}
+  \begin{tabularx}{\textwidth}{llccccc}\lsptoprule
+           &          & & \multicolumn{3}{c}{Degree of Interest}\\\cmidrule{4-6}
+    Corpus & Language & Corpus size & Green & Orange & Red & Total \\\midrule
+    YCOE & Old \ili{English}                   & 1\,452\,091           & 199\,559           & 107\,097           & 190\,676           & 497\,335\\
+    IcePaHC & \ili{Old Icelandic}                 & \phantom{0\,}234\,273 & \phantom{0}19\,351 & \phantom{0}28\,916 & \phantom{0}32\,483 & \phantom{0}80\,754\\
+    HeliPaD & \ili{Old Saxon}                     & \phantom{0\,0}46\,180 & \phantom{00}7\,112 & \phantom{00}5\,173 & \phantom{00}5\,970 & \phantom{0}18\,255\\
+    GeCEG   & Old High \ili{German}\hspace*{-2em} & \phantom{0\,00}5\,008 & \phantom{000\,}693 & \phantom{000\,}225 & \phantom{000\,}894 & \phantom{00}1\,812\\\addlinespace 
+    MAÞiR   & \ili{Old Swedish}                   & \phantom{0\,0}30\,422 & \phantom{00}2\,496 & \phantom{00}5\,859 & \phantom{00}3\,784 & \phantom{0}12\,140\\
+    PROIEL  & \ili{Gothic}                        & \phantom{0\,0}56\,315 & \phantom{00}5\,565 & \phantom{00}9\,123 & \phantom{00}8\,429 & \phantom{0}23\,117\\
+    ISWOC  & Old \ili{English}                    & \phantom{0\,0}28\,300 & \multicolumn{4}{c@{}}{--- no additional entries ---}\\\lspbottomrule
+    \end{tabularx}
+  \caption{Size of the source corpora in tokens (punctuation excluded) and corresponding number of extracted NPs\label{tab:numbers}}
+\end{table}
+
+
+
+\section{Accessing the NPEGL database}
+\label{sec:interfaces}
+\label{sec:searching}
+
+Users of the \isi{database}, whether they are interested in annotation or search, are given two different ways of accessing the data: first there is a classic record-based view provided by \textit{Karp}, and secondly the \isi{database} can be searched as an annotated \isi{corpus} in \textit{Korp}.\footnote{There is also the possibility of programmatic access, which comes in three forms: the two graphical interfaces discussed here also have their respective APIs, and the third possibility is to directly use a dump of the \isi{database} contents, which we distribute in JSON Lines format. We will not discuss these access methods in this chapter in any further detail.}
+
+\subsection{Search and annotation interface in Karp}
+
+\subsubsection{Background and motivation}
+\begin{sloppypar}
+The primary access method for the \isi{database} is through the
+lexical infrastructure Karp, which was developed at the University of Gothenburg, in the Språkbanken research unit \citep{karp}. Karp hosts a range of
+lexical resources, which can be searched through a graphical web interface or
+programmatically. The term \textit{lexical} here is to be understood in a broad sense. There are, for instance, typical dictionary resources like an electronic version of Söderwall's dictionary of
+medieval \ili{Swedish} \citep{soderwall} or the lexical-semantic and morphological resource for contemporary \ili{Swedish} SALDO \citep{borin-etal:2013}. But Karp also makes available encyclopedic resources such as \textit{Svenskt kvinnobiografiskt lexikon} (Biographical Dictionary of \ili{Swedish}
+Women),\footnote{\url{https://skbl.se/}.} and frame-semantic and
+construction-grammatical inventories such as \ili{Swedish} FrameNet++
+\citep{dannells-etal:2021} and \ili{Swedish} Constructicon
+\citep{lyngfelt-etal:2018}. These latter three resources were developed with the help of Karp's resource editing facilities, which were also used for NPEGL.
+\end{sloppypar}
+
+The development of the NPEGL \isi{database} has relied on this
+\isi{combination} of search and editing facilities, as it has allowed the
+individual language experts to choose their own focus in their
+annotation efforts, using the search facilities to select a group of
+entries of interest on the basis of the extracted data, and the
+editing facilities to correct and complement the annotation of these
+selected entries.
+
+The choice of a lexical infrastructure to host a \isi{database} of
+annotated NPs may sound counter-intuitive. However, the entry-centred
+organization of the Karp infrastructure, where every entity to be
+annotated can be associated with any number of different types of
+information to describe it, and each such description is
+self-contained, has been a good match for the project. A comparison to
+other types of annotation projects may make this clearer. For instance,
+in treebank annotation, the entities to be annotated -- sentences --
+receive a pervasive, and typically highly structured analysis of one
+kind, determined by the style of \isi{syntax}. The focus of such a project
+is this complex structure. Any additional information associated
+with the highest unit of analysis -- such as metadata saying
+where the linguistic unit was attested, etc.\ -- is in a sense secondary. A tool to annotate and view treebanks is therefore likely to focus on making the syntactic
+structure searchable, effectively editable and easily accessible, and to prioritize less
+the access to the secondary information. This contrasts with the NPEGL
+\isi{database}, where we have different types of information that are equally
+prominent: the textual origin, structural analysis, and 
+information about function and \isi{agreement} properties together form
+the complete description. Although the structural analysis has a
+slightly more complex structure than the other fields, it is still of
+a limited complexity. There is no need to prioritize this at the expense
+of the other information types. 
+
+The annotation task in NPEGL can also be contrasted with tasks  that are organized as a mark-up of units in running text, such as named
+entity annotation, or tracking occurrences of mentions
+of certain persons, or marking occurrences of particular verbs of interest,
+etc. Such annotated resources are like ours in that it is common to
+associate different kinds of information with each markable. At the
+same time, such annotation is typically flat. In our data, however, we
+commonly run into the situation that we have an NP that itself
+contains another NP. An example is given in~(\ref{ex:lagbokvästgöta}).
+\begin{exe}
+  \ex \label{ex:lagbokvästgöta}{\gll
+    laghbok \textbf{væsgöta}\\
+    law.book     Westrogothian.\textsc{gen.pl}\\
+    \glt `the code of law of the Westrogothians' (OSwe.816.415)}
+\end{exe}
+
+The word \textit{væsgöta} can be viewed at different levels:
+it acts as a category GenP in the structural description
+of the containing NP, but it also forms an NP that is structurally
+analyzable on its own. In this latter single word unit, the word
+\textit{væsgöta} is a segment with category \isi{common noun} (N.C). We
+effectively separate these views into different entries, one for the
+containing NP and one for the contained NP. That way, we are able to
+keep our structural descriptions flat without sacrificing the detailed
+description of embedded material.
+
+\begin{figure}
+  \begin{tabularx}{\textwidth}{@{}p{5.5em}X@{}}
+    \raggedleft\small origin\hspace*{.5em}\smash{\rule[-3.35em]{.5pt}{4.05em}}\hspace*{-.5em}\linebreak
+    \& context\vspace*{2.5em}
+\linebreak
+    \isi{agreement}\hspace*{.5em}\smash{\rule[-2.6em]{.5pt}{3.25em}}\hspace*{-.5em}\linebreak
+    \& function\vspace*{1.9em}\linebreak
+    structural\hspace*{.5em}\smash{\rule[-1.8em]{.5pt}{2.5em}}\hspace*{-.5em}\linebreak
+    analysis\vspace*{1.5em}\linebreak
+    metadata\hspace*{.5em}\smash{\rule[-6.1em]{.5pt}{6.8em}}\hspace*{-.5em}
+    &
+    \raisebox{-17.5em}{\includegraphics[height=0.38\textheight]{figures/npegldb-figure2-top}}
+    \\\midrule
+    \raggedleft\small (fixed)\hspace*{.5em}\smash{\rule[-3.45em]{.5pt}{4.15em}}\hspace*{-.5em}\vspace*{4em}\linebreak
+    (editable)\hspace*{.5em}\smash{\rule[-17em]{.5pt}{17.7em}}\hspace*{-.5em}\vspace*{17em}\linebreak
+    (automatically\hspace*{.5em}\smash{\rule[-1.4em]{.5pt}{2.1em}}\hspace*{-.5em}\linebreak updated)& \raisebox{-22.9em}{\includegraphics[height=0.50\textheight]{figures/npegldb-figure2-bottom}}
+  \end{tabularx}
+  \caption{Annotated screenshots for item Got.472.674 in view mode (top) and in edit mode (bottom)
+  in Karp's web interface\label{fig:karp}}
+\end{figure}
+
+\subsubsection{Description of the annotation process}
+
+The Karp web interface has two modes: viewing mode and editing mode. A user can search the \isi{database} by specifying one or more criteria. These search criteria can be positive (for instance, the presence of a certain lemma in an entry) or negative (for instance, the entry may not originate from a certain subcorpus), and they can be combined into complex queries using conjunction and disjunction.\footnote{Technically, all queries are in conjunctive normal form.} The interface initially presents the \isi{database} matches in viewing mode, in paginated form. Provided the annotator has the required credentials to edit the \isi{database}, they can switch to editing mode to make changes to a particular entry.
+
+\begin{sloppypar}
+To illustrate, the top screenshot in Figure~\ref{fig:karp} shows the
+entry for the \ili{Gothic} \textit{skauta wastjos is} `hem of his garment' (lit. `hem garment.\textsc{gen} his', Got.472.674). The entry's contents are organized into four fields: meta-information about where the NP was attested and in which context; linguistic global information, that is, \isi{agreement} information and
+grammatical function; structural analysis, that is, a division into segments and additional annotation for each segment; metadata including the degree of interest, annotator comments, internal links to contained/containing NPs, and external links. The links to containing NP let us quickly find related entries. In the example shown, the entry for the contained NP \textit{wastjos is} `his garment' is linked in such a fashion. External links are weblinks that could point at any type of additional information. In this case the links lead to the the annotation in the source treebank.
+\end{sloppypar}
+
+After switching to editing mode for this entry, we are presented with the interface in the bottom screenshot. In this screenshot, the annotator is in the middle of adding information about the semantic category of 
+\textit{skauta} `hem' by selecting the appropriate value from a hierarchical menu. As described above, we adopted a tree-shaped ontology of labels to allow annotators to choose a level of annotation detail. Here, the annotator could go for less detail by selecting Tang(ible) as the \isi{noun} semantics, or more detail by choosing the sub-label Tang(ible).Obj(ect).
+
+Not all fields are editable through the interface. The fields containing annotation time and the identity of the annotator are updated automatically by Karp. The fields with \textsc{DB item id} and the attestation context can only be updated by the \isi{database} administrator
+through programmatic access. This helps to ensure the integrity of the \isi{database}, by making unintended changes of the permanent identifier and the entry of duplicates impossible.
+
+If an annotator discovers that an entry is missing from the DB, they can propose a new entry -- initially without permanent identifier -- and provide as much information about it as possible. Creation of a
+full, valid entry is then handled by the \isi{database} administrator.
+
+\subsection{Searching in Korp}
+
+The search capabilities of Karp are helpful for exploration of the databases and during annotation. However, the query style of combining value-attribute constraints using conjunction, disjunction and negation is too limited to allow studying the structure of the annotated NPs. For instance, Karp lets us search for entries that contain both an N and a GenP, but we cannot distinguish cases in which the GenP follows the N from those in which the GenP precedes it. Nor can we distinguish between entries that have at least one GenP from those that have at least two. Since we consider such investigations to form an important use case for our \isi{database}, we have made the \isi{database} searchable in the \isi{corpus} search tool Korp \citep{korp}, which is powered by the Corpus Workbench \citep{cwb}. Korp's front-end offers three types of search interface: a simple token-based search box, a graphical query builder that lets one compose complex queries using boxes and drop-down menus, and an interface that directly accepts Corpus Workbench's query language CQP. In Korp, we can formulate complex queries that constrain properties of tokens and segments -- just as we could in Karp -- but in addition we can constrain the order and number of tokens and segments, as well.
+
+To be able to use the \isi{database} in Korp, we converted it into a pseudo-\isi{corpus}, by treating each entry as a small document, whose text is taken from the \textsc{context} field. One NP is marked up per document, as well as a number of segments inside this NP. The NPs and segments are associated with all information we have about them in the \isi{database} (the \isi{agreement} and function information, the categories from the structural analysis, and so on). The resulting ``\isi{corpus} view'' of the \isi{database} differs in an important way from the natural \isi{corpus} made up of the source texts: the same stretch of source text may appear in multiple entries, and therefore will be repeated as many times in our pseudo-\isi{corpus}. This happens when entries appear near each other in the original text and thus have overlapping contexts, or when the same string is a part of multiple entries, as in example (\ref{ex:lagbokvästgöta}) above. Corpus Workbench is not capable of searching recursively nested structural annotation. By organizing the data in the manner described, we are still able to query all material, including the embedded entries. The organization is moreover a natural fit for how we designed the \isi{database}, since each hit in a query result is linked to exactly one entry.\largerpage
+
+\begin{figure}[tb]
+\includegraphics[trim= 8 0 8 0, clip, width=\textwidth]{figures/npegldb-figure3}
+\caption{A query in Korp's graphical query builder that looks for a noun followed, at any distance, by a genitival phrase of exactly three words, in partially verified or better Old English material\label{fig:korp}}
+\end{figure}
+
+As an illustration of the kind of questions we can now ask about the material, consider a hypothesis about the relationship between the length/complexity of a segment and its position in the NP. In particular, we might be interested in seeing if, in our data, GenPs consisting of two tokens are more likely to appear prenominally than GenPs consisting of three tokens. We investigate that by posing four queries; the first of these can be seen in Figure~\ref{fig:korp}. In this screenshot, the graphical query builder is used to construct a query that looks for a token in a segment with a category subsumed by N (that is, part of a \isi{noun} N.C or proper name N.P), followed by zero or more tokens of any kind, followed by a segment of exactly three tokens that are inside a GenP. Note that the properties of the segments are all coded on the tokens themselves. Properties of the whole entry are also placed on individual tokens, which is why we also constrain the initial token to be part of an entry that does not have verified status ``No"; that is, we require it to be partially or completely verified. In short, this query gives us all entries with some level of manual inspection that contain a \isi{noun} followed, possibly indirectly, by a three-word \isi{genitival phrase}. As the screenshot in Figure~\ref{fig:korp} shows, there are 19 such entries in the Old \ili{English} material, of which the first is \textit{þæt halige Word þæs heofonlican Fæder} `the holy word of the heavenly father'. The words in boldface in the screenshot constitute the part of the entry that match the query itself. For the first matching entry, this is \textit{Word þæs heofonlican Fæder}. The box on the right contains an overview of the annotation associated with the selected token and its containing segment and the entry it appears in, including a link to the entry in the \isi{database} in Karp. 
+
+For our investigation, we construct three more queries, by dragging the token boxes into different positions and adjusting the counters that restrict the number of tokens inside the GenP segment. The other queries ask for a three-word \isi{genitival phrase} \textit{followed} by a \isi{noun} (also 19 hits), and a two-word \isi{genitival phrase} preceded by or followed by a \isi{noun} (37 and 142 hits, respectively). In our annotated Old \ili{English} material, there therefore seems to be a relation between length of a GenP and its placement, as two-word genitival phrases overwhelmingly appear prenominally (142 out of 179 cases, or 79\%), whereas three-word genitival phrases are evenly distributed (19 out of 38 cases \isi{prenominal}, or 50\%). Before drawing stronger conclusions about the purported effect, one might for instance want to look more closely at some individual examples to see if they contain fixed expressions or formulaic language, one might try to get an idea of how GenP of other lengths behave, or it could be worth trying to estimate whether the observed effect is an artifact of the annotation and verification process by also looking at unverified material. All of these additional studies can be carried out from the Korp search infrastructure.
+
+\begin{figure}[tb]
+\includegraphics[trim=7 0 7 0, clip, width=\textwidth]{figures/npegldb-figure4}
+\caption{Query and corresponding frequency list of all patterns that contain a strong quantifier (Q) in the manually checked Old Saxon material\label{fig:korp_samman}}
+\end{figure}
+
+Apart from the concordance view of the data, it is also possible to view results in terms of frequency lists, where the user can choose which properties are used to define the types for which the counts are collected. An example is given in Figure~\ref{fig:korp_samman}, where the user has specified a query that matches NPs that contain a strong \isi{quantifier} (category Q), and has chosen to view the frequencies of sequences of categories. The table at the bottom shows that there are 338 NPs that contain a \isi{quantifier}, divided over 34 patterns. The most frequent \isi{pattern}, a \isi{quantifier} followed by a \isi{common noun} (Q N.C) makes up almost half of these cases with 160 hits. The next two most frequent patterns are a single \isi{quantifier} (Q, 47 hits) and a \isi{common noun} followed by a \isi{quantifier} (N.C Q, 22 hits). This way of looking at the \isi{database} gives the \isi{corpus} user a quick, quantitative overview of the data on a higher level. Clicking on any row in the frequency table presents the user with a concordance view of the items that match the row's description, so that it is easy to switch between a high level overview of the data and detailed inspection of single attestations.
+
+\section{Concluding remarks and availability}\label{sec:sum}\label{sec:availability}\largerpage[2]
+
+We have introduced the NPEGL \isi{database}, a resource produced in the context of the project \textit{Constraints on syntactic \isi{variation}: \isi{Noun} phrases in early \ili{Germanic} languages}, which set out to empirically investigate NP-internal \isi{variation} in terms of make-up and \isi{word order} in Old \ili{Germanic} languages. The NPEGL \isi{database} contains annotated NPs from six historical languages: Old \ili{English}, \ili{Old Icelandic}, \ili{Old Saxon}, Old High \ili{German}, \ili{Old Swedish} and \ili{Gothic}. Each entry in the \isi{database} documents one NP, and gives information about its context as well as about its internal make-up. The \isi{database} was populated by extracting NPs from existing corpora, after which part of the entries was manually inspected and  corrected. For the purpose of enriching the \isi{database} with project-relevant linguistic information, we developed a set of guidelines for the annotation of contextual features and the function and the structure of the NP, in a theory-neutral way that we hope facilitates the reuse of this resource for further research.
+
+Vetted parts of the \isi{database} described in this paper are made publicly available. More information can be found at \url{https://spraakbanken.gu.se/en/resources/npegl}. This page gives, among other things, links to searchable versions of the material in the Karp and Korp interfaces. In addition, most of the source material has licences that allow us to distribute derivative works. For these parts of the \isi{database}, we also offer downloadable versions of the data under creative commons licences.
+
+
+\section*{Acknowledgements}\largerpage[2]
+
+\begin{sloppypar}
+The authors thank the members and associated researchers of the project \textit{Constraints on syntactic \isi{variation}: \isi{Noun} phrases in early \ili{Germanic} languages}, for valuable and constructive discussions during the development of the annotation guidelines and for their  crucial contributions to the annotated \isi{database}. The authors further gratefully acknowledge helpful comments from two reviewers on earlier versions of this \isi{article}.
+\end{sloppypar}
+
+The work reported here was funded by the Research Council of Norway (grant no.\ 261847 to Kristin Bech, University of Oslo). The second author is located at Språkbanken Text at the University of Gothenburg, which will also host the databases presented in this chapter. Språkbanken Text is part of the \ili{Swedish} national research infrastructure Nationella språkbanken, jointly funded by the \ili{Swedish} Research Council (grant no.\ 2017-00626) and 10 participating partner institutions.
+
+\section*{Appendix:~~Annotation labels}
+\label{sec:APPX}
+
+Some labels such as $\langle$Undec$\rangle$ (``undecidable'') or $\langle$Other$\rangle$ occur several times in different contexts, and hence appear to be multiply ambiguous. However,  this will not create any ambiguity insofar as they occur as an option only relative to a specific context (or embedded in a unique path), which makes it clear e.g. whether $\langle$Other$\rangle$ stands for an ``other'' grammatical function, see Table \ref{tab:ixpSYNT},  or an ``other'' type of \isi{coordination}, see Table \ref{tab:coord}, etc. %,  an ``other'' type of abstract denotation, see Table \ref{tab:Nsem}, etc. 
+
+In the following, we give an exhaustive overview of all annotation labels used in NPEGL.
+
+
+\begin{table}
+    \small
+    \begin{tabular}{ll}
+    \lsptoprule    
+        Description			&	Label					  \\\midrule    
+     	Nominative 						&	{Nom}					 \\  
+     	Accusative 						&	{Acc}				 	 \\  
+     	Dative	 						&	{Dat}		 	 \\  
+     	 Genitive						&	{Gen}		 	 \\  
+     	 Instrumental					&	{Instr}		   \\  
+     	 Vocative						&	{Voc}	   \\  
+     	 Oblique case\footnote{= morphological case is ``undecidable''.} &	{Obl} \\\addlinespace
+     	 Singular						&	{Sg}		  	 \\  
+     	 Dual							&	{Du}	  	 \\  
+     	 Plural							&	{Pl}	  	 \\   
+     	 Number cannot be decided  		&	{Undec}		 	 \\   
+     	 Masculine						&	{Mas}	    \\\addlinespace
+     	Feminine 						&	{Fem} 	 \\  
+     	 Neuter				    		&	{Neu}		   \\  
+     	 Gender cannot be decided  		&	{Undec}		  	 \\\lspbottomrule
+\end{tabular}  
+\caption{Property labels  1 -- Inflection: case, number, gender\label{ixpINFL}}
+\end{table}
+
+\begin{table}
+\small
+\begin{tabular}{ll}\lsptoprule    
+  Description & Label  \\\midrule
+  Argument & {Arg}   \\    
+  \quad Argument of verb  & {Arg.ofV}  \\  
+  \quad\quad Subject of verb & {Arg.ofV.Sb}  \\    
+  \quad\quad Object of verb & {Arg.ofV.Ob}  \\    
+  \quad\quad Other argument of verb & {Arg.ofV.Oth}  \\
+  \quad Complement of preposition  & {Arg.ofP}   \\    
+  \quad Argument of \isi{noun} & {Arg.ofN}   \\    
+  \quad Complement of \isi{adjective} & {Arg.ofA}  \\    
+  \quad Complement of degree element & {Arg.ofDeg}  \\    
+  Predicate & {Pred}        \\    
+  \quad Predicate with copular verb & {Pred.Cop}   \\    
+  \quad Predicate in other contexts & {Pred.Oth}   \\    
+  Apposition & {App}   \\
+  Vocative & {Voc}   \\    
+  Adverbial  & {Adv}    \\    
+  Other grammatical function  & {Other}    \\\lspbottomrule
+\end{tabular}  
+\caption{Property labels  2 -- Grammatical (= syntactic) function}
+\label{tab:ixpSYNT}
+\end{table}
+
+\begin{table}
+  \caption{Category labels: lexical categories}
+  \label{tab:catLabels}
+  \begin{tabularx}{\textwidth}{Xl}\lsptoprule
+    Description & Label \\\midrule
+    Noun & {N} \\ 
+    \quad Common \isi{noun} & {N.C} \\ 
+    \quad Proper name & {N.P} \\   
+    Modifier & {Md} \\ 
+    \quad Positional predicate & {Md.Pos} \\  
+    \quad Cardinal element (\isi{numeral} or weak \isi{quantifier}) & {Md.Nu/WQ} \\
+    \quad\quad Numeral & {Md.Nu/WQ.Nu} \\
+    \quad\quad Weak \isi{quantifier} & {Md.Nu/WQ.WQ} \\
+    \quad Adjective & {Md.Aj} \\   
+    \quad\quad Lexical \isi{adjective} & {Md.Aj.Lx} \\
+    \quad\quad\quad Past participle & {Md.Aj.Lex.Pst} \\ 
+    \quad\quad\quad Present participle & {Md.Aj.Lex.Pre} \\ 
+    \quad\quad\quad Derived \isi{adjective} (non-participial) & {Md.Aj.Lex.Der} \\ 
+    \quad\quad\quad Prototypical \isi{adjective} & {Md.Aj.Lex.Pro} \\ 
+    \quad\quad Functional \isi{adjective} & {Md.Aj.Fn} \\
+    \quad\quad\quad Ordinal \isi{numeral} & {Md.Aj.Fn.Ord} \\  
+    \quad\quad\quad Defective \isi{adjective} & {Md.Aj.Fn.Df} \\ 
+    \quad\quad\quad Determiner-like \isi{adjective} & {Md.Aj.Fn.Dt} \\  
+    Demonstrative & {Dem} \\ 
+    \ili{Norse} \isi{adjectival article} \textit{(h)inn} & {H} \\ 
+    Possessive & {Poss} \\ 
+    Personal \isi{pronoun} & {Per} \\ 
+    (Strong) Quantifier & {Q} \\
+    \lspbottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}
+ \caption{Category labels: coordination}
+ \begin{tabularx}{\textwidth}{Ql}\lsptoprule
+   Description & Label \\\midrule
+   Coordinator & {\&} \\
+   \quad Coordinator of NPs & {\&.NP} \\  
+   \quad Coordinator of nouns & {\&.N } \\  
+   \quad Coordinator of possessives & {\&.Pos} \\  
+   \quad Coordinator of adjectives & {\&.Aj} \\  
+   \quad Coordinator of numerals & {\&.Nu} \\  
+   \quad Uncertain type of \isi{coordination} & {\&.Other} \\
+   \quad Initial part of a discontinuous coordinator (double \isi{coordination}) & {\&.Init } \\
+   \lspbottomrule
+ \end{tabularx}
+\label{tab:coord}
+\end{table}
+
+
+\begin{table}
+  \caption{Category labels: phrasal/clausal categories}
+  \begin{tabularx}{\textwidth}{Xl}\lsptoprule
+    Description & Label \\\midrule
+    Noun phrase & {NP} \\
+    Genitival phrase & {GenP} \\ 
+    Prepositional phrase & {PP} \\ 
+    Apposition & {App} \\ 
+    Adjectival associate & {Assoc} \\
+    Relative clause & {RC} \\ 
+    Complement clause & {CC} \\ 
+    \quad Finite complement clause & {CC.Fi} \\  
+    \quad Non-finite complement clause & {CC.Nf} \\  
+    Adverbial & {Adv} \\
+    \lspbottomrule
+  \end{tabularx}
+\end{table}
+ 
+\begin{table}
+  \caption{Category labels: subdependents}
+  \label{tab:subdependents}
+  \begin{tabularx}{\textwidth}{Xl}\lsptoprule
+    Description & Label \\\midrule
+    Modifier of \isi{adjective} & {Mdmd} \\ 
+    Complement of \isi{adjective} & {Mdcm} \\ 
+    \quad Nominal complement of modifier & {Mdcm.N} \\ 
+    \quad Prepositional complement of modifier & {Mdcm.P} \\ 
+    Complement of degree element & {Dgcm} \\
+    \quad Unmarked (``bare'') nominal complement of degree & {Dgcm.Br} \\ 
+    \quad Marked/clausal complement of degree & {Dgcm.Mk} \\  
+    \lspbottomrule
+  \end{tabularx} 
+\end{table}
+
+\begin{table}
+  \caption{Formal / morphological / syntactic property labels} 
+  \begin{tabularx}{\textwidth}{Xl}\lsptoprule
+    Description & Label \\\midrule
+    Weak adjectival declension & {Wk} \\ 
+    Strong adjectival declension & {Str} \\ 
+    Ambiguous adjectival declension & {Undec} \\ 
+    (= undecidable whether strong or weak)& \\ 
+    Zero declension & {Zero} \\ \addlinespace
+    Positive (or unspecified) degree & {Pos} \\ 
+    Comparative degree & {Cmp} \\ 
+    Superlative degree & {Sup} \\\addlinespace
+    Suffixed \isi{article} \textit{(t)} & {Sf} \\ 
+    Relational \isi{noun} \textit{(t)} & {Rel} \\ 
+    Complex \textit{(t)} & {Complex} \\ 
+    Definite \textit{(t)} & {Def} \\ 
+    Apposition does not contain a head \isi{noun} \textit{(t)} & {NoN} \\
+    \lspbottomrule
+    \end{tabularx}
+\end{table}
+ 
+
+
+
+\begin{table}
+  \caption{Semantic property labels}
+  \begin{tabularx}{\textwidth}{Xl}\lsptoprule
+    Description & Label \\\midrule
+    Animate               & {Anim}     \\  
+    \quad Human individual     & {Anim.HInd}      \\  
+    \quad Human collective term  & {Anim.HColl}      \\   
+    \quad Other animate denotation   & {Anim.Oth}       \\  
+    Tangible          & {Tang}     \\  
+    \quad Tangible object denotation   & {Tang.Obj}      \\  
+    \quad Tangible substance denotation & {Tang.Subs}     \\  
+    Abstract          & {Abs}     \\  
+    \quad Dynamic denotation       & {Abs.Dyn}      \\  
+    \quad Other abstract denotation & {Abst.Oth}     \\ \addlinespace   
+    Denoting ethnicity, origin, affiliation etc.  & {Ethnic}     \\  
+    Denoting colour      & {Colour}     \\  
+    Denoting physical property or dimension & {Phys/Dim}     \\  
+    Evaluative \isi{adjective}       & {Eval}     \\  
+    Relational/denominal \isi{adjective}  & {RelDen}      \\  
+    Denoting degree or event quantification & {Deg/Q}    \\  
+    Other classes of lexical adjectives   & {LexRest} \\ \addlinespace  
+    Possessor    & {Pos}     \\  
+    Kinship   & {Kin}      \\  
+    Partitive   & {Part}      \\  
+    Other kind of argument & {OArg}     \\  
+    Other \isi{genitive} relation & {Oth}  \\  \addlinespace
+    GenP has animate  referent  & {Anim}     \\   
+    \lspbottomrule
+  \end{tabularx}
+\label{tab:Nsem}
+\end{table}
+
+
+\clearpage
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}
+

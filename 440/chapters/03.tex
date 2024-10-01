@@ -1,0 +1,1257 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998635}
+
+\author{
+Svetlozara Leseva\orcid{0000-0001-8198-4555}\affiliation{Department of Computational Linguistics, Institute for Bulgarian Language, Bulgarian Academy of Sciences} and 
+Verginica Barbu Mititelu\orcid{0000-0003-1945-2587}\affiliation{Research Institute for Artificial Intelligence, Romanian Academy} and 
+Ivelina Stoyanova\orcid{0000-0003-3771-435X}\affiliation{Department of Computational Linguistics, Institute for Bulgarian Language, Bulgarian Academy of Sciences} and 
+Mihaela Cristescu\orcid{0000-0003-0575-7902}\affiliation{Faculty of Letters, University of Bucharest}
+}
+
+
+%\ORCIDs{}
+
+\title[A uniform multilingual approach to the description of MWE]
+      {A uniform multilingual approach to the description of multiword expressions} 
+
+
+
+\abstract{In this chapter we describe a linked bilingual (Bulgarian and Romanian) computational lexicon of multiword expressions, a new resource which encompasses lexical, morphological, %(inflectional and derivational alike), syntactic %(including word order), 
+semantic %$(sense and semantic relations to other words or expressions in the language) 
+and stylistic information, in an independent, though unified way. The lexicon is a bilingual lexicographic resource, оriginating in the wordnets for the two languages, and is made up of self-contained monolingual lexicons of multiword expressions, which may be expanded to cover other levels and features of linguistic description, as well as other languages.}
+
+
+\begin{document}
+\lehead{Svetlozara Leseva et al.}
+\maketitle
+\section{Introduction and main objectives} \label{sec:03-intro}
+
+Along with the efforts in the domain of traditional lexicography, various developments towards the compilation of lexicons of multiword expressions (MWEs) for the needs of computational lexicography and computational linguistics have also been undertaken. As emphasised in a position paper \citep{savary-etal-2019-without} that emerged from the PARSEME\footnote{PARSEME was a COST Action (2013--2017) focusing on parsing and MWEs. Some of its major results were the creation of annotation guidelines for verbal MWEs for more than 20 languages from various language families, a multilingual journalistic corpus annotated according to these guidelines made publicly available and a series of shared tasks on the identification of MWEs in texts, in which the previously mentioned corpus was used for training and testing the participating systems. See \url{https://typo.uni-konstanz.de/parseme/}.} initiative \citep{parsemeMWE15}, devising syntactic MWE lexicons was recognised as a prerequisite for advancing research in MWE identification and other MWE-related tasks.
+
+We propose an electronic bilingual MWE lexicon that comprises morphological (inflectional and derivational alike), syntactic (including word order) and semantic description in an independent, though unified, way. We build upon the one proposed by \citet{leseva-etal-2020-takes}, itself inspired by the MWE description in \citet{Koeva-et-al2016}. Our goal is to create a linked bilingual lexicographic resource consisting of self-contained monolingual lexicons of MWEs that may be expanded to other levels of linguistic description and to other languages.
+
+Our work has the following main contributions: 
+(i) an overview of several approaches for the description of MWEs with interest in language-independent, cross-lingual, bilingual, and/or multilingual representation, and especially in the features used in the MWE description -- see \sectref{sec:SOTA}. \sectref{sec:compilation} %sketches 
+briefly describes the wordnets\footnote{We write \textit{wordnet} when refering to a ``lexical knowledge base for a given language, modeled after the principles
+of Princeton WordNet'' (see \url{http://www.dblab.upatras.gr/balkanet/journal/20_BalkaNetGlossary.pdf}). We write \textit{Wordnet} when refering to a particular such resource, here the Bulgarian Wordnet and the Romanian Wordnet; the form \textit{WordNet} is used only with reference to the trademarked Princeton WordNet (see \url{https://wordnet.princeton.edu/}).} for the two languages in focus and their characteristics that allow for the creation of the linked lexicon presented here, along with the compilation of the datasets of verbal multiword expressions (henceforth VMWEs) involved in the linguistic analysis. The features previously mentioned serve as a starting point in designing the structure of the MWE lexicons for Bulgarian and Romanian, linked into one resource, described in this work;
+(ii) the presentation of a uniform framework for the construction of a linked resource consisting of two MWE lexicons (for Bulgarian and Romanian) that takes into consideration the advantages and challenges posed by the existing approaches and practices -- see \sectref{sec:entry}. This is a first step in the creation of a multilingual resource for the lexicographic description of MWEs, both in structural and semantic perspectives;
+%(iii) the identification of theoretical and practical challenges to the in-depth linguistic description of verbal MWEs in and across languages and solutions to the identified issues;
+(iii) the exploration of the lexicographic representation of MWEs in the context of aligned general lexical, semantic and morpho-syntactic resources not exclusively compiled for MWEs, this step being an important prerequisite for various Natural Language Processing (NLP) applications -- see \sectref{sec:discussion}.
+We show that a uniform description of MWEs is possible for two languages from different families, highlighting language similarities, but also ensuring the mechanisms that allow for the description of language specificities.
+
+% This chapter is structured as follows: in  Section \ref{sec:SOTA} we present other endeavours to create (mono-, bi- or multilingual) lexicons containing MWEs, with a focus on the underlying assumptions, the types of MWEs covered, the way of structuring the content, and the grammatical frameworks supporting the description. %, the perspective from which the MWEs are analysed. 
+% We also give an overview of the linguistic features used in the description of MWEs in the dedicated lexicons. %presented in the previous section. %the  type of the lexicons containing them and the lexicographic architectures developed for coping with MWEs.
+% Section \ref{sec:compilation} %sketches 
+% briefly describes the wordnets for the two languages in focus and their characteristics that allow for the creation of the linked lexicon presented here, along with the compilation of the datasets of verbal multiword expressions (henceforth VMWEs) involved in the linguistic analysis.
+% Section \ref{sec:entry} contains a detailed description of the content of a lexicon entry, which is organised on several (technical and linguistic) levels, and the visualisation of the data.
+% Section \ref{sec:discussion} %summarises some of the questions raised in the previous sections 
+% discusses some aspects of the work presented here and its contribution to the field of MWE lexicons, and sketches further steps in our work.
+%resulted from the construction of this dictionary, 
+%before concluding the paper. 
+
+
+\section{%Recent 
+Advances in computational lexicography with a recourse to MWEs} \label{sec:SOTA}
+\begin{sloppypar}
+Most of the times, MWEs are recorded in general language dictionaries, where they are usually only semantically described, i.e., their meaning is explained. Large computational lexical resources also make provisions to incorporate MWEs \parencitetv{chapters/06}. Even valence dictionaries focused on the general language can contain descriptions of MWEs: see Walenty \citep{przepiorkowski-etal-2014-walenty}, which was extended to accommodate properties of MWEs \citep{przepiorkowski-etal-2014}. 
+\end{sloppypar}
+
+However, dedicated lexicons do exist for MWEs in some languages and various grammatical formalisms were adopted in their description: the Lexicon-Grammar framework \citep{gross-methodes-1975, gross-1982}, which spurred substantial advances in the formal linguistic description, including the treatment of MWEs, was more recently used in the description of Italian MWEs \citep{Vietri2014,Monti2014}; Lexical-Functional Grammar (LFG, \citealt{bresnan,Dalrymple2023}) was applied in the development of a Norwegian MWE resource \citep{dyvik2019}; Head-driven Phrase Structure Grammar (HPSG, \citealt{hpsg-1,hpsg-2,Müller2021}) was adopted in the LinGO project\footnote{\url{https://www-csli.stanford.edu/groups/lingo-project}} for the creation of a lexicon including both simplex entries and MWEs \citep{villavicencio-LexicalEncoding}; Frame Semantics was used to provide shallow semantic representation of multiword predicates \parencitetv{chapters/05}; Meaning-Text Theory \citep{MTT} was employed in \citegen{ECD} Explanatory Combinatorial Dictionary, while the work by \citet{Schafroth2015} offers a learner-centered description of Italian idioms based on the theoretical principles of Construction Grammar \citep{constrgr}.
+
+Most MWE lexicons are monolingual resources (\cite{fellbaum2005,gregoire-2007,Odijk2013,shudo_etal_2011,villavicencio-LexicalEncoding,Vietri2014,Schafroth2015,ECD,markantonatou-etal-2019-idion}, \textcitetv{chapters/01}). Others boast multilinguality as an important feature. However, multilingual support is ensured in different ways in different projects. \citet{villavicencio-etal-2004-multilingual} report on MWEs in a source language that are manually given their equivalents in a target language, thus ensuring semantic equivalence between MWEs in the two languages, while the lexical and syntactic equivalences have to be decided upon by the user. 
+Konbitzul\footnote{\url{http://ixa2.si.ehu.eus/konbitzul/}} \citep{inurrieta-etal-2018-konbitzul} is a bilingual Spanish-Basque verb-noun lexicon of MWEs. Besides containing MWE equivalents in the two languages, it also offers morphosyntactic information about the MWEs in both languages, which is introduced either manually or semi-automatically.
+The Genoese-Italian phraseological dictionary\footnote{\url{https://romanistik-gephras.uibk.ac.at}} describes Genoese MWEs, including their Italian equivalent(s) \citep{Autelli2020}.
+
+Some of the discussed MWE initiatives supply translation equivalents to the described units in other languages (either MWEs, if available, or free phrases) \citep{markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/02}. This feature is especially useful for dictionaries of less-spoken languages where the use of English as a metalanguage increases the usability and understandability of the resource.
+
+%\section{Main features of the linguistic description of MWEs}\label{sec:features}
+
+%In recent years, t
+Some of the projects developing MWE resources focused on harvesting them from corpora, providing consistent representation of the MWE system within a language, as well their extensive description at various linguistic levels.
+
+%\begin{itemize}
+ %   \item 
+%\noindent  
+
+Harvesting of MWEs from corpora was done (i) automatically, either from corpora annotated with MWEs \citep{gregoire-2007} or from corpora lacking such annotation \citep{fellbaum2005,Odijk2013}; or (ii) manually \citep{dyvik2019,shudo_etal_2011,chapters/07}.%,\parencitetv{chapters/07}.
+
+Given the characteristics of MWEs (e.g., discontinuity, inflection of components, word order variation, etc.), the automatic analysis of corpora is prone to errors, hence it is usually followed by a manual inspection and selection of MWEs. Automatic identification of MWEs in corpora benefits from the morphosyntactic annotation and lemmatisation of the texts \citep{Odijk2013}. % given the characteristics of MWEs (inflection of components, variations in their order of occurrence in language). 
+Some authors combine the extraction of MWEs from corpora with selecting MWEs from available idiom or general-purpose dictionaries or lists. In such cases, examples from corpora and/or the web serve to supplement the dictionaries with new entries, to confirm and exemplify the uses and various phenomena concerning MWEs \citep{hnatkova-etal-2019,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/01}. %; may be rephrase this item so as to accommodate this.
+
+%\subsection{Describing the system of MWEs within the language} 
+
+Describing the system of MWEs within a language concerns the paradigmatic aspect of MWEs, a topic that is more rarely touched upon in the dedicated literature. \citet{gregoire-2007} discusses the organisation of Dutch MWEs in classes (called ``equivalence classes'') according to syntactic characteristics, the inner structure of MWEs and the possibility for them to have modifiers; \citet{villavicencio-LexicalEncoding} use ``meta-types'' to organise the MWEs in classes and to map ``the semantic relations between the elements of the MWE into the appropriate grammar dependent features'' \citep{villavicencio-LexicalEncoding}. 
+
+With respect to the way in which MWEs are described in lexicographic resources, two trends were dominant in the literature. In one of them, all MWEs are entries in a lexicon: their description is made either by specifying a class to which they belong \citep{gregoire-2007} or by enumerating their characteristics, with special focus on idiosyncrasies \citep{gross-1996,shudo_etal_2011,al-hajetal2013,markantonatou-etal-2019-idion,markantonatou-etal-in-prep}. 
+
+In a different approach, \citet{villavicencio-LexicalEncoding} propose a description of MWEs adjusted to their decomposable or non-decomposable types. Thus, fixed (i.e., non-decomposable) MWEs should be treated as simplex entries: their orthography, syntactic and semantic type as well as morphological inflection of components are specified. Flexible or decomposable expressions are also lexical entries encoded in three stages: (i) their components are registered as idiomatic entries associated with  the non-idiomatic entries from which they inherit their grammatical characteristics; (ii) over-generation is avoided by defining the context of use for these idiomatic entries: for each MWE the components are listed, along with their obligatory or optional status; (iii) MWEs are assigned to a meta-type.\largerpage 
+    
+Similarly, \citet{al-hajetal2013} include MWEs as entries in their lexicon, alongside entries of simple words. Each component of a MWE contains a pointer to the corresponding simple entry in the lexicon. In a way similar to \citet{villavicencio-LexicalEncoding}, they propose adding fossil words\footnote{\textit{Fossil} words are those that only occur in MWEs; they are also known as \textit{cranberry} words.} as entries, which are not assigned a part of speech, but are marked as ``fossil'', which is an indication of their occurrence only as components of MWEs. %However, it is not clear if cases of non-compositionality are treated similarly to \cite{villavicencio-LexicalEncoding}.
+
+Alternatively, in the \textit{Explanatory combinatorial dictionary} \citep{ECD} different types of MWEs are treated differently: idioms and quasi-idioms %that roughly correspond to VIDs 
+are allotted separate entries (also cross-referenced with their components' entries) with their own fully-fledged description, whereas the so-called semi-phrasemes %, which subsume LVCs,
+are described in the entry of their base, which, in the case of light verb constructions (LVCs) (a type of semi-phrasemes), is most often a noun serving as the semantic head of the expression. The combinatorial properties of semi-phrasemes are represented lexicographically by means of a special lexical function. % Oper${}_1$. 
+Equivalent meanings formed on different support verbs are listed together.%, as in Oper${}_1$(complaint) = lodge, make [ART $\sim$]. 
+
+
+%\subsection{Describing MWEs at various linguistic levels} 
+
+Given that no standard was defined for it (yet), an important aspect of the linguistic description of MWEs is that it should not be framework-specific and should allow for its reuse by any system \citep{Odijk2013}. There is agreement among researchers that MWEs must be explicitly marked as such in lexicons \citep{fellbaum2005,ECD,al-hajetal2013,dyvik2019,hnatkova-etal-2019,markantonatou-etal-2019-idion,markantonatou-etal-in-prep}.
+
+Taking as a point of departure the above mentioned lexicographic resources that focus on or include MWEs, below we summarise the levels of description we consider relevant for our work: lexical, derivational, morphological, syntactic, semantic, contextual, stylistic.\footnote{For a discussion of lexical encoding formats for MWEs that can be used in NLP systems, see \citet{lichte-etal}.} A detailed description of the complex multilevel representation of a broad range of MWEs and MWE types in Czech (another morphologically rich language), which shares many commonalities with the approach adopted herein is presented in \textcitetv{chapters/01}. A different, though not contradicting approach to a rich multilayered description for Bulgarian MWEs is adopted in \textcitetv{chapters/04}.
+We defer the discussion as to which levels of description are implemented (and how) in the proposed Bulgarian-Romanian VMWE lexicon to \sectref{sec:entry}, where we also provide an explanation for favouring a particular decision or approach over another.
+
+\subsection{Lexical level} 
+
+The lexical level contains information about:
+         \begin{itemize}
+            \item the list of lexemes that can substitute components in the multiword expressions \citep{villavicencio-LexicalEncoding,gregoire-2007,przepiorkowski-etal-2014,hnatkova-etal-2019,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/01}. The variations may be handled uniformly regardless of the status of the component affected (i.e., as alternative realisation within the same citation form) or differently, according to certain criteria, e.g., whether the verbal head or an invariable component is concerned, cf. the treatment by \citet{markantonatou-etal-2019-idion,markantonatou-etal-in-prep}; %who treat as variants of an entry lexical variation of functional categories and %morphological variation or substitution by  diminutives of fixed content parts, while variants stemming from different verbal heads or different fixed noun phrases are treated as distinct, though semantically related entries; %a third option could be to consider such cases as separate related entries, 
+            \item cross-references from the dictionary entries of each of the components of the MWEs (except for function  words) to the entry/ies of the MWEs in which they occur \citep{villavicencio-LexicalEncoding,ECD}.\footnote{In \citet{ECD} it is not clear if all lexical entries of a MWE component contain references to the respective MWE or only that which reflects the meaning it has in the MWE, although the author admits the semantic non-compositionality of some idioms.}
+        \end{itemize}
+
+\subsection{Derivational information}
+
+Expressions that are derivationally related to the MWEs, e.g., nominal expressions derived from VMWEs \citep{ECD,hnatkova-etal-2019,Monti2014}, are recorded in the dictionary, thus providing links to other parts of the language's lexicon, including MWEs and one-word compounds. 
+
+\subsection{Morphological description} \label{subsec:morph-descr}
+
+The following information pertain to this level:
+        \begin{itemize}
+            %\item part of speech of the MWE \citep{al-hajetal2013,shudo_etal_2011}, sometimes indirectly mentioned, by means of reference to the class to which the MWE belongs \cite{gregoire-2007,Odijk2013};
+            \item lemma (i.e., canonical) form of all the components \citep{dyvik2019,gregoire-2007,%markantonatou-etal-2019-idion,markantonatou-etal-in-prep,
+            Odijk2013,chapters/07,chapters/04,chapters/01};% if I understand correctly??fellbaum2005 describe several lemmas according to frequency:  Our criterion for determining an idiom’s citation form for the template is frequency. However, in some cases, the corpus tokens are evenly divided into two or three different forms, necessitating multiple citation forms and templates.?? ; possibly extend this item as to how are lemmas defined : unmarkedness, frequency; abstract , non-abstract lemma or both
+
+            \item restrictions on the inflection of components that can help automatically generate all the possible forms of the MWE \citep{gregoire-2007,al-hajetal2013,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/02,chapters/04,chapters/01}.
+            
+            %\item restrictions on the inflection of components within the MWE \citep{al-hajetal2013,markantonatou-etal-2019-idion,markantonatou-etal-in-prep} or description of the morphosyntactic properties of each component, where components are separate entries \citep{gregoire-2007}, both approaches aiming at generating all and only the possible forms of the MWE, %\citep{al-hajetal2013,markantonatou-etal-2019-idion,markantonatou-etal-in-prep},
+        \end{itemize}
+        
+\subsection{Syntactic level}
+
+This level contains the following information:
+         \begin{itemize}
+            \item syntactic category of the expression (e.g., nominal, verbal, adjectival, etc.) \citep{shudo_etal_2011,al-hajetal2013,dyvik2019,markantonatou-etal-2019-idion}, sometimes referred to indirectly, by means of reference to the class to which the MWE belongs \citep{gregoire-2007,Odijk2013};  %check the rest
+            \item internal syntactic structure of the expression \citep{dyvik2019,gregoire-2007,hnatkova-etal-2019,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,shudo_etal_2011,przepiorkowski-etal-2014,villavicencio-LexicalEncoding,ECD} 
+            represented in terms of one of various theoretical frameworks: dependency structures \citep{hnatkova-etal-2019,Odijk2013,villavicencio-LexicalEncoding,chapters/02,chapters/04,chapters/01}, Lexicon-Grammar \citep{gross-1982}, HPSG \citep{villavicencio-LexicalEncoding}, LFG \citep{dyvik2019}, constituent structures \parencitetv{chapters/01}, among others;%phrase structure czech...
+            \item possible modifiers of components \citep{fellbaum2005,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,gregoire-2007,shudo_etal_2011,al-hajetal2013,chapters/02,chapters/04,chapters/01};
+            \item clear indication of the optional and obligatory components \citep{fellbaum2005,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,villavicencio-LexicalEncoding,chapters/02,chapters/01};
+            \item word order of the components with respect to each other \citep{al-hajetal2013,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/02} or marking of specific or anomalous word order \textcitetv{chapters/02}, \textcitetv{chapters/01}, see also the approach adopted below;
+            \item valency information about the MWE which determines its realisation in text \parencitetv{chapters/05}, \parencitetv{chapters/04}, \parencitetv{chapters/01};
+            \item combinatorial possibilities of the expression extracted from corpora, such as possible subjects, complements, pre- or post-modifiers, etc. \citep{Odijk2013,ECD}, sometimes with their frequency \citep{Odijk2013,chapters/07};
+            \item other syntactic variations such as passivisation, causative-inchoative alternations, long-distance dependencies, alternative forms of the MWE \citep{dyvik2019,fellbaum2005,markantonatou-etal-2019-idion,markantonatou-etal-in-prep, vietri,chapters/02,chapters/01}, but only when they violate the rules of the grammar \citep{ECD}. %also obligatory direct object NP cliticisation, binding, control... these may be treated differently across languages and resources/see what we want/need to include; fellbaum: clefting, relativization, topicalization - these were accounted for in PARSEME
+        \end{itemize}
+
+\subsection{Semantic description}
+
+The information contained at this level consists of:
+
+         \begin{itemize}\sloppy
+            \item a paraphrase, a definition or an explanation of the meaning of the MWEs \citep{villavicencio-LexicalEncoding,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,ECD,chapters/04,chapters/02,chapters/01};
+            \item relations to other idioms, such as synonymy \citep{Autelli2020,chapters/04,chapters/02}, antonymy \citep{fellbaum2005,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/02}, hypernymy and hyponymy \citep{fellbaum2005}, as well as other relations that serve to define a network of VMWEs expressing a concept \citep{markantonatou-etal-2019-idion,markantonatou-etal-in-prep}: causative-inchoative or stative relations, verb alternations, lexical variants, etc., making it possible to group MWEs in synonym sets \citep{markantonatou-etal-2019-idion,markantonatou-etal-in-prep,chapters/02};
+        \item semantic domain \citep{fellbaum2005,Monti2014}, by means of cross-references to other entries in the dictionary having the same or related meaning \citep{ECD}.
+        \end{itemize}
+
+\subsection{Contextual information}
+
+This level contains information such as:
+         \begin{itemize}
+            \item examples of sentences (extracted from corpora) containing the respective MWE \citep{gregoire-2007,markantonatou-etal-2019-idion,markantonatou-etal-in-prep,Odijk2013,Autelli2020,chapters/04,chapters/02,chapters/01}. When the MWEs in the lexicon originate from corpora, the information extracted from the corpus (such as context of occurrence, frequency, etc.) is kept track of by a reference from the lexicon entry to the file storing the respective information \citep{gregoire-2007};
+            \item contextual restrictions on the occurrences of MWEs, such as co-occurrence with specific syntactic phrases \citep{shudo_etal_2011} or with semantically specific adverbs or other external modifiers \citep{fellbaum2005}; %fellbaum2005: Some idioms occur characteristically with a limited set of semantically specific adverbs or other external modifiers. Such frequent but non-obligatory components are labelled in the template as “preferred syntactic environment”. - should this go here?
+            \item frequency of occurrence of MWEs in corpora \citep{Odijk2013}.
+        \end{itemize}
+
+\subsection{Stylistic information} \label{sec:stylistic}
+
+The label ``stylistic'' encompasses all kinds of information about the style or language register in which a MWE is typically used, such as ``ironic'', ``disparaging'', ``humorous'' \citep{fellbaum2005}; ``formal'', ``colloquial'', ``offensive'' \citep{markantonatou-etal-2019-idion,markantonatou-etal-in-prep}; ``vulgar'', ``negative connotation'', ``disused'' \citep{Autelli2020}, or other similar descriptions \parencitetv{chapters/01}. 
+
+\subsection{Other information}
+Besides the linguistic types of information already mentioned, some lexicons also include the following:
+\begin{itemize}
+    \item diachronic information: changes in the form and meaning of the VMWEs over time \citep{fellbaum2005};
+    \item translation into other languages such as English \citep{al-hajetal2013, markantonatou-etal-2019-idion, markantonatou-etal-in-prep} 
+    and French \citep{markantonatou-etal-2019-idion, markantonatou-etal-in-prep,chapters/02};
+    \item the emphatic function of MWEs \citep{Fotopoulou-et-al-2014, markantonatou-etal-2019-idion, markantonatou-etal-in-prep}. 
+\end{itemize}
+
+% przepiorkowski - represent VMWEs as part of the valency of the respective verb with restrictions and idiosynchrasies described as part of the respective complement's description
+    
+
+
+%KEYPOINTS:
+
+%idiosyncrasies need to be described in the lexicon, whereas regularities - in the grammar.
+
+
+%\subsection{Towards a unified multilingual approach: analysis of the minimum and optimum features}
+
+%We will proceed to evaluate and consider the required features of a unified framework that would accommodate previously gained experience and the above observations and to test it on a set of verbal MWEs that form the intersection of the Bulgarian and the Romanian wordnets – i.e., MWEs that share the same meaning but, as we have come to acknowledge, not necessarily the same morphological, syntactic, semantic, stylistic, etc. features.
+
+%The purpose of this step is two-fold:
+
+%• First, the description of verbal MWEs will further inform the adopted model to the end of refining and/or revising its features.
+
+%• Secondly, based on the semantic alignment of the MWEs in the two languages, we will undertake a contrastive linguistic analysis, as well as analysis with respect to the polysemy of equivalent Bulgarian-Romanian MWEs, their frequency and context of occurrence in annotated corpora for the two languages, etc. A priority of ours will be to acquire better understanding of verbal MWEs across languages, focusing on Bulgarian and Romanian, on the basis of exploring the intricacies of lexicographic descriptions.
+
+%Many authors acknowledge that the variability of VMWEs, particularly the possible syntactic variations, are much greater than expected given the traditional understanding about the relatively fixed nature of the structure of VMWEs. In particular, the understanding has been gaining ground that to a great extent (V)MWEs exhibit the regular syntactic behaviour of free phrases. This has crystallised in the idea of describing only the deviations from the regular behaviour. 
+
+% VMWE dictionaries also differ in terms of the extent to which they 
+%tackle lexical variation of the components...  at the lemma subsection
+
+%A current trend in VMWE description is the coupling of the lexicographic information with annotated corpus examples that illustrate not only the typical uses but also different (syntactic) phenomena.
+
+
+
+%\section{Content and organisation of the dictionary} \label{sec:specs}
+
+
+
+%\begin{itemize}
+%\item information about the type of verbal MWE according to the PARSEME typology and, where relevant, information about the fixedness/flexibility of the internal MWE structure based on corpus observations;
+%\item morphological representation – lemma, part of speech of the MWEs, part of speech of the MWE components, restrictions on their form(s);
+%\item internal syntactic representation – structural patterns (e.g. V + N/NP), syntactic relations between pairs of elements of the (verbal) MWEs, with consideration of the various theoretical and methodological frameworks in which they have been couched (Lexicon-Grammar \citep{Vietri2014}, HPSG (Sailer 2000), Generative syntax (Odijk 2004), Dependency syntax (Grégoire 2007), UD (Kahane et al. 2017); intervening elements in the MWEs’ structure (Shudo et al. 2011, Markantonatou et al. 2019, Leseva et al. 2020); word order of the components along with the restrictions on the word-order patterns, possible syntactic transformations, where relevant, such as passivisation, cliticisation, inchoative-causative alternation (Markantonatou et al. 2019);
+%\item semantic representation – definition of MWEs, but also possible semantic relations with other words and MWEs in the language (relations such as hypernymy / hyponymy, synonymy, etc.) (cf. also Markantonatou et al. 2019);
+%\item argument structure – information about MWE valency frames (Kettnerová et al. 2012, Przepiórkowski et al. 2014);
+%\item derivational relations – information about lexical units derived from MWEs which are either single words or MWEs themselves, but are not usually rendered in traditional dictionaries \citep{barbu-mititelu-leseva-2018};
+%\item stylistic information – connotation, register (Grégoire 2010, Markantonatou et al. 2019);
+%\item other: polarity, emphasis, context (cf. Grégoire 2010, Markantonatou et al. 2019).
+%\end{itemize}
+
+The overview of the types of linguistic information encoded about MWEs shows that the lexicons referenced above contain relevant descriptions and partially overlapping types of information, distributed over several linguistic levels. One of our aims when developing the linked Bulgarian-Romanian %resource was to offer a comprehensive description of MWEs, covering a whole range of linguistic aspects specific to synchrony, as well as technical ones, as shown in Section \ref{sec:tech}.
+%The implementation of the Bulgarian-Romanian 
+bilingual lexicon of MWEs %aims at following 
+was to provide a consistent and uniform framework for the representation of MWEs that would take into account the various levels of linguistic description and the approaches to tackle them in line with the findings of the theoretical analysis as well as the specific requirements of the bilingual (and by extension -- multilingual) representation of data.
+
+
+%discuss again at the beginning of 5
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% NEW %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\section{BulNet and RoWN - sources of MWEs for the dictionary} \label{sec:wordnets}
+
+\section{Compilation of a Bulgarian-Romanian MWE lexicon} \label{sec:compilation}
+
+We first describe the lexical resources that the lexicon is derived from, i.e., the Bulgarian and Romanian wordnets. We then present the different levels of linguistic description in comparison with other frameworks and initiatives.% and in order to motivate the decisions adopted.
+
+\subsection{BulNet and RoWN: Sources of MWEs for the lexicon} \label{sec:wordnets}
+
+A wordnet is a semantic network: its nodes are represented by synonym sets (synsets), which contain one or more linguistic items (called ``literals'') that lexicalise a concept; literals may be single words or multiword %expressions 
+combinations alike.\footnote{For a discussion on the representation of figurative language, proverbs and idioms in WordNet, see \citet{fellbaum-1998-towards}.} The edges connecting the nodes are semantic relations that hold between a pair of synsets. Only words belonging to content parts of speech are usually represented in such language resources: nouns and verbs have a hierarchical organisation, descriptive adjectives are organised in clusters created around a pair of antonymic adjectives, relational adjectives and adverbs have no organisation.
+The first such network, Princeton WordNet (WordNet, \citealt{miller}), was developed for English; wordnets for other languages have been subsequently developed,\footnote{For a list of existing wordnets in the world, see \url{http://globalwordnet.org/resources/wordnets-in-the-world/}.} most of which are aligned with WordNet, i.e. the synsets in different wordnets with equivalent meanings are mapped to each other.
+
+The development of the Bulgarian Wordnet (BulNet, \citealt{Koeva2010}) and the Romanian Wordnet (RoWN, \citealt{rown}) started in the BalkaNet project \citep{BalkaNet}, which had as one of its objectives the implementation of a set of synsets common to all languages in the project. The construction of the two wordnets adopted the ``expand'' approach, which involves translation of the literals in the English synsets and automatic transfer (and possibly revision) of the semantic relations from WordNet \citep{Fellbaum1998} to BulNet and RoWN. The content of the synsets and associated information (literals, gloss, usage examples, stylistic notes, etc.) were devised by native language experts, who consulted relevant monolingual and bilingual dictionaries. These decisions and work methods led to the creation of wordnets aligned to WordNet and thereby to each other (via WordNet),\footnote{They are also aligned to any wordnet that is aligned to WordNet.} on the other. Figure \ref{fig:wn} shows the interlinking among the wordnets, in which the English, Romanian and Bulgarian synsets contain verbal idioms: (bg) \ile{{давам най-доброто от себе си}} \ile{{davam nay-dobroto ot sebe si}}  (lit. `give the best of oneself'), \ile{{давам всичко от себе си}} \ile{{davam vsichko ot sebe si}} (lit. `give all of oneself') -- (ro)  \ile{{da totul}} (lit. `give all'), \ile{{da ce e mai bun}} (lit. `give the best'), \ile{{da tot ce e mai bun}} (lit. `give all the best').
+
+% A deviation from the adopted method is seen in the development of a set of synsets denoting some Balkan-specific concepts, which were defined and implemented usually as hyponyms to synsets existing in the WordNet, but also linked from one wordnet to the other (in this case, BulNet-RoWN), by means of assigning the same identifier to the respective synsets. In addition, while in the expand approach the overall WordNet structure is preserved, i.e. non-lexicalised synsets are not removed, each team has adopted devices to account for lexical gaps so as to reflect the peculiarities of the language in question. 
+
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/03/wn02.png}
+\caption{Interlinking wordnets.} \label{fig:wn}
+\end{figure}
+
+
+%At the moment, the mutual alignment between BulNet and RoWN is partial: 
+After the end of BalkaNet, each team continued the development of the respective wordnet independently, with different interests in the conceptual coverage of their resources. The development of the wordnets for Bulgarian and Romanian (as well as for any other language constructing a wordnet using the expand approach) is naturally biased towards English, as WordNet provided the original inventory of senses. While this fact was acknowledged, it was not considered a serious concern, as no resource could be absolutely unbiased, on the one hand, and because of the fact that concepts are shared by different languages, which made the alignment among wordnets possible, on the other. MWEs were not a particular focus of the development of BulNet and RoWN; however, as they are treated on a par with single words, MWEs were included whenever relevant for a synset. 
+%We would rather focus on the linguistic features of the MWEs in the respective languages, while acknowledging that such a resource could not be representative with respect to MWEs in Bulgarian or Romanian.
+The current versions of the two wordnets do not cover the lexical inventory of the languages thoroughly.\footnote{We used Princeton WordNet -- 3.0 aligned with Bulgarian and Romanian wordnets. BulNet consists of %overall 121,282 synsets of which 
+85,954 synsets created %or validated 
+by expert linguists \citep{Koeva2021}%(the remaining ones have been automatically translated but remain to be )
+, while RoWN contains 59,348 synsets \citep{rown}.}  
+
+
+% \section{Organization of the dictionary}
+
+% \subsection{Creating the pool of VMWEs}%to be included in the dictionary
+
+\subsection{Dataset construction} \label{sec:dataset}\largerpage
+
+The features of the bilingual resource outlined in the following sections were described on the basis of linguistic analysis aiming at delineating the common linguistic characteristics and the differences between the two languages that need to be taken into account in such a lexicon. This analysis is based on 3,656 multitoken literal-to-literal pairs in corresponding synsets in BulNet and RoWN. These include VMWEs proper, as well as multitoken free phrases with purely compositional meaning. We filtered out the latter and were left with 2,705 VMWE-to-VMWE pairs. As the VMWEs under discussion are part of pairs of corresponding aligned synsets, they are treated as possible translation equivalents to each other, cf. the synset counterparts in (\ref{literals}), and are included in the constructed bilingual resource. As part of the VMWE bilingual lexicon, each VMWE is analysed and described on the morphological, syntactic, semantic, stylistic, connotational and derivational level individually. The linguistic information which is common to all the members of a synset, e.g. the gloss, is also assigned to each VMWE in the relevant synset, as each VMWE is a separate unit in the VWME lexicon. In addition, all the VMWEs belonging to the same synset share the same synset ID and are thus identifiable as part of the synset. We did not implement any further linking beyond the alignment at the synset level, which was performed while the individual wordnets were being constructed.      
+
+\begin{sloppypar}
+The verbal multiword literals in BulNet and RoWN were manually annotated with the VMWE types from the PARSEME 1.2 guidelines:\footnote{\url{https://parsemefr.lis-lab.fr/parseme-st-guidelines/1.2/}} verbal idioms (VID), light verb constructions whose verb is semantically totally bleached (LVC.full), light verb constructions in which the verb adds a causative meaning to the noun (LVC.cause), inherently reflexive verbs (IRV), for both languages, while the category inherently adpositional verbs (IAV) was annotated only for Bulgarian \citep{barbu-mititelu-etal-2019-hear}. 
+\end{sloppypar}
+
+The compilation of the lexicon started with those synsets that are lexicalised by VMWEs of the same type in both wordnets: 192 VID examples, 44 LVC ones and 2,023 IRVs. IRVs are also of interest for comparative studies, but will be part of future work. Thus, the set of VMWEs currently included into the lexicon and subject to description is made up of 2,259 pairs of corresponding VMWEs.%covering \textbf{XXX} pairs of corresponding synsets in BulNet and RoWN. 
+
+The description of VMWE literals was performed independently for each of the two languages according to a common set of features and their possible values. IRVs have regular structure, word order and syntactic properties, so our work is focused only on VID and LVC cases, which pose a number of challenges for their description and the analysis of their properties. 
+   
+As a result, we obtain a new resource, a self-contained bilingual MWE lexicon where each VMWE in each of the languages is described individually, but each VMWE is described by filling in the relevant fields in the predefined template of a language-independent lexicon entry. In the following section %\ref{sec:entry} 
+we delve into the types of information included in each dictionary entry and how these are handled in practical terms.
+
+
+% \begin{table}[h]
+% \begin{center}
+% \begin{tabular}{|p{0.5cm}|r|r|r|r|r|}
+% \cline{3-6}
+% \multicolumn{2}{c|}{ } & \multicolumn{4}{c|}{BulNet}   
+% \\  \cline{3-6}
+% \multicolumn{2}{c|}{ }& VID & LVC & IRV & NONE \\ \hline
+% \multirow{4}{1.7cm}{\rotatebox[origin=c]{90}{\parbox[c]{1cm}{\centering RoWN}}} 
+% & VID & \bf 192 & 16 & 99 & 140\\ %\hline
+% & LVC & 41 & \bf 44 & 75 & 138\\ %\hline
+% & IRV & 151 & 64 & \bf 2,023 & 148\\ %\hline
+% & NONE & 49 & 5 & 96 & \bf 263\\ %\hline
+% \hline
+% \end{tabular}
+% \end{center}
+% \caption{\label{wn-lit-to-lit-stats} Distribution of VMWE literal-to-literal correspondences between BulNet and RoWN }
+% \end{table}
+
+\section{The content of a lexicon entry} \label{sec:entry}\largerpage
+%\subsection{Levels of organization of the dictionary}
+
+Following one of the dominant trends in MWE lexicon crafting, we adopt the approach of encoding VMWEs explicitly as distinct entries instead of describing the rules of combining their components. This makes it possible to reflect and access in a straightforward way the morphosyntactic, syntactic, semantic and derivational information associated with a particular entity that may not be readily obtainable from the combination of its components. %We follow PWN in treating synonymous single words and VMWE expressions alike 
+In (\ref{literals}), we illustrate three aligned synsets in WordNet, BulNet and RoWN.\footnote{The synset ID and definition are rendered only for WordNet.} We notice that in the same synset there may be MWEs based on a different support verb (as in (\ref{bg:diff-vb}) for Bulgarian) or a different semantic head (as in (\ref{ro:same-vb}) for Romanian).\footnote{For brevity, we do not give literal translations where they are similar or identical to the idiomatic translation% as with Bg example, which literally means `assume, take shape'
+.}
+
+
+\begin{exe}
+ \ex \label{literals}
+ \begin{xlist}
+\ex \label{en:takeform}
+\settowidth \jamwidth{(en)}
+ form:8; {take form}:1; {take shape}:1; spring:6\jambox*{(en)}
+Synset ID: eng-30-02623906-v 
+\glt Definition: `develop into a distinctive entity'%
+\ex \label{bg:priemamforma0}
+ \settowidth \jamwidth{(bg)} 
+   \gll {образувам} {се}:1, {оформям} {се}:2, {оформя} {се}:2, {формирам} {се}:1, {приемам} {форма}:1, {приема} {форма}:1, {добивам} {форма}:1, {добия} {форма}:1, {кристализирам}:1   \\
+    obrazuvam se:1, oformyam se:2, oformya se:2, formiram se:1, priemam forma:1, priema forma:1,   dobivam forma:1, dobiya forma:1, kristaliziram:1 
+     \\ \jambox*{(bg)}     
+\ex \label{ro:prindecontur}
+ \settowidth \jamwidth{(ro)}
+  {se} {forma}:1; {se} {contura}:1; {prinde} {contur}:1; {prinde} {formă}:1  \jambox*{(ro)}  
+ \end{xlist}
+\end{exe}
+
+\begin{exe}
+\ex 
+\begin{xlist}
+    \ex \label{bg:diff-vb}
+    \settowidth \jamwidth{(bg)}  
+    \glll {приемам} {форма}, {добивам} {форма} \\ 
+           priemam forma, dobivam forma \\ 
+           adopt shape, obtain shape \\ \jambox*{(bg)}
+     
+    
+     \ex \label{ro:same-vb}
+    \settowidth \jamwidth{(ro)}
+    \gll {prinde} {contur},  {prinde} {formă} \\ 
+         catch outline,  catch shape \\ \jambox*{(ro)}
+ %   \newline \gll \lex{prinde} \lex{formă} \\
+ %   catch shape\\
+ % \glt `take shape' 
+\end{xlist}
+\end{exe}
+
+
+
+
+% \begin{tabular}{ll}
+% 1a. En:
+% &\textit{form:8; \textbf{take form}:1; \textbf{take shape}:1; {spring}:6}\\
+% & Synset ID: eng-30-02623906-v \\
+% & Definition: `develop into a distinctive entity' \\[0.2em]
+% 1b. Bg: &\textit{\textbf{obrazuvam se}:1; \textbf{oformyam se}:2; \textbf{oformya se}:2; \textbf{formiram se}:1;}\\
+% & \textit{\textbf{priemam forma}:1; \textbf{priema forma}:1; \textbf{dobivam forma}:1; }\\
+% &\textit{\textbf{dobiya forma}:1; {kristaliziram}:1}\\[0.2em]
+% 1c. Ro: & \textit{\textbf{se forma}:1; \textbf{se contura}:1; \textbf{prinde contur}:1; \textbf{prinde formă}:1}
+% %Gloss: A (se) dezvolta într-o formă sau entitate distinctă
+%  \end{tabular}\\[1em]
+
+% \begin{tabular}{llllll}
+% 2a. Bg: &\textit{\textbf{priemam forma}} 
+% & adopt shape  & `take shape'\\
+% &\textit{\textbf{dobivam forma}}
+% & obtain shape & %`take shape'
+% \\[0.2em]
+% 2b. Ro: &\textit{\textbf{prinde contur}} & catch outline & `take shape' \\ &\textit{\textbf{prinde formă}} & catch shape & %`take shape' 
+% \end{tabular}\\[0.2em]
+
+%The definition supplied covers the meaning of the concept regardless of its expression, thus being suitable for synonymous single word lexemes and MWE expressions alike, including ones based on a different support verb, cf. Bg: \textbf{приемам форма}, take form, and \textbf{добивам форма}, acquire form,  or a different semantic head, cf. Ro: \textbf{prinde contur} and \textbf{prinde formă}, all expressions in both languages meaning 'take, assume form'. 
+
+While it is obvious that some literals are closer correspondences to each other in terms of structure and/or semantics -- e.g. (bg)  \ile{{formiram se}} -- (ro) {se forma} (`form') and (bg)  \ile{{priemam forma}}  -- (ro) \ile{{prinde formă}} -- (en) \ile{{take form}} -- we do not attempt to connect to each other such stricter correspondences found within the same pairs of synsets; instead, we take all literals on one side to be relevant translation equivalents of the literals on the other side, as translation choices may be guided by factors other than structural or semantic similarity.    
+
+
+In the following subsections we present the levels of description of VMWEs adopted in the resource presented. Given one of the organisation principles of WordNet, i.e., each synset stands for a concept and each word/expression can occur a number of times equal to its number of senses, it is clear that all information provided for a MWE pertains to one of its senses, in case it is polysemous. 
+
+\subsection{Technical information}\label{sec:tech}
+
+This level of description serves two main purposes: the unique identification of the VMWE lexicon entry within the dataset for one language, as well as pairing the VMWE entries across languages. 
+For this, we employ wordnet indexing with additional identification elements which serve both to identify a VMWE as part of a particular synset (via synset ID) and to distinguish it from other VMWEs in the same synsets, or from identical VMWE literals in other synsets (via literal IDs, see (\ref{bg:technical})). For Bulgarian we also include a verb aspect identifier, which allows us to refer jointly or separately to aspectual pairs lexicalising the VMWEs -- this is useful when comparing languages that differ with respect to the verb aspect %(such as the languages under discussion) 
+or where the aspectual systems are organised differently.\footnote{This feature is only relevant for Bulgarian. Romanian lacks a lexico-grammatical verb aspect (i.e. marked on separate lexemes) and aspectual distinctions are expressed by other means.} The identification system allows us to: (i) access all the synset-level linguistic information provided; (ii) make references to a particular VMWE uniquely, e.g., in the description of derivatives (e.g., (\ref{bg:technical-n}) as derived from (\ref{bg:technical-v}) and not from its aspectual counterpart \ile{{snema otpechatatsi}}, literal ID: bg\_2330, nor its synonym \ile{{vzemam otpechatatsi}}, literal ID: bg\_2327); (iii) extract translation equivalents of VMWEs from wordnets for different languages; (iv) use the rich relational structure of WordNet for the purposes of the semantic description of VMWEs. 
+
+\begin{exe}
+\ex \label{bg:technical}
+\begin{xlist}
+    \ex \label{bg:technical-v}
+    \settowidth \jamwidth{(bg)}
+    \glll {снемам} {отпечатъци}  \\ 
+    {snemam} {otpechatatsi}  \\ 
+   take fingerprints\\ \jambox*{(bg)}
+    Synset ID: eng-30-01748748-v, 
+    Literal ID: bg\_2329, Aspect: IPFV 
+
+    \ex \label{bg:technical-n}
+    \settowidth \jamwidth{(bg)}
+    \glll {снемане} {на}  {отпечатъци} {}  \\  
+    {snemane} {na} {otpechatatsi}  {} \\ 
+    taking of figerprints  {(the act of fingerprinting)}\\ \jambox*{(bg)}
+     Synset ID: eng-30-00152338-n  
+\end{xlist}
+
+\end{exe}
+
+
+% \begin{tabular}{llll}
+% 3. Bg: &\textit{\textbf{pisha na raka}} & Synset ID: eng-30-01005209-v \\
+% & `write by hand' & Literal ID: bg\_230\\[0.2em] 
+% &\textit{\textbf{pisane na raka}} & Synset ID: eng-30-00614730-n\\
+% & `(the act of) writing by hand'  & 
+% \end{tabular}\\[0.2em]
+
+\subsection{Morphological description} %Zara
+
+
+\subsubsection{Lemma of the VMWE}
+
+\citet{Savary2008} considers two main approaches to lemma representation that have become dominant: (i) an abstract lemma, where a citation form that generates all the possible forms of the relevant single word is assigned to each component; (ii) a non-abstract lemma in which each of the components is represented by the form that is part of the relevant MWE, and the MWE lemma is associated with a formalised description of the grammatically possible combinations of forms of the MWE components, thus avoiding overgeneration. Even though the latter approach is linguistically more justified and was adopted by other authors (see \sectref{subsec:morph-descr} above), the former allows recognition and retrieval of MWEs from corpora where MWEs are not annotated, thus possibly being capable of recognising MWEs not included in lexicons. %(when such resources are not employed in the recognition) \citep{dyvik2019,gregoire-2007,Odijk2013}. %using an abstract lemma consisting of the citation forms of all the components, however, requires some kind of formalism for restricting the forms that may be generated for each component so as to rule out impossible combinations. 
+Still others \citep{fellbaum2005} determine MWE lemmas on the basis of the frequency of occurrence, maintaining multiple citation forms where two or more dominant forms are relatively equally distributed. Such an approach accounts for the fact that the non-abstract MWE lemmas are often not morphologically unmarked and that they may occur preferentially in particular forms but not in others. 
+
+We adopt a two-way approach by assigning each MWE both a non-abstract lemma and an abstract one. The function of the former is to represent the most neutral form in which the components occur in the language. It is this lemma that we consider in determining the inflection of the MWE components that reflects the actual morphological restrictions imposed on the forms that need to be described in the fields dedicated to morphosyntactic restrictions. Consider the following examples of non-abstract lemmas:
+
+%(bg) \ile{\lex{затварям} \lex{си-POSS-REFL} \lex{очите-PL.DEF}} (\ile{\lex{zatvaryam} \lex{si-POSS-REFL} \lex{ochite-PL.DEF}}), lit. `close one's eyes', and (ro) \ile{\lex{închide} \lex{ochii-PL.DEF}}, lit. `close the eyes', meaning `turn a blind eye'. In both
+
+\begin{exe}
+\ex \label{bg:zatvaryam-si-ochite0}
+\settowidth \jamwidth{(bg)}
+        \glll {затварям} {си} {очите} \\
+    zatvaryam si ochite\\ 
+    close self.\LesevaCategory{CL} eye.\LesevaCategory{PL.DEF}\\ \jambox*{(bg)} 
+		\glt lit. `close one's eyes' 
+\\ `turn a blind eye'
+
+\ex \label{ro:închide ochii0}
+\settowidth \jamwidth{(ro)}
+\gll {închide} {ochii} \\ 
+close eye.\LesevaCategory{PL.DEF} \\ \jambox*{(ro)}
+\glt lit. `close the eyes'
+ \\ `turn a blind eye'
+\end{exe}
+
+In examples (\ref{bg:zatvaryam-si-ochite0}) and (\ref{ro:închide ochii0}), the verbal head's inflection is unrestricted, whereas the nominal complement is only found in its plural definite form. In addition, in Bulgarian the reflexive possessive pronoun is in its short (clitic) form (which is invariable). The description of the relevant restrictions in the dictionary prevents the overgeneration of non-existing forms.
+
+For the automatic recognition of MWEs, we also encode an abstract lemma for each MWE (see examples (\ref{bg:zatvaryam-si-ochite1}) and (\ref{ro:inchide-ochii1}) corresponding to the VMWEs in (\ref{bg:zatvaryam-si-ochite0}) and  (\ref{ro:închide ochii0}), respectively); this means representing the nominal complement in its citation form, i.e., singular indefinite for both languages,  respectively, and, in Bulgarian, representing the reflexive possessive in its base form, i.e. masculine %3rd person 
+singular indefinite, which changes in terms of the number, gender and definiteness of the possessed entity.\footnote{The long form of the reflexive possessive pronoun does not denote person, and the categories it inflects for (gender, number, definiteness) are features not of the possessor but of the entity possessed.} 
+
+\begin{exe}
+\ex \label{bg:zatvaryam-si-ochite1} 
+\settowidth \jamwidth{(bg)}
+        \glll {затварям} {свой} {око} \\
+ zatvaryam svoy oko \\ 
+ close self.\LesevaCategory{REFL.POSS.M.SG} eye.\LesevaCategory{SG.INDEF}\\\jambox*{(bg)}  
+		\glt lit. `close one's eye' \\
+`turn a blind eye'
+
+\ex \label{ro:inchide-ochii1}
+\settowidth \jamwidth{(ro)}
+\gll {închide} {ochi} \\
+close eye.\LesevaCategory{SG.INDEF} \\  \jambox*{(ro)} 
+\glt lit. `close eye'\\ 
+`turn a blind eye'
+\end{exe}
+
+Тhe abstract lemma is invoked when a sequence of words corresponding to a MWE in the lexicon is recognised as such in a lemmatised corpus (i.e. where, most often, lemmas are assigned to single words); it is itself a sequence of forms that will not be found in the language in an idiomatic meaning or is completely impossible, as the abstract lemma in example (\ref{bg:zatvaryam-si-ochite1}) above: \textit{{zatvaryam svoy oko}}.
+
+The abstract lemma thus matches the lemmas assigned in the corpus and allows for each occurrence of the relevant MWE in the corpus to be associated with the dictionary entry and the information it contains.
+
+% Example (\ref{ro:pune-sub-semnul-intreb}) below shows the two lemmas for a Romanian expression. We notice that the non-abstract lemma keeps inflection to render the syntactic relations within the expression, whereas the abstract one contains no such information, as all words are in their citation form.
+
+% \begin{exe}
+% \ex  \label{ro:pune-sub-semnul-intreb}
+% \settowidth \jamwidth{(ro)}
+% \gll \lex{pune} \lex{sub} \lex{semnul} \lex{întrebării} \\ put under sign question  \\ \jambox*{(ro)} 
+% \glt lit. `put under the question mark' \\
+% `call into question' \\
+% Non-abstract lemma: pune sub semnul întrebării \\
+% Abstract lemma: pune sub semn întrebare 
+% \end{exe}
+
+% \begin{tabular}{lll}
+% 4. Ro: &\textit{\textbf{pune sub semnul întrebării}} \\
+% & put under sign-DET question-GEN  &\\
+% &`call into question'& \\
+% & Non-abstract lemma:  pune sub semnul întrebării &\\
+% & Abstract lemma:    pune sub semn întrebare
+% \end{tabular}&\\[0.2em]
+
+%\texttt{pune sub semnul întrebării} -- non-abstract lemma
+%`put under sign-the question-the-genitive'
+%``call into question''
+%\texttt{pune sub semn întrebare} -- abstract lemma
+%`put under sign question'
+
+
+The components of the MWE are numbered and identified with respect to their position in the lemma and the abstract lemma. In this way the morphological features, the restrictions on a component's paradigm, as well as the blocking of modifiers and external elements between particular components can be precisely defined.
+
+
+\subsection{Syntactic description} 
+The syntactic variability of VMWEs is much greater than expected despite the traditional understanding about the relatively fixed nature of the structure and linearity of VMWEs. In particular, many (V)MWEs exhibit the regular syntactic behavior of free phrases, including the possibility of intervening external elements that modify a particular element of the VMWE or the entire expression/sentence, various semantic-syntactic transformations, alternative complement expression, long-distance dependencies, etc. That is why we chose to describe only the deviations from the regular syntactic behavior of the MWEs.% in our resource.
+%Many authors acknowledge that the syntactic variability of VMWEs is much greater than expected despite the traditional understanding about the relatively fixed nature of the structure and linearity of VMWEs. In particular, the understanding has been gaining ground that, to a great extent, many (V)MWEs exhibit the regular syntactic behavior of free phrases, including the possibility of intervening external elements that modify a particular element of the VMWE or the entire expression/sentence, various semantic-syntactic transformations, alternative complement expression, long-distance dependencies, etc. %(relativisation, wh-question formation, topicalisations, etc.), relatively free word order. %The scope of the phenomena captured in VMWE resources varies across resources %(depending on how deep into the data the authors have decided to go or whether they approach these peculiarities in term of introspective analysis or from corpus data), languages %(depending on the phenomena found in the particular language) and theoretical apparatus or formalism. %(e.g. dealing with passivisation in terms of syntactic rules or in the lexicon as related lexical templates). 
+
+The syntactic description of the VMWEs in the lexicon is based on the Universal Dependencies\footnote{\url{https://universaldependencies.org/}} (UD) framework \citep{UD}. The choice for this framework was natural, in order to ensure a consistent treatment of the VMWEs in the wordnets and in the Bulgarian \citep{Savary-et-al2018} and Romanian \citep{barbu-mititelu-etal-2019-romanian} corpora created (alongside those for other languages) within PARSEME, and annotated with the same types of VMWEs. These corpora were automatically syntactically annotated  using UDPipe \citep{udpipe}, with the syntactic relations defined in UD \citep{savary-etal-2023-parseme}. 
+
+There are several types of syntactic information recorded in our resource: the internal structure of VMWEs, their valence frames, word order restrictions on their components and the possibility of other words to occur within the expressions. They are all discussed in what follows.
+
+\subsubsection{Internal syntactic structure}
+
+The syntactic annotation of the VMWEs in the two wordnets with UD relations was done manually, with the aim of describing the number of components within each VMWE and the syntactic relations between them. The representation of the VMWE structure follows this convention: the head of the expression (i.e., the verb) followed by the UD relations that the other components of the VMWEs establish with the head or with other components. In the description of the internal structure of VMWEs, the order of these relations reflects the linear order of the components in the expression. For example, the internal structure of the VMWE (en) \ile{{kick the bucket}} is \texttt{V + [det + obj]}. The square brackets indicate that the determiner (\texttt{det}) and the direct object (\texttt{obj}) are not both attached to the verb, but only the \texttt{obj}, whereas the other depends on it.
+
+
+% The most frequent syntactic structures across the Romanian VMWEs (from a list of 107) are the following:
+% \begin{itemize}
+% \item \textbf{V + obj} – bilingualing a verb to the entity acted upon or undergoing a change; the relation is displayed by 42 VMWEs, such as: \textit{atrage atenția} (attract attention ‘draw attention’), \textit{avea chef} (have mood ‘feel like’), \textit{avea grijă }(have care ‘take care’)
+% \item \textbf{V + obl + case} – bilingualing a verb to a nominal as a non-core (oblique) argument or adjunct introduced by a preposition; there are 26 of VMWEs in this case: \textit{băga de seam}ă (stick of account ‘ackowledge’), \textit{cădea de acord} (fall of agreement ‘agree’), \textit{trece prin cap} (pass through head ‘cross mind’)
+% \item V + xcomp (3): \textit{face cunoscut} (make known ‘make known’), \textit{face egal} (make equal ‘draw, tie a game’), \textit{face public} (make public ‘make public’)
+% \item V + obj + expl:poss (3): \textit{(-și) lua revanșa} (take revenge ‘get revenge’), \textit{(-și) rupe spatele} (break back ‘be exhausted’), \textit{(-și) ține gura} (keep mouth ‘keep mouth shout’)
+% \item V + advmod (2): \textit{bate măr} (beat apple ‘hit badly’), \textit{da afară }(give outside ‘fire’)
+% \item V + obj + obl + case (2): \textit{arunca praf în ochi} (throw dust in eyes ‘mislead’), \textit{întoarce stomacul pe dos} (turn the stomach on inside ‘cause severe nausea’)
+% \item V + obj + nummod (2): \textit{da doi bani} (give two cents ‘not care’), da două parale (give two cents ‘not care’)
+% \item V + obl + case + case (2): \textit{da pe sub mână} (give on under hand ‘sell illegally’), \textit{învăța pe de rost }(learn on of mouth ‘learn by heart’)
+% \end{itemize}
+
+% The other 25 Romanian VMWEs display unique syntactic structures.
+% ...........
+
+Table \ref{tab:synt-struct} shows only some of the most frequent syntactic structures that have correspondences in the analysed VMWEs in  Bulgarian and Romanian, but variants of these structures are omitted. For example, patterns such as \texttt{V + obj} and \texttt{V + case + obl} can have as variants \texttt{V + obj + amod} and \texttt{V + [case + obl + amod]} in Romanian and \texttt{V + [amod + obj]} and \texttt{V + [case + amod + obl]} in Bulgarian,  \texttt{V + [nummod + obj]} in both languages, where the word order variations arise from the structural differences in the two languages, i.e., in Romanian modifiers usually follow the nominal head, whereas in Bulgarian they precede it.\footnote{Where such syntactic patterns are presented, we stick to a uniform way of encoding them, e.g., \texttt{V + [obj + amod]}, disregarding the differences between the two languages.}
+
+We did include several parallel patterns. They are given a somewhat different analysis -- i.e., we construe the possessive clitic in their structure as \texttt{expl:poss} in Romanian and as \texttt{det} in Bulgarian. But, in fact, they correspond to each other and translate in the same way. Such an example is illustrated by the pattern \texttt{V + expl:poss/det + obj}. Leaving the linguistic discussion aside, we treat them as equivalent, thus aiming at pointing out the essential commonalities instead of the less important differences.
+
+%stands for the neutral word order of the BG: \texttt{V + [amod + obj]} and the RO: \texttt{V + [obj + amod]}, respectively.  %or we can mark them explicitly. others... what about case?...   
+
+\begin{table}
+\begin{tabularx}{\textwidth}{>{\hsize=.65\hsize}X >{\hsize=1.3\hsize}X >{\hsize=1.05\hsize}X}%p{3cm}p{4.2cm}p{4.2cm}}
+\lsptoprule
+ {Syntactic \newline pattern}  & {Romanian example}  & {Bulgarian example}  \\ \midrule
+\texttt{V+obj} 
+&  \ile{avea grijă} \newline lit. `have care' 
+\newline `take care' 
+& \ile{imam grizha} \newline lit. `have care' 
+\newline `take care'
+\\ \midrule
+\texttt{V+ \newline [case+obl]}
+&  \ile{citi printre rânduri} \newline lit. `read among lines' 
+\newline `read between the lines' 
+& \ile{cheta mezhdu redovete} \newline lit. `read between the lines' 
+\newline `read between the lines'
+%& \textit{read between the lines} 
+\\ \midrule
+% V + xcomp 
+% & \textit{{face egal}} \newline `do equal' \newline `draw, tie'
+% & \textit{{pravya raven}} \newline `make equal' \newline `draw, tie' 
+% %& \textit{draw, tie}%look for another one
+%\\ 
+\texttt{V+ \newline expl:poss/det +obj}
+& \ile{își ține gura}  \newline lit. `keep one's mouth'
+\newline `shut one's mouth'
+& \ile{zatvaryam si ustata}  \newline lit. `close one's mouth' 
+\newline `shut one's mouth'
+%& \textit{shut one's mouth} 
+\\ \midrule
+% V + advmod 
+% & \textit{{bate măr}}  \newline `beat apple' \newline `clobber'
+% & \textit{{vzemam prisartse}}  %\newline `take to heart' 
+% \newline `take to heart'*
+%& RO: \textit{clobber}; BG: \textit{take to heart} 
+\texttt{V+obj+ \newline [case+obl]}
+& \ile{arunca praf în ochi}  %\newline `throw dust in eyes' %\newline \textit{{pull the wool over s.o.'s eyes}} 
+\newline lit. `throw dust in eyes' \newline `throw dust in the eyes'
+& \ile{hvarlyam prah v ochite}  %\newline `throw dust in the eyes' \newline \textit{{pull the wool over s.o.'s eyes*}}
+\newline lit. `throw dust in eyes' \newline `throw dust in the eyes'
+%& \textit{pull the wool over someone's eyes} 
+\\  \midrule
+% V + [nummod + obj] 
+% & \textit{{da doi bani}}  \newline `give two cents' \newline `give a hang'*
+% & \textit{{davam pet pari}}  \newline `give five cents' \newline `give a hang'*
+%& \textit{give a hang} 
+%\\ 
+% V + \newline [case + case + obl] 
+% & \textit{{învăța pe de rost}}  \newline `learn on by mouth' \newline `learn by heart'
+% & \textit{{vali kato iz vedro}}  \newline `rains as if out of a bucket' \newline `rain buckets'*
+%& RO: \textit'learn by heart'; BG: \textit{rain buckets} 
+%\\ 
+\texttt{V+ \newline expl:poss/det \newline + [case+obl]}
+& \ile{își ieși din fire} \newline lit. `escape from one's temper' \newline `flip one's lid'
+& \ile{plyuya si na petite} \newline lit. `spit on one's heels' \newline `head for the hills'
+%& RO: \textit{flip one's lid}; BG: \textit{head for the hills}
+%\\ 
+% V + [obj + amod] 
+% & \textit{{da frâu liber}} \newline `give rein free' \newline `unleash'
+% & \textit{{davam puknata para}}  \newline `give a cracked coin' \newline `give a hang'*
+% %& RO: \textit{unleash}, 'give a free rein'; BG: \textit{give a hang} 
+% \\ 
+% V + \newline [case + obl + amod] 
+% & \textit{{pune pe lista neagră}} \newline `put on list.DEF black' \newline `blacklist'
+% & \textit{{vkarvam v cheren spisak}}  \newline `include in a black list' \newline `blacklist'
+%& \textit{blacklist}, 'put in a black list'%I put 'put in a black list', as it has similar structure; again BG amod precedes the head 
+\\  \midrule
+\texttt{V+ \newline expl:poss/det\newline+obj+advmod}
+& \ile{își lua cuvintele înapoi}  
+%\newline one's take words.DEF back' 
+\newline lit. `take back one's words'
+\newline `take back one's words'
+& \ile{vzemam si dumite nazad}
+%\newline `take one's words back' 
+\newline lit. `take back one's words'
+\newline `take back one's words'
+\\ \midrule
+\texttt{V+nsubj+ \newline [case+advmod]}
+& \ile{lua gura pe dinainte} \newline lit. `the mouth takes on ahead' \newline `let the cat out of the bag'
+& --
+\\ \midrule
+\texttt{V+advmod+\newline det+nsubj}
+& --%\textit{{lua gura pe dinainte}} \newline ... \newline \textit{{spill the beans*}} 
+& \ile{mnogo mi znae ustata} \newline lit. `my mouth knows a lot'
+\newline `have a big mouth' 
+\\
+%{cop + \newline [case + det + \newline nummod + \newline ROOT]*}%decide whether to leeave them as it is now, there is no det in bg.
+%& \textit{fi în al nouălea cer}  \newline `be in ninth sky' \newline \textit{be on cloud nine}
+%& \textit{съм на седмото небе}  \newline `be on the seventh sky' \newline \textit{be on cloud nine}
+%& \textit{be on cloud nine} 
+% \\ \midrule 
+% {cop + case + ROOT}
+% & \textit{fi cu ochii}  \newline `be with eyes-the' \newline \textit{keep an eye on}
+% & \textit{съм в течение}  \newline `be in current' \newline \textit{keep abreast}
+%& RO: \textit{keep an eye on}; BG: \textit{keep abreast} 
+%\\ \midrule
+ %\end{tabular}
+ \lspbottomrule
+\end{tabularx}
+\caption{Frequent syntactic structures within VMWEs in Bulgarian and Romanian. %(*We skip the literal translations where the Romanian or Bulgarian VMWEs are word-for-word correspondences of the English expression.) %(literal translation is provided only when it differs from the English equivalent)% (with * we label translations in English which are VMWEs and appear in the corresponding WordNet synset)
+} 
+\label{tab:synt-struct}
+\end{table}
+
+
+
+% \begin{table}%just a sample table
+% \begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+% \hline
+%  X & x & x \\ \hline
+%  \multicolumn{3}{|c|}{\textbf{V + obj}} % align: l,c,r
+% \\ \hline
+%  nsubj чета obj между редовете
+% & nsubj citi obj printre rânduri
+% & nsubj read obj  between the lines \\ \hline
+
+% \end{tabular}
+% \caption{}
+% \end{table}
+
+When correlating the PARSEME VMWEs types with their valence frames we notice the following. 
+%While the Romanian VMWEs in our resource are mostly VIDs, there are also some cases of LVCs. 
+According to PARSEME guidelines, a characteristic of LVCs is the fact that they are made up of a verb and a noun, the latter determining the semantics of the expression. 
+%is defined as a subtype of compound (\texttt{compound: lvc}), whose semantics is determined by the non-head word, often a noun or an adjective (https://universaldependencies.org/u/dep/compound-lvc.html). 
+%In Romanian 
+In Romanian and Bulgarian most expressions of the type LVC.full have the internal structure \texttt{V + obj}, consider the chess term (ro) \ile{{da șah}} and its counterpart (bg) \ile{{davam shah}}, both literally meaning `give check' and translated as `place into check', or \texttt{V + [case + obl]} -- (ro) \ile{{lua în serios}} (lit. `take in serious') {`treat seriously'} and (bg) \ile{{stigam do sporazumenie}} (lit. `reach to an agreement') {`come to an agreement'}. %\textit{\textbf{stigam do sporazumenie}} (lit. `reach to an agreement') `come to an agreement'. %and \textit{prinde formă} (catch shape ‘take shape‘). 
+The instances of Romanian LVC.cause display two types of internal structures, i.e., \texttt{V + xcomp} and \texttt{V + [case + obl]}. The same structures are also found in Bulgarian, compare (ro) \ile{{face public}} {`make public'}
+%Ro: \textit{\textbf{face public}} (`make public') 
+and (bg) \ile{{pravya raven}} {`make equal'}, 
+% Bg: \textit{\textbf{pravya raven}} `make equal', 
+as well as (ro) \ile{{pune în circulație}}
+%\textit{\textbf{pune în circulație}} 
+and (bg) \ile{{puskam v obrashtenie}}
+%Bg:\textit{\textbf{puskam v obrashtenie}} 
+{`put into circulation'}. In Bulgarian we also attested LVC.cause with the structure \texttt{V + obj}, e.g., (bg) \ile{{pravya} {upoyka}} (lit. `administer anesthesia') {`put under, anesthesise'}.
+%\textit{\textbf{pravya upoyka}} (lit. `administer anesthesia') `put under, anesthesize'.
+ 
+
+The internal structure of VIDs is more diverse, though, given that they can even be/contain clauses: e.g., (ro) \ile{{bate} {fierul cât e cald}} {`strike the iron while it is hot'}. 
+%\textbf{bate fierul cât e cald} `strike the iron while it is hot'. 
+The syntactic structures attested in the data are based primarily on a verb-complement or verb-modifier pattern, while the subject and another complement or modifier are part of the VMWE's valence frame. This fact is reflected in Table \ref{tab:synt-struct}, %do not contain a subject 
+which shows that only a few examples including a subject are found in the data, cf. the last two rows -- (ro) \ile{{lua gura pe dinainte}} and (bg) \ile{{mnogo mi znae ustata}}, 
+%RO \textit{lua gura pe dinainte} %`take mouth on ahead' ``let the cat out of the bag'', 
+%and BG \textit{\textbf{mnogo mi znae ustata}}. 
+where the nouns \textit{gura} and \textit{ustata}, respectively, are the subject of the verb.\footnote{The empty cells show that the pattern is not attested in the data, though may well be possible in the language.} 
+
+Besides the patterns in Table \ref{tab:synt-struct}, the data also contains a number of structures that are less represented in the bilingual lexicon due to its size. In fact, many of them are variations of the ones described in the table, e.g., \texttt{V + [case + advmod]}  (bg) \ile{{izlizam na otkrito}} (lit. `come out in open') {`come to light'} 
+%BG \texttt{V + [case + advmod]} \textit{\textbf{izlizam na otkrito}}, lit. `come out in open' (\textit{\textbf{come to light}}) 
+is a variant of \texttt{V + advmod}; the patterns involving an expletive reflexive (expl:pv), such as \texttt{V + expl:pv + [case + obl]} (bg) \ile{{makna se po petite}} (lit. `drag oneself on someone's heels') {`tag along'}, 
+%\textit{\textbf{makna se po petite}}, lit. `drag oneself on someone's heels' (\textit{\textbf{tag along}}), 
+are variations of the respective models based on the pattern \texttt{V + obj}, as the expletive blocks the direct object (reflexive verbs are intransitive). %By the same token several patterns in Romanian which contain an expletive, such as \texttt{V + expl + [case + obl]}, may be considered as variants of the respective pattern with an object, the expletive being an accusative clitic, as in Ro:  \textit{\textbf{o lua la goană}}, lit. `ClAccFemSg take at rush' (\textit{\textbf{break away}}).
+
+\subsubsection{Morphosyntactic description}
+\largerpage
+%A description representing the forms of the head and of the dependent components of the VWME separately (each identified by a number showing its position in the VMWE): each component is identified as unrestricted (full paradigm, not specifically marked), restricted, unchangeable. In the latter case, the morphological category and its value are listed.
+
+The morphosyntactic description deals with the morphological properties of the head and the dependent components of the VMWEs and the ways in which each of the components varies morphologically as part of the expression. The way morphological variation is treated depends on the extent of variation, the way the MWE lemma is defined, etc. (see \sectref{sec:SOTA}). Regarding its variability, each component may be unrestricted (i.e., the MWE component displays the full simple word paradigm), restricted (the MWE component’s forms vary grammatically, but it is restricted with respect to one or more grammatical categories) or fixed (the MWE component does not vary morphologically). 
+
+We adopt the practice that lack of any morphosyntactic restrictions is the default value for each component and hence not marked, whereas restrictions or invariability are explicitly defined in the respective field of the MWE entry. For instance, in the following equivalent examples -- (ro) \ile{{pune pe fugă}} (lit. `put on run'), (bg) \ile{{obrashtam v byagstvo}} (lit. `turn into flight') {`rout out, oust, cause to flee'} -- the MWEs consist of a verbal head and an oblique expressed by a noun introduced by a preposition (\texttt{V + [case + obl]}). The verb may be found in any form and is thus unrestricted, prepositions in both languages are invariable, while the noun is only found in its singular indefinite form. 
+
+In the analysed data, most often the verbal head's paradigm is unrestricted, with just a few exceptions, e.g., (ro) \ile{{lua gura pe dinainte}} (lit. `the mouth takes on ahead') {`let the cat out of the bag'}. Examples of such exceptions are the cases where: (i) the nominal subject is part of the MWE and therefore the verbal head agrees with it; or (ii) the subject's referent cannot be a participant in the communication; or (iii) the verb is otherwise restricted as in weather expressions, where it can only be in the third person singular, e.g., (ro) \ile{{ploua cu găleata}} (lit. `rains with bucket') and (bg) \ile{{vali kato iz vedro}} (lit. `rains as if out of a bucket') {`rain buckets'}.\largerpage
+%Ro: \textit{\textbf{ploua cu găleata}} `rain with bucket-the' and Bg \textit{\textbf{vali kato iz vedro}} `rain buckets'. 
+
+We note that the most frequent restriction found in both languages is the singular indefinite form of the nominal dependent, followed by the singular definite form, etc. (Table \ref{tab:morphosynt-restr}). These restrictions are found across the most well-represented syntactic patterns -- \texttt{V + obj} and \texttt{V + [case + obl]} as well as in more complex variations of these structures, e.g.,  \texttt{V + [case + amod + obl]}. -- (bg) \ile{{dokarvam do proseshka toyaga}} (lit. `bring to a beggar's stick') %, (ro) \ile{{aduce în sapă de lemn}} (lit. `bring into hoe of wood')
+{`beggar, pauperise'}. 
+%\textit{\textbf{dokarvam do proseshka toyaga}} (lit. `bring to a beggar's stick') , 
+%Ro: \texttt{V + [case + obl + [case + nmod]]} -- \textit{\textbf{aduce în sapă de lemn}} (lit. `bring into hoe of wood'), both meaning \textit{beggar, pauperize}. 
+Another frequent variant in patterns with definite nominal dependents features an expletive possessive \texttt{V + expl:poss + obj} -- (ro) \ile{{își rupe spatele}} {`break one's back'} or reflexive possessive clitic \texttt{V + det + obj} -- (bg) \ile{{iztarvavam si nervite}} (lit. `drop one's nerves') {`lose one's temper'}. 
+%Ro: \textit{\textbf{-și rupe spatele}} (\textit{\textbf{break one's back}}), Bg \textit{\textbf{prosya si belyata}} (\textit{\textbf{ask for trouble}}). 
+In both languages the possessive clitic occurs only with definite nouns or noun phrases.
+
+
+
+
+
+\begin{table}
+\begin{tabularx}{\textwidth}{QQQ}
+\lsptoprule
+%{|p{2.8cm}|p{3.7cm}|p{4.5cm}|}% these are not all structures but the ones that were easy to align and find examples; some of the structures are to be revised after we discuss them, and some differences in the order of notations that are not essential should be discussed and possibly omitted.
+%\begin{tabular}
+ {Restrictions}  & {Romanian example}  & {Bulgarian example}  \\ \midrule
+Number = sg \newline Def = indf \newline \texttt{V + obj}
+&  \textit{lua parte}\newline `take part' & \textit{vzemam uchastie} \newline `take part' \\ 
+\addlinespace
+Number = sg \newline Def = indf \newline \texttt{V + [case + obl]}
+&  \textit{pune pe fugă}\newline lit. `put on running' \newline `oust, cause to flee' & \textit{obrashtam v byagstvo} \newline lit. `turn into flight' \newline `oust, cause to flee' \\ 
+\addlinespace
+Number = sg \newline Def = def \newline \texttt{V + obj}
+&  \textit{atrage atenția} \newline lit. `attract attention' \newline `call attention' 
+& \textit{nasochvam vnimanieto} \newline lit. `direct attention' \newline `call attention' \\ 
+\addlinespace
+Number = sg \newline Def = def \newline \texttt{V + [case + obl]}
+&  \textit{sta la baza} \newline lit. `stand in the base' \newline `underlie' 
+& \textit{lezha v osnovata} \newline lit. `lie in the base' \newline `underlie' \\ 
+\addlinespace
+%Number = pl \newline Def = indef
+%& \textit{\textit{da doi bani}}\newline lit. `give two bans???'\newline \textit{\textit{give a hang}}*
+%& \textit{\textit{davam pet pari}} \newline  lit. `give five coins'\newline \textit{\textit{give a hang}}* \\
+%\addlinespace
+Number = sg  \newline \texttt{V + obj}
+& \textit{avea încredere}\newline lit. `have trust' \newline `trust'
+& \textit{imam vyara}\newline lit. `have faith' \newline `trust' \\
+\addlinespace
+Number = pl \newline Def = def \newline \texttt{V + obj}
+& \textit{închide ochii}\newline lit. `close eyes' \newline `turn a blind eye' 
+& \textit{darpam kontsite}%zatvaryam si ochite}} 
+\newline `pull strings' \\
+\addlinespace
+Number = pl \newline Def = def \newline \texttt{V + [case + obl]}
+& \textit{fi cu ochii} \newline lit. `be with eyes' \newline `keep an eye on' %\textit{\textit{închide ochii}}\newline lit. `..' \newline \textit{\textit{turn a blind eye}}* 
+& \textit{hodya po nervite}%zatvaryam si ochite}} 
+\newline  lit. `walk on the nerves'\newline `madden' \\
+\addlinespace
+Unrestricted \newline \texttt{V + obj}
+& --  
+& \textit{iznasyam lektsia} \newline  lit. `present a lecture'\newline `lecture' \\
+\addlinespace
+Unrestricted \newline \texttt{V + advmod}
+& --  
+& \textit{vzemam prisartse} \newline `take to heart' \\
+\addlinespace
+%Possessive clitic with definite noun
+Def = def \newline \texttt{V+ \newline expl:poss/det+obj} & \textit{își rupe spatele} \newline `break one's back'  & \textit{prosya si belyata} \newline lit. `beg for my own trouble' \newline  `ask for trouble' \\
+%Degree \newline  \texttt{V + (case) advmod}
+%& %\textit{\textit{muri de foame}}\newline lit. `die of hunger' \newline \textit{\textit{starve}}* 
+%& \textit{\textit{vzemam prisartse}} \newline  \textit{take to heart}* \\
+%\addlinespace
+
+%Number = pl
+%& \textit{\textit{spăla bani}}\newline lit. `launder money' \newline \textit{launder}*
+%& \textit{\textbf{pera pari}} \newline  lit. `launder money' \newline \textit{launder}* \\
+%\addlinespace
+%Def = indef 
+%& \textit{\textbf{...}}\newline \textit{\textbf{shut one's mouth}}*
+%& \textit{\textbf{stavam svidetel}}\newline  lit. `become witness' \newline \textit{witness}* \\
+%\\ \addlinespace
+%Def = def 
+%& \textit{\textbf{-și ține gura}}\newline \textit{\textbf{shut one's mouth}}*
+%& \textit{\textbf{zatvaryam si ustata}}\newline \textit{\textbf{shut one's mouth}}* \\
+\lspbottomrule
+\end{tabularx}
+\caption{The most frequent morphosyntactic restrictions on dependents found with VMWEs in Bulgarian and/or Romanian (literal translation is provided only when it differs from the English equivalent)% (with * we label translations in English which are VMWEs and appear in the corresponding WordNet synset)
+.} 
+\label{tab:morphosynt-restr} 
+\end{table}
+
+
+
+Another relatively frequent pattern, as shown in Table \ref{tab:morphosynt-restr}, is the one containing an object that is restricted to the singular (definite and indefinite) forms: see the examples (ro) \ile{{avea încredere}} {`have trust'} -- (bg) \ile{{imam vyara}} {`have faith'}. A plural object (e.g., (ro) \ile{{închide ochii}}) is more rarely found in the Romanian data as compared with the singular, although in Bulgarian the patterns with plural definite complements are quite well represented: see examples (bg) \ile{{darpam kontsite}} and (bg) \ile{{hodya po nervite}}.  
+
+In Bulgarian, unrestricted objects/modifiers are also represented to a certain extent. Examples such as (bg) \ile{{iznasyam lektsia}} and (bg) \ile{{vzemam prisartse}} show patterns with a nominal complement unrestricted for number and definiteness, or an adverbial modifier, that is unrestricted for the category of degree (comparative, superlative), which is possible for some MWEs. In Romanian, such examples could not be found in the dataset. 
+
+%Rarer (and thus not accounted for in the table) restriction combinations include invariable plural indefinite complements, e.g. Ro: \textit{\textbf{da doi bani}} (lit. `give two bans???'), Bg: \textit{\textbf{davam pet pari}} (lit. `give five coins') (\textit{\textbf{give a hang}})*; complements restricted to the plural (definite and indefinite) forms: Ro: \textit{\textbf{spăla bani}}, Bg: \textit{\textbf{pera pari}} (\textit{launder}*); complements restricted to the definite (sg and pl) form -- Ro: \textit{\textbf{-și ține gura}}, Bg: \textit{\textbf{zatvaryam si ustata}} (\textit{\textbf{shut one's mouth}}*); complements restricted to indefinite (sg and pl) forms: Bg: \textit{\textbf{stavam svidetel}}, lit. `become witness' (\textit{witness}*),...
+
+
+\subsubsection{Valence frames}\label{valence-frames} 
+Another important aspect of the syntactic description of VMWEs is represented by their valence frames, which we encode by the use of the following conventions. First, they are formulated as UD relations: for each MWE, we define the types of relations it establishes within a sentence to ensure its grammatical correctness. For example, the MWE \ile{{kick the bucket}} has a valence frame containing only the subject, i.e., \texttt{nsubj}.
+
+The valence frames can contain obligatory, as well as optional relations. The difference between them is that the latter can be absent from the sentence without affecting its grammatical correctness: consider the sentence in (\ref{ro:duce-de-nas}):
+
+\ea \label{ro:duce-de-nas}
+\settowidth \jamwidth{(ro)}
+\gll Regizorul i -a \lex{dus} \lex{de} \lex{nas} pe spectatori cu un scurtmetraj. \\
+Director them has taken of nose on audience with a short-film \\ \jambox*{(ro)}
+\glt lit. `The director lead the audience by the nose with a short film.' \\
+`The director pulled the wool over the audience's eyes with a short film.' \\
+\z
+
+%\textit{Regizorul \ile{\lex{i-a} \lex{dus} \lex{de} \lex{nas}} pe spectatori cu un scurtmetraj.}, \lit{lit. `Director-the CL-has taken of nose PE audience with a short film'} (`The director pulled the wool over the audience's eyes with a short film'). 
+The subject \textit{Regizorul} and the object \textit{spectatori} are  obligatory relations, but the prepositional object \textit{cu un scurtmetraj} is optional. The optional nature of a relation is marked by means of round brackets around it; thus the valence frame for the VMWE in (\ref{ro:duce-de-nas}) is: \texttt{nsubj, obj, (case\{cu\}, obl)}.  
+
+Third, lexical restrictions on the form of prepositions or markers are rendered between curly brackets immediately after the relevant relation, \texttt{case} and \texttt{mark}, respectively: e.g., \texttt{case\{cu\}} in the frame presented for example (\ref{ro:duce-de-nas}).
+
+Fourth, alternative valences are separated by a slash. For example, if two different prepositions occur after a VMWE, they are listed as values of the respective relation in the manner described: \texttt{case\{împotriva/asupra\}}.
+
+Fifth, whenever an alternative consists of at least two elements (e.g., relations, forms, etc.), they are grouped together within square brackets: for example, (ro) \ile{{da} {drumul}} (lit. `give way') {`let go'} can take either a prepositional object with the preposition \ile{{la}} or an indirect object; this is represented as follows: \texttt{[case\{la\}, obl]/iobj}.\largerpage
+
+Table \ref{tab:valences} shows the most frequent valence frames characterising VMWEs in the Bulgarian and Romanian datasets.
+Most of the encoded valences describe personal verb constructions, thus they require a subject in the frame, unless it is part of the expression, which happens rarely, as mentioned above.
+
+\begin{table}
+\begin{tabularx}{\textwidth}{>{\hsize=.9\hsize}X >{\hsize=1.15\hsize}X >{\hsize=0.95\hsize}X}
+\lsptoprule
+Valence frame & Romanian example & Bulgarian example \\ \midrule
+\texttt{nsubj} & \textit{o lua la goană} \newline lit. `her take at rush' \newline `break away' &  \textit{hvashtam gorata} \newline lit. `take the wood' \newline `take to the woods'  \\ \hline
+\texttt{nsubj, obj} & \textit{aduce în sapă de lemn}  \newline lit. `bring in hoe of wood' \newline 
+`pauperise' &  \textit{dokarvam do prosiya} \newline lit. `bring to beggary' \newline 
+`pauperise'  \\ \hline
+\texttt{nsubj, iobj} & \textit{da frâu liber}%atrage atenția}} 
+\newline lit. `give rein free' \newline `unleash' & \textit{davam volya} \newline  lit. `give freedom' \newline `unleash' \\\hline
+%&& ``draw attention''\\\hline
+\texttt{nsubj, case, obl} & \textit{da piept} \newline lit. `give breast' \newline `confront' & \textit{varvya v krak} \newline lit. `walk in step' \newline `keep pace' \\ \hline
+\texttt{nsubj, \newline [case, obl] / \newline [mark, ccomp]} & \textit{da seamă} \newline lit. `give count' \newline `be responsible for' & \textit{namiram sili} \newline lit. `find strength' \newline `take heart'\\
+\lspbottomrule
+\end{tabularx}
+\caption{The most frequent valence frames in the two languages.} \label{tab:valences}
+\end{table}
+
+
+When correlating the PARSEME VMWE types with their valence frames, we notice the following.  
+Besides the subject, the valence frames of all expressions of the type LVC.cause have an obligatory object. This is in line with the definition of this type in PARSEME, according to which the noun in the LVC.cause ``has semantic arguments expressed as non-subject elements in the sentence''.\footnote{\url{https://parsemefr.lis-lab.fr/parseme-st-guidelines/1.2/?page=050_Cross-lingual_tests/020_Light-verb_constructions__LB_LVC_RB_}} E.g., (ro) \ile{{pune în circulație}} (lit. `put in circulation') {`issue'}
+%\textit{pune în circulație} `put in circulation' ``issue'' 
+has the internal structure \texttt{V + [case + obl]} and the valence frame \texttt{nsubj, obj}, where the \texttt{obl} has the \texttt{obj} as a semantic argument -- see the example: \ile{Banca \lex{pune} banii \lex{în} \lex{circulație}} (lit. `Bank puts money in circulation') {`The bank issues money'}, 
+%\textit{Banca pune banii în circulație.} `Bank-the puts money-the in circulation' ``The bank issues money.'', 
+in which \textit{money} is the semantic argument of \textit{circulație}.
+
+The valence frames of VMWEs of the types LVC.full and VID may contain only the subject or the subject and a nominal (\texttt{obj}, \texttt{iobj} or \texttt{obl}) or a clause: here are some examples: 
+(a) VID (ro) \ile{{prinde} {inimă}} (lit. `catch heart') {`cheer up'} 
+%\textit{prinde inimă} `catch heart' ``cheer up'' 
+takes only a subject: \ile{Copilul a \lex{prins} \lex{inimă}} {`The child cheered up'}; 
+%\textit{Copilul a prins inimă.} ``The child cheered up.''; 
+(b) VID (ro) \ile{{purta} {sâmbetele}} (lit. `bear Saturdays') {`bear ill will'} 
+%\textit{purta sâmbetele} `bear Saturdays' ``bear (someone) ill will'' 
+takes a subject and an indirect object: \ile{Bărbatul îi \lex{purta} \lex{sâmbetele} soacrei sale} {`The man was bearing his mother-in-law ill will'}; 
+%\textit{Bărbatul îi purta sâmbetele socrei sale.} ``The man was bearing his mother-in-law ill will.''; 
+(c) VID (ro) \ile{{cădea} {de} {acord}} (lit. `fall of agreement') {`reach agreement'} 
+%\textit{cădea de acord} `fall of agreement' ``reach agreement'' 
+takes a subject, an oblique indicating the person with whom agreement is achieved, and a subordinate clause or a prepositional phrase indicating the matter which was the subject of discussion: \ile{Avocatul a \lex{căzut} \lex{de} \lex{acord} cu clientul [asupra onorariului]/[cât să îl plătească]} {`The lawyer has reached agreement with his client [on the fee]/[how much to pay him'}; 
+%\textit{Avocatul a căzut de acord cu clientul [asupra onorariului]/[cât să îl plătească].} ``The lawyer has reached agreement with his client [on the fee]/[how much to pay him for the trial].''; 
+(d) LVC.full (ro) \ile{{avea} {încredere}} (lit. `have trust') {`trust'} 
+%\textit{avea încredere} `have trust' ``trust'' 
+takes a subject, an oblique denoting the person who the subject trusts, and a subordinate clause indicating with respect to what the subject trusts the other person: \ile{Bărbatul \lex{are} \lex{încredere} în avocat că va câștiga procesul} {`The man trusts the lawyer that he will win the trial'}.
+%\textit{Bărbatul are încredere în avocat că va câștiga procesul.} `Man-the has trust in lawyer that will win trial-the' ``The man trusts the lawyer will win the trial.''
+
+In addition to these, both languages display valence patterns where one of the elements is an obligatory \texttt{nmod} or complement that usually enters the relation \texttt{obj} or \texttt{obl} with the verb, e.g., (ro) \ile{{sta la baza}} (lit. `stand at the base') and (bg) \ile{{lezha v osnovata}} (lit. `lie in the base') where the obliques (ro) \ile{{baza}} and (bg) \ile{{osnovata}} need a nominal modifier to form a grammatical sentence. These may also be possessive phrases, e.g., (bg) \ile{{hodya po nervite}} + \texttt{nmod}: \textit{na nyakogo} (lit. `walk on the nerves  + \texttt{nmod}: of someone') `madden'.   
+
+
+Empty valence frames are also possible where the VMWEs are headed by impersonal verbs and they do not have obligatory complements or modifiers. In Romanian, this is the case of weather expressions, %which have, just like weather verbs 
+such as (ro) \ile{{plouă cu găleata}} (lit. `rains with bucket') {`it is raining cats and dogs'}. The corresponding Bulgarian expression (bg) \ile{{vali kato iz vedro}}, with the same meaning, may be headed by an impersonal or by a personal verb and thus takes alternatively either an empty or an \texttt{nsubj} frame.
+
+
+\subsubsection{Word order variation}
+
+Both languages are characterised by a relatively free word order. The manual analysis of the VMWEs and the validation of this linguistic introspection using large corpora %as well as the internet 
+show that most VMWEs are no exception to this general rule. Here is an example of a LVC.full in Romanian (\ref{ro:wordorder}) and in Bulgarian (\ref{bg:wordorder}) showing this free word order:
+
+\begin{exe}
+ \ex \label{ro:wordorder}
+\begin{xlist}
+    \ex 
+    \settowidth \jamwidth{(ro)}
+    \gll \lex{Luăm} \lex{parte} la concert.  \\ 
+   Take part at concert\\ \jambox*{(ro)}
+     `We take part in the concert.'
+    \ex 
+    \settowidth \jamwidth{(ro)}
+    \gll \lex{Parte} \lex{luăm} la concert. \\ 
+    Part take at concert\\ \jambox*{(ro)}
+     `We take part in the concert.'
+\end{xlist}
+
+\ex \label{bg:wordorder}
+\begin{xlist}
+    \ex 
+    \settowidth \jamwidth{(bg)}
+    \glll В концерта \lex{взеха} \lex{участие} известни изпълнители. \\ 
+     V kontserta \lex{vzeha} \lex{uchastie} izvestni izpalniteli. \\ 
+   In concert-DEF took part famous performers.\\ \jambox*{(bg)}
+   \glt  `Famous performers took part in the concert.'
+
+    \ex 
+    \settowidth \jamwidth{(bg)}
+    \glll В концерта \lex{участие} \lex{взеха} известни изпълнители. \\ 
+    V kontserta \lex{uchastie} \lex{vzeha} izvestni izpalniteli. \\ 
+    In concert-DEF part took famous performers.\\ \jambox*{(bg)}
+    \glt `Famous performers took part in the concert.'
+\end{xlist}
+\end{exe}
+
+% Ro LVC.cause: \textit{Banca \textbf{pune în circulație} doar bancnote noi.}  \textit{\textbf{În circulație pune} banca doar bancnote noi.} ``The bank issues only new notes.''
+
+% Ro LVC.full: \textit{\textbf{Luăm parte} la concert.} \textit{\textbf{Parte luăm} la concert.} ``We take part into the concert.''
+
+% Ro VID: \textit{\textbf{Păstrăm tăcere} în clasă.} \textit{\textbf{Tăcere păstrăm} în clasă.} ``We keep quiet in the class.''
+
+However, when (some) constraints exist with respect to the word order of components or only of some of them, they are clearly marked in the entry of the respective VMWE. Such examples include: 
+(ro) \ile{{arunca praf în ochi}} (lit. `throw dust in eyes') {`pull the wool over one's eyes'}, in which the noun phrase (\textit{praf}) and the prepositional phrase (\textit{în ochi}) always occur in this order, and the verb can be moved after them, thus resulting in an emphatic construction. A relevant example is (bg) \ile{{mnogo mi znae ustata}} (\glo{much my %-CLITIC 
+ knows mouth-DEF}, lit. `my mouth knows a lot') {`have a big mouth'}. The normal word order of the MWE is an emphatic one with the \texttt{advmod} first and the \texttt{nsubj} last instead of the neutral sentential order \texttt{nsubj + det + V + advmod}. Although even in this case different word order variants are possible, some of them such as the ones where the \texttt{advmod} follows the \texttt{V} or the \texttt{V} follows the \texttt{nsubj} are very rare and we mark them as such.  
+
+\subsubsection{Intervening elements} 
+Another syntactic characteristic of VMWEs in the two languages is the possibility for (sequences of) words that do not belong to the expression %(but not words that are part of their valence frames) 
+to occur between its components. This is a consequence of the relatively free word order characterising Bulgarian and Romanian. Such an example is:
+(ro) \ile{\lex{Învăț} adesea, cu drag, o poezie \lex{pe de rost}} ({lit. `Learn often, with pleasure, a poem by heart'}).
+%\textbf{Învăț} adesea, cu drag, o poezie \textbf{pe de rost}. 
+A few words occur within the VID \ile{{învăța pe de rost}} {`learn by heart'}: a frequency adverb (\textit{adesea} `often'), a manner prepositional phrase (\textit{cu drag} `with pleasure') and the direct object (\textit{o poezie} `a poem'). The first two are not part of the valence frame, whereas the last one is. We take the stance that by default the VWMEs obey the general rules of the language in question so that peculiarities resulting from the free word order need not be marked in any way.
+
+However, there are also cases in which the possibility for intervening elements is blocked. %and this is clearly marked in the dictionary. 
+Such an example is: compare (ro) \ile{Stă cu mâinile adesea în sân} %{lit. `Stays with hands often in breast'} 
+`She often stays with her arms crossed' with \ile{\lex{Stă} adesea \lex{cu mâinile în sân}} %{lit. `Stays often with hands in breast'} 
+`She often stays doing nothing'. The former example shows that it is not possible to insert the frequency adverb \textit{adesea} `often' between the two prepositional phrases of the VID and keep the non-compositional meaning (hence, the status of VID), whereas the latter shows that this insertion is possible between the verb and the first prepositional phrase. 
+
+For Bulgarian, we note that in some cases external elements may be blocked between a dependent's modifier and its head, when both are part of the idiom (\texttt{V + [case + amod + obj]}), e.g. (bg) \ile{{stoya sas skrasteni ratse}} (lit. `sit with crossed arms') {`sit back, sit by'}. In this case, the occurrence of such element signals that the phrase has a literal reading, as in (bg) \ile{Toy \textbf{stoeshe sas skrasteni} otpred \textbf{ratse}} %(lit. `He stood with crossed in front of his body arms') 
+`He stood with his arms crossed in front of his body'.
+
+There are also cases where parts of the VMWE are themselves idiomatic and thus do not allow intervening elements. Consider the example (bg) \ile{{varvya v krak}} {`keep in step'} whose dependent \ile{{v} {krak}} {`in step'} functions as an idiomatic expression outside the VID, and therefore the noun cannot be modified. 
+
+Wherever we establish restrictions on the occurrence of intervening elements between the components of a VMWE, the lexicon entry clearly states the components between which such an insertion is blocked.
+
+Theoretically, the intervening elements may belong to a particular part of speech, may be forms of a particular lexeme or lexemes, etc. At the current stage of the development of the MWE lexicon, we prefer to collect evidence of various types of idiosyncrasies whose tackling may be dealt with at present, or may be deferred to a later moment. One of the focuses of this part of our work are the cases that diverge from the regular syntactic and linearisation rules of the language under study. Currently, this description involves the specification of POS tags that are disallowed. In the above case, the VID (bg) \ile{{varvya v krak}} {`keep in step'} does not allow the modification of the noun, although the rules of Bulgarian license the adjectival modification of nominals in prepositional phrases. %This observation, however, cannot be extended to all VIDs with the structure \texttt{verb} + \texttt{adp} + \texttt{noun}, as there are counterexamples, compare with (bg) \ile{{darzha pod kontrol}} {`keep under control'} -- \ile{{darzha pod palen}  \lex{kontrol}} {`keep under total control'}.
+
+%how is this technically implemented 
+
+%Here we mean elements that are external to the VMWE (not adjuncts of the VMWE components), but which may come between its components: BG: outside advmod-s, the question particle, forms of the auxiliary to be where the head verb is a complex verb form, the dative and the accusative clitic, other parts of the sentence (incl. the subject). These are predefined general constraints (noted as General); where specific constraints exist, those are described additionally.
+
+
+%\subsubsection{Syntactic transformations}
+
+%Syntactic transformation have not been tackled yet in our resource for a couple of reasons. Firstly, the observation that many VMWEs show the regular syntactic behavior of free phrases, to a great extent holds for transformations, which  include a broad span of phenomena, most often: passivisation, various semantic-syntactic transformations (diatheses), long-distance dependencies, such as relativisation, wh-question formation, topicalisations, etc. For this reason, we have decided, during the next stage of our work, to start marking the cases where a certain transformation is impossible and proceed to describe the conditions for blocking. 
+
+%This will be implemented in a manner similar to the encoding of morphosyntactic restrictions, i.e. by defining a relevant field `Syntactic transformations' and listing the restrictions using a predefined list of the names of the transformations as values. This will enable us to group the restrictions and to establish subclasses of VMWEs within the PARSEME types -- mainly LVCs and VIDs -- according to the transformation they allow/disallow.
+
+%Secondly, these introspective decisions need to be checked against corpus data in order to confirm empirically whether a syntactic transformation involving the components of a VMWE is possible or not. In addition, the components of the MWEs in the corpora examples will be annotated, thus associating elements of the internal syntactic structure of a VMWE's valence frame (\sectref{valence-frames}) with elements of the syntactic structure of a sentence.
+
+%\textbf{I understand that flexibility in terms of syntactic transformation is not yet considered, but one could at least speculate how this can be included in the current architecture of the electronic lexicon. Is it possible at all?}
+
+
+
+\subsection{Semantic description} 
+
+The lexicon design proposed in this chapter falls in line with the trend of describing MWEs in %fully functional dictionaries
+dedicated lexicons that provide various types of linguistic information referring to the MWE and its components and may be employed in MWE recognition related tasks. Due to the fact that BulNet and RoWN are aligned to each other, to WordNet and to any other wordnet mapped to it (see \sectref{sec:wordnets}), we  make use of the rich semantic description provided in the WordNet, added from additional resources or supplied manually by the teams developing BulNet and RoWN. The use of WordNet further supports the multilingual dimension of the described resource through the possibility of directly deriving the relevant semantic description available for other languages. 
+
+The main components of the semantic description incorporated herein are: a definition (called gloss), a set of semantic relations to other WordNet concepts, usage examples, stylistic and connotation information. 
+
+\subsubsection{Lexicographic definition}
+
+The lexicographic description of MWEs in the form of definitions was employed by various authors of MWE resources, including close non-MWE paraphrases (cf. \sectref{sec:SOTA}). The use of definitions aims not only at documenting the meaning of a MWE, but also at distinguishing the particular sense from other senses of the same MWE lemma, thus accounting for polysemy. %\citep{markantonatou-etal-2019-idion,markantonatou-etal-in-prep}. %\citet{ECD} offers a different treatment of different types of MWEs in this respect: idioms and quasi-idioms are encoded as separate entries with their own explanatory definition, while the meaning of LVCs is compositionally interpreted from the semantics of the components.
+
+The lexicographic definition adopted in WordNet and in the lexicon describes concepts regardless of the structure of the units that lexicalise them (single words or MWEs). Thus each MWE shares a definition with the remaining synonyms in the relevant synset in both languages, with the WordNet gloss serving as an intermediary.
+
+\subsubsection{Stylistic and/or register information}\label{stylistic}
+
+%Encoding information regarding style and/or register is especially useful at the literal level as often lexemes denoting the same concept, and thus belonging to the same synset, may belong to different registers. 
+The inventories for encoding stylistic/register information in MWE resources are usually subsets of those adopted in standard dictionaries (\sectref{sec:stylistic}). 
+%For instance, \citet{fellbaum2005} reports a non-exhaustive inventory of marking the idioms, including "ironic", "disparaging", "humorous", etc. \citet{markantonatou-etal-2019-idion, markantonatou-etal-in-prep} use three values: Formal, Colloquial, Offensive adopted from previous research. %adopted from (Christopouloufellbaum20052016). 
+Note that while stylistic remarks are usually assigned to an entry, which means that they characterise all the occurrences of the respective lexical unit, \citet{fellbaum2005} assign the labels to usages, thus accounting for the fact that the same idiom may have different stylistic features depending on the context.
+
+In the model adopted, we assign stylistic/register information as a permanent value attached to a MWE% lexical item (synset literal)
+, using one or more labels, established in the lexicographic practice and adopted in the BulNet for both single and MWE lexemes: ``colloquial'', ``slang'', ``literary'', ``figurative'', ``dialect'', ``obsolete'', ``pejorative''. The values were assigned to the RoWN counterparts and reviewed manually, as lexical items describing the same concept may differ stylistically. 
+%\ile{\lex{hvarlyam} \lex{prah} \lex{v} \lex{ochite}}:1 and (ro) \ile{\lex{duce} \lex{de} \lex{nas}}:2; \ile{\lex{trage} \lex{pe} \lex{sfoară}}:4; \ile{\lex{arunca} \lex{praf} \lex{în} \lex{ochi}}:1, meaning %'pull the wool over someone's eyes'
+%{`throw dust in someone's eyes'} are 
+Thus, the corresponding VIDs (bg) \ile{{davam pet pari}} (lit. `give five paras') and \ile{{davam puknata para}} (lit. `give broken para') and (ro) \ile{{da doi bani}} (lit. `give two coins')  {`give a hang'} are marked as ``colloquial'', whereas (ro) \ile{{da două parale}} (lit. `give two paras') having the same meaning but pertaining to a different register is marked as ``literary''.
+
+\subsubsection{Connotation}
+%In addition, w
+We include connotative information which is automatically assigned to BulNet and RoWN from SentiWordNet \citep{baccianella-et-al2010}. This is an open lexical resource designed for supporting sentiment classification and opinion mining applications which resulted from the automatic annotation of all the synsets in WordNet with one of three possible values: positive (between $0.00$ and $1.00$), negative (between $-1.00$ and $0.00$) and neutral ($0.00$). The sentiment values were assigned to BulNet and RoWN as part of previously implemented tasks.
+
+In our current work, we undertook a check of the values at the level of individual VMWEs (not the level of the synset), as different literals may have different connotation. For instance, the colloquial (bg) \ile{{hvarlyam prah v ochite}} and (ro) \ile{{arunca praf în ochi}} (`throw dust in the eyes') have negative connotation, but the synset was assigned a positive value of 0.5. We marked where the connotation value assigned from WordNet were reconsidered in our resource. % In SentiWordNet these values are assigned to synsets, I think, and for this example there are two values: +0.5 and 0 and I don't know how this is possible - was it some kind of merge when we assigned them or was it like that in SentiWordNet.
+
+\subsubsection{Semantic relations}
+
+Another trend in MWE lexicon crafting was to integrate MWEs into the lexical system of the language as individual entities, while accounting for their morphological, syntactic and semantic properties. This integration may involve the encoding of various relations to other single and MWE lexemes (\sectref{sec:SOTA}). %, including not only semantic relations such as synonyms, antonyms, hypernyms and hyponyms but also relations corresponding or akin to semantic diatheses (statives, causative-non-causative relations and other alternations).
+
+By virtue of their integration in the WordNet's structure, the VMWE in the devised lexicon are explicitly associated to their synonyms (i.e., the remaining synset members, both single words and MWEs), see Figure \ref{fig:synset-relations}. 
+Through their membership in synsets, VMWEs are also connected to other synsets in WordNet via a number of conceptual-semantic relations -- hypernymy (and its inverse hyponymy), holonymy (and its inverse meronymy), etc. -- and/or lexical relations, e.g., antonymy \citep{miller,Fellbaum1998}. 
+%Consider the example (Figure \ref{fig:synset-relations}) and the description following it.
+
+%\begin{exe}
+%\ex \label{bg-ro-en:shop}Synset relations within WordNet (Figure \ref{fig:01})
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/03/pic2.png}
+\caption{Synset relations within WordNet.} \label{fig:synset-relations}
+\end{figure}
+
+%\end{exe}
+
+%Bg: пазарувам:1; \textbf{правя покупки}:1; напазарувам:2	
+
+%Ro: \textbf{face\_piața}:1; \textbf{face\_cumpărături}:1	
+
+%En: shop:1 'do one's shopping'
+
+%\Downarrow HYPERNYM
+
+%Bg: получавам:8; получа:8; \textbf{сдобивам се}:2; \textbf{сдобия се}:2	
+
+%Ro: dobândi:4; obține:1; procura:2	
+
+%En: obtain:1 'come into the possession of'
+
+%\Downarrow HYPONYM
+
+%Bg: \textbf{ходя на пазар}:1
+
+%Ro: \textbf{face\_cumpărături}:2
+
+%En: market:2 'buy household supplies'
+
+%\Leftrightarrow ENG\_DERIVATIVE	\&\ HAS\_LOCATION
+
+%Bg: магазин:1;   
+
+%Ro: magazin:1; prăvălie:1	
+
+%En: shop:1 'a mercantile establishment for the retail sale of goods or services'
+
+%\Leftrightarrow ENG\_DERIVATIVE	\&\ HAS\_AGENT
+
+%Bg: купувач:4
+ 
+%Ro: cumpărător:4	
+
+%En: shopper:1 'someone who visits stores in search of articles to buy'
+
+%\Leftrightarrow ENG\_DERIVATIVE	\&\ HAS\_EVENT
+
+%Bg: пазаруване:1; покупки:1; пазар:3	
+
+%Ro: cumpărătură:3; târguială:2	
+
+%En: shopping:1 'searching for or buying goods or services'
+
+%\Downarrow CATEGORY\_DOMAIN	
+
+%Bg: търговия:3; търгуване:3; търговска дейност:1
+
+%Ro: comerț:2; negoț:1; negustorie:1	
+
+%En: commerce:1; commercialism:1; mercantilism:2 'transactions (sales and purchases) having the objective of supplying commodities (goods and services)'
+
+The Bulgarian and Romanian MWEs in the target synset are connected to their hypernym (also containing MWE literals in Bulgarian). 
+In addition, WordNet includes derivational relations (marked as \texttt{eng\_derivative}), part of which are assigned semantic values that denote various roles in the situation described, eventualities or properties, i.e., the so-called morphosemantic links \citep{fellbaum-et-al2009}. Derivational relations require validation as they might not be true across languages, e.g., (bg) magazin:1 and (ro) magazin:1; prăvălie:1 (`shop') are not derivationally related to the target synset. Their semantic values, however, are considered to be language-independent. In %Ex. \ref{bg-ro-en:shop}
+Figure \ref{fig:synset-relations}, such relations are: \texttt{has\_location} that connects the target synset to the location where it takes place; \texttt{has\_agent} -- pointing to the invariant agent (a person who shops); \texttt{has\_event}~-- the act of doing shopping. Another relation, \texttt{category\_domain}, describes the domain to which a synset pertains (if relevant). In this case it relates the target synset to the domain of commerce.
+
+
+\subsection{Derivational information} \label{sec:derivrel}
+
+MWEs can be bases for derivation in both Romanian and Bulgarian, but this property was not consistently accounted for in WordNet.\footnote{Note that we cannot claim that the discussed patterns are indeed resulting from a process of derivation that occurred in the language history. Rather, we mean that there are multiword formations that are semantically and structurally related to VMWEs and that those formations involve the employment of some mechanism of derivation (or even inflection) concerning one or more of the elements of the respective VMWE, as well as internal syntactic restructuring.} %However, there are plenty of examples when derivation is not possible in their case. EXAMPLE
+\citet{barbu-mititelu-leseva-2018} showed that derivation of MWEs can result into both other MWEs and one-word compounds; the authors also analysed some syntactic patterns identified in the derivation of VMWEs extracted from two lexicons of MWEs in Bulgarian and Romanian. However, the VMWEs in our lexicon display only the derivational relations between two MWEs.
+
+%In line with the trend of developing MWE lexicons as fully functional resources, 
+We also investigated the derivational potential of the VMWEs included in the lexicon.
+Our datasets do not coincide with those used by \citet{barbu-mititelu-leseva-2018}, although a certain overlap is naturally possible. However, after the manual investigation of the derivational possibilities of the VMWEs in BulNet and RoWN, we could confirm the patterns enumerated there.\footnote{The patterns presented by \citet{barbu-mititelu-leseva-2018} are described in terms of dependency grammar, but using syntactic functions such as subject, complements, adjuncts. The confirmation of those patterns was possible by converting them into the UD format.} 
+Table \ref{tab:derivs} shows the syntactic patterns involved in the VMWEs derivation, alongside examples for each language in which they are found. Derivational patterns with the same syntactic transformation, but involving different semantics, are presented as distinct patterns (e.g., \texttt{V + obj} > \texttt{N\_V-derived + case + nmod} for deriving Event or Agent). The head of the derivation is marked by boldface.
+
+The data shows a vast number of nouns designating events, which is in line with the findings by \citet{barbu-mititelu-leseva-2018}, while derivation involving a result pertaining to other semantic types is less numerous. %Even so, we give some examples to illustrate this possibility.
+The semantic labels provided in Table \ref{tab:derivs} are mostly based on the inventory analysed by \citet{barbu-mititelu-leseva-2018}.
+
+In light of the most represented syntactic patterns in the datasets, the primary bases for forming the most productive type -- event deverbal -- are VMWEs exhibiting the relations \texttt{V + obj} and \texttt{V + [case + obl]}. In addition to expressing the VMWE complement as a prepositional modifier in the resulting nominalisation, Romanian exhibits a pattern where the VMWE complement is turned into a genitive modifier, which the Bulgarian language does not allow for. 
+
+From the same syntactic patterns, but involving a different (e.g., agentive) suffix in the derivation of the deverbal noun, we obtain Agents (bg) \ile{{perach na pari}} {`brainwasher'}, Patients (ro) \ile{{muritor de foame}} {`very poor person'}, etc.    
+
+
+
+
+\begin{table}%{|p{5.8cm}|p{5.8cm}|}
+\centering
+\begin{tabularx}{\textwidth}{XX}
+\lsptoprule
+Romanian examples & Bulgarian examples\\ 
+\midrule
+\multicolumn{2} {c} {\texttt{V + case + obl} > \texttt{\textbf{N\_V-derived} + case + nmod}} {Event}\\ \midrule
+\textit{ieși la iveală} > \textit{ieșirea la iveală} \newline `exit at apparition' > `exit (N) at apparition' \newline `come to light' > `coming to light'
+& 
+%\textbf{igraya na karti} > \textbf{igrach na karti}
+%\newline `play on cards' > `player on cards'\newline   `play cards' > `card player'
+% \\ \midrule
+% \multicolumn{2} {c} {\texttt{V + case + obl} > \texttt{\textbf{N\_V-derived} + case + nmod}}\\ \midrule
+% \textbf{muri de foame} > \textbf{????} \newline `die of hunger' > `an act of dying of hunger' \newline `starve' > `starving, starvation' &
+\textit{umiram ot glad} > \textit{umirane ot glad} \newline `die of hunger' > `an act of dying of hunger' \newline `starve' > `starving, starvation' \\\midrule
+\multicolumn{2} {c} {\texttt{V + obj} > \texttt{\textbf{N\_V-derived} + case + nmod}} {Event}\\\midrule%\texttt{N\_V-derived + case + obl}}/
+\textit{spăla bani} > \textit{spălare de bani} \newline `launder money' > `laundering of money', `money laundering'
+%\textbf{ține minte} > \textbf{ținere de minte}
+% \newline `keep mind' > `keeping of mind'\newline   `remember' > `memory' 
+& \textit{pera pari} > \textit{prane na pari} \newline `launder money' > `laundering of money', `money laundering'
+\\\midrule
+% \multicolumn{2} {c} {\texttt{V + obj} > \texttt{N\_V-derived + case + obl}}/\texttt{\textbf{N\_V-derived} + case + nmod????}\\\midrule
+% \textbf{ține minte} > \textbf{ținere de minte}
+% \newline `keep mind' > `keeping in mind'\newline   `remember' > `memory' & \textbf{pera pari} > \textbf{perach na pari} \newline `launder money' > `launderer of money' \newline `launder money' > `money-launderer'
+%\\\midrule
+\multicolumn{2} {c} {\texttt{V + obj} > \texttt{\textbf{N\_V-derived} + nmod}} {Event}%/\texttt{\textbf{N\_V-derived} + case + nmod}}
+\\\midrule
+\textit{spăla creierul} > \textit{spălarea creierului}
+\newline `brainwash' > `brainwashing' & -- %\textbf{\textit{{declara război} > {declararea războiului} }}
+%& \textbf{promivam mozaka} > \textbf{promivane na mozatsi}, \textbf{promivka na mozatsi} \newline `brainwash' > `brainwashing' 
+\\\midrule
+\multicolumn{2} {c} {\texttt{V + obj} > \texttt{\textbf{N\_V-derived} + case + nmod}} {Agent}\\\midrule
+\textit{spăla creierul} > \textit{spălător de creiere} \newline `brainwash' > `brainwasher' & \textit{promivam mozaka} > \textit{promivach na mozatsi} \newline `brainwash' > `brainwasher' \\\midrule
+% \multicolumn{2} {c} {\texttt{V + case + obl} > \texttt{N\_V-derived + case + nmod}} \textbf{Patient}\\\midrule
+% \textbf{muri de foame} > \textbf{muritor de foame} \newline `die of hunger' > `one dying of hunger' \newline `starve' > `a very poor person'  &  \\\midrule
+%\multicolumn{2} {c} {\texttt{V + obj} > \texttt{N\_V-derived + case + nmod}} \textbf{Agent}\\\midrule
+%\textbf{spăla creierul} > \textbf{spălător de creiere} \newline `brainwash' > `brainwasher' & \textbf{promivam mozaka} > \textbf{promivach na mozatsi} \newline `brainwash' > `brainwasher' \\\midrule
+\multicolumn{2} {c} {\texttt{V + obj} > \texttt{\textbf{ADJ\_V-derived} + \textbf{N$_\text{obj}$}}} {Result}\\\midrule
+%\textbf{spăla creierul} > \textbf{spălat pe creier} \newline `brainwash' > `brainwashed' 
+\textit{trage sfori} > \textit{sfori trase} \newline `pull strings' > `pulled strings'
+& \textit{promiya mozaka} > \textit{promit mozak} \newline `brainwash' > `a brainwashed brain' %`brainwashee',  
+\\\midrule
+\multicolumn{2} {c} {\texttt{V + case + obl} > \texttt{\textbf{ADJ\_V-derived} + case + obl}} {Characteristic}%/\texttt{\textbf{A*\_V-derived} + case + nmod????}}
+\\\midrule
+\textit{muri de foame} > \textit{mort de foame} \newline `die of hunger' > `dead of hunger'\newline `starve' > `starving' \newline \textit{spăla creierul} > \textit{spălat pe creier} \newline `brainwash' > `brainwashed & \textit{umra ot glad} > \textit{umryal ot glad}  \newline `die of hunger' > `dead of hunger'\newline `starve' > `starving'  \\\midrule
+\multicolumn{2} {c} {\texttt{V + case + obl} > \texttt{\textbf{ADJ\_V-derived} + case + obl}} {Characteristic}%/\texttt{\textbf{A**\_V-derived} + case + nmod????}}
+\\\midrule
+%\textbf{muri de foame} > \textbf{mort de foame} \newline `die of hunger' > `dead of hunger'\newline `starve' > `starving' 
+\textit{scoate din minți} > \textit{scoatere din minți} \newline `take-out from minds' > `taking-out from minds' \newline `madden' > `maddenning'
+& \textit{umiram ot glad} > \textit{umirasht ot glad}  \newline `die of hunger' > `dying of hunger'\newline `starve' > `starving'  \\ 
+\lspbottomrule
+\end{tabularx}
+\caption{The most frequent syntactic patterns involved in the VMWE-to-OtherPOS-MWE derivation.} \label{tab:derivs}
+\end{table}
+
+VMWEs exhibiting the \texttt{V + obj} relation allow the formation of noun expressions (NMWEs) whose head is the object of the VMWE modified by a participial (adjective) -- a past (passive) participle, cf. the examples in Table \ref{tab:derivs}: (bg) \ile{{promiya mozaka}} > \ile{{promit mozak}} and (ro) \ile{{trage sfori}} > \ile{{sfori trase}}. The meaning is resultative and aligns with such examples in English:  (en) \ile{{close the door}} > \ile{{closed door}}, \ile{{break the heart}} > \ile{{broken heart}}. 
+
+VMWEs exhibiting both the relations \texttt{V + obj} and \texttt{V + case + obl} regularly correspond to formations headed by a participle of the head verb in the VMWE. In Bulgarian different participles take part in this process: present (active) participles, e.g. (bg) \ile{{smrazyavam kravta}} > \ile{{smrazyavasht kravta}} {`curdle the blood' > `curdling the blood', `blood-curdling'}; past active participles: (bg) \ile{{umiram ot glad}} > \ile{{umryal ot glad}} {`die of hunger' > `dead of hunger', `starved'}; past passive participles: (bg) \ile{{vlyubya se do ushi}} > \ile{{vlyuben do ushi}} {`fall in love to the ears' > `fallen in love to the ears', `be head over heels in love' > `head over heels in love'}. Some of them become established in the language and are converted to adjectives, whereas others are used in context but are not established as lexicographic units. Nevertheless, such constructions need to be described both from the perspective of generation, as they are formed on the basis of VMWEs having a certain syntactic structure and morphological properties according to certain rules, and recognition (being able to associate a relevant string of forms as related to the source VMWE).
+
+With respect to derivation, the Romanian dataset contains a large number of VMWEs which are bases for derived nominal MWEs by means of conversion applied to the supine verb of the base VMWE. For example, (ro) \ile{{da socoteală}} lit. `give payoff' `answer for' is the base for \ile{{datul socotelii}}: the derived nominal MWE is obtained from the base MWE by converting the supine of the verb \textit{da}, namely \textit{dat}, into a noun, shown here by adding the definite article \textit{-(u)l} to it. Equally often we find cases when the participle of the verb allows for the derivation of an adjectival MWE from the verbal one, also by means of conversion: e.g., (ro) \ile{{trage pe sfoară}} lit. `pull on rope' `play a trick on' is the base for \ile{{tras pe sfoară}}: the derived adjectival MWE is obtained from the base MWE by conversion of the supine of the verb \textit{trage}, namely \textit{tras}, into an adjective, which is a frequent phenomenon in Romanian.
+
+
+
+%\subsection{Language-independent and language-specific features and constraints}
+
+%Analysis of the language independent features and language specific constraints in the approach to the construction of the proposed MWE dictionary with a view to its population with instances and various types of MWEs, as well as its adaptation to other languages.
+
+%like a conclusion to the whole presentation: in spite of diffces, it is still worth organizing/presenting data in parallel
+
+%With respect to derivation, the Romanian dataset contains a large number of examples of VMWEs which are bases for derived VMWEs by means of conversion applied to the supine verb of the base VMWE. For example, \textbf{da socoteală} lit. `give payoff' `answer for' is the base for \textbf{datul socotelii}: the derived nominal MWE is obtained from the base one by converting the supine of the verb \textit{da}, namely \textit{dat}, into a noun, shown here by adding the definite article \textit{-(u)l} to it. Also often are cases when the participle of the verb allows for the derivation of an adjectival MWE from the verbal one, also by means of conversion: e.g., \textbf{trage pe sfoară} lit. `pull on rope' `play a trick on' is the base for \textbf{tras pe sfoară}: the derived adjectival MWE is obtained from the base one by converting the supine of the verb \textit{trage}, namely \textit{tras}, into an adjective, a frequent phenomenon in Romanian.
+
+
+\subsection{Visualisation and basic query interface}
+
+% You can download and view in a browser the file mwe-visual.html; data is not last update, these are data that I used to test it, I will replace with last revision of data at the end
+
+\figref{fig:visualfilt} shows the basic visual interface that allows access to and queries on the dataset. There are several filtering parameters: (i) the type of the VMWE (All, VID, LVC); (ii) word order variability; (iii) syntactic flexibility -- whether the VMWE allows its components to be modified; (iv) stylistic register of the MWE; (v) structure of the VMWE  -- syntactic patterns according to the UD scheme; (vi) search terms in either Bulgarian and/or Romanian VMWEs or abstract lemmas. The result of the filtering is a list of all VMWE pairs that match the filtering criteria. Each VMWE pair is first identified by its synset ID and WordNet definition. If more than one VMWE pairs are available for a given synset, the user can select among possible Bulgarian-Romanian literal pairs to align and compare. Upon selection, the pair of VMWEs is presented in parallel for Bulgarian and Romanian (see Figure \ref{fig:visual}) with the features outlined in \sectref{sec:tech}--\sectref{sec:derivrel}.%\footnote{After the completion of the rounds of reviews, the bilingual resource will be made freely available online as a standalone resource, as well as through the visualisation and query interface. We are grateful to the reviewers and editors for the recommendations in this respect, which we will do our best to accommodate in the final version.}.
+
+
+
+\begin{figure}\centering
+\includegraphics[width=\textwidth]{figures/03/vis01b.png}
+\caption{Search interface to filter MWE data.}\label{fig:visualfilt}
+\end{figure}
+
+\begin{figure}\centering
+\includegraphics[width=\textwidth]{figures/03/vis2b.png}
+\caption{Visualisation of aligned bilingual VMWEs.}\label{fig:visual}
+\end{figure}
+% include more visualisation functionalities, more search options - search by morph feature, restrictions etc., or by component in the mwe or the lemma
+% 2 separate figures
+
+ 
+\clearpage
+\section{Discussion, conclusions, and future work} \label{sec:discussion}\largerpage
+
+%similarities and differences between our dictionary and other multilingual ones
+
+We consider the important aspects of our work to be (i) its focus on languages other than English, and (ii) the use of a common framework for an in-depth linguistic description of VMWEs. Bulgarian and Romanian are morphologically richer languages than English and belong to different families (Slavic and Romance, respectively). The description of VMWEs in these two languages is made in a multilingual landscape offered by aligned wordnets. Using of a common framework for an in-depth linguistic description of VMWEs allows for highlighting both similarities and differences between the MWEs in the two languages. Moreover, this framework is encoded in a transparent, flexible, expressively capable, versatile and friendly way \citep{lichte-etal}. 
+
+Our lexicon is rooted in WordNet: the organisation principles therein explain the work methodology and the representation of information. Thus, for a MWE, we do not encode a list of lexemes that can substitute components in an expression, as is the case with some other such lexicons (see \sectref{sec:SOTA}). Whenever such substitutions are possible, the whole expression is encoded as a different literal occurring in the same synset as its synonyms (thus, labelled with different literal IDs, see \sectref{sec:tech}). One such example is the pair (ro) \ile{{da doi bani}} -- \ile{{da două parale}} `give a hang', which differ in their last component: \textit{ban} is a current unit of money% worth 0.01 of 1 leu, which is the current Romanian currency
+, while \textit{para} is an older one, not used anymore. An argument in favor of the distinct treatment of lexical variants is that, other differences aside, as we showed earlier, the two MWEs belong to different lexical registers -- one is colloquial and the other is literary.
+
+There are also cases when two expressions vary by means of one component that is added to offer emphasis to the expression in use: see the pair (ro) \ile{{își da silința}} -- \ile{{își da toată silința}} `do one's best', which differ only in the determiner \textit{toată} `all' added to the direct object of the verb, thus making it more emphatic. This affects the communicative status of the different variants and may determine the choice of one over the other in a context, the preference of different equivalents or translations in other languages, etc.
+
+Another consequence of including in the lexicon MWEs from wordnets is that no relationship is encoded between an expression and the entries for its components, i.e., the synset(s) to which the MWE belongs and the synsets to which its components belong (unlike traditional thesauri where MWEs often appear under one or more of its components). Each word sense and each MWE sense are separately encoded. However, by means of the relations in the networks, when any semantic relation exists between one meaning of a component and the meaning of a MWE of which it is a component, then this (close or distant) relation can be retrieved by traversing the edges starting from one synset and reaching the other one.
+
+The multilingual dimension of the resource presented here springs from the fact that the Bulgarian-Romanian lexicon exploits the alignment between the two wordnets, thus being a resource on top of two linked monolingual ones. The alignment was possible via Princeton WordNet and this actually opens the way to alignment to any other such lexicon either built on top of other wordnets or linked to them. A possible future development towards the multilingual extension would be to employ a large-scale densely populated resource providing access to aligned MWE entities such as BabelNet \citep{babelnet2012}.
+
+%In %discussing lexical encoding formats for MWEs, 
+\citet{lichte-etal} discuss what they call general virtues of MWE encoding, namely \textit{transparency, flexibility, power to generalise, implementation friendliness, electronic versatility}, as prerequisites for a lexical resource. \textit{Transparency} concerns the ability of the human user to map the encoding back to the source set of lexical properties, i.e. the simplicity %/intuitiveness or complexity  
+of the encoding of linguistic features and the straightforwardness of their interpretation by novices or non-expert users. \textit{Flexibility} is the adaptability of a format to dealing with unforeseen properties or changes in properties. %through formulating new ones on the fly %and choose freely their names. 
+The \textit{power to generalise} allows the user to group properties and assign them collectively, thus avoiding redundancies and errors. The \textit{implementation friendliness} relates to the existence of tools that assist a human user with encoding or its validation. %the lexical objects, or with verifying these encodings. 
+\textit{Electronic versatility} describes the ease of converting the lexical encoding into a
+lexical resource, in particular, %it touches upon 
+the existence of conversion tools or the possibility to produce them. %Taking into consideration the existing practice in the design of MWE lexicons, we will try to address to what extent and how we tackle the general virtues in section \ref{sec:entry}, where the elements of the MWE lexicon entry are discussed.
+\largerpage
+
+To ensure the \textit{transparency} of the encoding, we adopted a straightforward link between the linguistic properties and their values. The field names serving to encode the properties %are named accordingly and 
+are both easy to encode manually and to interpret. The basic tabular format of the template used to describe each MWE component facilitates the adaptation to new or unforeseen properties, %by formulating new or changing existing, 
+thus ensuring the \textit{flexibility} of the data encoding. New (categories of) fields and values may be defined as appropriate when needed and added to the predefined VMWE description template. This is especially relevant with respect to language-specific features (e.g., verb aspect in Bulgarian), as it allows the two teams to work independently. The unified description of the data for each language enabled us to consider two aspects of the \textit{power to generalise}: %The first refers to 
+(i) the possibility to identify and extract linguistic regularities, including groups of relevant properties in the VMWEs that share them, thus identifying possible classes of VMWEs with similar characteristics (from a certain perspective); and (ii) %The second aspect deals with 
+the possibility to look into linguistic regularities or shared features between the languages as well as to extract semantic, structural, etc. correspondences between VMWEs in them. %which are members of different language families, but have been in contact throughout their evolution. 
+\textit{Implementation friendliness} and \textit{electronic versatility} stem from the simple form in which the data are described. Currently, we did not use a particular tool, but the explicitness of the format and the encoding of features makes it easy to convert to various formats according to the relevant requirements of the existing tools.
+
+Adopting the same work methodology made it possible for the teams to work independently from each other using a predefined template that includes the relevant linguistic features (on the basis of previous data analysis) and expanding it to new features when the need arises. The model is thus adaptable to languages that share similar linguistic properties, possibly to genetically and/or typologically related ones.  
+
+
+Future work will aim at the enrichment of the monolingual lexicons with descriptions of the VMWEs that are in the individual wordnets, as for now we created entries only for those that are mutually equivalent VMWEs in the two languages. The further development of the two wordnets will allow for the identification of other (V)MWEs equivalents, thus enriching %actually 
+the bilingual lexicon and extending it to MWEs of other parts of speech.
+
+%In addition, for the time being, we have limited ourselves to detailing the syntactic transformations (such as passivization, causative-inchoative alternations, etc.) that VMWEs undergo, as they are addressed in other resources than ours, and we have not yet tackled their representation due to the need to analyze more comprehensive datasets in order to propose a linguistically grounded data-driven account.
+
+Syntactic transformations have not been tackled yet in our resource. As most of them show the regular syntactic behavior of free phrases, 
+% for a couple of reasons. Firstly, the observation that many VMWEs show the regular syntactic behavior of free phrases, to a great extent holds for transformations, which  include a broad span of phenomena, most often: passivisation, various semantic-syntactic transformations (diatheses), long-distance dependencies, such as relativisation, wh-question formation, topicalisations, etc. 
+we have decided, during the next stage of our work, to start marking the cases where a certain transformation is impossible and proceed to describe the conditions for blocking. 
+This will be implemented in a manner similar to the encoding of morphosyntactic restrictions, i.e. by defining a relevant field `Syntactic transformations' and listing the restrictions using a predefined list of the names of the transformations as values. A further, more in-depth treatment of syntactic transformations will depend on the analysis of the data after we have collected them.
+%This will enable us to group the restrictions and to establish subclasses of VMWEs within the PARSEME types -- mainly LVCs and VIDs -- according to the transformation they allow/disallow.
+
+
+As corpora annotated with VMWEs exist for both Romanian \citep{barbu-mititelu-etal-2019-romanian} and Bulgarian \citep{2012-The-Bulgarian-National-Co}, associating the lexicon entries with relevant corpora occurrences is a natural next step that would contribute %to giving 
+a syntagmatic dimension to the resource. 
+
+%Secondly, these introspective decisions need to be checked against corpus data in order to confirm empirically whether a syntactic transformation involving the components of a VMWE is possible or not. In addition, the components of the MWEs in the corpora examples will be annotated, thus associating elements of the internal syntactic structure of a VMWE's valence frame (\sectref{valence-frames}) with elements of the syntactic structure of a sentence.
+
+\section*{Abbreviations}
+\begin{multicols}{2}
+\begin{tabbing}
+MMMM  \= Bulgarian WordNet\kill
+BulNet \> Bulgarian WordNet\\
+HPSG   \> Head-driven Phrase \\ \> Structure Grammar\\
+IAV    \> inherently adpositional verb\\
+IRV    \> inherently reflexive verb\\
+LFG    \> Lexical-Functional Grammar\\
+LVC    \> light verb constructions\\
+MWE    \> multiword expression\\
+N      \> noun\\
+NLP    \> Natural Language Processing\\
+NMWE   \> noun multiword expressions\\
+RoWN   \> Romanian WordNet\\
+UD     \> Universal Dependencies\\
+V      \> verb\\
+VID    \> verbal idiom\\
+VMWE   \> verbal multiword expression
+\end{tabbing}
+\end{multicols}
+
+
+\section*{Acknowledgements}
+The authors are grateful to the anonymous reviewers and to the editors of this volume for their remarks on the previous versions of this chapter, which helped improving it.
+\vskip-.5\baselineskip\largerpage[2.5]
+
+
+%\citet{Nordhoff2018} is useful for compiling bibliographies.
+
+
+%\section*{Contributions}
+%John Doe contributed to conceptualization, methodology, and validation.
+%Jane Doe contributed to the writing of the original draft, review, and editing.
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}

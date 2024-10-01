@@ -1,0 +1,1139 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998643}
+
+
+\author{Jan Odijk\orcid{}\affiliation{Utrecht University} and
+    Martin Kroon\orcid{}\affiliation{Utrecht University; Leiden University} and
+    Sheean Spoel\orcid{}\affiliation{Utrecht University} and
+    Ben Bonfil\orcid{}\affiliation{Utrecht University} and 
+    Tijmen Baarda\orcid{}\affiliation{Utrecht University}}
+
+\title[MWE-Finder]{MWE-Finder: Querying for multiword expressions in large Dutch text corpora}
+
+\abstract{We present {\mwefinder}, an application that enables a user to search for multiword expressions (MWEs) in large Dutch text corpora. Components of many MWEs in Dutch can occur in multiple forms, need not be adjacent, and can occur in multiple orders (such MWEs are called \textit{flexible}). Searching for such flexible MWEs is difficult and cannot be done reliably with most search applications. What is needed is a search engine that takes into account the grammatical configuration of the MWE. {\mwefinder} is therefore embedded in GrETEL, a treebank search application for Dutch. A user can enter an example of a MWE in a specific canonical form, after which the system searches for sentences in which the MWE occurs, using queries generated automatically from the canonical form. We will describe in detail how the queries for this MWE are derived from the canonical form. The MWE can also be selected from a list of approximately 10k canonical forms for Dutch MWEs that {\mwefinder} offers. We will show that {\mwefinder} also offers facilities to find examples with unexpected modifiers or determiners on components of the MWE, and that it will yield statistics on the arguments,  modifiers and determiners that occur with the MWE and its components.}
+
+
+
+
+
+\begin{document}
+\judgewidth{\#}
+\maketitle
+
+\section{Introduction}
+\label{introduction}
+%to be written by JO
+%size mas 0.5 A4
+
+Many  multiword expressions (MWEs) are flexible in the sense that their components can have different forms, can occur in different orders, or may not be contiguous, with other words appearing between elements of the MWE.  This makes searching for such MWEs in large text corpora difficult. What is needed is a search system that can take all this flexibility into account. 
+
+In this chapter we present such a system, called {\mwefinder}. This system is specific for the Dutch language, but many aspects of the design of the system are not specific to Dutch or the specific parser used, as we will describe in Section~\ref{otherlanguages}.
+
+We made a system for  Dutch because this language exhibits flexibility in a wide range of MWEs. This is especially true for verbal MWEs (including proverbs), but also for certain nominal and adpositional MWEs. Searching for Dutch MWEs is thus an excellent and challenging test case for {\mwefinder}. In addition, an excellent parser is available for Dutch, Alpino \citep{VanNoord:2006}, which is also fully integrated in a treebank query application, GrETEL \citep{Augustinusetal:GrETEL:2017}.
+
+{\mwefinder} enables a user to find occurrences of a multiword expression in a large Dutch  text corpus. {\mwefinder} is intended as a tool for any linguist or lexicographer interested in research into MWEs, in particular  \textit{flexible} MWEs.
+
+{\mwefinder} can be used to address the task of MWE \textit{identification} in the sense of \citet{constant-etal-2017-survey}: by using {\mwefinder} a researcher can find occurrences of a given MWE easily and in a more reliable way than with other search applications. This will stimulate research into individual MWEs, their variants and their properties, and their frequencies, thereby facilitating research into MWEs in general.
+The system also creates a good basis for software to automatically annotate large text corpora for MWEs, which not only may be beneficial for linguistic research but also for a variety of natural language processing tools dealing with MWEs. 
+
+{\mwefinder} uses the DUtch CAnonicalised Multiword Expressions lexical resource ({\DUCAME}) to suggest MWEs to the user.
+This  is a resource containing more than 10,000 MWEs for the Dutch language in a canonical form.
+
+
+The organisation of this chapter is as follows. We begin with a brief introduction of the notion multiword expression (Section~\ref{mwe}).
+The {\DUCAME} resource is described in more detail in Section~\ref{mweresource}. {\mwefinder}  is presented in Section~\ref{application}.  In Section~\ref{otherlanguages} we discuss the potential for extending  {\mwefinder} to other languages and other parsers. We will end with conclusions (Section~\ref{conclusions}) and plans for future work (Section~\ref{futurework}).
+
+\section{Multiword expressions}
+%size max 1.5 A4
+\label{mwe}
+A MWE is a word combination  with linguistic properties
+that cannot be predicted from the properties of the individual words or the
+way they have been combined by the rules of grammar \citep{Odijk:2013-382996}.\footnote{For a similar but slightly different definition see \citet{Sag:Baldwin:2002}.}
+A word combination can, for example, have an unpredictable
+meaning (\textit{de boeken neerleggen}, lit.\ ‘to put down the books’, meaning ‘to declare
+oneself bankrupt’), an unpredictabe form (e.g.\ \textit{ter plaatse} `on location', with idiosyncratic use of \textit{ter} and \textit{e}-suffix on the noun), or it can have only limited usage (e.g.\ \textit{met vriendelijke groet} ‘kind
+regards’, used as the closing of a letter). In a translation context, it can have an unpredictable translation (\textit{dikke darm} lit.\ ‘thick intestine’, ‘large intestine’), etc.
+
+Note that it is not always easy to determine whether a combination of words is a MWE, because we do not always know the exact properties of the individual component words or what the grammar rules of a language are exactly. So this may require a substantial amount of research.
+
+
+Words of a MWE need not always be fixed. This can be illustrated
+with the Dutch MWE \textit{de boeken neerleggen} ‘to declare oneself bankrupt’. The verb \textit{neerleggen} in (\ref{flex}) can occur in all of its inflectional variants (e.g., past participle in (\ref{flexa}), infinitive in (\ref{flexb}), and past tense singular in (\ref{flexc}) and (\ref{flexd})), and with the separable particle \textit{neer} attached to it (\ref{flexa}, \ref{flexb}) or separated (\ref{flexc}, \ref{flexd}).
+MWEs do not necessarily consist of words that are adjacent, and the words making up a MWE need not always occur in the same order. This expression allows a canonical order with contiguous elements (as in (\ref{flexa})), but it also allows other words to intervene between its components (as in (\ref{flexb})), as well as permutations of its component words (as in (\ref{flexc})), and combinations of permutations and intervention by other words that are not components of the MWE (as in (\ref{flexd})):
+
+\begin{exe}
+\ex \label{flex}
+\begin{xlist}
+\ex\label{flexa} \gll Saab heeft gisteren \textit{de} \textit{boeken} \textit{neergelegd}.\\
+           Saab has yesterday the books down.laid\\
+       \glt `Saab declared itself bankrupt yesterday.'
+  \ex\label{flexb} \gll Ik dacht dat Saab gisteren \textit{de} \textit{boeken} wilde \textit{neerleggen}.\\
+           I thought that Saab yesterday the books wanted down.lay\\
+       \glt `I thought Saab wanted to declare itself bankrupt yesterday.'
+   \ex\label{flexc} \gll Saab \textit{legde} \textit{de} \textit{boeken} \textit{neer}.\\
+            Saab laid the books down\\
+        \glt `Saab declared itself bankrupt.'
+\ex\label{flexd}     \gll Saab \textit{legde} gisteren \textit{de} \textit{boeken} \textit{neer}.\\
+             Saab laid yesterday the books down\\
+        \glt `Saab declared itself bankrupt yesterday.'
+\end{xlist}
+\end{exe}
+        
+In addition, certain MWEs allow for (and require) controlled variation in lexical
+item choice, e.g.\ in expressions containing bound anaphora, where the possessive pronoun varies depending on the subject, as in (\ref{geduldverliezen}), exactly as in the English expression \textit{to lose one’s temper}.
+
+\begin{exe}
+    \ex \label{geduldverliezen}
+    \begin{xlist}
+    \ex \gll Ik \textit{verloor} \textit{mijn} / *\textit{jouw} \textit{geduld}.\\
+    I lost my / *your patience\\
+    \glt `I lost my temper.'
+    \ex \gll Jij \textit{verloor} *\textit{mijn} / \textit{jouw} \textit{geduld}.\\
+    You lost *my / your patience\\
+    \glt `You lost your temper.'
+    \end{xlist}
+\end{exe}
+
+Of course, not every MWE allows all of these options, and not all permutations
+of the components of a MWE are well-formed (e.g.\ one cannot have *\textit{Saab heeft
+neergelegd boeken de.} lit.\ ‘Saab has downlaid books the.’).
+
+In Dutch, even proverbs, which have no variable parts, are flexible, because the finite verb occupies a different position in main clauses (\ref{proverbmc}) than in subordinate clauses (\ref{proverbsc}), and adverbial modifiers modifying the whole proverb may split the words of the proverb (\ref{proverbadvmod}):
+
+\begin{exe}
+    \ex Flexibility of proverbs in Dutch:
+    \begin{xlist}
+    \ex \label{proverbmc} \gll \textit{De} \textit{appel} \textit{valt} \textit{niet} \textit{ver} \textit{van} \textit{de} \textit{boom}.\\
+    the apple falls not far from the tree\\
+    \glt `The apple never falls far from the tree.'
+    \ex \label {proverbsc}
+     \gll Hij zegt dat \textit{de} \textit{appel} \textit{niet} \textit{ver} \textit{van} \textit{de} \textit{boom} \textit{valt}. \\
+    he says that the apple not far from the tree falls\\
+    \glt `He says that the apple never falls far from the tree.' 
+    \ex \gll \textit{De} \textit{appel} \textit{valt} immers \textit{niet} \textit{ver} \textit{van} \textit{de} \textit{boom}.\\
+    The apple falls {after all} not far from the tree\\
+    \glt `After all, the apple never falls far from the tree.'
+    \label{proverbadvmod}
+    \end{xlist}
+\end{exe}
+
+This flexible nature of such MWEs makes it difficult to reliably search for such expressions in text corpora. Standard search engines such as Google do not enable the user to systematically search for different word forms of the same lemma.  Search applications for Dutch such as OpenSoNaR \citep{Camp:etal:CLC19,Does:etal:CLC20} or Nederlab \citep{BRUGMAN16.471} can do this, but it is difficult to formulate a query allowing different orders and interspersed irrelevant words, and the results of such a query will be  unreliable. At best, one will find all instances but  at the same time also many cases where all the component words occur but do not make up a MWE. One should be able to search for flexible MWEs in such a way that their grammatical structure is taken into account. This can be done in a treebank, and {\mwefinder} enables searching for MWEs in a treebank.
+
+MWEs can contain multiple content words,\footnote{\textit{Content word} is defined here as a word belonging to any of the syntactic categories noun, verb, adjective, or adverb.} but can also contain only a single content word and one or more function words, and can even consist completely of function words. We will not focus here on some classes of MWEs that  consist of a content word and one or more function words,  such as verbs with obligatory bound reflexive pronouns, verbs with separable particles, verbs with prepositional complements headed by a specific preposition, and combinations thereof, as illustrated in (\ref{optrekken}), in which the MWE consists of the verb \textit{trekken}, a separable particle (\textit{op}), an idiosyncratically selected adposition (\textit{aan}) and a reflexive pronoun (\textit{zich}):
+
+\begin{exe}
+\ex\label{optrekken} \gll Hij heeft \textit{zich} altijd \textit{aan} zijn vriend \textit{op} kunnen \textit{trekken}.\\
+         he has himself always to his friend up can pull\\ 
+   \glt `He has always received support from his friend.’
+\end{exe}
+
+Such MWEs are already fully dealt with by the grammar used in {\mwefinder}.
+
+
+\section{The {\DUCAME} MWE resource}
+\label{mweresource}
+%to be written by JO
+%size max 4 A4
+
+The {\DUCAME} lexical resource is available\footnote{\url{https://surfdrive.surf.nl/files/index.php/s/2Maw8O0QTPH0oBP}} and consists of a reworked version of the DuELME database \citep{Gregoire:PhD:2009,duelme,Odijk:2013-382998} and a new list of MWEs  composed by one of the authors on the basis of publicly available sources, which include \citet{stoett1925nederlandsche}, Onze Taal,\footnote{\url{https://onzetaal.nl/schatkamer/lezen/uitdrukkingen} and \url{https://onzetaal.nl/zoekresultaten?in=advice&zoek=uitdrukking}} VRT website,\footnote{\url{https://vrttaal.net/taaladvies-taalkwestie/vaste-uitdrukkingen}} Lassy-Small treebank \citep{LASSY:2013}, and own collection. DUCAME contains more than 10,000 unique MWEs (many more than DUELME, which had around 5,000).
+
+{\DUCAME} is unique in that it has all the MWEs in a canonical form as described in more detail below. The MWEs also have annotations on properties of their parts. These annotations are based mostly on native speaker intuitions of the developers and have not been tested against large text corpora. {\mwefinder} enables carrying out such tests. 
+
+Traditional dictionaries usually include a MWE by providing an example sentence, but it is very difficult for humans and nearly impossible for software to derive the general properties of the MWE from such an example. What is needed is a canonical form from which the properties of the MWE are easy to  derive automatically. In addition, the canonical forms should be a well-formed expression of Dutch and should be parsable by automatic parsers.
+
+For single words the canonical form is called the \textit{lemma}, i.e.\ a specific form of an inflectional paradigm that is used as headword in traditional dictionaries. One can adopt this usage for the head of MWEs as well, and that works fine for many MWEs. However, it does not always work for a MWE with a verb as its head.
+In Dutch, the lemma of a verb is identical to the infinitive, but several problems arise when one tries to use the infinitive as the lemma for the head of a verbal MWE: first, no overt subjects can appear with an infinitive, so a MWE with an overt subject and an infinitive is an ill-formed expression:\footnote{\textsc{dim} stands for diminutive, \textsc{pl} for plural.}
+
+\begin{exe}
+\ex
+\begin{xlist}
+\ex[*] {\gll \textit{De} \textit{laatste} \textit{loodjes} \textit{het} \textit{zwaarst} \textit{wegen}.\\
+the last lead.\textsc{dim}.\textsc{pl} the heaviest weigh\\
+\glt `The tail end is the most difficult.' }
+\ex[*] {\gll \textit{De} \textit{schellen} iemand \textit{van} \textit{de} \textit{ogen} \textit{vallen}.\\
+the scales someone from the eyes fall\\
+\glt `His eyes are opened.' }
+\end{xlist}
+
+\end{exe}
+Furthermore, though the subject must be absent, it is present implicitly and interpreted as an animate actor. If the subject of a MWE is not animate, using the MWE with an infinitival head as the canonical form gives infelicitous results:
+
+\begin{exe}
+\ex
+\begin{xlist}
+\ex[?] {\gll iemand \textit{de} \textit{keel} \textit{uithangen}\\
+             someone the throat outhang\\
+        \glt `for something to bore someone'}
+\ex[?] {\gll iemand \textit{niet} \textit{kunnen} \textit{bommen}\\
+      someone not can care\\
+      \glt `for someone not to care about something'}
+\end{xlist}
+\end{exe}
+
+In order to avoid these problems and at the same time have a canonical form with an infinitive, the canonical forms in this resource are all finite sentences with a form of the future tense auxiliary verb \textit{zullen} `will' as its main verb, as in (\ref{canformszullen}). These are all well-formed sentences that can in principle be parsed by a parser.
+
+\begin{exe}
+\ex \label{canformszullen}
+\begin{xlist}
+\ex \gll \textit{De} \textit{laatste} \textit{loodjes} zullen \textit{het} \textit{zwaarst} \textit{wegen.}\\
+the last lead.\textsc{dim}.\textsc{pl} will the heaviest weigh\\
+\glt `The tail end will be the most difficult.'
+\ex\gll \textit{De} \textit{schellen} zullen iemand \textit{van} \textit{de} \textit{ogen} \textit{vallen}.\\
+the scales will someone from the eyes fall\\
+\glt `His eyes will be opened.' 
+\ex\gll Iets zal iemand \textit{de} \textit{keel} \textit{uithangen}.\\
+             something will someone the throat out.hang\\  \label{ietssubject1}
+        \glt `Something will bore someone.'
+\ex\gll Iets zal iemand \textit{niet} \textit{kunnen} \textit{bommen}.\\
+      something will someone not can care\\  \label{ietssubject2}
+      \glt `Someone will not care about something.'
+\end{xlist}
+\end{exe}
+
+% Concerning modifiers and determiners, the canonical forms must be interpreted as allowing combining a MWE as a whole  with modifiers and/or determiners. Components of the MWE, however, cannot be combined with modifiers or determiners that are not components of the MWE.
+By default, the canonical forms in {\DUCAME} must be interpreted as allowing for the head of the  MWE to be modified by determiners and/or other modifiers; a component of the MWE that is not its head cannot be modified by determiners and/or other modifiers individually unless these are themselves components of the MWE.
+Similarly, it is assumed that only the head of the MWE can occur in different inflectional forms, while other parts of the MWE cannot. Of course, there are many exceptions to this, and these are indicated in {\DUCAME} by means of annotations. The annotations allowed are given in Table~\ref{tab:annotationtable}.
+
+\begin{table}[htb]
+    \centering
+    \begin{tabular}{ll}
+    \lsptoprule
+       notation & interpretation\\
+    \midrule
+       *\textit{word}  & \textit{word} is modifiable/determinable\\
+       +\textit{word}  &  \textit{word} is inflectable\\
+        =\textit{word}  & \textit{word} must occur in the MWE as given\\
+        !\textit{word} & \textit{word} is not modifiable/determinable\\
+        dd:[\textit{word}] & \textit{word} must be a definite determiner\\
+        〈\textit{text}〉 & \textit{text} is interpreted as a freely replaceable argument\\
+        0\textit{word} & \textit{word} is not part of the MWE\\
+    \lspbottomrule
+    \end{tabular}
+    \caption{Notational devices for annotating a canonical form. The code \textit{+} can also be combined with \textit{*} or \textit{!} (in any order).}
+    \label{tab:annotationtable}
+\end{table}
+
+Arguments of the MWE that can be freely replaced by arbitrary phrases are represented by the indefinite pronouns \textit{iemand} `someone', \textit{iets} `something', and \textit{ergens} `somewhere', where this is possible. One can also use combinations such as \textit{iemand}|\textit{iets} or \textit{iets}|\textit{iemand}, which are to be interpreted as allowing either but most likely with the first alternative. If such words must occur  in the MWE as such (i.e.\ cannot be freely replaced), they can be preceded by the annotation \textit{=}, as in (\ref{fixediets}).
+
+\begin{exe}
+\ex \gll Iemand zal  \textit{voor} \textit{=iets} \textit{tussen} iets \textit{zitten}.\\
+someone will  for something between something sit\\ \label{fixediets}
+\glt `Someone will be a factor in something.'
+\end{exe}
+
+
+
+The system of pronouns in natural languages in general and in Dutch in particular is in many respects somewhat arbitrary. So, \textit{iemand} implies a human argument, whereas \textit{iets} implies a nonhuman argument. A distinction between animate and inanimate nonhuman arguments does not exist in the Dutch pronominal system, nor does one between objects and events. For many phrase types there are no pronouns at all, e.g.\ for adjectival, adverbial and clausal phrases.\footnote{Sometimes it is possible to use pronouns for noun phrases to refer to these but there are no pronouns that can actually replace them.} Nevertheless, the use of the existing pronouns is easy and rather natural for humans, and the missing pronouns are covered by a special annotation in which an arbitrary phrase surrounded by angled brackets 〈...〉 is interpreted as a freely replaceable argument, as in (\ref{vishaken}).
+
+\begin{exe}
+\ex \gll Iemand zal 〈makkelijk〉 \textit{in} \textit{de} \textit{omgang} \textit{zijn}.\\
+someone will easy in the interaction be\\ \label{vishaken}
+\glt `Someone will be 〈easy〉-going, 〈easy〉 to deal with.'
+\end{exe}
+
+Bound pronouns such as reflexives and possessive pronouns are represented by the third person singular forms (\textit{zich}, \textit{zichzelf}, \textit{zijn}). If such forms do not vary, one can precede them by the annotation \textit{=}, as in the expression \textit{op =zich} lit.\ `on \textsc{refl}', `in itself'. There is (currently) no convention or annotation to specify the antecedent of such bound anaphors.\largerpage
+
+It sometimes is necessary to include a word in a canonical form to create a natural utterance even if this word does not belong to the MWE. Such words can be preceded by the code \textit{0}. This very often occurs in MWEs that have an indefinite subject, which prefer the presence of \textit{er}, as in (\ref{0er}), and in MWEs that are or contain negative polarity items and that require the presence of a licensing element such as a negative adverb (\textit{niet} `not'), determiner (\textit{geen} `no') or pronoun (e.g.\ \textit{niemand} `nobody'), e.g., in the MWE with canonical form \textit{dd:[die] vlieger zal 0niet opgaan}. In (\ref{vliegerniet})  the negative adverb \textit{niet} cannot be absent,  but it is arguably not part of the MWE, as shown by (\ref{vliegernoniet}) in which the negative pronoun \textit{niemand} in the main clause is the licensing element for the negative polarity MWE in the subordinate clause.\footnote{The notation *(...) means that leaving out the parts between the round brackets yields ill-formedness; the notation (*...) means that including the part between the brackets leads to ill-formedness.}
+
+\begin{exe}
+\ex 
+\begin{xlist}
+\ex \gll 0Er zal iets \textit{op} \textit{het} \textit{spel} \textit{staan}.\\
+there will something on the game stand\\
+\glt `Something will be at stake.' \label{0er}
+\ex \gll Die \textit{vlieger} zal *(niet) \textit{opgaan}.\\
+that kite will not up.go\\
+\glt `That won't wash.'  \label{vliegerniet}
+\ex \gll Niemand denkt dat die \textit{vlieger} \textit{opgaat}.\\
+nobody thinks that that kite up.goes\\
+\glt `Nobody thinks that that will wash.' \label{vliegernoniet}
+\end{xlist}
+\end{exe}
+
+\section{{\mwefinder}}
+\label{application}
+
+{\mwefinder} enables a user to search for occurrences of a MWE in a treebank based on an example MWE in the canonical form as described in Section~\ref{mweresource}.
+It is embedded in GrETEL, an existing web application for searching Dutch treebanks \citep{AUGUSTINUS12.756, Augustinusetal:GrETEL:2017, Odijk:etal:TLT16}.
+The distinguishing feature of GrETEL is its query-by-example feature. In its regular search mode, it leads the user through a number of steps to get from an example sentence to search results and analysis of the search results:\largerpage
+
+\begin{description}
+\item[{1.\ Example:}] A user can enter a natural language example that illustrates the construction they are interested in.
+\item[{2.\ Parse:}] The Alpino parser \citep{alpino-paper-2,Alpino:2002} parses the example sentence.
+\item[{3.\ Matrix:}] The user indicates  which words of this example are crucial for the construction, and how each word should be generalised from. Based on this the parse tree of the example sentence is transformed into an XPath query.
+\item[{4.\ Treebanks:}] The user can select one or more treebanks to search in.
+\item[{5.\ Results:}] The XPath query is applied to the selected treebank(s) and the results are provided as a list of sentences with matches.
+\item[{6.\ Analysis:}] The results can be further analysed in a graphical interface to a pivot table for properties of the nodes in the query in combination with any available metadata.
+\end{description}
+
+
+
+A second important feature of GrETEL is that one can upload one's own text corpus, which is then automatically parsed and made available as a treebank to search in. 
+
+
+
+{\mwefinder} is part of version 5 of the web application GrETEL, available in a first version since the end of 2022.\footnote{\url{https://gretel5.hum.uu.nl}} Thanks to this integration, {\mwefinder} has access to all GrETEL features, and supports all treebanks that are included in GrETEL as well as the possibility of uploading one's own text corpora. In Sections \ref{frontend} through \ref{backend} we describe the user interface and the query generation process of {\mwefinder}, as well as a number of changes we had to make in GrETEL's backend. In Section~\ref{example} we illustrate the use of {\mwefinder} by means of a concrete example.
+
+
+\subsection{User interface}
+\label{frontend}
+%to be written by  Ben (and Sheean?)
+% size: max 4 A4
+{\mwefinder} partially mimics the structure of GrETEL's main search functionality. It distinguishes the following steps: \textit{Canonical Form} (cf.\ GrETEL's \textit{Example} step), \textit{Treebanks}, \textit{Results}, and \textit{Analysis}. It currently lacks the \textit{Parse} step and the \textit{Matrix} step.
+ 
+ 
+ {\mwefinder}  enables the user to enter a MWE example, just like GrETEL, though it must be in the canonical form as described in Section~\ref{mweresource}. The user thereby implicitly formulates a hypothesis about the properties of this MWE. The annotations on the example specify how the system should generalise from this example, so these annotations can be seen as a different way of implementing the \textit{Matrix} step.
+ 
+The MWEs contained within {\DUCAME} have been included in a drop-down list  and are directly searchable within the {\mwefinder}. The user can also enter a new MWE, provided that it complies with the conventions for MWE canonical forms (Figure~\ref{fig:canonical}).
+
+\begin{figure}[p]
+\caption{The first step is to choose a MWE from the DUCAME list of canonical forms or to provide a new MWE.}
+\label{fig:canonical}
+% \includegraphics[width=\textwidth]{figures/frontend-canonical-evenbigger.png}
+\includegraphics[width=\textwidth]{figures/07/pdf/GrETEL1v3.pdf}
+% \includegraphics[width=\textwidth]{figures/test.pdf}
+\end{figure}
+
+As a concrete example, suppose that the user selects the canonical form (\ref{canform}): 
+
+\begin{exe}
+\ex \gll Iemand zal \textit{de} \textit{kat} \textit{uit} \textit{de} \textit{boom} \textit{kijken}.\\
+someone will the cat from the tree watch.\\
+\glt `Someone will wait and see.' \label{canform}
+
+\end{exe}
+
+
+After the MWE has been selected or entered, the system automatically generates three queries to search for occurrences of this MWE in a treebank. They correspond to different levels of agreement between the MWE and the sentences of the corpora. These are the \textit{{\supersetquery}}, the \textit{\nearmissquery}, and the \textit{MWE query}.\footnote{Note that {\mwefinder} can identify potential occurrences of a MWE in a treebank. It cannot determine for an expression that is ambiguous between a literal and an idiomatic reading which of these alternative readings is applicable in a specific sentence.} The query generation process is explained in detail in Section~\ref{querygeneration}.
+
+
+
+
+Next, the user can select the treebank or treebanks that the query should be applied to.
+Once selected, the application switches to the \textit{Results} view where query results are displayed as they arrive from the server. In that view, the user can also switch between the different queries for the chosen MWE or choose to exclude results of finer-grained queries. It is also possible to inspect or manually change the automatically generated XPath queries and retrieve new results (Figures~\ref{fig:query-menu} and \ref{fig:results}).
+
+\begin{figure}[p]
+\caption{After selecting the treebanks to search in, the results come in and the user can switch between the three queries that are created based on the selected MWE.}
+\label{fig:query-menu}
+% \includegraphics[width=\textwidth]{figures/frontend-results-query-menu-evenbigger.png}
+\includegraphics[width=\textwidth]{figures/07/pdf/GrETEL2v2.pdf}
+\end{figure}
+
+\begin{figure}
+\caption{A sample of the results for the MWE \textit{Iemand zal de kat uit de boom kijken.} `Someone will wait and see.' for the Europarl corpus \citep{koehn-2005-europarl}, part of LASSY Groot \citep{vanNoord:2008}.}
+\label{fig:results}
+% \includegraphics[width=\textwidth]{figures/frontend-results-evenbigger.png}
+\includegraphics[width=.9\textwidth]{figures/07/pdf/GrETEL3v2.pdf}
+\end{figure}
+
+In the \textit{Results} view, users can also look at the parse trees for results or toggle extra context (one preceding sentence, one following sentence) to better analyse the  occurrences found, just like in GrETEL.
+
+Finally, there is the analysis step, which is identical to the one in GrETEL.
+For a MWE, one would like to analyse the result set in ways that cannot be achieved by GrETEL's standard analysis component. We are working on a special analysis step for MWEs, in which the system gathers statistics on the components of the MWE, the arguments of the MWE (their grammatical relations and syntactic categories, and their  heads), the argument frames\footnote{With \textit{argument frame} we mean a list of (extended relation, syntactic category) pairs for the arguments that the MWE occurs with, where an extended relation is a sequence of grammatical relations. For example, in \textit{Marie brak Piets hart.} lit.\ `Marie broke Piet's heart.', the argument frame is [(su, NP), (obj1/det, NP)], i.e., it combines with two arguments, a subject NP and a NP functioning as the determiner of the direct object.} that occur with the MWE, and about modifiers and determiners for the MWE as a whole and for each of its components.
+It does this for the results of the MWE query, for the results of the {\nearmissquery}, and for the difference between the {\nearmissquery} and the MWE query.
+We have an initial version available but at the time of writing it has not been integrated yet in the actual application.
+
+%\subsection{Canonical form MWE Examples }
+%\label{canonical form}
+% to be written by JO this section can be left out, covered by the section on the MWE resource
+% size max 4 A4
+
+\subsection{Illustration}
+\label{example}
+
+We illustrate the use of {\mwefinder} with a specific example. Suppose we want to investigate the use of the MWE \textit{de dans ontspringen} `to get off scot-free'. The canonical form as listed in DUCAME (version 1) is in (\ref{dansontspringen}):
+
+\begin{exe}
+    \ex \gll Iemand zal de \textit{dans} \textit{ontspringen}.\\
+    someone will the dance escape\\
+    \glt `Someone will get off scot-free.' \label{dansontspringen}
+\end{exe}
+
+This canonical form is parsed by the parser in {\mwefinder}, resulting in the syntactic structure in Figure~\ref{dansontspringenparse}. In this figure, we omit  most attribute value pairs on each node, because there are too many to represent.
+
+\vfill
+\begin{figure}[H]
+\begin{forest}
+[--/smain
+    [su/1:vnw\\(\textit{iemand})]
+    [hd/ww\\(\textit{zal})]
+    [vc/inf
+        [su/1]
+        [obj1/np
+            [det/lid\\(\textit{de})]
+            [hd/n\\(\textit{dans})]            
+        ]
+        [hd/ww\\(\textit{ontspringen})]    
+    ]    
+]
+\end{forest}    
+
+%\leaf{su/1:vnw(\textit{iemand})}
+%\leaf{hd/ww(\textit{zal})}
+%\leaf{su/1}
+%\leaf{det/lid(\textit{de})}
+%\leaf{hd/n(\textit{dans})}
+%\branch{2}{obj1/np}
+%\leaf{hd/ww(\textit{ontspringen})}
+%\branch{3}{vc/inf}
+%\branch{3}{--/smain}
+%\begin{center}
+%\tree
+\caption{Syntactic structure of \textit{Iemand zal de dans ontspringen}.} \label{dansontspringenparse}
+\end{figure}
+\vfill\pagebreak
+
+% % % \notinclude{
+% % % \begin{figure}
+% % % \begin{lstlistings}
+% % % <node begin="0" cat="smain" end="5" id="1" rel="--">
+% % %       <node begin="0" end="1" frame="noun(de,count,sg)" gen="de" getal="ev" id="2" index="1" lcat="np" lemma="iemand" naamval="stan" num="sg" pdtype="pron" persoon="3p" pos="noun" postag="VNW(onbep,pron,stan,vol,3p,ev)" pt="vnw" rel="su" rnum="sg" root="iemand" sense="iemand" status="vol" vwtype="onbep" word="iemand"/>
+% % %       <node begin="1" end="2" frame="verb(hebben,modal_not_u,aux(inf))" id="3" infl="modal_not_u" lcat="smain" lemma="zullen" pos="verb" postag="WW(pv,tgw,ev)" pt="ww" pvagr="ev" pvtijd="tgw" rel="hd" root="zal" sc="aux(inf)" sense="zal" stype="declarative" tense="present" word="zal" wvorm="pv"/>
+% % %       <node begin="0" cat="inf" end="5" id="4" rel="vc">
+% % %         <node begin="0" end="1" id="5" index="1" rel="su"/>
+% % %         <node begin="2" cat="np" end="4" id="6" rel="obj1">
+% % %           <node begin="2" end="3" frame="determiner(de)" id="7" infl="de" lcat="detp" lemma="de" lwtype="bep" naamval="stan" npagr="rest" pos="det" postag="LID(bep,stan,rest)" pt="lid" rel="det" root="de" sense="de" word="de"/>
+% % %           <node begin="3" end="4" frame="noun(de,count,sg)" gen="de" genus="zijd" getal="ev" graad="basis" id="8" lcat="np" lemma="dans" naamval="stan" ntype="soort" num="sg" pos="noun" postag="N(soort,ev,basis,zijd,stan)" pt="n" rel="hd" rnum="sg" root="dans" sense="dans" word="dans"/>
+% % %         </node>
+% % %         <node begin="4" buiging="zonder" end="5" frame="verb(unacc,inf,transitive)" id="9" infl="inf" lcat="inf" lemma="ontspringen" pos="verb" positie="vrij" postag="WW(inf,vrij,zonder)" pt="ww" rel="hd" root="ontspring" sc="transitive" sense="ontspring" word="ontspringen" wvorm="inf"/>
+% % %       </node>
+% % %     </node>
+% % %   </node>
+% % % \end{lstlistings}
+% % % \caption{XML encoding of the syntactic structure of \textit{iemand zal de dans ontspringen}.}
+% % % \end{figure}
+% % % } % notinclude
+
+The query generation process,  described in detail in Section~\ref{querygeneration}, first converts this syntactic structure into one or more reduced syntactic structures for the MWE. For this example, there is just one such structure (see Figure~\ref{dansontspringenmwe}).
+
+
+\begin{figure}
+\begin{forest}
+[
+    [obj1/np
+        [det/detp[{hd/lid\\(lemma:\textit{de},\\lwtype:bep)}]]
+        [{hd/n\\(lemma:\textit{dans},\\genus:zijd, getal:ev,\\graad:basis)}]            
+    ]
+    [hd/ww\\(lemma:\textit{ontspringen})]    
+]    
+\end{forest}    
+
+%\leaf{su/1:vnw(\textit{iemand})}
+%\leaf{hd/ww(\textit{zal})}
+%\leaf{su/1}
+%\leaf{det/lid(\textit{de})}
+%\leaf{hd/n(\textit{dans})}
+%\branch{2}{obj1/np}
+%\leaf{hd/ww(\textit{ontspringen})}
+%\branch{3}{vc/inf}
+%\branch{3}{--/smain}
+%\begin{center}
+%\tree
+
+\caption{MWE structure of \textit{Iemand zal de dans ontspringen}.} \label{dansontspringenmwe}
+\end{figure}
+
+From this the MWE query is generated, shown in Figure~\ref{dedansontspringenmwequery}.
+
+\begin{figure}
+\begin{verbatim}
+//node[
+      node[@rel="obj1" and @cat="np" and count(node)=2 and 
+          node[@rel="det" and @cat="detp" and count(node)=1 and 
+              node[@lemma="de" and @rel="hd" and @pt="lid" and 
+                   @lwtype="bep"]
+              ] and 
+          node[@lemma="dans" and @rel="hd" and @pt="n" and 
+               @ntype="soort" and (@genus="zijd" or @getal="mv") and 
+               @getal="ev" and @graad="basis"]
+          ] and 
+      node[@lemma="ontspringen" and @rel="hd" and @pt="ww"]
+      ]
+\end{verbatim}
+\caption{The MWE query  for \textit{de dans ontspringen}.} \label{dedansontspringenmwequery}
+\end{figure}
+
+When we apply this query to the Mediargus treebank,\footnote{A large treebank with Flemish newspaper text created by Kris Heylen from KU Leuven in 2009.} {\mwefinder} finds 1158 hits in over 103 million sentences.
+
+The {\nearmissquery} is given in Figure~\ref{dedansontspringennearmiss}. It finds 1271 hits in the Mediargus treebank.
+
+\begin{figure}
+\begin{verbatim}
+//node[
+      node[@rel="obj1" and @cat="np" and 
+          node[@lemma="dans" and @rel="hd" and @pt="n" and 
+               @ntype="soort" and (@genus="zijd" or @getal="mv")]
+          ] and 
+      node[@lemma="ontspringen" and @rel="hd" and @pt="ww"]
+      ] 
+\end{verbatim}
+    \caption{The {\nearmissquery} for \textit{de dans ontspringen}.} \label{dedansontspringennearmiss}
+\end{figure}
+
+If we exclude the results of the MWE query, which is an option offered by {\mwefinder}, we quickly see in the 131 remaining hits that \textit{de dans ontspringen} occurs in variants not predicted by the canonical form that we started with. We list some examples of phrases that the word \textit{dans} occurs with:\smallskip\\
+
+% \begin{description}
+% \item[different determiners:] none, \textit{die} `that', \textit{zijn} `his'. 
+% \item[adjectival modifiers:] \textit{gerechtelijke} `judicial', \textit{fiscale} `fiscal', \textit{politieke} `political'.
+% \item[PP modifiers:] \textit{van de bedreigden} `of the threatened ones', \textit{van de sociale verkiezingen} `of the social elections'.
+% \end{description}
+
+\noindent \begin{tabular}{@{}ll@{}}
+    % \\[\itemsep]
+    \textit{different determiners:}  & None,\\
+                            & \textit{die} `that',\\
+                            & \textit{zijn} `his';\\[\itemsep]
+    \textit{adjectival modifiers:}   & \textit{gerechtelijke} `judicial', \\
+                            & \textit{fiscale} `fiscal',\\
+                            & \textit{politieke} `political';\\[\itemsep]
+    \textit{PP modifiers:} & \textit{van de bedreigden} `of the threatened ones', \\
+    & \textit{van de sociale verkiezingen} `of the social elections'.\\[\itemsep]
+\end{tabular}\smallskip\\
+
+We also see that the NP headed by \textit{dans} can be the object of two different coordinated verbs, which is possible (we hypothesise) because the verb \textit{ontspringen} is used in its  literal meaning in the MWE (i.e., a meaning that it also has outside of this MWE):
+
+\begin{exe}
+    \ex \gll Wie de politieke \textit{dans} gaat leiden of \textit{ontspringen} ...\\
+    who the political dance goes lead or escape ...\\
+    \glt `Who will lead or escape the political unpleasant event ...' 
+\end{exe}
+
+All of this clearly suggests that the canonical form that we started with was too strict. We must allow for modification of the MWE component \textit{dans},\footnote{This word appears to have a metaphorical meaning in this MWE, meaning something like `unpleasant event'.} the article \textit{de} is not a component of the MWE,\footnote{Absence of a determiner is generally ill-formed, but this is due to the normal rules of the Dutch grammar, viz. that a singular count noun requires a determiner. This should not be described as a property of the MWE. There are examples in the treebank in which \textit{dans} occurs without a determiner, but these are all examples from headlines which obey a different grammar.} and ideally  we should indicate somehow that  the verb \textit{ontspringen} is used in its literal meaning.\footnote{A newer version of DUCAME, not described here, has this option.}  A better canonical form for this MWE would be \textit{iemand zal 0de *dans ontspringen}, which explicitly allows modification of \textit{dans}, and explicitly states that the determiner \textit{de} is not a component of the MWE.  Indeed, the MWE query derived from this canonical form  finds 1271 hits, the same number as the {\nearmissquery} for the original canonical form. In this way, we can improve upon an initial canonical form mainly based on native speaker intuitions by systematically taking into account corpus data. {\mwefinder} makes this possible in a very efficient and user friendly way.
+
+Lastly, the {\supersetquery} (see Figure~\ref{dansontspringenmajorlemmaquery}) finds 1309 hits. If we exclude the results of the {\nearmissquery}, we have to inspect 38 examples. These are mostly valid instances of the MWE \textit{de dans ontspringen} that have been wrongly parsed by Alpino, but we also find a variant of the MWE, viz. (\ref{aandedansontspringen}) for which we can now add a canonical form to DUCAME.
+
+\begin{exe}
+    \ex \gll Iemand zal \textit{aan} de \textit{dans} \textit{ontspringen}.\\
+    someone will to the dance escape\\
+    \glt `Someone will get off scot-free.'  \label{aandedansontspringen}
+\end{exe}
+
+In this way, a linguist or lexicographer can easily and efficiently investigate the properties of Dutch MWEs, and improve the description of Dutch MWEs. This process will be even more efficient as soon as the dedicated analysis options have become available.
+
+
+\begin{figure}
+\begin{verbatim}
+    //node[@lemma="dans" and @pt="n"]
+    /ancestor::alpino_ds/node[@cat="top" and 
+     descendant::node[@lemma="ontspringen" and @pt="ww"]]
+\end{verbatim}
+    \caption{The {\supersetquery}  for \textit{de dans ontspringen}.} \label{dansontspringenmajorlemmaquery}
+\end{figure}
+
+\subsection{Query generation}
+\label{querygeneration}
+% to be written by MK and JO
+% size max 4 A4
+
+Query generation by {\mwefinder} involves multiple aspects. In Section~\ref{queries} we list and characterise the queries generated. In Section~\ref{gramprops} we describe which grammatical properties from the parse of the canonical form end up in the query. Section~\ref{variants} lists multiple variants of the MWE structure that must be taken into account. Section~\ref{order} explains how {\mwefinder} deals with left-right order. Finally, in Section~\ref{limitations} we describe the limitations of the approach taken.
+
+\subsubsection{Queries}
+\label{queries}
+
+The system processes an input example and interprets it as a canonical form for a MWE: it extracts the annotations and stores them in a data structure, parses the canonical form (with annotations  removed) using the Alpino parser, processes any annotations on the canonical form, and then creates three queries: the \textit{{\supersetquery}}, the \textit{\nearmissquery}, and the \textit{MWE query}.
+These queries are then applied to a treebank offered by the GrETEL application and selected by the user.
+
+The {\supersetquery} searches for sentences in which at least the lemmas of the so-called major words of the MWE occur (in any grammatical configuration). Major words are the content words if there are at least two in the MWE, and content and function words if there is at most one content word in the MWE. The query yields a superset of the results of both other queries. This query is applied to the full treebank, making use of indexes on the treebank to speed up the process. The {\supersetquery} yields a list of syntactic structures, and can be used to identify the MWE in a grammatical configuration that was not expected at all, to retrieve occurrences of the MWE in sentences  that Alpino parsed incorrectly, or to retrieve occurrences of the MWE for which {\mwefinder} did not generate the correct other two queries on the basis of the canonical form. The syntactic structures in the output of the {\supersetquery} are adapted in ways described below. The {\nearmissquery} and the MWE query are applied to the modified output of the {\supersetquery}.
+
+The {\nearmissquery} searches for sentences in which the lemmas of the major words of the MWE occur in the grammatical configuration derived from the canonical form. It can find potential examples of the MWE that deviate from the canonical form provided by showing differences in forms, arguments, modification and determination. It yields a superset of the MWE query results and can be used to fine-tune the hypothesis on the MWE as encoded in the canonical form supplied by the user.
+
+The {MWE query} finds sentences in which the MWE occurs. This query takes into account the hypothesis on the MWE implied by the canonical form and its annotations supplied by the user.
+
+\subsubsection{Grammatical properties}
+\label{gramprops}
+
+The parse tree for the canonical form contains grammatical properties for each word.\footnote{These properties include the so-called D-COI properties \citep{VanEynde:DCOITagSet:2005} and various Alpino-specific properties.} These include attributes for the part of speech (\textit{pt}), for the grammatical relation the word has in the structure (\textit{rel)}, for the lemma of the word (\textit{lemma}), for the actual form of the word in the utterance (\textit{word}), and for other grammatical properties, among which we distinguish three classes:
+
+\begin{description}
+\item[Subcategorisation properties:] properties to specify a subcategory of the part of speech, e.g.\ is a pronoun a demonstrative pronoun or a relative pronoun, is an adposition a preposition or a postposition, is a conjunction a coordinate conjunction or a subordinate conjunction, etc.
+
+\item[Interpretable properties:] properties that have an influence on the meaning of the utterance, e.g.\ is a noun singular or plural, what is the mood of the verb, what is the tense of a finite verb, etc.
+
+\item[Purely grammatical properties:] e.g.\ the person and number of a finite verb, the inflectional form of an adjective, the case of a pronoun, etc.
+\end{description}
+
+For the inflectable words in a MWE the query will contain a condition on the lemma of the word, its part of speech and any relevant subcategorisation properties.
+For the uninflectable words it is tempting to formulate the condition in terms of the \textit{word} property, but that would be ill-considered for a variety of reasons. The most important and principled reason has to do with purely grammatical properties such as (structural) \textit{case} or inflectional properties of adjectives. The case of a direct object of a MWE component is not part of the MWE, since the word may occur in different case forms depending on the syntactic configuration, e.g.\ a phrase may be in nominative case when it has been turned into a subject as a result of passivisation. In MWEs consisting of an adjective and a noun the adjective gets its normal inflectional variants in plural and in definite noun phrases, as illustrated in (\ref{vrolijkfransje}):\footnote{\textsc{e} stands for the adjectival \textit{e}-suffix. \textit{Frans} is a common Dutch name.}
+
+\begin{exe}
+\ex \label{vrolijkfransje}
+\begin{xlist}
+\ex \gll een \textit{vrolijk}-(*e) \textit{Fransje}\\
+a gay-\textsc{e} Frans.\textsc{dim}\\
+\glt `a gay spark'
+\ex \gll \textit{vrolijk}-*(e) \textit{Fransjes}\\
+gay-\textsc{e} Frans.\textsc{dim}.\textsc{pl}\\
+\glt `gay sparks' 
+\ex \gll dit \textit{vrolijk}-*(e) \textit{Fransje}\\
+this gay-\textsc{e} Frans.\textsc{dim}\\
+\glt `this gay spark'
+\end{xlist}
+\end{exe}
+
+A second reason for not formulating the part of the query for uninflectable words in terms of the \textit{word} attribute is that the value of the \textit{word} attribute is how the word actually appears in the text, including capitalisation, missing or extra diacritics, and spelling errors.
+
+Instead, the relevant part of the query is defined in terms of lemma, part of speech, subcategorisation properties and interpretable properties.
+
+\subsubsection{Creating modified variants}
+\label{variants}
+
+Creating the query for the canonical MWE is nontrivial, since the algorithm for it must take into account all the conventions for and the annotations on the canonical form provided for the MWE. For reasons described below, modification of the structure is often required. In many cases it is necessary to generate a query that takes into account multiple variants. These variants are required in part due to properties of the Dutch language, in part due to specific properties of the structures that Alpino yields, and in part due to the difficulty of parsing natural language utterances in general. We list a few examples.
+
+%\begin{description}
+\subsubsubsection{Single word phrases} For phrases that consist of a single word Alpino yields structures with a node for the word but not for the phrase.\footnote{Alpino is, despite what is stated on \url{https://www.let.rug.nl/vannoord/alp/Alpino/}, \textit{not} a dependency parser. It is a parser that yields constituent structures with explicitly labelled dependencies. See also \citet[283--285]{Odijk:etal:PaQu}.} This is in accordance with conventions that have been agreed upon in the consortia that have developed treebanks for Dutch \citep{Hoekstra:etal:2003,LASSY:SA-MAN}, but it is a very unfortunate feature for querying, because it requires a complication or even duplication of most of the queries  (\cite[106--107]{VANEYNDE2016104}, \cite{Odijk:etal:PaQu,Odijk:LiberAmicorum:2022}); in {\mwefinder} this feature is mitigated by expanding the structures of the example MWE and the structures in the {\supersetquery} results to contain a phrasal node above single word phrases (also illustrated in Figure~\ref{wiensharttreeafter}).
+% In {\mwefinder}, the structures of the example MWE and the structures in the {\supersetquery} results are all expanded with a phrasal  node above the word node for a single word phrase.
+
+\subsubsubsection{Bare indexed phrases} For words and phrases that play multiple roles in an utterance Alpino yields separate nodes for each role. One of these is a node for the whole  phrase (the \textit{antecedent}), whereas the other nodes are nodes with just the property of the grammatical relation and an index attribute (\textit{bare index nodes}). The bare index nodes are coindexed with the antecedent (have the same value for the \textit{index} attribute). This is used for wh-movement, control of the subject of an infinitival clause, for subject and object raising, for object to subject movement in passives, and for various kinds of ellipsis. In {\mwefinder} bare index nodes are replaced by their antecedent (though their \textit{rel} attribute is retained), both in the {\supersetquery}  output structures and in the structure of the example MWE. This is essential for dealing with passivised MWEs where the object has become the subject (see item below), with raising of subject MWE components, as in (\ref{subjrais}), and for wh-movement of MWE-components, as in (\ref{whmov}): \
+\begin{exe}
+\ex
+\begin{xlist}
+\ex\label{subjrais} {\gll \textit{De} \textit{laatste} \textit{loodjes} zullen \textit{het} \textit{zwaarst} \textit{wegen}.\\
+the last lead.\textsc{dim}.\textsc{pl} will the heaviest weigh\\}
+\glt `The tail end will be the most difficult.' 
+\ex\label{whmov} \gll Wiens \textit{hart} heeft zij \textit{gebroken}?\\
+whose heart has she broken\\
+\glt `Whose heart did she break?'
+
+\end{xlist}
+\end{exe}
+
+The changes made for single word phrases and bare index node expansion are illustrated in Figure~\ref{wiensharttree} (original parse tree) and Figure~\ref{wiensharttreeafter} (parse tree after single word phrase and bare index node expansion).
+\input{qobitree}
+
+
+% % % \notinclude{
+% % % 
+% % % 
+% % % \begin{figure}
+% % % {\tiny
+% % % \leaf{su/1:n(\textit{Jan})}
+% % % \leaf{hd/ww(\textit{wil})}
+% % % \leaf{su/1}
+% % % \leaf{det/lid(\textit{de})}
+% % % \leaf{hd/n(\textit{plaat})}
+% % % \branch{2}{obj1/np}
+% % % \leaf{hd/ww(\textit{poetsen})}
+% % % \branch{3}{vc/inf}
+% % % \branch{3}{--/smain}
+% % % \begin{center}
+% % % \tree
+% % % \end{center}
+% % % }
+% % % \caption{Parse Tree of \textit{Jan wil de plaat poetsen}}
+% % % \end{figure}
+% % % 
+% % % \begin{figure}
+% % % {\tiny
+% % % \leaf{\textbf{hd}/n(\textit{Jan})}
+% % % \branch{1}{\textbf{su/1:np}}
+% % % \leaf{hd/ww(\textit{wil})}
+% % % \leaf{\textbf{hd/n(\textit{Jan})}}
+% % % \branch{1}{\textbf{su/1:np}}
+% % % \leaf{\textbf{hd}/lid(\textit{de})}
+% % % \branch{1}{\textbf{det/detp}}
+% % % \leaf{hd/n(\textit{plaat})}
+% % % \branch{2}{obj1/np}
+% % % \leaf{hd/ww(\textit{poetsen})}
+% % % \branch{3}{vc/inf}
+% % % \branch{3}{--/smain}
+% % % \begin{center}
+% % % \tree
+% % % \end{center}
+% % % }
+% % % \caption{Parse Tree of \textit{Jan wil de plaat poetsen} after single word phrase introduction and bare index phrase expansion. The modified parts are in bold face.}
+% % % \end{figure}
+% % % 
+% % % 
+% % % } % notinclude
+
+\begin{figure}
+    \centering\small
+\begin{forest}
+  [--/whq, for tree={parent anchor=south, child anchor=north}
+    [whd/2:np
+      [det/vnw
+        [\textit{wiens}]
+      ]
+      [hd/n
+        [\textit{hart}]
+      ]
+    ]
+    [body/sv1
+      [hd/ww
+        [\textit{heeft}]
+      ]
+      [su/1:vnw
+        [\textit{zij}]
+      ]
+      [vc/ppart
+        [su/1]
+        [obj1/2]
+        [hd/ww
+          [\textit{gebroken}]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+    \caption{Parse tree of example (\ref{whmov}) \textit{Wiens hart heeft zij gebroken?}. The notation \textit{rel/i:cat} specifies a node with relation \textit{rel}, syntactic category \textit{cat} and index \textit{i}. Not all nodes have an index. Bare index nodes have an index but do not dominate lexical material and have no syntactic category; here \textit{su/1} and \textit{obj1/2}.} \label{wiensharttree}
+\end{figure}
+
+
+% \begin{figure}
+% {\footnotesize
+% \leaf{\textit{wiens}}
+% \branch{1}{det/vnw}
+% \leaf{\textit{hart}}
+% \branch{1}{hd/n}
+% \branch{2}{whd/2:np}
+% \leaf{\textit{heeft}}
+% \branch{1}{hd/ww}
+% \leaf{\textit{zij}}
+% \branch{1}{su/1:vnw}
+% \leaf{su/1}
+% \leaf{obj1/2}
+% \leaf{\textit{gebroken}}
+% \branch{1}{hd/ww}
+% \branch{3}{vc/ppart}
+% \branch{3}{body/sv1}
+% \branch{2}{--/whq}
+
+% \begin{center}
+% \tree
+% \end{center}
+% } % tiny
+% \caption{Parse tree of example (\ref{whmov}) \textit{Wiens hart heeft zij gebroken?}. The notation \textit{rel/i:cat} specifies a node with relation \textit{rel}, syntactic category \textit{cat} and index \textit{i}. Not all nodes have an index, bare index nodes have an index but do not dominate lexical material and have no syntactic category.} \label{wiensharttree}
+% \end{figure}
+
+\begin{figure}
+    \centering\small
+\begin{forest}
+  [--/whq, for tree={parent anchor=south, child anchor=north}
+    [whd/2:np
+      [\textbf{det/detp}
+        [\textbf{hd}/vnw
+          [\textit{wiens}]
+        ]
+      ]
+      [hd/n
+        [\textit{hart}]
+      ]
+    ]
+    [body/sv1
+      [hd/ww
+        [\textit{heeft}]
+      ]
+      [\textbf{su/1:np}
+        [\textbf{hd}/vnw
+          [\textit{zij}]
+        ]
+      ]
+      [vc/ppart
+        [\textbf{su/1:np}
+          [\textbf{hd/vnw}
+            [\textbf{\textit{zij}}]
+          ]
+        ]
+        [\textbf{obj1/2:np}
+          [\textbf{det/detp}
+            [\textbf{hd/vnw}
+              [\textbf{\textit{wiens}}]
+            ]
+          ]
+          [\textbf{hd/n}
+            [\textbf{\textit{hart}}]
+          ]
+        ]
+        [hd/ww
+          [\textit{gebroken}]
+        ]
+      ]
+    ]
+  ]
+\end{forest}
+    \caption{Parse tree of example (\ref{whmov}) \textit{Wiens hart heeft zij gebroken?} after single word phrase expansion and bare index node expansion. The pronouns \textit{wiens} and \textit{zij} are now dominated by a phrasal node. The bare index nodes for the subject and the direct object of the participial phrase have been replaced by their antecedents. Changes are in bold face.} \label{wiensharttreeafter}
+\end{figure}
+
+% \begin{figure}
+% {\footnotesize
+% \leaf{\textit{wiens}}
+% \branch{1}{\textbf{hd}/vnw}
+% \branch{1}{\textbf{det/detp}}
+% \leaf{\textit{hart}}
+% \branch{1}{hd/n}
+% \branch{2}{whd/2:np}
+% \leaf{\textit{heeft}}
+% \branch{1}{hd/ww}
+% \leaf{\textit{zij}}
+% \branch{1}{\textbf{hd}/vnw}
+% \branch{1}{\textbf{su/1:np}}
+
+% \leaf{\textbf{\textit{zij}}}
+% \branch{1}{\textbf{hd/vnw}}
+% \branch{1}{\textbf{su/1:np}}
+
+% \leaf{\textbf{\textit{wiens}}}
+% \branch{1}{\textbf{hd/vnw}}
+% \branch{1}{\textbf{det/detp}}
+% \leaf{\textbf{\textit{hart}}}
+% \branch{1}{\textbf{hd/n}}
+% \branch{2}{\textbf{obj1/2:np}}
+
+% \leaf{\textit{gebroken}}
+% \branch{1}{hd/ww}
+% \branch{3}{vc/ppart}
+% \branch{3}{body/sv1}
+% \branch{2}{--/whq}
+
+% \begin{center}
+% \tree
+% \end{center}
+% } %small
+% \caption{Parse tree of example (\ref{whmov}) \textit{Wiens hart heeft zij gebroken?} after single word phrase expansion and bare index node expansion. The pronouns \textit{wiens} and \textit{zij} are now dominated by a phrasal node. The bare index nodes for the subject and the direct object of the participial phrase have been replaced by their antecedents. Changes are in bold face.} \label{wiensharttreeafter}
+% \end{figure}
+
+
+
+\subsubsubsection{Passivisation} 
+In  passivised variants, several changes occur:\largerpage[2]
+
+\begin{itemize}
+\item The direct object, if there is one, is turned into a subject;\footnote{In Dutch it is sometimes possible to passivise an intransitive verb or a transitive verb without an object, e.g.\ \textit{er wordt gedanst} `there is dancing', \textit{er wordt gefietst} `people are cycling', \textit{er wordt gebouwd} `something is being built/there is construction going on', prompting a dummy subject \textit{er} `there' (cf.\ \cite{tp:14406719669147366}).}
+\item the subject is left out or turned into a phrase headed by the adposition \textit{door} `by';
+\item the verb takes on the past participle form;
+\item a passive auxiliary (\textit{worden} `be' or \textit{zijn} `have been') can be  introduced.
+\end{itemize}
+
+Example (\ref{passiveoverall}) illustrates this:
+
+\begin{exe}
+\ex\label{passiveoverall}
+\begin{xlist}
+\ex\label{passive} \gll \textit{De} \textit{boeken} werden door Saab \textit{neergelegd}.\\
+the books were by Saab down.laid\\
+\glt `Saab declared itself bankrupt.'
+\ex\label{impersonalpassive} \gll Er werd \textit{met} \textit{de} \textit{pet} \textit{naar} \textit{gegooid.}\\
+there was with the cap to thrown\\
+\glt `People were mucking around.'
+\end{xlist}
+\end{exe}
+
+Passive forms of MWEs can be dealt with as follows: free argument subjects  are simply not part of the query, since they are not needed at all for identifying a MWE (see also below, under Subjects). Since the object bare index phrase has been replaced by its antecedent, it's easy to check whether the direct object matches the requirements (in example (\ref{passive}), whether the direct object equals \textit{de boeken}). Any verb form is accepted by the MWE query, so the past participle also matches. This leaves only the cases where a MWE with a fixed subject can be passivised: in these cases this subject must be replaced by a phrase headed by the adposition \textit{door} in the query. Note that this also accounts for impersonal passives, of which (\ref{impersonalpassive}) is an example.
+
+
+\subsubsubsection{Definite pronouns as complements to an adposition} The definite pronouns \textit{het} `it', \textit{dit} `this', and \textit{dat} `dat' as a complement to a preposition are ill-formed or infelicitous. Instead of these, Dutch uses the corresponding R-pronouns (\textit{er}, \textit{hier}, \textit{daar}), with the postpositional variant of the adposition. The R-pronouns precede the adposition and do in fact not have to be adjacent to it:
+
+\begin{exe}
+\ex
+\begin{xlist}
+\ex[*] { \gll Hij \textit{paste} \textit{een} \textit{mouw} \textit{aan} \textit{het}.\\
+he fitted a sleeve on it\\}
+\ex[] {\gll Hij \textit{paste} \textit{er} \textit{een} \textit{mouw} \textit{aan}.\\
+he fitted it a sleeve on\\
+\glt `He found a solution for it.' }
+
+\end{xlist}
+\end{exe}
+
+For these cases, the query must only allow for the postpositional form of the adposition (e.g.\ \textit{met} is turned into \textit{mee}); the rest is taken care of by the Alpino grammar itself.
+
+However, if the R-pronoun is adjacent to the adposition, it must  be written as one word with the adposition according to the official Dutch spelling rules.\footnote{\url{https://en.wikipedia.org/wiki/Dutch_orthography}.} The simplest way to analyse this is to assume that this is a low-level orthographic convention (grounded in phonological considerations), so that it can be mostly ignored in the syntax (see \cite[115--116]{Rosettaboek:94} for such an analysis).\footnote{The operation must be syntactic in nature because the R-pronoun and the adposition must only be written as a single word when the R-pronoun is a complement to the adposition.} But traditional grammar and Alpino deal with these words consisting of an R-pronoun and an adposition (e.g.\ \textit{eraan} `on it') as independent words with their own part of speech code, so a variant query is generated to cover these cases.
+
+\subsubsubsection{Sentential complements to an adposition} The Dutch language does not allow sentential complements to  an adposition. This is illustrated in (\ref{P+NP}), which has a NP as a complement to the adposition and is well-formed, vs. (\ref{P+S}), which has a subordinate clause as a complement to an adposition and is ill-formed. 
+
+\begin{exe}
+\ex
+\begin{xlist}
+\ex[] {\gll Hij \textit{liep} \textit{tegen} veel problemen \textit{aan}.\\
+he walked against many problems on\\
+\glt `He had to face many problems.' \label{P+NP}}
+
+\ex[*] {\gll Hij \textit{liep} \textit{tegen} dat hij ziek was \textit{aan}.\\
+he walked against that he ill was on\\\label{P+S}} 
+
+\ex[] {\gll Hij \textit{liep} er \textit{tegen} \textit{aan} dat hij ziek was.\\
+he walked it against on that he ill was\\
+\glt `He had to face the fact that he was ill.' \label{erP+S}}
+\end{xlist}
+\end{exe}
+
+Instead, the adposition must have the R-pronoun \textit{er} `it' as a complement and changes into a postposition, and the sentential complement is added at the end of the clause, as in (\ref{erP+S}). For each query that contains a free argument to an adposition, a variant taking this into account is generated. Also here, an additional variant is generated to cover the cases where \textit{er} and the adposition are written as a single word.
+  
+\subsubsubsection{Subjects} Subjects can be absent in Dutch utterances in imperative clauses, in cases of topic drop, and in impersonal passives. This is also the case for subjects of MWEs, unless the subject is or contains a fixed component of the MWE. This is illustrated in (\ref{imperative}) for imperatives, in (\ref{topicdrop}) for topic drop and in (\ref{impersonalpassive}) for impersonal passives, repeated here as (\ref{impersonalpassivenosubject}):
+
+\begin{exe}
+\ex
+\begin{xlist}
+\ex \gll \textit{Gooi} \textit{er} niet \textit{met} \textit{de} \textit{pet} \textit{naar}!\\
+throw it not with the cap towards\\ \label{imperative}
+\glt `Don't muck around!'
+\ex \gll \textit{Staat} \textit{in} \textit{de} \textit{sterren} \textit{geschreven}.\\
+stands in the stars written\\
+\glt `That is bound to happen.'  \label{topicdrop}
+\ex\label{impersonalpassivenosubject} \gll Er werd \textit{met} \textit{de} \textit{pet} \textit{naar} \textit{gegooid}.\\
+there was with the cap to thrown\\
+\glt `People were mucking around.'
+\end{xlist}
+\end{exe}
+These are accounted for by not including any condition on the subject in the query if it is not  and does not contain a fixed component of the MWE. Nonfinite clauses have no overt subject but in most cases they do have a bare index node subject in Alpino structures, so these are not relevant here.
+
+\subsubsubsection{Relativisation of  MWE-parts} 
+Components of a MWE can sometimes be relativised, especially in the case of support verb constructions, but this is certainly not always the case. Example (\ref{mwerel}) contains an example where this is possible (for the MWE \textit{(een) poging wagen} `to make an attempt'), example (\ref{mwenorel}) shows an example where this is not possible (for the MWE \textit{de plaat poetsen} `to bolt'):\footnote{The symbol \textit{\#} means that the idiomatic reading is not possible.}
+
+\begin{exe}
+\ex\judgewidth{\#}
+\begin{xlist}
+\ex[] {\gll De \textit{poging} die hij \textit{gewaagd} had was hopeloos.\\
+the attempt that he dared had was hopeless\\
+\glt `The attempt that he had made was hopeless.' \label{mwerel}}
+\ex[\#] {\gll \textit{De} \textit{plaat} die hij \textit{gepoetst} had was mooi. \\
+the plate that he polished had was beautiful \\
+\glt `The plate that he polished was beautiful.' \label{mwenorel}}
+\end{xlist}
+\end{exe}
+
+{\mwefinder} replaces a relative pronoun by its antecedent. As its antecedent it takes the NP that it is contained in with the exclusion of the relative clause\footnote{This is done to avoid an infinite recursion.} but with the addition of an abstract dummy modifier. The antecedent of the relative pronoun \textit{die} `that' is therefore \textit{de dummy poging} in (\ref{mwerel}), and \textit{de dummy plaat} in (\ref{mwenorel}). The presence of the dummy modifier now ensures that relativisation is only allowed when the component of the MWE can be modified (which is the case for \textit{poging} in \textit{een poging wagen}, but not for \textit{plaat} in \textit{de plaat poetsen}).
+
+\subsubsubsection{NP PP sequences} In expressions in which a noun phrase (NP) is immediately followed by an adpositional phrase (PP) the PP can be a sibling or a child of the NP. Alpino resolves this ambiguity sometimes by selecting the PP as child option, sometimes by selecting the PP as a sibling option. The choice is dependent on several factors, among which the nature of the complement in the PP. In (\ref{NPPP1}) the PP \textit{van iets} is analysed as a child of the NP node dominating \textit{de schuld}, while in (\ref{NPPP2}) the (discontinuous) PP \textit{daar ... van} is a sibling of the NP \textit{de schuld}. We indicated this by means of square brackets in these examples.
+
+\begin{exe}
+\ex \gll Iemand zal iemand  [\textit{de} \textit{schuld} [\textit{van} iets]] \textit{geven}.\\
+someone will someone the blame of something give\\  \label{NPPP1}
+\glt `Someone will put the blame for something on someone.'
+\ex \gll Iemand zal iemand  [daar] [\textit{de} \textit{schuld}] [\textit{van}] \textit{geven}.\\
+someone will someone there the blame of give\\ \label{NPPP2}
+\glt `Someone will put the blame for that on someone.'
+\end{exe}
+%iemand zal een boekje over iemand opendoen
+
+For this reason, an alternative structure is generated for nodes headed by a verb that contain an NP which in turn contains a PP. In this alternative structure, the PP is a sibling of the NP.
+
+It is not enough to generate this alternative only for the structure of the MWE that the query is derived from. It must also be applied to the structure of each sentence queried, i.e. for PPs that can be part of the MWE. For example, for the variants \textit{Iemand zal iemand daar van de schuld geven} (with a space between \textit{daar} and \textit{van}) and \textit{Iemand zal iemand van iets de schuld geven}, the PPs \textit{daar van} and \textit{van iets} are analysed as modifiers of the immediately preceding \textit{iemand}, which would lead to a mismatch with the query for the expression \textit{iemand van iets de schuld geven}, as indicated in (\ref{iemandbracketing}).
+
+\begin{exe}
+\ex \label{iemandbracketing}
+\begin{xlist}
+\ex \gll Iemand zal [iemand [daar \textit{van} ]] de \textit{schuld} \textit{geven}.\\
+Someone will [someone [there of ]] the blame give.\\
+\glt `Someone will put the blame for something on someone.'
+\ex \gll Iemand zal [iemand [\textit{van} iets ]] de \textit{schuld} \textit{geven}.\\
+Someone will [someone [of something ]] the blame give.\\
+\glt `Someone will put the blame for something on someone.'
+\end{xlist}
+\end{exe}
+
+%\item[Alpino mwus]
+
+\subsubsubsection{Adpositional phrases} Adpositional  phrases to a verb can get different analyses in Alpino: as a predicative complement, as a locational-directional complement, as an adpositional complement,  as a modifier, or as a secondary predicate. The choice is in part dependent on the verb that selects them, but, in the case of ambiguities, also dependent on the disambiguation strategy of Alpino \citep{VanNoord:2006}, for which it is not easy to predict which selection is made. For PPs dependent on  a verb the query is therefore relaxed to accept any of these grammatical relations.
+
+\subsubsubsection{Secondary predicates} Modifiers in a clause with a verb cluster are always analysed as modifiers of the deepest embedded verb. However, secondary predicates are always analysed as modifiers of the least embedded verb. If an expression such as (\ref{rookt}) with the secondary predicate \textit{als een ketter} is embedded under an auxiliary verb such as \textit{hebben}, as in (\ref{gerookt}), the phrase \textit{als een ketter} is analysed by Alpino as a modifier to the verb \textit{heeft}, and the MWE will not be found:
+
+\begin{exe}
+\ex \gll Hij \textit{rookt} \textit{als} \textit{een} \textit{ketter}.\\
+he smokes like a heretic\\ \label{rookt}
+\glt `He smokes like a chimney.'
+
+\ex \gll Hij heeft altijd \textit{gerookt} \textit{als} \textit{een} \textit{ketter}.\\
+he has always smoked as a heretic\\  \label{gerookt}
+\glt `He has always smoked like a chimney.'
+\end{exe}
+
+In order to avoid this problem, a special operation is applied to move the secondary predicate to become a modifier of the deepest embedded verb, both in the structures that lead to the query and in the structures of the sentences being queried.
+
+
+\subsubsection{Left-right order}
+\label{order}
+
+The queries that are generated generally do not check for the left-right order of the components of the MWE, its arguments or modifiers. This is desired since the order of these elements is in most cases not a property of the MWE but follows from the grammar of the language. For this reason {\mwefinder} can easily identify the different expressions in (\ref{flex}) as instantiations of the same MWE. Dutch has words that in some cases must be used as a preposition (preceding its complement) and in other cases as a postposition (following its complement), but even this does not require conditions on order since the distinction is marked by a grammatical feature. Thus, {\mwefinder}, without restrictions on left-right order,  will correctly not identify (\ref{deklippenop}) as containing the MWE \textit{op de klippen lopen} `to fail', though it will  identify (\ref{opdeklippen}) as such: 
+
+\begin{exe}
+\ex \gll Dat zal de klippen op lopen.\\
+that will the cliffs on walk\\ \label{deklippenop}
+\glt `That will walk onto the cliffs.' (Not: `That will fail.')
+\ex \gll Dat zal \textit{op} \textit{de} \textit{klippen} \textit{lopen}.\\
+that will on the cliffs walk\\ \label{opdeklippen}
+\glt `That will walk on the cliffs.' And: `That will fail.'
+ \end{exe}
+
+There surely are some MWEs in which the left-right order is a property of the MWE, especially in coordinate structures, e.g.\ as in (\ref{coordorder}), but at the time of writing we did not yet implement such restrictions.
+
+\begin{exe}
+\ex \label{coordorder}
+\begin{xlist}
+\ex[] {\gll dag en nacht\\
+day and night\\
+\glt `during night and day'}
+\ex[\#] {nacht en dag}
+\ex[] {\gll dames en heren\\
+            ladies and gentlemen\\
+\glt `ladies and gentlemen'}
+\ex[\#] {heren en dames}
+
+\end{xlist}
+\end{exe}
+%\end{description}
+
+%dhet volgende  stuk zou ook naar de future work sectie verplaatst kunnen worden
+There are also restrictions on left-right order that hold for MWEs but not for literal constructions. For example, \textit{de plaat} in (\ref{deplaattop}) can not be clause-initial under the idiomatic reading though it can be  under the literal reading:
+
+\begin{exe}
+\ex[\#] {\gll De plaat heeft hij niet gepoetst.\\
+the plate has he not polished\\ \label{deplaattop}
+\glt `He did not polish the plate.' (Not: `He bolted.')}
+\end{exe}
+
+We did not yet implement such restrictions. We believe that many such restrictions can be dealt with systematically but whether that turns out to be the case still remains to be investigated.
+
+\subsubsection{Limitations}
+\label{limitations}
+
+ {\mwefinder} is fully dependent on the syntactic structures generated by the Alpino parser. If Alpino cannot parse a sentence correctly, {\mwefinder} will not be able to identify any MWE in it. This is one of the reasons why {\mwefinder} includes the {\supersetquery}: this query will find sentences in which the MWE occurs even if Alpino cannot parse it correctly, so a researcher still has data to work with.\footnote{Assuming Alpino can at least lemmatise all major words correctly.} However,  this query will also find many sentences in which the MWE does not occur, so it will require more manual work by the researcher. The amount of work is significantly reduced by the option to select the results of a query minus the results of a stricter query, as we showed in Section~\ref{example}. We aim to reduce the amount of manual work required even more  by providing statistics on the results and the results minus the results of the other two queries in the dedicated MWE analysis step. In particular, it will provide statistics on the grammatical relation between the lemmas of the major words. However, at the time of writing this has not been integrated in the online version yet. 
+
+Alpino may analyse a sentence incorrectly for a wide variety of reasons. One possibility is that the sentence contains a construction that Alpino cannot handle. For example, in the sentence \textit{Hoe goed Afrikaanse muzikanten ook zijn, aan de bak komen ze nauwelijks.} `Good though African musicians may be, they hardly get jobs.',\footnote{Twente News Corpus \citep{Ordelman:2007}, component ad1999, sentence with identifier ad19990108.data.dz:1831 in GrETEL.} Alpino can only correctly parse the part \textit{Hoe goed Afrikaanse muzikanten ook zijn}, but it cannot connect it to the rest of the sentence, and as a consequence the MWE \textit{aan de bak komen} `to get a job, get a turn' is incorrectly not identified in this sentence.
+
+{\mwefinder} also currently fails to find a MWE  if Alpino does not know a word and cannot correctly guess its properties. For example, the word \textit{velen} can be a verb (`tolerate') or a pronoun (`many persons'). As a  verb it can only occur in the expression \textit{iets (niet) kunnen velen} `not be able to stand something'. Alpino does not know this verb and analyses (\ref{kunnenvelen}) incorrectly as consisting of a full main clause \textit{hij kan dat niet} `he cannot do that' followed by single word phrase headed by the pronoun \textit{velen} `many persons'. Similarly, Alpino does know the verb \textit{smeren}, but only in the sense of `to butter'. {\mwefinder} can therefore find \textit{smeerde 'm} in (\ref{msmeren}) when looking for instances of the MWE \textit{'m smeren} `to bolt', because it looks for instances of the verb \textit{smeren} with an object \textit{'m} `him'. The problem is that the verb \textit{smeren} `to butter' forms its perfect tense with the auxiliary verb \textit{hebben}, while the verb \textit{smeren} in the MWE \textit{'m smeren} forms its perfect tense with the auxiliary verb \textit{zijn}, as illustrated in  (\ref{mgesmeerdzijn}). The result is that Alpino cannot correctly analyse (\ref{mgesmeerdzijn}), and {\mwefinder} cannot identify it as an occurrence of the MWE \textit{'m smeren}.
+
+% , so {\mwefinder} can identify \textit{smeerde 'm} in (\ref{msmeren}) as an instance of  the MWE \textit{'m smeren} `to bolt'. However, the verb \textit{smeren} forms its perfect tense with the auxiliary verb \textit{hebben}, while the verb \textit{smeren} in the MWE \textit{'m smeren} forms its perfect tense with the auxiliary verb \textit{zijn}, as illustrated in  (\ref{mgesmeerdzijn}). Alpino cannot correctly analyse (\ref{mgesmeerdzijn}), so {\mwefinder} cannot identify it as an occurrence of the MWE \textit{'m smeren}.
+
+\begin{exe}
+\ex \gll Hij \textit{kan} dat niet \textit{velen}.\\
+he can that not stand\\ \label{kunnenvelen}
+\glt `He can't stand it.'
+\ex \gll Hij \textit{smeerde} \textit{'m}.\\ 
+he buttered him\\ \label{msmeren}
+\glt `He bolted.'
+\ex \gll Hij is \textit{'m} \textit{gesmeerd}.\\
+he is him buttered\\ \label{mgesmeerdzijn}
+\glt `He has bolted.'
+\end{exe}
+
+%limitations of Alpiono. of parsing in general
+%variants required because of peculiarities of the Dutch language
+%Alpino mwus
+
+\subsection{Changes under the hood}
+\label{backend}
+%to be written by Sheean Spoel and Tijmen Baarda(?)
+% size max 4 A4
+
+Under the hood, the backend of GrETEL was largely rewritten to make it more flexible. The existing PHP backend of GrETEL~4 was migrated to Python in combination with the Django framework for web applications,\footnote{\url{https://www.djangoproject.com/}} which gives us better support for asynchronous tasks and better run-time resource management. This allowed us to improve performance and to better support large corpora and complex queries. The existing Angular frontend of GrETEL~4 was modified to communicate with the new backend and expanded with a new functionality for the \mwefinder.\footnote{\url{https://angular.io/}}
+
+Support for large text corpora is important in the context of MWEs, because word frequencies in natural language have a Zipfian distribution, so that most of the words occurring in the  MWEs have very low frequencies. GrETEL~5 still takes a considerable amount of time to search entire corpora, but does so in the background and will cache the counts and results for further usage. We have prepared several existing large corpora for usage in GrETEL, including LASSY Groot \citep{vanNoord:2008},\footnote{\url{https://taalmaterialen.ivdnt.org/download/tstc-lassy-groot-corpus/}} which includes the 500-million-word SoNaR corpus \citep{SONAR:2013}, a Wikipedia dump, and the TwNC, a multifaceted Dutch news corpus \citep{Ordelman:2007}. GrETEL~5 ships with import scripts for these corpora.\largerpage
+
+The principles of the existing search mechanism of GrETEL have been retained in GrETEL~5, and they also largely form the basis of how the {\mwefinder} is integrated into the application, but with certain deviations. In GrETEL, the corpora are stored in  XML format as they were parsed by the Alpino parser\footnote{These are in accordance with the \href{https://github.com/rug-compling/Alpino/blob/master/Treebank/alpino_ds.dtd}{alpino\_ds DTD}.} in databases of BaseX \citep{Gruen:2010},\footnote{\url{https://docs.basex.org/wiki/Main_Page}. GrETEL uses  BaseX version 9.}  a database system for XML documents. GrETEL translates queries created by the user into XQuery/XPath queries that can be executed by BaseX. This search process is relatively slow compared to other search methods, but searching syntactical structures is not possible using common search methods such as simple full text search.
+
+
+
+The most important deviation entails that when searching for a MWE, the BaseX databases are always searched using the {\supersetquery}, while the other two queries are executed with the search results of the {\supersetquery} as its basis. The main reason for this is that MWE queries result in complex nested XPath expressions which are not fully optimised by BaseX's query planner.
+
+On the contrary, a {\supersetquery} contains only a handful of content words and makes good use of the indices that BaseX creates for XML attributes. This means that results for a {\supersetquery} can be efficiently retrieved. The results of the {\supersetquery}, which contain all potential matches for the requested MWE, can then be reused for resolving the other more specific queries.
+
+Another reason for searching MWEs based on the {\supersetquery} is that it is necessary to manipulate the Alpino parse trees of the corpora before the other two queries can be run. Those additional manipulations are needed because of the considerations detailed in Section~\ref{variants}. Such processing steps would be too expensive computationally to run on entire corpora, and are instead run on the result set of the relevant {\supersetquery}. The latter is of a substantially smaller scale. These processing steps are carried out in-memory using the \texttt{lxml} Python library.\footnote{\url{https://lxml.de/}}
+The final step is to use the queries to search in the manipulated parse trees, which is done using \texttt{lxml}, as well, thanks to its XPath engine.\largerpage
+
+
+Finally, structuring MWE queries around a {\supersetquery} allows query results to be cached, providing a more fluent interactive workflow for users. The user does not see anything of this tiered approach, and instead simply sees the results for the selected MWE and type of query, and can quickly switch between them.
+
+GrETEL is open source and its code is available at GitHub.\footnote{\url{https://github.com/UUDigitalHumanitieslab/gretel}} The part of the application that generates queries for MWEs and that performs the tree manipulation is available as a separate Python package, so that it may also be used to create scripts that search treebanks without using GrETEL.\footnote{\url{https://github.com/UUDigitalHumanitieslab/mwe-query}} 
+
+\section{Other languages}
+\label{otherlanguages}
+
+We presented {\mwefinder} for the Dutch language, integrated in a specific treebank query application (GrETEL) for the Dutch language, which uses a specific grammar and parser for the Dutch language (Alpino).
+However, it is not difficult to make similar systems for other languages. The minimum requirements to make a variant for a different language are a parser for that language, and a query system that can query the kind of structures that the parser yields.
+A system for a different language could even be integrated in GrETEL, because GrETEL is in itself not bound to any particular language, as shown by the GrETEL variant for Afrikaans \citep{AUGUSTINUS16.362}, and Poly-GrETEL \citep{AUGUSTINUS16.486}, which enabled simultaneous querying in multiple languages in a parallel treebank.\footnote{\url{http://gretel.ccl.kuleuven.be/poly-gretel/index.php}.}
+
+Moreover, a {\mwefinder} for a different language and a different parser  has to have a query generation
+procedure. The procedure described in \sectref{querygeneration} is to a large extent generic, though of course it has some aspects that are specific to the Dutch language or to the specific parser used.
+In {\mwefinder}, the treatment of single word phrases and the treatment of secondary predicates is entirely idiosyncratic to the parser used. 
+Some aspects are entirely specific to Dutch (definite pronouns and sentential complements  to an adposition), though surely each language will have its own peculiarities, even if one would use a cross-language framework for grammatical structures such as the Universal Dependencies framework \citep{NIVRE16.348}.\footnote{\url{https://universaldependencies.org/}}
+Other aspects will have to be addressed in any grammar/parser but may be implemented in a  completely different way in different grammars/parsers. Displacement and control phenomena (with Alpino using bare indexed phrases), passivisation (with Alpino having displaced objects) are concrete examples.
+But most  aspects are completely generic: the treatment of the grammatical properties (\sectref{gramprops}), the 
+modified variants (\sectref{variants}), subjects, relativisation of MWE-parts, NP PP sequences, adpositional phrases, and left-right order are relevant for any language.
+
+In summary, the implementation of {\mwefinder} sets an excellent example for the implementation of similar systems for different languages and parsers. 
+
+\section{Conclusions}
+\label{conclusions}
+%tobe written by JO
+%size max 0.5 A4
+
+% We submit that the {\DUCAME} resource provided and the {\mwefinder} are useful research instruments for linguistic and lexicological research into MWEs. 
+We presented the {\DUCAME} resource and the {\mwefinder} as useful research instruments for linguistic and lexicological research into MWEs. 
+{\mwefinder} makes it possible to reliably and quickly search for occurrences of a MWE despite their flexible nature. The search is based on an example in an annotated canonical form. The system searches not only for the MWE, but also  generates and executes two more relaxed queries: the results of the \textit{\nearmissquery}  and especially the difference between the results of the \textit{\nearmissquery} and the \textit{MWE query} are very useful for evaluating the implicit hypothesis on the nature of the MWE as formulated in the annotated canonical form, and for adjusting it if needed. The \textit{{\supersetquery}}, and especially the difference between the results of this query and the other two enable the user to find occurrences of MWEs that one might not have expected at all, and also acts as a fall back option for cases in which Alpino parses the sentence containing a MWE incorrectly, or if {\mwefinder} does not generate the correct other queries from the canonical form.
+
+\section{Future work}
+\label{futurework}
+%size max 0.5 A4
+
+We aim to finalise the work on the dedicated MWE analysis component and to integrate it in the online application.
+
+We also plan to experiment with a different indexing system than BaseX for the {\supersetquery}. This query searches for a set of lemmas irrespective of their grammatical relation, so it is not necessary to use an index system for this query that can deal with very complex XPath expressions. One of the indexing systems we want to experiment with is Solr/Lucene,\footnote{\url{https://lucene.apache.org/} and \url{https://solr.apache.org/}} which has also proven very efficient in OpenSoNaR \citep{Does:etal:CLC20} and in Nederlab \citep{Brouwer:etal:MTAS:2016}.
+
+The software behind the system can easily be converted to software to annotate a large corpus for MWEs, and enrich the treebank with metadata on MWE occurrences. We  intend to make this software and apply it on a large corpus (e.g., the LASSY-Groot Newspaper corpus; \cite{LASSY:2013}). We will also write software for converting the metadata on MWE occurrences in the CoNLL-U and Parseme-tsv formats as proposed in the PARSEME consortium.\footnote{\url{https://universaldependencies.org/format.html} and \url{https://typo.uni-konstanz.de/parseme/index.php/2-general/184-parseme-shared-task-format-of-the-final-annotation}} This can then form the basis for  the manual verification of these annotations and in particular adding missing annotations, and the resulting data may be relevant for a wide range of natural language processing tools dealing with MWEs.
+
+We furthermore aim to extend the annotation system for the canonical forms with special annotations for collocations and support verb constructions, and to extend {\mwefinder} so that it can deal with these new annotations.
+
+Finally, there is a small number of MWEs that are currently not dealt with correctly with the canonical forms we currently use. We aim to investigate how we can adapt this.
+
+\section*{Acknowledgements}
+%Acknowledgements will be added in the final version.
+The research described in this chapter was carried out in the Datahub SSH project funded by Utrecht University. We thank the anonymous reviewers for their comments, which led to  a significant improvement of the original text. 
+
+%\section*{Contributions}
+%John Doe contributed to conceptualization, methodology, and validation.
+%Jane Doe contributed to the writing of the original draft, review, and editing.
+
+\section*{Acronyms and Abbreviations}
+\label{acronyms}
+% % % We list the abbreviations and acronyms used in this chapter with  explanations and their types (between brackets).
+
+
+\begin{description}[noitemsep,style=multiline,font=\normalfont,leftmargin=\widthof{MMMMMM}]
+% \item[--] unspecified grammatical relation (Alpino grammatical relation)
+\item[BaseX] index system for XML documents (index system)
+\item[body] relation of the clause in a wh-question (Alpino grammatical relation)
+\item[cat] syntactic category (Alpino attribute)
+\item[CONLL-U] Computational Natural Language Learning format version U (text corpus format)
+\item[det] determiner (Alpino grammatical relation)
+\item[detp] determiner phrase (Alpino syntactic category)
+\item[\textsc{dim}] diminutive (grammatical category)
+\item[DUCAME] Dutch Canonicalised Multiword Expressions (lexical resource)
+\item[DuELME] Dutch Electronic Lexicon of Multiword Expressions (lexical resource)
+\item[\textsc{e}] Dutch \textit{e}-suffix on adjectives (suffix)
+\item[GrETEL] Greedy Extraction of Trees for Emprical Linguistics (application)
+\item[hd] head (Alpino grammatical relation)
+\item[inf] infinitive phrase (Alpino syntactic category)
+\item[lid] article (Alpino part of speech code)
+\item[lxml] Python module to deal with XML (Python module)
+\item[MWE] multiword expression (term)
+\item[n] noun  (Alpino part of speech code)
+\item[np] noun phrase (Alpino syntactic category)
+\item[NP] noun phrase (syntactic category)
+\item[obj1] direct object (Alpino grammatical relation)
+\item[PARSEME] Parsing and Multiword Expressions (project)
+% \item[\textsc{pl}] plural (grammatical category)
+\item[PP] adpositional phrase (syntactic category)
+\item[ppart] past participle phrase (Alpino syntactic category)
+\item[pt] part of speech (Alpino attribute)
+\item[rel] grammatical relation (Alpino attribute)
+\item[R-pronoun] Dutch pronoun from a particular set, each of which contains an \textit{r} in it (word class)
+\item[smain] main clause (Alpino syntactic category)
+\item[su] subject (Alpino grammatical relation)
+\item[sv1] Verb-initial clause (Alpino syntactic category)
+\item[top] top relation (Alpino grammatical relation)
+\item[tsv] tab-separated value file (file format)
+\item[TwNC] Twente News Corpus (text corpus)
+\item[vc] verbal complement (Alpino grammatical relation)
+\item[vnw] pronoun (Alpino part of speech code)
+\item[VRT] Vlaamse Radio en Televisie `Flemish Radio and Television' (broadcast organisation in Belgium)
+\item[whd] relation of fronted wh-phrase in a question (Alpino grammatical relation)
+\item[whq] main wh-question (Alpino syntactic category)
+\item[ww] verb (Alpino part of speech code)
+\item[XML] eXtensible Mark-up Language (mark-up language)
+\item[Xpath] query language for XML-documents (query language)
+\item[Xquery] programming language (programming language)
+\end{description}
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}

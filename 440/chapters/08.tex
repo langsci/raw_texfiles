@@ -1,0 +1,699 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998645}
+
+\author{Sabine {Schulte im Walde}\orcid{0000-0002-8975-6255}\affiliation{Institute for Natural Language Processing, University of Stuttgart, Germany}}
+\title{Collecting and investigating features of compositionality ratings}
+
+\abstract{Developing computational models to predict degrees of compositionality for multiword expressions typically goes hand in hand with creating or using reliable lexical resources as gold standards for formative intrinsic evaluation. Not much work however has looked into whether and how much both the gold standards and the computational prediction models vary according to the properties of the compounds within the lexical resources. In the current study, we focus on English and German noun compounds and suggest a novel route to assess the interactions between compound and constituent properties with regard to the compounds' degrees of compositionality. Our contributions are two-fold: (1)~a novel collection of compositionality ratings for 1,099 German noun compounds, where we asked the human judges to provide compound and constituent properties (such as paraphrases, meaning contributions, hypernymy relations, and concreteness) before judging the compositionality; and (2)~a series of analyses on rating distributions and interactions with compound and constituent properties for our novel collection as well as existing gold standard resources in English and German. Following the analyses we discuss to what extent one should aim for an even distribution of ratings across the pre-specified scale, and to what extent one should take into account properties of the compound and constituent targets when creating a novel resource and when using a resource for evaluation. We suggest as a minimum requirement to balance targets across frequency ranges, and optimally to balance targets across their most salient properties in a post-collection filtering step. Above all, we recommend to assess computational models not only on the full dataset but also with regard to subsets of targets with coherent task-relevant properties.}
+
+\begin{document}
+\maketitle
+
+\section{Motivation}
+
+Combinations of words are considered multiword expressions (MWEs) in the field of natural language processing (NLP), if they are semantically idiosyncratic to some degree, i.e., the meaning of the combination is not entirely (or even not at all) predictable from the meanings of the constituents \citep{Sag:Baldwin:2002, Baldwin/Kim:10, SavaryEtAl:18}. Hence, computational modelling of MWEs has been a long-standing task and is important for both theoretical and applied research, in order to investigate multiword expressions from a large-scale, empirical perspective, and to integrate the compositionality models into NLP applications that require natural language understanding (NLU), such as domain-specific interpretation \citep{Clouet/Daille:14, Haetty/SchulteImWalde:18b, HaettyEtAl:19b, BettingerEtAl:20, HaettyEtAl:21, EichelEtAl:23} and machine translation \citep{Carpuat/Diab:10, Cholakov_Kordoni:14, WellerEtAl:14b, CapEtAl:15, SalehiEtAl:15b, GamalloEtAl:19, DankersEtAl:22a}.
+
+In the current study, the focus of interest is on noun compounds, such as \textit{climate change} and \textit{crocodile tears} in English, and \textit{Ahornblatt} `maple leaf' and \textit{Fliegenpilz} `toadstool' in German. The representation, processing and modelling of noun compounds has previously received an immense attention across disciplines and languages, e.g., regarding the theoretical definition of compoundhood, typologies of compounds, structural properties of compounds, and compound and constituent meanings (\citealt{Levi:78, Plag:03, Bauer:17, SchulteImWalde/Smolka:20}, i.a.); regarding the question whether compounds are stored in the mental lexicon and processed as units, via their constituents, or via a dual route (\citealt{Taft/Forster:75,Butterworth:83}, i.a.); regarding conceptual combinations of modifiers and heads (\citealt{Murphy:90,Wisniewski:96,Costello/Keane:00,Benczes:14}, i.a.); regarding the role of compound relations (\citealt{Gagne:02,Nastase:03, GirjuEtAl:05, SpaldingEtAl:10}, i.a.); regarding association and feature norms of noun compounds and their constituents (\citealt{Roller/SchulteImWalde:14, SchulteImWalde/Borgwaldt:15}, i.a.); etc.
+
+Standard computational approaches define and compare corpus-based representations of compounds and their constituents, in order to compute the degrees of semantic relatedness as a basis for predicting the degrees of compositionality of the compounds; for example, the representation of a compound such as \textit{climate change} is supposedly more similar to the representations (or a combination of the representations) of the constituents \textit{climate} and \textit{change} than the representation of a more semantically idiosyncratic compound such as \textit{crocodile tears} would be. Such distributional models are rather successful and obtain correlations of $\rho \approx 0.7$ when evaluated against gold standard resources.
+
+Developing computational models of compositionality typically goes hand in hand with creating reliable lexical resources as gold standards for formative intrinsic evaluation. Accordingly, we find datasets of noun compounds with ratings on compositionality across languages, such as English \citep{ReddyEtAl:11a, CordeiroEtAl:19}, German \citep{SchulteImWaldeEtAl:13,SchulteImWaldeEtAl:16a}, and French and Portuguese \citep{CordeiroEtAl:19}.
+%
+Not much work however has looked into whether and how much both the gold standards and the prediction models vary according to properties of the targets within the lexical resources. For example, what are the empirical, corpus-based properties of the noun compound targets, such as frequencies and constituent productivities? What are their lexical-semantic properties, such as degrees of ambiguity and concreteness? And how do these properties interact with the compounds' degrees of compositionality? The distributions of target properties and compositionality ratings differ across compound datasets, and potential skewness hinders us from a generalised assessment of prediction models. I.e., does a system's correlation of $\rho \approx 0.7$ hold across targets and target properties, or is this merely an average result and therefore opaque regarding any gold standard subsets? As to our knowledge, up to date only a few computational studies on noun compounds have described the variance of prediction results across compound and constituent properties \citep{SchulteImWaldeEtAl:16b, Koeper/SchulteImWalde:17b, Alipoor/SchulteImWalde:20, Miletic/SchulteImWalde:23}, thus pointing out the need for a more systematic investigation.
+
+The current study suggests a novel route to assess the interactions of compound and constituent properties with regard to the compounds' degrees of compositionality, which we consider as indispensible ground knowledge when interpreting the results of computational models. We provide two contributions to move forward both theoretical and computational investigations of compositionality for noun compounds:
+
+\begin{enumerate}[label=(\arabic*)]
+
+\item We created a \emph{novel collection of compositionality ratings for 1,099 German noun compounds} where --~differently to previous related work~-- we asked the human judges to provide (a)~paraphrases of the compounds' meanings, (b)~constituent features contributing to the compounds meanings, (c)~judgements on the hypernymy relations between the compounds and their head constituents, and (d)~judgements on the concreteness of the compounds and constituents, before they provided their judgements on the compounds' degree of compositionality with regard to the respective constituents. The elaborate information enables us to relate compositionality judgements to a range of compound and constituent properties. 
+
+\item We present a \emph{series of analyses} on (a) distributions of compositionality ratings, and (b) relations between compositionality ratings and compound and constituent properties (such as frequency, productivity, ambiguity, hypernymy and concreteness). Next to relying on our own novel collection as basis for our study, we also make use of the predominantly used lexical resources of noun compound compositionality for English \citep{ReddyEtAl:11a, CordeiroEtAl:19} and German \citep{SchulteImWaldeEtAl:13,SchulteImWaldeEtAl:16a}, and exploit web corpora for the same two languages \citep{BaroniEtAl:09,Schaefer/Bildhauer:12}.
+
+\end{enumerate}
+%
+Based on our insights from (1) and (2), we then discuss distributions of compositionality ratings across resources, and to what extent (and how) one should take into account properties of targets when creating a novel resource, and when using a resource in the evaluation of computational models.
+
+In the remainder of this article, Section~\sectref{sec:overview} presents an overview of existing lexical resources with compositionality ratings for noun compounds, as well as standard computational prediction models across languages. In Section~\sectref{sec:feature-nn}, our article introduces the creation of the novel gold standard of German compositionality ratings, before we dive into analyses and discussions of rating distributions and rating properties in Section~\sectref{sec:analysis}.
+
+
+\section{Previous work on compositionality datasets and models}
+\label{sec:overview}
+
+As a starting point for discussing the interactions and potential strategies for optimisations of gold-standard compositionality ratings, we provide an overview of the predominantly used English and German datasets (Section~\sectref{sec:overview-datasets}) and approaches towards predicting degrees of compositionality (Section~\sectref{sec:overview-models}).
+
+\subsection{Datasets of compositionality ratings}\label{sec:overview-datasets}
+
+\citet{ReddyEtAl:11a} created the probably first dataset with compositionality judgements for noun compounds that were explicitly collected as gold standard ratings to evaluate computational models of compositionality. Henceforth, we will refer to this dataset as \textsc{Reddy-NN}. For the \textsc{Reddy-NN} dataset, \citet{ReddyEtAl:11a} selected 90 English noun compounds with two simplex noun constituents. The compound target construction was done such that Reddy et al. distinguished between four classes of modifier and head combinations regarding the constituents' contributions to the compound meanings,\footnote{As to our knowledge, Libben and his colleagues \citep{LibbenEtAl:97, LibbenEtAl:03} were the first in psycholinguistics research who systematically categorised noun-noun compounds with nominal modifiers and heads into four groups representing all possible combinations of modifier and head transparency (T) vs. opaqueness (O) within a compound. Examples for these categories were \textit{car-wash} (TT), \textit{strawberry} (OT), \textit{jailbird} (TO), and \textit{hogwash} (OO).} based on heuristics using relations and definitions in WordNet \citep{Fellbaum:98}: a compound was considered compositional with regard to a constituent if it either represented a hyponym of that constituent (e.g., a \textit{swimming pool} is a \textit{pool}), or if the constituent occurred in its definition (e.g., \textit{swimming} occurs in the definition of a \textit{swimming pool}). Then Reddy et al. asked 30 annotators via Amazon Mechanical Turk (AMT) to provide judgements on compositionality ratings for the compound as a whole (which they refer to as ``phrase compositionality"), and for the strengths of meaning contributions of the constituents, all on a scale $[0,5]$ from 0 (clearly non-compositional) to 5 (clearly compositional). The upper part in \tabref{tab:ex-compounds} provides a selection of examples from the \textsc{Reddy-NN} target compounds, together with the mean compositionality ratings across the raters and the respective standard deviations. The basic dataset was subsequently extended in various respects: \citet{Bell/Schaefer:13} added semantic relations; \citet{SchulteImWaldeEtAl:16b} added frequencies and scores for productivity and ambiguity; and \citet{CordeiroEtAl:19}, henceforth \textsc{Cordeiro-N}, extended the dataset to 280 English noun compounds, however varying the modifier word class, and then following the same rating procedure as \citet{ReddyEtAl:11a}.
+%
+In our own work, we created two datasets of German noun compounds:
+\begin{enumerate}[label=(\arabic*)] 
+\item In \citet{SchulteImWaldeEtAl:13}, we presented a set of 244 German noun--noun compounds with two simplex nominal constituents, based on a larger set of 450 \textit{concrete} noun compounds from \citet{Heide/Borgwaldt:09}, who had collected compound--constituent compositionality ratings from 30 annotators in a paper-and-pen annotation. We collected and added to the resource between 27--34 compositionality ratings via AMT for the compound as a whole. All ratings were collected on a scale $[1,7]$ from 0 (clearly non-compositional) to 7 (clearly compositional). Henceforth, we will refer to this dataset as \textsc{Concrete-NN}. The lower part of \tabref{tab:ex-compounds} provides a selection of examples, together with mean compositionality ratings and standard deviations. The basic dataset was subsequently extended by \citet{SchulteImWaldeEtAl:16b}, who added frequencies and scores for productivity and ambiguity; and \citet{SchulteImWalde/Borgwaldt:15}, who compiled and analysed association norms for the concrete compounds and their constituents.
+\end{enumerate}
+
+\begin{table}
+\small
+\caption{Example compounds from \textsc{Reddy-NN} and \textsc{Concrete-NN}, with mean compositionality ratings and standard deviations. The compound column refers to compound phrase/whole ratings; the modifier and head columns refer to compound--modifier and compound--head ratings, respectively. Note that the collections use different scales: $[0,5]$ in \textsc{Reddy-NN} and $[1,7]$ in \textsc{Concrete-NN}.}
+\label{tab:ex-compounds}
+  \begin{tabular}{l ccc}
+  \lsptoprule
+                & \multicolumn{3}{c}{Mean ratings and std. dev.} \\\cmidrule(lr){2-4}
+      Compounds & \multicolumn{1}{c}{compound} & \multicolumn{1}{c}{modifier} & \multicolumn{1}{c}{head} \\
+      \midrule
+
+      \textit{cheat sheet}     & $2.89\pm 1.11$ & $2.30\pm 1.59$ & $4.00\pm 0.83$  \\
+      \textit{climate change}  & $4.97\pm 0.18$ & $4.90\pm 0.30$ & $4.83\pm 0.38$  \\
+      \textit{couch potato}    & $1.41\pm 1.03$ & $3.27\pm 1.48$ & $0.34\pm 0.66$  \\
+      \textit{crocodile tears} & $1.25\pm 1.09$ & $0.19\pm 0.47$ & $3.79\pm 1.05$  \\
+      \textit{diamond wedding} & $1.70\pm 1.05$ & $0.78\pm 1.29$ & $3.41\pm 1.34$  \\
+      \textit{guilt trip}      & $2.19\pm 1.16$ & $4.71\pm 0.59$ & $0.86\pm 0.94$  \\
+      \textit{melting pot}     & $0.54\pm 0.63$ & $1.00\pm 1.15$ & $0.48\pm 0.63$  \\
+      \textit{night owl}       & $1.93\pm 1.27$ & $4.47\pm 0.88$ & $0.50\pm 0.82$  \\
+      \textit{polo shirt}      & $3.37\pm 1.38$ & $1.73\pm 1.41$ & $5.00\pm 0.00$  \\
+      \textit{search engine}   & $3.32\pm 1.16$ & $4.62\pm 0.96$ & $2.25\pm 1.70$ \\
+      \midrule
+      \textit{Ahornblatt} `maple leaf'                     & $6.03\pm 1.49$ & $5.64\pm 1.63$ & $5.71\pm 1.70$\\
+      \textit{Feuerzeug} (lit. `fire stuff') `lighter'        & $4.58\pm 1.75$ & $5.87\pm 1.01$ & $1.90\pm 1.03$ \\
+      \textit{Fleischwolf} (lit. `meat wolf') `meat grinder'  & $1.70\pm 1.05$ & $6.00\pm 1.44$ & $1.90\pm 1.42$ \\
+      \textit{Fliegenpilz} (lit. `fly mushroom') `fly agaric' & $2.00\pm 1.20$ & $1.93\pm 1.28$ & $6.55\pm 0.63$ \\
+      \textit{Flohmarkt} `flea market'                     & $2.31\pm 1.65$ & $1.50\pm 1.22$ & $6.03\pm 1.50$ \\
+      \textit{Löwenzahn} (lit. 'lion tooth') `dandelion'      & $1.66\pm 1.54$ & $2.10\pm 1.84$ & $2.23\pm 1.92$ \\
+      \textit{Maulwurf} (lit. `mouth throw') `mole'           & $1.58\pm 1.43$ & $2.21\pm 1.68$ & $2.76\pm 2.10$ \\
+      \textit{Postbote} (lit. `mail messenger') `post man'    & $6.33\pm 0.96$ & $5.87\pm 1.55$ & $5.10\pm 1.99$\\
+      \textit{Seezunge} (lit. `sea tongue') `sole'            & $1.85\pm 1.28$ & $3.57\pm 2.42$ & $3.27\pm 2.32$ \\
+      \textit{Windlicht} (lit. `wind light') `lantern'        & $3.52\pm 2.08$ & $3.07\pm 2.12$ & $4.27\pm 2.36$ \\
+
+  \lspbottomrule
+  \end{tabular}
+\end{table}
+
+\begin{enumerate}[label=(\arabic*), resume] 
+\item In \citet{SchulteImWaldeEtAl:16a}, we presented a dataset of German noun--noun compounds with two simplex nominal constituents. As to our knowledge, this dataset was the first that took properties of the compounds and the constituents into account during the selection of the targets: we induced a balanced set of 180 compounds with low/mid/high modifier productivity and low/mid/high head ambiguity (which we determined as the two most important balancing criteria) from a candidate compound set containing $\approx$ 150,000 noun-noun compounds occurring in a large web corpus \citep{Schaefer/Bildhauer:12}. We also created an extended set of 868 compounds by systematically adding all compounds from the original candidate set with either the same modifier or the same head as any of the compounds in the balanced set. For example, given the compound \textit{Geduldspiel} `puzzle' in the balanced set of compounds we added all compounds from the original candidate set with the modifier \textit{Geduld} `patience', and all compounds with the head \textit{Spiel} `game'. We then collected between 8--13 compound--constituent compositionality ratings via AMT, on a scale $[0,6]$ from 0 (clearly non-compositional) to 6 (clearly compositional). Henceforth, we will refer to the two balanced/unbalanced versions of the dataset containing 180/868 noun--noun compounds as \textsc{Ghost-NN/S} and \textsc{Ghost-NN/XL}, in the same way as in \citet{SchulteImWaldeEtAl:16b}.
+
+\tabref{tab:ex-ghost} provides a selection of examples, together with empirical and lexical compound and constituent properties, and mean compositionality ratings. The examples include compounds with the modifiers \textit{Stadt} `city' and \textit{Sonne} `sun' as well as compounds with the heads \textit{Spiel} `game' and \textit{Kette} `chain'. The corresponding properties are corpus frequencies for the compounds, modifiers and heads, as well as productivity and ambiguity scores for the constituents, relying on morphological family size \citep{deJongEtAl:02} and the number of senses defined in GermaNet \citep{Hamp/Feldweg:97, Kunze:00}, respectively. Semantic relations between modifiers and heads (e.g., in \textit{Machtspiel} `power game', the game is \SchuleRelation{ABOUT} power; in \textit{Kartenspiel} `card game', the cards represent the \SchuleRelation{INSTRUMENT} in the game) were annotated by the four authors of the paper, adopting the scheme by \citet{OSeaghdha:07} using four relations defined by \citet{Levi:78}: \SchuleRelation{BE}, \SchuleRelation{HAVE}, \SchuleRelation{IN}, \SchuleRelation{ABOUT}; two relations referring to event participants (\SchuleRelation{ACTOR}, \SchuleRelation{INST}(rument)), and \SchuleRelation{LEX} indicating lexicalised compounds.
+\end{enumerate}
+
+\begin{sidewaystable}
+
+\caption{Examples of compounds from \textsc{Ghost-NN/XL} with empirical and lexical properties, and mean compositionality ratings.}
+\label{tab:ex-ghost}
+\scriptsize
+  \begin{tabularx}{\textwidth}{llrrrrrrrrrr}
+  \lsptoprule
+
+%       \multirow{2}{*}
+      \multicolumn{1}{c}{Compounds} &
+%       \multirow{2}{*}
+      {Relation} & \multicolumn{3}{c}{Frequencies} & \multicolumn{2}{c}{Productivities} & \multicolumn{2}{c}{Ambiguities} & \multicolumn{2}{c}{Ratings} \\
+      \cmidrule{3-11}
+      & & compound & modifier & head & modifier & head & modifier & head & modifier & head \\
+
+       \midrule
+
+      \textit{Stadthotel} `city hotel' & IN & 3,405 & 4,053,206 & 1,199,856 & 543 & 59 & 1 & 1 & 3.35 & 5.35 \\
+      \textit{Stadtrand} (lit. `city border') `suburb' & HAVE & 25,099 & 4,053,206 &   523,473 & 543 &  98 & 1 & 2 & 4.94 & 4.25 \\
+      \textit{Stadtwerk} (lit. `city plant') `public services' & ACTOR & 107,754 & 4,053,206 & 1,354,148 & 543 & 366 & 1 & 6 & 3.81 & 3.69 \\
+      \midrule
+
+      \textit{Sonnenenergie} `solar energy' & INST & 25,398 & 832,636 & 1,191,333 & 155 & 30 & 3 & 2 & 4.58 & 5.44 \\
+      \textit{Sonnenkönig} `Sun King' & LEX & 2,680 & 832,636 & 494,221 & 155 & 109 & 3 & 3 & 1.94 & 5.50 \\
+      \textit{Sonnenmasse} `sun mass' & HAVE & 3,433 & 832,636 & 468,284 & 155 & 108 & 3 & 3 & 4.56 & 4.75 \\
+      \textit{Sonnenscheibe} `solar disc' & BE & 3,155 & 832,636 & 364,567 & 155 & 96 & 3 & 4 & 4.56 & 3.75 \\
+      \textit{Sonnenseite} `sunny side' & IN & 7,279 & 832,636 & 5,508,445 & 155 & 256 & 3 & 6 & 4.00 & 4.31 \\
+      \textit{Sonnenstrahl} `sun beam' & HAVE & 44,612 & 832,636 & 32,182 & 155 & 27 & 3 & 3 & 5.13 & 4.69 \\
+      \textit{Sonnenuhr} (lit. `sun clock') `sundial' & INST & 8,407 & 832,636 & 4,507,590 & 155 & 63 & 3 & 2 & 3.75 & 5.31 \\
+       \midrule
+
+      \textit{Kirchspiel} (lit. `church game') `parish' & LEX & 6,583 & 1,761,187 & 4,122,168 & 319 & 403 & 3 & 6 & 4.44 & 3.13 \\
+      \textit{Machtspiel} `power game' & ABOUT & 4,408 & 806,162 & 4,122,168 & 169 & 403 & 2 & 6 & 4.63 & 3.44 \\
+      \textit{Testspiel} (lit. `test game') `tryout' & BE & 37,800 & 660,169 & 4,122,168 & 100 & 403 & 3 & 6 & 4.25 & 5.19 \\
+      \textit{Trauerspiel} (lit. `mourning game') `fiasco' & ABOUT & 10,763 & 134,379 & 4,122,168 & 77 & 403 & 3 & 6 & 3.06 & 2.81 \\
+      \textit{Windspiel} (lit. `wind game') `wind chimes' & INST & 2,284 & 551,317 & 4,122,168 & 88 & 403 & 3 & 6 & 4.31 & 2.94 \\
+      \textit{Würfelspiel} `dice game' & INST & 4,408 & 80,371 & 4,122,168 & 14 & 403 & 2 & 6 & 4.94 & 5.56 \\
+        \midrule
+
+      \textit{Bergkette} `mountain chain' & BE & 8,799 & 564,178 & 207,479 & 205 & 139 & 2 & 4 & 5.13 & 2.56 \\
+      \textit{Halskette} (lit. `neck chain') `necklace' & IN & 8,707 & 271,703 & 207,479 & 39 & 139 & 3 & 4 & 3.94 & 5.44 \\
+      \textit{Handelskette} `trade chain' & INST & 6,509 & 428,611 & 207,479 & 240 & 139 & 1 & 4 & 4.75 & 3.38 \\
+      \textit{Hotelkette} `hotel chain' & BE & 6,410 & 1,199,856 & 207,479 & 134 & 139 & 1 & 4 & 5.00 & 3.13 \\
+      \textit{Menschenkette} `human chain' & BE & 6,383 & 8,884,087 & 207,479 & 191 & 139 & 1 & 4 & 4.94 & 3.75 \\
+      \textit{Produktionskette} `production chain' & HAVE & 2,738 & 579,419 & 207,479 & 244 & 139 & 2 & 4 & 4.69 & 3.19 \\
+      \textit{Schneekette} `snow chain' & INST & 5,167 & 324,839 & 207,479 & 95 & 139 & 1 & 4 & 4.19 & 4.21 \\
+      \textit{Zeichenkette} (lit. `character chain') `string' & BE & 8,836 & 749,903 & 207,479 & 62 & 139 & 3 & 4 & 4.34 & 2.95 \\
+
+\lspbottomrule
+\end{tabularx}
+\end{sidewaystable}
+
+Overall, the described datasets \textsc{Reddy-NN} and \textsc{Cordeiro-N} for English as well as \textsc{Concrete-NN} and \textsc{Ghost-NN} for German were created on different grounds for target compound selection, i.e., WordNet relations (\textsc{Reddy-NN} and \textsc{Cordeiro-N}), concreteness (\textsc{Concrete-NN}), and partial balancing across empirical and lexical properties (\textsc{Ghost-NN}). The actual collection of human ratings was done similarly across datasets, while varying between paper-and-pen and crowdsourcing as well as the rating scales. 
+
+\figref{fig:comp-ratings} however presents a rather diverse picture regarding the distributions of compositionality ratings across the respective collection ranges. The boxplots show the four quartiles of the rating distributions, with the median lines in the boxes of the interquartile ranges, and the dots referring to outliers. Green boxes refer to compound ratings, blue/red boxes to compound--modifier and compound--head ratings, respectively. For the compound--constituent ratings in the \textsc{Ghost-NN} variants, 75\% of the mean ratings are in the range $[4, 6]$, and the medians are between $4$ and $5$. \textsc{Concrete-NN} is less skewed, but still 75\% of all ratings are in the range $[3.5, 7]$. Only \textsc{Reddy-NN} and the extension \textsc{Cordeiro-N} (plots for the latter are in the appendix because they follow similar trends as \textsc{Reddy-NN}) cover a wide range of compositionality ratings. In the next section we will ask whether and how the skewness of the compounds' degrees of compositionality influences the reliability of predictions by computational models.
+
+
+\begin{figure}
+    \includegraphics[width=.5\textwidth]{figures/08/ghost-nn-s-ratings.png}\includegraphics[width=.5\textwidth]{figures/08/ghost-nn-xl-ratings.png}\smallskip\\
+    \includegraphics[width=.5\textwidth]{figures/08/concrete-nn-ratings.png}\includegraphics[width=.5\textwidth]{figures/08/reddy-nn-ratings.png}
+    \caption{Compositionality rating distributions across rating datasets.}\label{page:comp-ratings}\label{fig:comp-ratings}
+\end{figure}
+
+\subsection{Compositionality prediction models}
+\label{sec:overview-models}
+
+As introduced above, standard computational approaches define and compare corpus-based representations of compounds and their constituents, in order to determine the degree of semantic relatedness as a basis for predicting the degree of compositionality of the compounds. Existing models generally rely on the distributional hypothesis that the context of a linguistic unit contains indicators for the unit's usage and meaning \citep{Harris:54, Firth:57}, and thus exploit and represent corpus-based cooccurrences induced from large-scale corpora of the respective language, in combination with mathematical measures of similarity when comparing the representations. The most traditional approaches rely on distributional count vector spaces, either using window-based or syntax-based cooccurrences \citep{ReddyEtAl:11a, ReddyEtAl:11b, SchulteImWaldeEtAl:13, SchulteImWaldeEtAl:16b}, while later approaches use embeddings as representations \citep{SalehiEtAl:15, CordeiroEtAl:19, Alipoor/SchulteImWalde:20, Miletic/SchulteImWalde:23}.  The work by Salehi combined corpus-based textual information with dictionary information \citep{SalehiEtAl:14} and integrated translation knowledge \citep{Salehi/Cook:13, SalehiEtAl:14b}, and the work in our group extended textual to multimodal approaches \citep{Roller/SchulteImWalde:13, Koeper/SchulteImWalde:17b}. While most approaches were directly applied to type-level representations, \citet{Bott/SchulteImWalde:17} applied soft clustering to access the sense level, and \citet{Miletic/SchulteImWalde:23} compared token- and type-level BERT representation layers.
+The actual predictions of degrees of compositionality then compare the respective representations by computing the cosine distance (or other vector-based distance measures) between vector representations of compounds and vector representations of constituents, or apply composite functions to the vectors of the constituents (such as vector multiplication) before computing the similarity with the compound vector (\citealt{Mitchell/Lapata:10, ReddyEtAl:11a, Hermann:14, DimaEtAl:19, Alipoor/SchulteImWalde:20}, i.a.).
+
+While the exact details of the various approaches are not relevant to the current study, we would like to point out that the majority of approaches predicted the degrees of compositionality across all compound and constituent targets of the respective datasets, i.e., disregarding target subsets and potential influences of such subsets on the prediction. As such, existing compositionality prediction models have overall proven very successful, obtaining Spearman's rank-order correlation coefficients \citep{Siegel/Castellan:88} of $\rho \approx 0.7$ when evaluated against the gold standard datasets. In the following we present three studies demonstrating that the results differ, however, when compound and constituent properties are taken into account in the evaluation of the models.
+
+\citet{SchulteImWaldeEtAl:16b} implemented a standard window-based vector space model relying on cooccurrence in a sentence-internal window of $\pm 20$ words, and predicted degrees of compositionality based on the cosine distance measure. For evaluation they used \textsc{Reddy-NN, Concrete-NN} and \textsc{Ghost-NN} as well as an English noun compound dataset with semantic relations by \citet{OSeaghdha:07}. In a preparatory effort, they extended the datasets such that information on compound and constituent frequency, constituent productivity, compound and constituent ambiguity, and semantic relations was available for all English and German resources. Coccurrences, frequencies and productivities were induced from the respective \textsc{COW} corpora \citep{Schaefer/Bildhauer:12,Schaefer:15}; ambiguities from WordNet/GermaNet \citep{Fellbaum:98, Hamp/Feldweg:97, Kunze:00}, and semantic relations and compositionality ratings were annotated, if not available. Crucially, \citet{SchulteImWaldeEtAl:16b} then ran their prediction models on all targets within the respective datasets, but also on subsets of targets with extreme properties, such as the least and the most frequent compounds, the least and the most productive constituents, by relation type, etc. Their results showed that --~among other insights~-- the same models make overall better predictions for (i)~more frequent compounds, and for (ii)~compounds with less frequent, less productive and less ambiguous heads, while (iii)~the modifier properties did not have a consistent effect. 
+
+In a similar vein, \citet{Alipoor/SchulteImWalde:20} implemented a standard window-based vector space model and word2vec embeddings for English, relying on a sentence-internal window of $\pm 10$ words in the English \textsc{COW} corpus. They focused on the effect of various kinds of dimensionality reductions on compositionality prediction, and they also zoomed into compound subsets regarding compound and constituent properties. Similarly to the study by \citet{SchulteImWaldeEtAl:16b}, they found that in most vector-space variants the predictions (i)~were better for mid-/high-frequency compounds in comparison to low-frequency compounds, and (ii)~did not behave in a consistent way for modifier properties; but in contrast to the previous work, their predictions were (iii)~better for compounds with mid-/high-productivity than low-productivity heads. In addition, they looked into the effect of target compositionality, and found that predictions were (iv)~generally better for mid-/high-compositional than low-compositional compound--constituent combinations. \citet{Miletic/SchulteImWalde:23} also zoomed into the influence of frequencies, productivities and ambiguities in our study regarding BERT representation layers. Focusing on head properties of the \textsc{Cordeiro-N} compounds, we found better compositionality predictions for low-frequency, low-productivity, and low-ambiguity heads across compound and compound--constituent rating predictions.\largerpage
+
+Finally, \citet{Koeper/SchulteImWalde:17b} compared multimodal models combining textual and visual vector spaces when predicting degrees of compositionality for German noun compounds and particle verbs. They zoomed into the effects of constituent properties: frequency, ambiguity, concreteness, imageability and compositionality. As in previous work, they did not find consistent effects of modifier properties, but as \citet{SchulteImWaldeEtAl:16b} they found overall better predictions for (i) compounds with low-frequency and low-ambiguity in comparison to high-frequency/-ambiguity heads; and for (ii) compounds with concrete and imaginable in comparison to abstract and low-imageability heads.
+
+The described studies and their insights clearly demonstrate that --~across variants of textual (and also multimodal) vector-space models~-- compound and constituent properties strongly influence the prediction quality. We are thus asking two questions that we address in the current study. First of all, is there a way to understand better how humans perceive interactions between compound properties and compositionality ratings? We address this question by providing a novel collection (strategy) in Section~\sectref{sec:feature-nn}. And secondly, how exactly do compound and constituent properties interact with compositionality ratings, in our novel collection and also in existing datasets? We will address this question by analysing the distributions and correlations of compositionality ratings and compound and constituent property distributions in Section~\sectref{sec:analysis}.
+
+
+\section{Novel collection: Feature-based compositionality}\label{sec:feature-nn}
+\largerpage
+
+In this section we present our novel compositionality ratings for German compounds. As target compounds, we rely on the union of targets from the above-described previous German datasets, \textsc{Concrete-NN} and \textsc{Ghost-NN}, resulting in a total of 1,099 German noun-noun compounds (i.e., 244 compound targets from \textsc{Concrete-NN} and 868 compound targets from \textsc{Ghost-NN}, minus 13 overlapping compound targets). Given that we aimed for a better understanding of what's on an annotator's mind when providing a judgement on a compound's degree of compositionality, we compiled a series of tasks for the annotators to fulfill in addition to providing the actual judgements. In the following we list these tasks, accompanied by the respective motivations. The full annotation guidelines are available in the appendix. The annotators were five graduate students of computational linguistics at the University of Stuttgart.
+
+\begin{enumerate}
+\item \textit{Compound meaning}:
+    We wanted the annotators to consciously pay attention to the overall meaning of the compound and therefore asked them to paraphrase the compound meaning within a phrase or a sentence. Similar tasks have previously been defined by, e.g., \citet{Wisniewski:96} and \citet{Marsh:15}.
+
+\item \textit{Constituent meaning contribution}:
+    Similarly, we wanted the annotators to consciously pay attention to the constituents' meaning components and their contributions to the meaning of the compound. We therefore asked them to explicitly provide one or more features of constituent meaning that contribute to the compound meaning, such as \textit{failure} regarding the contribution of the head \textit{Fehler} `mistake' to the meaning of the compound \textit{Kunstfehler}.
+
+\item \textit{Super-/sub-ordination (hypernymy/hyponymy)}:
+    We wanted the annotators to be aware of potential hypernymy relationships between compounds and head constituents, because we hypothesised that a large portion of the compound targets represent sub-ordinate categories \citep{GagneEtAl:19, GagneEtAl:20}. We focused on the compound--head relationship and asked the annotators to judge if the compound is a hyponym \textit{(is a kind)} of the compound head, on a scale $[0,5]$.
+    
+\item \textit{Abstractness/concreteness}:
+    We wanted the annotators to be aware of the concreteness of the compounds and the constituents, because we hypothesised that the degree of concreteness might have an influence on the compositionality of the compound. We therefore asked them to judge about the concreteness (in contrast to abstractness) of compounds and constituents on a scale $[0,5]$.
+    
+\item \textit{Degree of compositionality}:
+    Finally, we wanted the annotators to provide their judgements about the degrees of compositionality of the compounds with regard to their constituents on a scale $[0,5]$ \textit{after} fulfilling the above-listed tasks about compound and constituent properties.
+\end{enumerate}
+
+\begin{sloppypar}
+\noindent All annotations are publicly available from \url{http://www.ims.uni-stuttgart.de/data/feature-comp-nn}, which also includes the spreadsheet for annotation that we gave to the annotators. In the following we provide insights into the various kinds of annotations we collected.
+\end{sloppypar}
+
+Regarding task 1 (compound meaning), \tabref{tab:ex-features-comp} shows examples of paraphrases of compound meanings that were provided by the annotators. We can see that the paraphrases are strongly overlapping in some cases, e.g., for the compound \textit{Autozug} `car train' we find four almost identical phrases \textit{Zug, der Autos transportiert} `train that transports cars'. Yet, the paraphrases offer different aspects of meanings, such as \textit{schwingen} `to swing', \textit{Instrument} `instrument' and \textit{Dekoration} `decoration' for \textit{Windspiel} (lit. `wind game') `wind chimes'. Overall, we judge the paraphrases as useful materials to approach the compound meanings, similarly to dictionary definitions and WordNet glosses.\largerpage
+
+Regarding task 2 (constituent meaning contribution), \tabref{tab:ex-features-const} shows examples of modifier and head features which the annotators considered as contributing to the compound meanings. When comparing these features with the compound paraphrases in \tabref{tab:ex-features-comp}, we can see that the overlap in the materials differs for constituents with more vs. less contributions to compound meaning, e.g., three annotators refer to \textit{Panzer} `carapace' as the meaning contribution of \textit{Schild} `shield' to \textit{Schildkröte} (lit. `shield toad') `turtle', and \textit{Instrument} `instrument' for \textit{Spiel} `game' in \textit{Windspiel} (lit. `wind game') `wind chimes'.
+
+\begin{table}
+\caption{Examples of compound paraphrases in \textsc{Feature-NN}.}
+\label{tab:ex-features-comp}
+\footnotesize
+  \begin{tabularx}{\textwidth}{p{4cm}p{7.5cm}l}
+  \lsptoprule
+
+\textit{Autozug} `car train' &	\textit{\op{ein}\cp Zug, der Autos transportiert} (4 annotators)\\
+& \hspace*{+3mm}`(a) train that transports cars'\\
+& \textit{ein Zug für den Fernverkehr, der neben Personen auch Fahrzeuge befördert}\\
+& \hspace*{+3mm}`a train for long-distance traffic that also carries vehicles,\\
+& \hspace*{+4mm}next to persons'\\
+\midrule
+
+\textit{Eifersucht} `jealousy',  &	\textit{Besitzanspruch auf eine Person}\\
+\hspace*{+3mm}(lit. `eagerness addiction') &  \hspace*{+3mm}`claim of ownership to a person'\\
+& \textit{eine Form des Neides im Kontext romantischer Beziehungen}\\
+& \hspace*{+3mm}`a form of jealousy in the context of romantic relations'\\
+&	\textit{Angst die Liebe oder Zuneigung eines Anderen mit jemanden teilen zu müssen}\\
+& \hspace*{+3mm}`fear of having to share someone's love or affection'\\
+&	\textit{anderer Ausdruck für Neid}\\
+& \hspace*{+3mm}`different expression for jealousy'\\
+&	\textit{Angst jemanden zu verlieren}\\
+& \hspace*{+3mm}`fear to lose someone'\\
+\midrule
+
+\textit{Schildkröte} `turtle',  &	\textit{Reptil mit Panzer}\\
+\hspace*{+3mm}(lit. shield toad) & \hspace*{+3mm}`reptile with carapace'\\
+& \textit{eine Reptilienart mit einem charakteristischen Panzer auf dem Rücken}\\
+& \hspace*{+3mm}`a type of reptile with characteristic carapace on back'\\
+&	\textit{Reptilien mit Panzer}\\
+& \hspace*{+3mm}`reptile with carapace'\\
+&	\textit{ein Reptil mit einem harten Panzer um den Torso}\\
+& \hspace*{+3mm}`a reptile with a hard carapace around the torso'\\
+&	\textit{ein Reptil mit einem Panzer}\\
+& \hspace*{+3mm}`a reptile with a carapace'\\
+\midrule
+
+\textit{Windspiel} `wind chimes',  &	\textit{Objekt, das im Wind schwingt}\\
+\hspace*{+3mm}(lit. `wind game') &	\hspace*{+3mm}`object that swings in the wind'\\
+& \textit{eine Art Instrument, das außerhalb von Gebäuden aufgehängt und vom Wind gespielt wird}\\
+& \hspace*{+3mm}`a kind of instrument that hangs outside buildings and\\
+& \hspace*{+4mm}is played by the wind'\\
+& \textit{Dekoration die im Wind sich bewegt}\\
+& \hspace*{+3mm}`decoration that moves in the wind'\\
+&	\textit{Konstrukt, das sich im Wind bewegt und Geräusche macht}\\
+& \hspace*{+3mm}`construct that moves in the wind and makes sounds'\\
+&	\textit{eine hängende Dekoration, die im Wind Töne erzeugt}\\
+& \hspace*{+3mm}`a hanging decoration that makes sounds in the wind'\\
+
+  \lspbottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}
+\caption{Examples of constituent features contributing to compound meaning in \textsc{Feature-NN}.}
+\label{tab:ex-features-const}
+\footnotesize
+  \begin{tabularx}{\textwidth}{p{3.2cm}p{2.2cm}p{7.2cm}}
+  \lsptoprule
+
+\textit{Bahnhof} `train station' & \textit{Bahn} `train' & \textit{verkehrstechnisch, ziehend}\\
+& & \hspace*{+3mm} `transport connecting, pulling'\\
+& &	\textit{Bahnverkehr, Zugverkehr} `rail/train traffic'\\
+& &	\textit{Transportmittel} `means of transport'\\
+& &	\textit{Transportmittel, Zug} means of transport, train'\\
+& &	\textit{Zug} `train'\\
+\midrule
+
+\textit{Schildkröte} `turtle',  & \textit{Schild} `shield' &	\textit{schildförmig, schützend}\\
+\hspace*{+6mm}(lit. `shield toad') & &	\hspace*{+3mm}`shield-shaped', `protective'\\
+& &	\textit{gepanzert, geschützt} `armoured', `protected'\\
+& &	\textit{mechanischer Schutz}\\
+& & \hspace*{+3mm} `mechanical protection'\\
+& &	\textit{Panzer, Schutz, robust}\\
+& & \hspace*{+3mm}`carapace', `protection', `robust'\\
+& &	\textit{gepanzert} `shielded'\\
+\midrule
+
+\textit{Windspiel} `wind chimes', & \textit{Wind} `wind' & \textit{windig} `windy'\\
+\hspace*{+6mm} (lit. `wind game') & & \textit{Wind} `wind' \\
+& &	\textit{Bewegung in der Luft}\\
+& & \hspace*{+3mm}`movement in the air'\\
+& &	\textit{Luft, Böe, wehen}\\
+& & \hspace*{+3mm}`air', `gust', `blow'\\
+& &	\textit{beweglich} `movable'\\
+\midrule
+
+\textit{Luftzug} `draught',  & \textit{Zug} `train' & \textit{ziehend} `pulling'\\
+\hspace*{+6mm} (lit. `air train') & & \textit{bewegt} `moved'\\
+& &	\textit{Transportmittel} `means of transport'\\
+& &	\textit{Bewegung} `movement'\\
+& &	\textit{Richtung} `direction' \\
+\midrule
+
+\textit{Schildkröte} `turtle',  & \textit{Kröte} `toad' & \textit{kriechend} `creeping'\\
+\hspace*{+6mm} (lit. `shield toad') & & \textit{Reptil} `reptile'\\
+& &	\textit{Amphibien die am Wasser leben}\\
+& & \hspace*{+3mm} `amphibians that live in the water'\\
+& &	\textit{Tier} `animal', \textit{Frosch} `frog'\\
+& &	\textit{Reptil} `reptile'\\
+\midrule
+
+\textit{Windspiel} `wind chimes', & \textit{Spiel} `game' &	\textit{spielend} `playing'\\
+\hspace*{+6mm} (lit. `wind game') & & \textit{Instrument} `instrument', \textit{Klang} `sound'\\
+& &	\textit{Vergnügen} `pleasure'\\
+& &	\textit{unterhaltend} `entertaining'\\
+& &	\textit{Musik} `music'\\
+
+  \lspbottomrule
+  \end{tabularx}
+
+\end{table}
+
+Regarding task 3 (hypernymy relation between compounds and their head constituents), \tabref{tab:ex-features-hyp} shows examples of mean hypernymy ratings for a subset of the target compounds with heads \textit{Spiel} `game', \textit{Werk} `work'; `factory' and \textit{Zug} `train'; `draught'. The dataset \textsc{Feature-NN} contains a total of 39/76/28 compound types (i.e., 39/76/28 different modifiers) with heads \textit{Spiel}, \textit{Werk} and \textit{Zug}, respectively.
+%
+We can see that these heads strongly differ regarding their hypernymy relation strengths to the respective compounds. \figref{fig:feature-nn-ratings-hyp} shows the distributions of the ratings across all compound heads (red box), and also for only the compounds with the three example heads (orange boxes). The boxplots show that (i)~overall we have a target set of compounds that is highly skewed towards super-/sub-ordination, but also that (ii)~the hypernymy strength distribution varies according to specific compound heads.
+
+\begin{table}
+\caption{Examples of mean hypernymy ratings in \textsc{Feature-NN} for a subset of the target compounds with heads \textit{Spiel} `game', \textit{Werk} `work'; `factory' and \textit{Zug} `train'; `draught'.}
+\label{tab:ex-features-hyp}
+\resizebox{\textwidth}{!}{\begin{tabular}{ *2{lc} }
+\lsptoprule
+\textit{Angriffsspiel} `offensive play'        & 3.2 &  \textit{Mundwerk} `gab'                   & 0.2 \\ 
+\textit{Ballspiel} `ball game'                 & 4.8 &  \textit{Netzwerk} `network'               & 0.4 \\ 
+\textit{Computerspiel} `computer game'         & 4.8 &  \textit{Stahlwerk} `steel plant'          & 5.0 \\ 
+\textit{Farbenspiel} `play of colours'         & 3.0 &  \textit{Stockwerk} `floor'                & 0.0 \\ 
+\textit{Gedankenspiel} `intellectual game'     & 1.6 &  \textit{Tagewerk} `day's work'            & 4.0 \\ 
+\textit{Glockenspiel} `chimes'                 & 2.2 &  \textit{Teufelswerk} `devil's work'       & 2.8 \\ 
+\textit{Glücksspiel} `gambling'                & 4.4 &  \textit{Triebwerk} `power unit'           & 3.2 \\ 
+\textit{Kartenspiel} `card game'               & 5.0 &  \textit{Uhrwerk} `clockwork'              & 2.4 \\ 
+\textit{Kinderspiel} `children's game'; `easy' & 3.6 &  \textit{Wunderwerk} `miracle'             & 3.8 \\ 
+\textit{Kirchspiel} `parish'                   & 0.8 &  \textit{Zementwerk} `cement plant'        & 4.8 \\ 
+\textit{Liebesspiel} `amorous play'            & 2.6 &  \textit{Atemzug} `breath' & 0.8 \\                
+\textit{Machtspiel} `power game'               & 3.2 &  \textit{Autozug} `car train' & 5.0\\              
+\textit{Orgelspiel} `organ playing'            & 4.0 &  \textit{Beutezug} `foray' & 3.2\\                 
+\textit{Ritterspiel} `knights game'            & 4.0 &  \textit{Charakterzug} `character trait' & 2.6\\   
+\textit{Schattenspiel} `shadow play'           & 4.2 &  \textit{Dampfzug} `steam train' & 5.0\\           
+\textit{Trauerspiel} `fiasco'                  & 2.9 &  \textit{Fackelzug} `torchlight procession' & 2.4\\
+\textit{Wasserspiel} `water game'              & 3.4 &  \textit{Feldzug} `campaign' & 1.4\\               
+\textit{Windspiel} `wind chimes'               & 2.6 &  \textit{Gebirgszug} `mountain range' & 1.6\\      
+\textit{Wortspiel} `pun'                       & 3.2 &  \textit{Gesichtszug} `facial feature' & 1.0\\     
+\textit{Würfelspiel} `game of dice'            & 5.0 &  \textit{Kriegszug} `military expedition' & 2.6\\  
+\textit{Bergwerk} `mine'                       & 4.6 &  \textit{Luftzug} `draught' & 2.8\\ 
+\textit{Blattwerk} `foliage'                   & 1.6 &  \textit{Nachtzug} `night train' & 5.0\\ 
+\textit{Erstlingswerk} `first work'            & 3.4 &  \textit{Protestzug} `protest march' & 3.6 \\ 
+\textit{Feuerwerk} `fireworks'                 & 2.4 &  \textit{Schachzug} `chess move'; `gambit' & 2.5 \\ 
+\textit{Hexenwerk} `sorcery'; `difficult'      & 2.8 &  \textit{Schriftzug} `lettering' & 0.6\\ 
+\textit{Klavierwerk} `piano work'              & 3.0 &  \textit{Seilzug} `cable pull' & 3.6\\ 
+\textit{Kraftwerk} `power station'             & 4.4 &  \textit{Siegeszug} `triumphal march' & 1.4 \\ 
+\textit{Mauerwerk} `masonry'                   & 2.0 &  \textit{Trauerzug} `funeral procession' & 3.6\\ 
+\textit{Meisterwerk} `masterpiece'             & 3.2 &  \textit{Triumphzug} `triumphal march' & 3.4\\ 
+\textit{Menschenwerk} `man-made'               & 4.0 &  \textit{Vogelzug} `bird migration' & 1.8\\ 
+\lspbottomrule
+\end{tabular}}
+\end{table}
+
+Regarding task 4 (abstractness/concreteness), \figref{fig:feature-nn-ratings-conc} shows the distributions of the ratings across all compounds, all modifiers and all heads (green, blue and red boxes, respectively, as in Section~\sectref{sec:overview-datasets}), and \figref{fig:feature-nn-ratings-conc-ex} shows the distribution across all compounds in comparison to the distributions across compounds with the same example heads as above, \textit{Spiel}, \textit{Werk} and \textit{Zug}. In \figref{fig:feature-nn-ratings-conc} we can see that we have similar overall concreteness distributions for the compounds, the modifiers and the heads. When zooming into compounds with specific heads in \figref{fig:feature-nn-ratings-conc-ex}, we observe a more diverse picture: while the compounds, modifiers and heads of \textit{Spiel} and \textit{Zug} compounds are again skewed towards concreteness, the compounds and constituents of \textit{Werk} compounds exhibit more diversity in their concreteness ratings.
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[height=5cm]{figures/08/feature-nn-hyp-ratings-head.png}
+    \caption{Strengths of hypernymy relation ratings in \textsc{Feature-NN} regarding all compound--head combinations in comparison to compounds with heads \textit{Spiel, Werk} and \textit{Zug}.}
+    \label{fig:feature-nn-ratings-hyp}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[height=5cm]{figures/08/feature-nn-conc-ratings.png}
+    \caption{Concreteness ratings in \textsc{Feature-NN}.}
+    \label{fig:feature-nn-ratings-conc}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[height=5.4cm]{figures/08/feature-nn-conc-ratings-compound.png}
+
+    \includegraphics[height=5.4cm]{figures/08/feature-nn-conc-ratings-mod.png}
+
+    \includegraphics[height=5.4cm]{figures/08/feature-nn-conc-ratings-head.png}
+
+    \caption{Concreteness ratings in \textsc{Feature-NN}, comparing ratings across all compounds (top), all compound--modifier combinations (middle), and all compound--head combinations (bottom) against those for compounds with heads \textit{Spiel, Werk} and \textit{Zug}, respectively.}
+    \label{fig:feature-nn-ratings-conc-ex}
+\end{figure}
+
+\figref{fig:feature-nn-comp-ratings} and \tabref{tab:corr-comp-orig-feature} look into the compositionality ratings in our novel dataset, making use of two perspectives. \figref{fig:feature-nn-comp-ratings} shows boxplots of compound--modifier and compound--head compositionality ratings. For both constituent types we can see skewed distributions towards strongly compositional compounds, similarly to the distributions in \textsc{Ghost-NN}, cf. \figref{fig:comp-ratings}. \tabref{tab:corr-comp-orig-feature} compares the novel ratings against the original ratings in the datasets \textsc{Concrete-NN} and \textsc{Ghost-NN}, relying on Spearman's rank-order correlation coefficient $\rho$. The correlations are between $0.663$ and $0.792$ and therefore all point towards strong agreement between the novel mean ratings and the original mean ratings. On the one hand, this allows us to judge our novel collection as reliable, even though a smaller number of annotators was involved; on the other hand, the strong correlations tell us that the additional rating tasks we asked the annotators to perform did not have a strong influence on their compositionality judgements.
+
+\begin{figure}
+\label{page:comp-ratings-feature}
+    \centering
+    \includegraphics[height=5.5cm]{figures/08/feature-nn-ratings.png}
+    \caption{Compositionality ratings in \textsc{Feature-NN}.}
+    \label{fig:feature-nn-comp-ratings}
+\end{figure}
+
+\begin{table}
+\caption{Correlations ($\rho$) between original and feature-based compositionality ratings for \textsc{Concrete-NN} and Ghost-NN compounds.}
+\label{tab:corr-comp-orig-feature}
+\begin{tabular}{llc}
+\lsptoprule
+& constituent & $\rho$ \\\midrule
+\textsc{Concrete-NN} & modifier & 0.792 \\
+                     & head & 0.728 \\\addlinespace
+
+Ghost-NN/S & modifier & 0.770 \\
+           & head & 0.687 \\\addlinespace
+  
+Ghost-NN/XL & modifier & 0.663 \\
+            & head     & 0.687 \\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+\section{Analyses}
+\label{sec:analysis}
+
+In this section, we raise and discuss two issues that we consider important for the creation of datasets with compositionality ratings, and potentially also for the creation of datasets with ratings on further semantic variables. (1)~On the one hand, we are asking whether the distribution of ratings across a pre-specified scale of ratings should be even, as opposed to being skewed towards parts of the rating scale. (2)~On the other hand, we are asking to what extent one should take into account properties of targets when creating a novel resource, and also when using a resource for evaluating computational models. In the following, we will look into rating distributions across datasets regarding issue~(1), and into interactions between target properties and rating distributions regarding issue~(2). As datasets, we will make use of the existing German and English resources \textsc{Concrete-NN, Ghost-NN, Reddy-NN} and \textsc{Cordeiro-N}\footnote{Plots for the \textsc{Reddy-NN} extension \textsc{Cordeiro-N} can be found in the appendix.} introduced in Section~\sectref{sec:overview-datasets}, as well as our novel resource \textsc{Feature-NN} introduced in the previous Section~\sectref{sec:feature-nn}. As properties, we will make use of frequency, productivity and ambiguity values provided by \citet{SchulteImWaldeEtAl:16b} and \citet{Miletic/SchulteImWalde:23}, hypernymy and concreteness ratings for the German targets collected in \textsc{Feature-NN}, and concreteness ratings for the English compound and constituent targets collected by \citet{MurakiEtAl:22} and \citet{BrysbaertEtAl:14}, respectively.
+
+\figref{fig:comp-ratings} on page~\pageref{page:comp-ratings} presented the distributions of compositionality ratings across the targets in the existing German and English rating datasets; \figref{fig:feature-nn-comp-ratings} on the previous page presented the distributions for our novel dataset \textsc{Feature-NN}. The two \textsc{Ghost-NN} variants and also our novel dataset \textsc{Feature-NN} are skewed towards strongly compositional targets, while the targets in \textsc{Concrete-NN} and even more so in \textsc{Reddy-NN} exhibit more even distributions. Figures \ref{fig:concrete-comp-std} and~\ref{fig:reddy-comp-std} provide an additional view on the ratings in the latter two datasets, where the mean ratings on the $x$-axes are plotted in relation to the respective standard deviations ($y$-axes). The plots in Figures \ref{fig:concrete-comp-std} and~\ref{fig:reddy-comp-std} confirm that there are more strongly compositional than strongly non-compositional or mid-scale targets in \textsc{Concrete-NN}, while \textsc{Reddy-NN} predominantly includes strongly compositional and also strongly non-compositional targets, in contrast to the mid-range which is covered rather sparsely. Overall, we induce from the distribution plots that (a)~the concreteness-focused selection of targets for \textsc{Concrete-NN}, (b)~the property-based balancing selection of targets for \textsc{Ghost-NN}, and (c)~the target selection combining WordNet-based hypernymy and gloss overlap resulted in target sets with rather different distributions across compositionality ratings.
+
+\begin{figure}[p]
+    \includegraphics[width=.65\textwidth]{figures/08/concrete-nn-comp-std-compound.png}\\
+    \includegraphics[width=.65\textwidth]{figures/08/concrete-nn-comp-std-mod.png}\\
+    \includegraphics[width=.65\textwidth]{figures/08/concrete-nn-comp-std-head.png}%
+    \caption{Mean compositionality ratings and standard deviations in \textsc{Concrete-NN}.}
+    \label{fig:concrete-comp-std}
+\end{figure}
+
+\begin{figure}[p]
+    \includegraphics[width=.65\textwidth]{figures/08/reddy-nn-comp-std-compound.png}\\
+    \includegraphics[width=.65\textwidth]{figures/08/reddy-nn-comp-std-mod.png}\\
+    \includegraphics[width=.65\textwidth]{figures/08/reddy-nn-comp-std-head.png}%
+    \caption{Mean compositionality ratings and standard deviations in \textsc{Reddy-NN}.}
+    \label{fig:reddy-comp-std}
+\end{figure}
+
+\tabref{tab:corr-comp-ratings} looks into relations between compositionality ratings for compounds and compound--constituent combinations, by presenting correlations between the compositionality rating distributions for compounds and constituents within datasets. While we do not see meaningful correlations between the compound--modifier or the compound--head ratings in the \textsc{Ghost-NN} variants or \textsc{Feature-NN}, we find a weak negative correlation for \textsc{Concrete-NN} ($\rho=-0.372$) and weak positive correlations for \textsc{Reddy-NN} ($\rho=0.265$) and \textsc{Cor\-dei\-ro-N} ($\rho=0.353$). Even more so, we find strong correlations between compound and com\-pound--mod\-i\-fi\-er ratings (\textsc{Concrete-NN}: $\rho=0.600$; \textsc{Reddy-NN}: $\rho=0.804$; \textsc{Cor\-dei\-ro-N}: $\rho=0.798$), and also between compound and compound--head ratings (\textsc{Reddy-NN}: $\rho=0.720$ and \textsc{Cor\-dei\-ro-N}: $\rho=0.759$). I.e., in \textsc{Concrete-NN} and \textsc{Reddy-NN} strongly compositional compounds include strongly meaning-contributing modifiers (and heads, in the datasets \textsc{Reddy-NN} and \textsc{Cor\-dei\-ro-N}), and strongly non-compositional compounds include strongly non-contributing modifiers (and heads). We will discuss these insights further after we have looked into compound properties across datasets, i.e., issue (2).
+
+
+\begin{table}
+\caption{Within-dataset correlations ($\rho$) between the compositionality ratings for compounds, modifiers and heads.}
+\label{tab:corr-comp-ratings}
+\begin{tabular}{llrr}
+\lsptoprule
+  & & \multicolumn{2}{c}{$\rho$} \\\cmidrule(lr){3-4}
+  & & modifier & head \\\midrule
+  \multicolumn{4}{l}{German datasets} \\    
+    {\textsc{Concrete-NN}} & compound & \cellcolor{lred}0.600 & 0.138 \\
+                           & modifier  & & \cellcolor{beaublue} −0.372 \\
+    {Ghost-NN/S} & modifier & &  −0.087 \\
+    {Ghost-NN/XL} & modifier & &  −0.123 \\
+    {Feature-NN} & modifier  & &  0.085 \\
+    \midrule    
+    \multicolumn{4}{l}{English datasets} \\
+    {\textsc{Reddy-NN}} & compound & \cellcolor{lred}0.804 & \cellcolor{lred}0.720 \\
+                        & modifier  & & \cellcolor{beaublue}0.265 \\
+    {\textsc{Cordeiro-N}} & compound & \cellcolor{lred}0.798 & \cellcolor{lred}0.759 \\
+    & modifier  & & \cellcolor{beaublue}0.353 \\
+  \lspbottomrule
+ \end{tabular}
+\end{table}
+
+\begin{table}[p]
+\small
+\caption{Correlations ($\rho$) between compound and constituent compositionality ratings and compound and constituent properties.}
+\label{tab:corr-comp-properties}
+ \begin{tabular}{lllrrrrr}
+  \lsptoprule
+    & & & \multicolumn{5}{c}{Properties} \\\cmidrule(lr){4-8}
+    & & & freq & prod & amb & hyp & conc \\
+    \midrule
+
+    {\textsc{Concrete-NN}} & \textsc{orig} & compound & −0.075 & -- & -- & 0.424 & 0.113 \\
+    {\textsc{Concrete-NN}} & \textsc{orig} & modifier  & 0.080 & 0.164 & −0.157 & -- & 0.079 \\
+    {\textsc{Concrete-NN}} & \textsc{orig} & head & −0.147 & −0.178 & −0.279 & \cellcolor{lred} 0.689 & 0.228 \\ 
+
+    {\textsc{Concrete-NN}} & \textsc{feat} & modifier & 0.020 & 0.114 & −0.177 & 0.080 & 0.182 \\
+    {\textsc{Concrete-NN}} & \textsc{feat} & head & −0.070 & −0.061 & −0.230 & \cellcolor{lred} 0.762 & \cellcolor{lred} 0.414 \\ 
+    {Ghost-NN/S} & \textsc{orig} & modifier & 0.032 & 0.024 & −0.235 & -- & 0.002 \\
+    {Ghost-NN/S} & \textsc{orig} & head & −0.220 & −0.271 & −0.305 & \cellcolor{lred} 0.797 & 0.344 \\
+      
+    {Ghost-NN/S} & \textsc{feat} & modifier  & 0.020 & 0.071 & −0.192 & -- & 0.142 \\
+    {Ghost-NN/S} & \textsc{feat} & head & −0.164 & −0.197 & −0.119 & \cellcolor{lred} 0.624 & 0.281 \\ 
+
+    {Ghost-NN/XL} & \textsc{orig} & modifier & −0.088 & −0.023 & −0.231 & -- & 0.119 \\
+    {Ghost-NN/XL} & \textsc{orig} & head & −0.202 & −0.204 & −0.356 & \cellcolor{lred} 0.692 & 0.171 \\
+      
+    {Ghost-NN/XL} & \textsc{feat} & modifier & −0.130 & −0.087 & −0.164 & -- & 0.212 \\
+    {Ghost-NN/XL} & \textsc{feat} & head & −0.246 & −0.250 & −0.294 & \cellcolor{lred} 0.645 & 0.224 \\ 
+    {\textsc{Reddy-NN}} & & compound & \cellcolor{lred} 0.579 & -- & -- & -- & \cellcolor{lred} 0.592 \\
+    {\textsc{Reddy-NN}} & & modifier  & \cellcolor{lred} 0.547 & \cellcolor{lred} 0.471 & 0.172 & -- & \cellcolor{lred} −0.492 \\
+    {\textsc{Reddy-NN}} & & head & \cellcolor{lred} 0.454 & \cellcolor{lred} 0.484 & 0.224 & -- & −0.207 \\ 
+
+    {\textsc{Cordeiro-N}} & & compound & 0.385 & -- & -- & -- & \cellcolor{lred} 0.469 \\
+    {\textsc{Cordeiro-N}} & & modifier & 0.340 & 0.269 & −0.100 & -- & −0.381 \\
+    {\textsc{Cordeiro-N}} & & head & 0.307 & 0.331 & 0.110 & -- & −0.283 \\ 
+
+  \lspbottomrule
+ \end{tabular}
+\end{table}
+
+\begin{table}[p]
+\small
+\caption{Correlations ($\rho$) between compound compositionality ratings and compound and constituent properties.}
+\label{tab:corr-compound-properties}
+ \begin{tabular}{l rrr rr rrr}
+  \lsptoprule
+    & \multicolumn{3}{c}{frequency} & \multicolumn{2}{c}{productivity} & \multicolumn{2}{c}{ambiguity} \\\cmidrule(lr){2-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+    & comp & mod & head & mod & head & mod & head \\
+    \midrule
+    \textsc{Concrete-NN} & −0.075 & 0.049 & 0.099 & 0.101 & 0.199 & −0.182 & −0.060 \\
+    \textsc{Reddy-NN} & \cellcolor{lred} 0.579 & \cellcolor{lred} 0.535 & 0.393 & \cellcolor{lred} 0.517 & \cellcolor{lred} 0.464 & 0.219 & 0.133 \\
+    \textsc{Cordeiro-N} & 0.385 & 0.188 & 0.257 & 0.132  & 0.314 & −0.140 & 0.072 \\
+  \lspbottomrule
+ \end{tabular}
+\end{table}
+
+Tables~\ref{tab:corr-comp-properties} and~\ref{tab:corr-compound-properties} look into interactions between compositionality ratings and properties of compounds and constituents, again relying on Spearman's $\rho$ correlations. More specifically, \tabref{tab:corr-comp-properties} shows correlations between compound ratings and compound frequency (freq), hypernymy (hyp), concreteness (conc), and also between compound--modifier ratings (modifier) and compound--head ratings (head) and the respective modifier/head properties, as well as productivity (prod) referring to the family size, and ambiguity (amb) referring to the number of senses. For the \textsc{Reddy-NN} and the \textsc{Cordeiro-N} datasets, we do not have hypernymy ratings, but we assume that hypernymy is strongly involved in compound--constituent relationships because of how targets were selected (cf. Section~\sectref{sec:overview-datasets}). We distinguish between original ratings (ORIG) and novel ratings (FEAT) in the German datasets, and we highlight cells with moderate-to-strong correlations $\rho > 0.4$. 
+
+The following observations are particularly striking: in the German dataset variants, we find a strong correlation between compound--head ratings and the degree of hypernymy ($0.624 \le \rho \le 0.797$), i.e., the stronger the degree of hypernymy, the more a head has been judged as contributing its meaning to the compound meaning, which we consider an indirect confirmation of the reliability of the ratings, because this is hypernymy per definitionem. In the \textsc{Feature-NN} ratings for the \textsc{Concrete-NN} compound--head combinations we further see a moderate correlation between the ratings and the heads' degrees of concreteness ($\rho=0.414$). For compounds, the same type of correlation is even stronger in the \textsc{Reddy-NN} and the \textsc{Cordeiro-N} datasets ($\rho=0.592$ and $\rho=0.469$, respectively), and negative for the concreteness of compound--modifier ratings in \textsc{Reddy-NN} ($\rho=-0.492$). Most striking in the table are the moderate correlations for \textsc{Reddy-NN} between all compound and compound--constituent ratings and their empirical properties frequency and productivity ($0.454 \le \rho \le 0.579$), while there are no moderate correlations between compositionality ratings and frequency and productivity in the German datasets.
+
+In \tabref{tab:corr-compound-properties}, we focus on compound ratings, this time looking into correlations between compound ratings and compound and constituent properties. We can see that the compound phrase/whole ratings in the \textsc{Reddy-NN} dataset are also moderately correlated with modifier and head frequencies and productivities.
+
+We now turn towards a discussion of the analyses with regard to the two issues we raised: (1)~to what extent one should aim for an even distribution of ratings across the pre-specified scale of ratings, and (2)~to what extent one should take into account properties of targets when creating a novel resource and when using a resource for evaluation. We saw in our analyses that the datasets we explored are skewed towards certain ranges of compositionality in different ways, some contain more compositional than non-compositional compounds, and some contain many more ratings at either extreme of the compositionality scale than in the mid-range. Furthermore, in some datasets (but not in others) we find strong correlations between compound and compound--constituent ratings as well as moderate correlations between compositionality ratings and corpus-based frequencies and productivity scores. Which of these inter-dependencies are desired, and which are artefacts created by the specific strategies of how to select compound targets for the dataset? Optimally, one should aim for ratings on a scale that are evenly distributed across targets, both overall and also with regard to salient target properties, in order to ensure full coverage of the phenomenon. This goal is very difficult to achieve, however, because we can only check on rating distributions once we have collected the ratings. We therefore suggest to pay attention to a subset of target properties that are considered most salient and influential regarding the desired rating types. This was done for \textsc{Ghost-NN} by \citet{SchulteImWaldeEtAl:16b}, for example, whose resulting ratings are however highly skewed towards compositionality, so in retrospect our specific choice of salient properties may be considered suboptimal.
+
+We see two alternative routes to follow, individually or in combination: (a)~Balance your targets across frequency ranges as the minimally required target property, because we know that target frequency has generally a strong influence on language processing and comprehension \citep{Ellis:02}. (b)~If time and money allow, go for a large set of targets in the selection phase, such that the collected ratings may be analysed and the targets then be post-balanced across the most salient target properties in a post-processing filtering step.
+%
+Realistically, many datasets that are available or will be available in the future still incorporate artefacts with regard to one or the other target property, so we need a workaround when evaluating our computational models on the basis of such datasets. Our baseline for this workaround is to assess models not only on the full dataset, but also with regard to subsets of targets with coherent task-relevant properties, similarly to our studies described in Section~\sectref{sec:overview-models} \citep{SchulteImWaldeEtAl:16b, Koeper/SchulteImWalde:17b, Alipoor/SchulteImWalde:20, Miletic/SchulteImWalde:23}. In this way we obtain a fine-tuned set of model results, rather than ``just'' an overall result score.
+
+
+\section{Conclusion}
+
+The current study started off with the observation that evaluations of computational models predicting degrees of  compositionality for noun compounds typically evaluate their models across all targets, disregarding the fact that prediction models might vary according to properties of the targets within the gold standard resources. We suggested a novel route to assess the interactions between compound and constituent properties with regard to degrees of compositionality: (1)~We created a novel collection \textsc{Feature-NN} with compositionality ratings for 1,099 German compounds, where we asked the human judges to provide compound and constituent properties (such as paraphrases, meaning contributions, hypernymy relations, and concreteness) before judging the compositionality; and (2)~We performed a series of analyses on rating distributions and interactions with compound and constituent properties for our novel collection as well as previous gold standard resources for German (\textsc{Concrete-NN} and \textsc{Ghost-NN}) and English (\textsc{Reddy-NN} and \textsc{Cordeiro-N}). Our novel collection of ratings provides useful materials to investigate the meanings of the 1,099 compound targets and their constituents and is available from \url{http://www.ims.uni-stuttgart.de/data/feature-comp-nn} under a CC BY-NC-SA license. The obtained compositionality ratings are strongly correlated with previous ratings on the same targets, from which we induce (a)~that we judge our novel ratings as reliable, and at the same time (b)~that the additional ratings on compound and constituent properties that we asked the human judges to provide did not have a strong influence on their judgements. 
+
+Making use of our novel annotations as well as information on frequencies, productivities, ambiguities and degrees of concreteness regarding the target compounds and their constituents, we gained insight into distributions over compositionality ratings as well as interactions between these distributions and a range of target properties, most importantly: (a)~The previous and also our novel collection of compositionality ratings all show skewed distributions, however in various ways: \textsc{Ghost-NN} and \textsc{Feature-NN} are skewed towards strongly compositional targets, while \textsc{Reddy-NN} includes strongly compositional and also strongly non-compositional targets while the mid-range is covered more sparsely. (b)~Regarding relations between compound and constituent ratings, \textsc{Concrete-NN} and \textsc{Reddy-NN} show moderate-to-strong correlations between compound and compound--modifier ratings (\textsc{Concrete-NN}: $\rho=0.600$; \textsc{Reddy-NN}: $\rho=0.804$) and between compound and compound--head ratings (\textsc{Reddy-NN}: $\rho=0.720$). (c)~Looking into the interactions between compound and constituent properties and their compositionality ratings, we found moderate-to-strong correlations with concreteness (\textsc{Concrete-NN}: $\rho=0.414$; and \textsc{Reddy-NN}: $\rho=0.592$ for compounds and $\rho=0.492$ for heads), and we also found moderate correlations with frequency and productivity (\textsc{Reddy-NN}: $0.393 \ge \rho \ge 0.579$).
+
+Following the analyses we discussed to what extent one should aim for an even distribution of ratings across the pre-specified scale, and to what extent one should take into account properties of targets when creating a novel resource and when using a resource for evaluation. We suggest as a minimum requirement to balance targets across frequency ranges, and optimally to balance targets across their most salient properties in a post-collection filtering step. Above all, we recommend assessing computational models not only on the full dataset but also with regard to subsets of targets with coherent task-relevant properties. We believe that especially the latter recommendation does not only apply to compositionality ratings (resources and models) but more generally to creating and using evaluation datasets across tasks.
+
+
+\section*{Abbreviations}
+
+\begin{tabularx}{.9\textwidth}{@{}lQ@{}}
+MWE & multiword expression\\
+NLP & natural language processing\\
+NLU & natural language understanding\\
+BE & semantic compound relation: be\\
+HAVE & semantic compound relation: have\\
+IN & semantic compound relation: in\\
+ABOUT & semantic compound relation: about\\
+ACTOR & semantic compound relation: actor\\
+INST & semantic compound relation: instrument\\
+LEX & no semantic compound relation; lexicalised compound\\
+%\end{tabularx}%
+%\begin{tabularx}{.5\textwidth}{@{}lQ@{}}
+\end{tabularx}
+
+
+\section*{Acknowledgements}
+
+We thank the five annotators for their contributions to the creation of the dataset \textsc{Feature-NN}, and we thank Chris Jenkins and Filip Miletic as well as the two anonymous reviewers and the editors of this volume for their feedback on previous versions of this chapter. Our research received funding from the German Research Foundation (DFG) through projects \textit{Sense Discrimination and Regular Meaning Shifts of German Particle Verbs} in the Collaborative Research Centre SFB~732, SCHU~2580/5 \textit{Computational Models of the Emergence and Diachronic Change of Multi-Word Expression Meanings}, and SCHU~2580/2 \textit{Distributional Approaches to Semantic Relatedness}.
+
+
+\appendixsection{Annotation guidelines for \textsc{FEATURE-NN} ratings}
+\begin{otherlanguage}{ngerman}
+\appendixsubsection{Original German version: Guidelines für die Annotation von Eigenschaften komplexer Nomen und ihrer Konstituenten}
+
+In der Datei \texttt{anno-comp-ratings-feat.ods} findest Du eine Liste
+von komplexen Nomen und ihren zwei nominalen Konstituenten in den
+Spalten A, B und C (und für eine bessere Übersichtlichkeit wiederholt
+in den Spalten M, N und O). In den dazwischen liegenden Spalten bitten
+wir Dich um Deine spontanen Intuitionen bezüglich folgender
+Eigenschaften:
+
+\begin{description}
+\item[\textit{Spalte D:}] \textcolor{orange}{\textbf{Bedeutung des komplexen Nomens}}
+
+  Aufgabe: Erkläre die Bedeutung des komplexen Nomens in einer
+  Phrase\slash einem Satz. Du darfst (musst aber nicht) die Konstituenten
+  des Nomens in Deiner Erklärung verwenden.
+
+  Beispiel: Die Bedeutung des komplexen Nomens \textit{Eselsohr} ist \textit{verknickte Ecke einer Buchseite}.
+
+\item[\textit{Spalten E und F:}] \textcolor{blue}{\textbf{Eigenschaften der Konstituenten}}
+
+  Welche Eigenschaften der ersten bzw. zweiten Konstituente finden
+  sich in dem komplexen Nomen wieder? Falls Dir mehrere Eigenschaften
+  einfallen, trenne diese bitte durch Komma. Falls Dir keine
+  Eigenschaft einfällt, trage bitte ``0'' ein.
+
+  Beispiel: Bei dem komplexen Nomen \textit{Kunstfehler} trägt
+  z.B. die erste Konstituente die Eigenschaften \textit{sehr gut,
+    Qualität} bei, die zweite Konstituente z.B. die Eigenschaft
+  \textit{Misserfolg}.
+
+  Versuche, jede Eigenschaft auf ein oder wenige Worte zu
+  beschränken. Die Wortarten sind beliebig.
+
+\item[\textit{Spalte G:}] \textcolor{magenta}{\textbf{Über-/Unterordnung}}
+
+  Ist das komplexe Nomen ``eine Art'' der zweiten Konstituente? Nutze
+  eine Skala von 0 (nein, gar nicht) bis 5 (ja, absolut).
+
+  Beispiel: ``Ein Ahornbaum \textbf{ist} eine Art von Baum'', aber\\\hspace*{+1.4cm}``Ein Eselsohr \textbf{ist keine} Art von Ohr''.
+
+\item[\textit{Spalten H--J:}] \textcolor{olive}{\textbf{Abstraktheit/Konkretheit}}
+
+  Wie abstrakt bzw. konkret sind das komplexe Nomen sowie die erste
+  bzw. zweite Konstituente? Nutze wiederum eine Skala von 0 (ganz
+  abstrakt) bis 5 (ganz konkret).
+
+  Hinweis: Konkrete Wörter können durch die menschlichen Sinne (hören,
+  riechen, schmecken, sehen, tasten) erfasst werden
+  (z.B. \textit{Tisch, Lärm}), abstrakte Wörter nicht
+  (z.B. \textit{Idee, Traum}).
+
+\item[\textit{Spalten K--L:}] \textcolor{red}{\textbf{Kompositionalität}}
+
+  Wie sehr lässt sich die Gesamtbedeutung des komplexen Nomens aus der
+  Bedeutung der ersten bzw. zweiten Konstituente ableiten? Nutze
+  wiederum eine Skala von 0 (gar nicht) bis 5 (sehr stark).
+
+\end{description}
+\end{otherlanguage}
+
+\appendixsubsection{Tentative English translation: Guidelines for annotating properties of complex nouns and their constituents}
+
+
+The file \texttt{anno-comp-ratings-feat.ods} provides a list of complex nouns and their two nominal constituents in columns A, B and C (and repeated in columns M, N and O). In the intermediate columns we ask for your spontaneous intuitions regarding the following properties:
+
+\begin{description}
+\item[\textit{Column D:}] \textcolor{orange}{\textbf{Meaning of the complex noun}}
+
+  Task: Explain the meaning of the complex noun within one phrase/sentence. You may (but you do not have to) use the constituents of the noun in your explanation.
+
+  Example: The meaning of the complex noun \textit{Eselsohr} (lit. `donkey ear') `earmark' is a \textit{folded corner of a page in a book}.
+
+\item[\textit{Columns E and F:}] \textcolor{blue}{\textbf{Properties of the constituents}}
+
+  Which properties of the first/second constituent do you recognise in the complex noun? If you are aware of several properties, please separate them with commas. If you are not aware of any property, please enter ``0''.
+
+  Example: Regarding the complex noun \textit{Kunstfehler} (lit. `art mistake') `malpractice' the first constituent contributes the properties \textit{excellent} and \textit{quality}, and the second constituent contributes the property \textit{failure}.
+
+  Try to use only one or a few words for each property. You may use words of any word class.
+
+\item[\textit{Column G:}] \textcolor{magenta}{\textbf{Super-/subordination}}
+
+  Is the complex noun ``a kind of'' the second constituent? Please use a scale between 0 (no, not at all) and 5 (yes, absolutely).
+
+  Example: ``An \textit{Ahornblatt} `maple tree' \textbf{is} a kind of tree'', but\\\hspace*{+1.55cm}``An Eselsohr (lit. `donkey ear') `earmark' \textbf{is not} a kind of ear''.
+
+\item[\textit{Columns H--J:}] \textcolor{olive}{\textbf{Abstractness/concreteness}}
+
+  How abstract/concrete are the complex noun and the first and second constituent?
+  Again, please use a scale between 0 (totally abstract) and 5 (totally concrete).
+  
+  Hint: Concrete words can be perceived by human senses: hearing, smelling, tasting, seeing, touching (e.g., \textit{table, noise}), abstract words cannot (e.g., \textit{idea, dream}).
+  
+\item[\textit{Columns K--L:}] \textcolor{red}{\textbf{Compositionality}}
+
+  To what degree can you induce the meaning of the complex nouns from the meanings of the first/second constituents? Again, please use a scale between 0 (not at all) and 5 (totally).
+ 
+\end{description}
+
+\appendixsection{Cordeiro dataset ratings}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.65\linewidth]{figures/08/cordeiro-n-ratings.png}
+    \caption{Compositionality rating distributions in \textsc{Cordeiro-N}.}
+    \label{fig:cordeiro-n}
+\end{figure}\pagebreak
+\vfill
+\begin{figure}[H]
+    \includegraphics[width=.65\linewidth]{figures/08/cordeiro-n-comp-std-compound.png}\\
+    \includegraphics[width=.65\linewidth]{figures/08/cordeiro-n-comp-std-mod.png}\\
+    \includegraphics[width=.65\linewidth]{figures/08/cordeiro-n-comp-std-head.png}
+    \caption{Mean compositionality ratings and standard deviations for compounds in \textsc{Cordeiro-N}.}
+    \label{fig:cordeiro-n-std}
+\end{figure}
+\vfill
+\pagebreak
+
+\appendixsection{Concreteness of Targets in \textsc{Reddy-NN} and \textsc{Cordeiro-N}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[height=5cm]{figures/08/reddy-nn-conc-ratings.png}\\
+    \includegraphics[height=5cm]{figures/08/cordeiro-n-conc-ratings.png}
+    \caption{Concreteness ratings in \textsc{Reddy-NN} and \textsc{Cordeiro-N}.}
+    \label{fig:reddy-cordeiro-conc}
+\end{figure}
+
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}

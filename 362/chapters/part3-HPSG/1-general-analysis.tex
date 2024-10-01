@@ -1,0 +1,245 @@
+The main finding of the corpus studies and experiments that I have presented in this book is that there is a cross-construction difference as far as extracting out of the subject is concerned, and that the constraints on locality known as ``subject island'' since the foundational work of \citet{Ross.1967} depend on discourse functions. The empirical data also show that extraction out of the subject depends on the type of subjects: sentential or infinitival subjects are not like NP subjects, and embedded subjects are not like subjects of the matrix clause. This was my motivation for proposing the Focus-Background Conflict constraint in order to account for this cross-construction difference. As I argued in part~II, other processing factors are also useful for understanding the data, but the FBC constraint relies on information structure, at the interface between semantics and pragmatics, and is therefore part of the grammar. 
+In this section, I will discuss the FBC constraint in more detail, leaving aside the other processing factors at play for extractions (e.g.\ surprisal caused by infrequent and complex structures). In the following sections, I will propose a formalisation of the FBC constraint in the framework of HPSG.
+
+The FBC constraint in (\ref{rule:FBC}), reproduced here in (\ref{rule:FBC-bis}) for convenience, states the following:
+
+\ea Focus-background conflict (FBC) constraint:\\
+A focused element should not be part of a backgrounded constituent.
+\label{rule:FBC-bis}
+\z 
+
+\section{Clarifying the FBC constraint}
+
+Intuitively, it seems reasonable to assume that something cannot simultaneously be backgrounded and in the foreground, presupposed and unknown, highlighted and able to be elided. Focus and background come in complementary distribution, and an element is either focused or belongs to the background. 
+
+The novelty of the FBC constraint is to state that a constituent cannot be partly focused if it is also backgrounded. Some assumptions are necessary in order to make the constraint work. First, the FBC does not specify what kind of focus is not allowed as part of a backgrounded constituent. So far, my main concern has been informational focus, because that is the type involved in interrogatives and clefts. However, because focus and background are in complementary distribution, I will assume that all kinds of focus fall under the FBC. 
+
+Second, we assume that a constituent is backgrounded if its head is backgrounded. Otherwise relativizing out of an object NP (or any NP) that is part of the focus domain would violate the FBC constraint. In (\ref{ex:object-subextraction-rc}), the relative clause is restrictive and backgrounded, and thus the NP object of the matrix clause is partly backgrounded and partly focused, but we assume that the the direct object is focused, because its head is focused. Hence, (\ref{ex:object-subextraction-rc}) does not violate the FBC constraint. 
+
+\ea I can't see [the man [you mentioned yesterday]$_{\text{Bg}}$]$_{\text{F}}$.
+\label{ex:object-subextraction-rc}
+\z 
+
+Third, \label{ch:is-internal} 
+I assume with other scholars \citep[a.o.][]{Lahousse.2011,Song.2017} that embedded clauses have an internal information structure, independent of the information structure role the clause itself may play with respect to the matrix clause meaning. In the formalism that I adopt in the following sections, information structure is expressed as a binary relation between a constituent and a clause meaning. For example, a restrictive relative clause is generally considered as backgrounded with respect to the meaning of the clause that embeds it, but this does not mean that its antecedent cannot play the role of a topic with respect to the relative clause itself. In example (\ref{ex:internal-is}), I use a graphical representation of information structure in which the binary relation is represented by an arrow starting from the constituent that bears the information structure role and pointing to the clause (represented by its verb) with respect to which the relation holds.
+
+\ea \label{ex:internal-is}
+\attop{\oneline{\begin{forest}
+[[The, no edge] [mice, no edge, name = mouse] [{[}to whom, no edge] [we, no edge] [gave, no edge, name = gave] [only, no edge] [glucose{]}, no edge, name = glucose] [were, no edge, name = were] [in, no edge] [lipogenesis., no edge, name = lipo]]
+\draw[->] ([xshift= 0pt]mouse.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Topic}  ([xshift= -3pt]gave.north);
+\draw[->] ([xshift= 0pt]glucose.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Focus}  ([xshift= 3pt]gave.north);
+\draw[->] ([xshift= -3pt]mouse.north) .. controls +(up:22mm)  and +(up:22mm)  .. node[above] {Topic}  ([xshift= 0pt]were.north);
+\draw[->] ([xshift= 0pt]gave.north) .. controls +(up:13mm)  and +(up:13mm)  .. node[above] {BG}  ([xshift= -3pt]were.north);
+\draw[->] ([xshift= 0pt]lipo.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Focus}  ([xshift= 3pt]were.north);
+\end{forest}}}
+\z 
+
+A possible context for (\ref{ex:internal-is}) is that of an experiment in which one group of mice are fed glucose, and the other ones are fed glucose and fat. Given this context, \emph{mice} is at the same time the default topic of the matrix clause (its subject)\footnote{In this particular context, it is probably best interpreted as a contrastive topic.} and the default topic of the relative clause (its antecedent). The relative clause is interpreted as a restrictive relative, and is therefore backgrounded with respect to the matrix clause meaning. However, the presence of the focus particle \emph{only} signals that \emph{glucose} bears a focus. The focused element [\emph{only glucose}] is hence ``part of'' the backgrounded relative clause, but this does not violate the FBC constraint, because the former is focused with respect to the embedded clause meaning and the latter is backgrounded with respect to the matrix clause meaning. 
+By contrast, (\ref{ex:internal-is-clash}) does violate the FBC constraint, because [\emph{which car}] is focus with respect to the matrix clause meaning, and [\emph{the driver of (the car)}] is topic with respect to the same clause meaning. The former is therefore both topic and focus of the clause meaning at the same time.
+
+\ea \label{ex:internal-is-clash}
+\begin{forest}
+[
+[{[}Which, no edge] [car{]}, no edge, name = car] [did, no edge] [{[}the, no edge] [driver, no edge, name = driver] [of{]}, no edge] [cause, no edge, name = cause] [a, no edge] [scandal?, no edge]
+]
+\draw[->] ([xshift= 0pt]car.north) .. controls +(up:18mm)  and +(up:18mm)  .. node[above] {Focus}  ([xshift= 0pt]cause.north);
+\draw[->] ([xshift= 0pt]driver.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Topic}  ([xshift= -3pt]cause.north);
+\end{forest}
+\z 
+
+Fourth, S or VP are considered constituents only with respect to the clause that embeds them.\footnote{Here and in the following, I am distinguishing between an S (or CP) like [\emph{David read the book}] and a VP like [\emph{read the book}].} The FBC constraint does not apply to their internal structure. 
+In example (\ref{ex:focus-part-of-VP-answer}), the V is backgrounded, but this does not mean that the NP object cannot be focus. 
+Thus the VP is not backgrounded, even though its head is.
+
+\eal \label{ex:focus-part-of-VP}
+\ex A: What did David read?
+\ex B: [David read]$_{\text{Bg}}$ [this book]$_{\text{F}}$. \label{ex:focus-part-of-VP-answer}
+\zl 
+
+Similarly, the subject or an adverb can be the focus of the clause meaning even when the verb is backgrounded. On the other hand, if the meaning of the embedded clause is backgrounded with respect to the matrix clause meaning, as in (\ref{ex:internal-is}), all elements in the embedded clause are backgrounded with respect to the matrix clause meaning.\footnote{Relative clauses belong to the syntactic island defined by \citet{Ross.1967} as ``Complex NP Constraint''. 
+
+\begin{itemize}
+    \item[(i)] \citep[119]{Ross.1967}
+    \item[] * The man [who$_i$ I read a statement [which$_j$~\trace{}$_j$ was about~\trace{}$_i$]] is sick. 
+\end{itemize}
+
+\citet{Goldberg.2013} argues that extracting out of relative clauses is ruled out because relative clauses are backgrounded (according to the BCI constraint, see Section~\ref{ch:salience-and-BCI}). The FBC constraint predicts that focalization out of a relative clause should lead to a discourse clash, but it does not constrain relativizations (topicalization) out of a relative clause. 
+
+This seems at odds with examples like (i), but research on extraction out of relative clauses shows that acceptability increases drastically if the words in the matrix clause are semantically weakly defined, i.e.\ with indefinite antecedents \citep{Kluender.1998} and main verbs almost devoid of meaning \citep[91--92]{Chaves.2020.UDC}. Furthermore, \citet{Erteschik-shir.1979} have shown that extraction out of presentational relative clauses is acceptable. Notice that most of the time, the examples given in this literature are relativizations out of a relative clause.
+
+Furthermore, there are languages that allow some extractions out of a relative clause (with or without resumptive pronouns, see \citet{Crysmann.2012} for a discussion and analysis). Example (ii) is an extraction out of a relative clause in Hausa, showing relativization.
+
+\begin{itemize}
+    \item[(ii)] (\citealt[84]{Tuller.1986} cited by \citealt[55]{Crysmann.2012})
+    \item[] \gll ?g\`{\=a} m\`{\=a}tar [dà$_i$ ka b\=a nì litt\=afin [dà$_j$ m\`{\=a}l\=amai sukà san mùtumìn [d\=a$_k$~\trace{}$_i$ ta rub\`{\=u}t\=a w\=a~\trace{}$_k$~\trace{}$_j$]]].\\
+\sbar{}here.is woman \sbar{}\textsc{rel} 2\textsc{sg.mas.cpl} give me book \sbar{}\textsc{rel} teachers 3\textsc{.pl.cpl} know man \sbar{}\textsc{rel} 3\textsc{.sg.fem.cpl} write for\\
+\glt `Here is the woman that you gave me the book that the teachers know the man (she) wrote (it) for (him).'
+\end{itemize}
+
+This evidence challenges the idea that extraction out of relative clauses is altogether unacceptable. Therefore, the fact that relativizing out of a relative clause does not violaate the FBC constraint makes correct predictions. But it still remains to be demonstrated that there is a cross-construction difference between relativizations and interrogatives.}
+
+Finally, \label{ch:general-analysis-gradability}
+an important aspect of the FBC constraint is that it assumes a gradience of discourse status:
+``The more focused an element, the more focused the constituent
+it is part of''  \citep[21]{Abeille.2020.Cognition}. The gradient nature of information structure is assumed by many scholars. \citet{Kuno.1987} defines focus as the ``highly unpredictable'' information in the sentence; since information can be more or less predictable, it follows that focalization is graded. \citet[310--311]{Webelhuth.2007} defines a ``more thematic than'' relation that holds between different arguments, such that some are topics (themes) to a greater or lesser degree than the others. 
+% Webelhuth, p 310-311: he defines a "more thematic than" relationship (the arguments for this are in Bresnan et al 2007 according to him, but I can't identify them)
+% Bresnan, Joan, Cueni, Anna, Nikitina, Tatiana and Baayen, Harald. 2007. Predicting the Dative Alternation. In I. Kraemer G. Boume and J. Zwarts (eds.), Cognitive Foundations of Interpretation, pages 69–94, Amsterdam: Royal Netherlands Academy of Science.
+\citet[369]{Ambridge.2008} assume that a constituent can be more or less backgrounded, and that this is the factor that explains the gradient acceptability of extractions out of backgrounded constituents.
+
+\section{The FBC in long-distance dependencies}
+\label{ch:analysis-ldd}
+
+In Section \ref{ch:exp-conclu-cross-construction}, I discussed the results of focalization out of backgrounded constructions in long-distance dependencies. In (\ref{ex:interr-ldd-eng-bis}), the extraction gives rise to focalization of the \emph{wh}-phrase. More precisely: The \emph{wh}-phrase is focused with respect to the matrix clause meaning.
+
+\ea \label{ex:interr-ldd-eng-bis}
+\attop{\oneline{%
+\begin{forest}
+[
+[Of, no edge] [who, no edge, name = who] [do, no edge] [you, no edge] [think, no edge, name = think] [that, no edge] [the, no edge] [daughter, no edge, name = daughter] [plays, no edge, name = play] [the, no edge] [piano?, no edge]
+]
+\draw[->] ([xshift= 0pt]who.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Focus}  ([xshift= 0pt]think.north);
+\draw[->] ([xshift= -3pt]who.north) .. controls +(up:24mm)  and +(up:24mm)  .. node[above] {?}  ([xshift= 3pt]play.north);
+\draw[->] ([xshift= 0pt]daughter.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Topic?}  ([xshift= -3pt]play.north);
+\end{forest}}}
+\z 
+
+Two questions arise in this configuration: What is the status of the \emph{wh}-phrase with respect to the embedded clause meaning? And: Is the subject of the embedded clause also a default topic?\footnote{\citet{Portner.1998} claim that topics have wide scope over the whole utterance. For them, this follows logically from the definition of topics: if the topic is ``the thing which the sentence is about'' \citep[127]{Portner.1998}, then the whole utterance can have only one focus. This would, however, mean that my assumption in the previous section that antecedents are the topic of (restrictive) relative clauses cannot hold.} In view of the FBC constraint, these two questions are interrelated: If we assume that the subject is the default topic of the embedded clause meaning, and that interrogation makes the \emph{wh}-phrase the focus of the embedded clause meaning, then (\ref{ex:interr-ldd-eng-bis}) should violate the FBC constraint. The question is therefore: is there evidence that a discourse clash takes place in embedded structures?
+
+The results of Experiment~13 on \emph{wh}-questions with a long distance dependency were not conclusive. Extraction out of the subject was not rated significantly lower than extraction out of the object, and there was no significant interaction. 
+
+\begin{sloppypar}
+Even though Experiment~13 shows null results, other researchers testing similar stimuli in English \citep{Sprouse.2007.PhD,Sprouse.2012,Sprouse.2016} and in Italian \citep{Sprouse.2016} found significant interaction effects.\footnote{I leave aside \citet{Sprouse.2011}, as they did not cross extraction site and extraction type. \citet{Sprouse.2016} reported only a marginally significant interaction ($p<0.062$) in English. However, reanalyzing their data, I found that the interaction became significant ($p<0.05$) using cumulative link mixed models instead of the authors' original linear mixed effects models. Thus, according to the criteria adopted in this book, the interaction for \textit{wh}-question in English in \citet{Sprouse.2016} would be significant. I think we can safely assume that the interaction is robust with their material, although the effect may not be very large.}
+\end{sloppypar}
+
+Unfortunately, all these experiments used subject and object relative clauses as a baseline. This is problematic because it is well-known that there is a strong cross-linguistic preference for subject relative clauses. \figref{fig:results-sprouse-2016} illustrates the interaction effects found for English relative clauses and \emph{wh}-questions in \citet{Sprouse.2016}. Even a purely visual inspection of the interaction plot shows a clear subject preference in the non-island baseline (green line). Reanalysis of their data revealed a significant difference ($p<0.005$ and $p<0.05$ respectively) between extraction out of the subject and extraction out of the object (i.e. the slope of the red line is significantly different from 0). However, we cannot tell whether the interaction effect would also appear with another grammatical baseline or is artificially produced by the subject relative clause preference.
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figures/interaction-English-sprouse2016}
+    \caption{Interaction plot of \citegen{Sprouse.2016} experiments on subject island in English}
+    \label{fig:results-sprouse-2016}
+\end{figure}
+
+I conclude that there is enough evidence concerning long-distance dependencies to affirm that the focused element is focus also with respect to the meaning of the embedded clauses. There is certainly a persistent tendency for long-distance \emph{wh}-questions pointing to this, and it is also supported by the intuitions of many scholars. But further research is needed.
+
+\section{The puzzle of \emph{it}-clefts}
+\label{ch:analysis-clefts}
+
+In this section, I will concentrate on \emph{it}-clefts (or \emph{c'est}-clefts for French) with narrow focus, i.e.\ with focus on the pivot. As explained in Section~\ref{ch:is-clefts}, all-focus \emph{c'est}-clefts are possible and common in French \citep{Lambrecht.1994,Doetjes.2004}, but they differ in prosody \citep[541--549]{Doetjes.2004} and therefore should be analyzed differently.
+
+\subsection{The information structure of the \textit{that}-clause}
+
+The information structure of the pivot was discussed previously in Section~\ref{ch:is-clefts}, but we have not considered the information structure of the \textit{that}-clause (or \textit{que}-clause in French). The approach that seems to predominate in the literature is \citegen{Prince.1978}. \citeauthor{Prince.1978} describes the content of the \emph{that}-clause in English \emph{it}-clefts as being presupposed and containing ``known'', but not necessarily ``given'' information (her terminology). Actually, in some variants of \emph{it}-clefts ``frequent in historical naratives'', the speaker assumes the information to be unknown to the hearer (hence not given in discourse) but known in general terms as an indisputable (for example historical) fact. One example is given in (\ref{ex:narrative-cleft}).
+
+\ea \citep[900]{Prince.1978}\\
+It was in this year that Yekuno Amlak, a local chieftain in the
+Amba-Sel area, acceded to the so-called Solomonic Throne. 
+\label{ex:narrative-cleft}
+\z 
+
+In the other and most common variant of \emph{it}-clefts, the information is presupposed to be known by both speaker and hearer, thus the information in the \emph{that}-clause does not play an important role in the development of the discourse. Sometimes this information may even be given. For this reason, this part may easily be omitted in most of the cases, as shown in (\ref{ex:cleft-that-deleted}).
+
+\ea \citep[897]{Prince.1978}\\
+Who made this mold? Was it the teachers? 
+\label{ex:cleft-that-deleted}
+\z 
+
+% Prince 1978 : ``not the theme'' (not sure if she means by that ``not the topic''?)
+
+That the \emph{that}-clause is presupposed (and therefore backgrounded) can be shown using the negation test: whereas (\ref{ex:cleft-presupposition-test-comp-base}) and (\ref{ex:cleft-presupposition-test-base}) convey the same information, the negation in (\ref{ex:cleft-presupposition-test}) only targets the pivot, whereas John having lost something remains true. This is not the case in (\ref{ex:cleft-presupposition-test-comp}), where the scope of the negation is ambiguous.
+
+\eal 
+\ex John lost his keys.
+\label{ex:cleft-presupposition-test-comp-base}
+\ex It was his keys that John lost.
+\label{ex:cleft-presupposition-test-base}
+\ex John didn't lose his keys.
+\label{ex:cleft-presupposition-test-comp}
+\ex \citep[884]{Prince.1978}\\
+It wasn't his keys that John lost. 
+\label{ex:cleft-presupposition-test}
+\zl 
+
+The proposition expressed by the \textit{that}-clause in (\ref{ex:cleft-presupposition-test-base}), namely that \textit{John lost x}, is still true in (\ref{ex:cleft-presupposition-test}). What is negated is identitity x with the entity \textit{his keys}. This seems to indicate that the content of the \textit{that}-clause is backgrounded.
+
+There are, however, alternative views. According to \citet[96]{Gussenhoven.2007}, the \emph{that}-clause in \emph{it}-clefts can contain reactivated information, i.e.\ old information that bears focus. This would be incompatible with the idea that everything in the \textit{that}-clause is backgrounded.  \citet{Song.2017} concludes that there is not enough evidence for considering \emph{that}-clauses in \emph{it}-clefts as backgrounded and decides not to constrain their information structure in his own analysis.
+
+\subsection{A problem for the FBC constraint?}
+
+If, as assumed by \citet{Prince.1978}, the whole \textit{that}-clause is backgrounded, then \textit{it}-clefts are problematic to the FBC. By definition, \textit{it}-clefts would indeed involve  focalization (by means of extraction) of a backgrounded element.\footnote{I thank Daniel Büring for drawing my attention to this issue.} Typically, subextractions out of the NP object like (\ref{ex:cleft-contradiction}) should violate the FBC constraint. And yet, the empirical evidence in \REF{ch:exp14} show that they are acceptable.
+
+\ea It is [of my car]$_{F}$ [that you hate [the color~\trace{}]]$_{B?}$. \label{ex:cleft-contradiction}
+\z 
+
+One solution is offered by \citet{Bresnan.1987}. They propose that \emph{it}-clefts are semantically biclausal and assume the information structure in (\ref{ex:is-cleft-bresnan}). According to this analysis, the pivot is the focus of the main clause, and the topic of the embedded clause. 
+
+\ea Information structure of \emph{it}-clefts \citep[adapted from][758]{Bresnan.1987}:\nopagebreak\\
+\begin{forest}
+[
+[It, no edge] [is$_{e1}$, no edge, name = is] [my, no edge] [car, no edge, name = car] [that, no edge, name = that] [you, no edge] [don't, no edge] [want$_{e2}$., no edge, name = want]
+]
+\draw[->] ([xshift= -3pt]car.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Focus}  ([xshift= 0pt]is.north);
+\draw[->] ([xshift= 3pt]car.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Topic}  ([xshift= 0pt]want.north);
+\end{forest}
+\label{ex:is-cleft-bresnan}
+\z 
+
+If it-clauses involve two clauses, elements of the \emph{that}-clause are backgrounded with respect to the embedded clause meaning (e2), while the pivot is focus with respect to the main clause meaning (e1). This solves the conflict with the FBC constraint, since the same element is not focus and backgrounded with respect to the same clause.
+
+But the analysis in (\ref{ex:is-cleft-bresnan}) seems problematic to me. There is no meaningful event e1 associated with the copula. What does it mean then for the focused element to be focus with respect to e1? It seems to me that the set of alternatives opened by the focalization in (\ref{ex:is-cleft-bresnan}) is more likely something like: \{\emph{You don't want my house.}, \emph{You don't want Christine's dog.}, \dots\}. For this reason, in the following I will argue for an analysis of \emph{it}-clefts as semantically monoclausal structures.
+%\footnote{Furthermore, the analysis in (\ref{ex:is-cleft-bresnan}) presupposes that the \emph{that}-clause in \emph{it}-clefts is a relative. I will argue in the sections below that this cannot be the case.}
+
+\ea Information structure of \emph{it}-clefts in this work:\nopagebreak\\
+\begin{forest}
+[
+[It, no edge] [is, no edge, name = is] [my, no edge] [car, no edge, name = car] [that, no edge, name = that] [you, no edge] [don't, no edge] [want., no edge, name = want]
+]
+\draw[->] ([xshift= -3pt]car.north) .. controls +(up:6mm)  and +(up:6mm)  .. node[above] {Focus}  ([xshift= 3pt]want.north);
+\end{forest}
+\label{ex:is-cleft-mythesis}
+\z 
+
+
+
+\subsection{Other extractions out of the \textit{that}-clause}
+
+We may add that \emph{wh}-questions with extraction out of the \emph{que}-clause in French seem relatively acceptable:
+
+\ea[]{\gll [De qui]$_i$ est - ce que [c' est toi$_j$ qui~\trace{}$_j$ dois tenir [la main~\trace{}$_i$]]?\\
+\sbar{}of who is {} it that \sbar{}it is you who must hold \sbar{}the hand\\
+\glt `Of whom are you the one who must hold the hand?'}
+\label{ex:introspective-cleft-extraction-que-clause}
+\z 
+
+In example (\ref{ex:introspective-cleft-extraction-que-clause}), the object complement \textit{de qui} is necessarily focus, since it is the \textit{wh}-element of the \textit{wh}-question. It is also part of the \textit{que}-clause of the embedded \textit{c'est}-cleft, and therefore backgrounded according to \citet{Prince.1978}.
+
+Yet, it would be necessary to confirm this intuition with empirical data, because it has been claimed that such examples are ungrammatical. For example, \citet{Godard.1988} says that extraction out of the \emph{que}-clause in general~-- e.g.\ (\ref{ex:godard-extraction-que-clause})~-- is only possible with a resumptive pronoun. 
+
+\ea \citep[44]{Godard.1988}\\
+* \gll Les enfants, [qu$_i$' il était convenu que [c' était le père de Paul qui$_j$~\trace{}$_j$ devait raccompagner~\trace{}$_i$]], ont décidé de rentrer seuls.\\
+the children \sbar{}that it was agreed that \sbar{}it was the father of Paul who must\textsc{.past} take.back have decided of come.back alone\\
+\glt `The children, that it was agreed that it was Paul's father who was supposed to bring (them) back, have decided to come back on their own.'
+\label{ex:godard-extraction-que-clause}
+\z\largerpage[2.25]
+
+If \citeauthor{Godard.1988}'s intuition concerning (\ref{ex:godard-extraction-que-clause}) was true, then this case would challenge the FBC constraint, because relativization should be acceptable regardless of the discourse status of the \emph{que}-clause. But examples with a similar structure and unquestionable focalization of the pivot such as (\ref{ex:online-cleft-extraction-que-clause}) can be found online.\footnote{Example (\ref{ex:online-cleft-extraction-que-clause}) from \url{https://www.lorientlejour.com/article/699098/Un\_systeme\_tampon,\_en\_attendant\_un\_nouveau\_pacte\_constitutionnel.html}, last access 19/06/2023}
+Hence more work is needed in order to resolve this issue.
+
+\ea[]{\gll des périodes de crise prolongées[,] [[d]ont$_i$ [c' est toujours l' économie et le social qui$_j$~\trace{}$_j$ pâtissent~\trace{}$_i$]]\\
+\textsc{det} times of crisis protracted \ssbar{}of.which \sbar{}it is always the economy and the social who suffer\\
+\glt `times of long-term crisis, from which it's always the economy and the social affairs that suffer' (i.e.\ the economy and the social affairs suffer from times of long-term crisis)}
+\label{ex:online-cleft-extraction-que-clause}
+\z 
+
+Examples like (\ref{ex:introspective-cleft-extraction-que-clause}) and (\ref{ex:online-cleft-extraction-que-clause}) seem to indicate either that the FBC constraint is incorrect, or that we have to abandon the assumption that the \emph{que}-clause is backgrounded in French.
+
+\subsection{Assumptions in this book}
+
+In an experiment to be published elsewhere \citep{Winckel.cleft.prep}, we have tested sentences like (\ref{ex:cleft-presupposition-test}), which serves as the basis for the assumption that the content of the \emph{that}-clause is presupposed. The empirical evidence suggests that the elements in the \textit{that}-clause are not backgrounded to the same degree. I will therefore follow \citet{Song.2017} and assume in my analysis that the elements in the \emph{que}-clause may have any discourse status. This also allows me to not take into account the distinction between all-focus and narrow-focus \emph{it}-clefts or \emph{c'est}-clefts. However, an empirically grounded investigation of the information structure of \emph{it}-clefts would be very beneficial to our understanding of focalization. 
+
+% seems to contradict the FBC
+% [Traces only of resin , gum and extractive matter] can be separated from the mass . . . 		(Philosophical Magazine: 17)
+% reported by Heageman et al 2014, p 88
+
+% Not sure what to do with that :
+% Cognitive domains / attributes (Langacker 1987): you may use a part to refer to a whole but not the other way round (that is how metonymy works); you may say the engine to refer to the car, but not a car to refer to the engine. Deane 1991,15-16 says that it has to do with subextraction from NPs: the attribute of a domain can be extracted.
+

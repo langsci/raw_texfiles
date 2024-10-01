@@ -1,0 +1,987 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998631}
+
+\author{Hana Skoumalová\orcid{0000-0002-3519-0233}\affiliation{Charles University} and Marie Kopřivová\orcid{0000-0001-7390-0753}\affiliation{Charles University} and Vladimír Petkevič\orcid{0000-0003-0468-4158}\affiliation{Charles University} and Tomáš Jelínek\orcid{0000-0002-8521-4715}\affiliation{Charles University} and Alexandr Rosen\orcid{0000-0003-2210-4268}\affiliation{Charles University} and Pavel Vondřička\orcid{0000-0001-8544-6113}\affiliation{Charles University} and Milena Hnátková\orcid{0000-0002-4790-9807}\affiliation{Charles University}}
+
+\title{LEMUR: A lexicon of Czech multiword expressions}
+
+
+\abstract{This chapter describes a lexicon of Czech multiword expressions, designed to be useful both for human readers and for natural language processing tasks. Its entries use a rich typology of multiword expressions, based on their syntactic aspects, idiomaticity and flexibility, with a focus on the specific features of Czech multiword expressions with their significant variability, and a classification according to a traditional approach. The content and structure of the entries facilitate the use of the lexicon in natural language processing. The chapter also describes how the lexicon is implemented and used in parsing and for annotating multiword expressions in a corpus. The corpus and the lexicon are linked, so each entry in the lexicon includes examples from the corpus, and each annotated multiword expression in the corpus is linked with a corresponding lexical entry.}
+
+\lehead{Hana Skoumalová et al.}
+\begin{document}
+\lehead{Hana Skoumalová et al.}
+\maketitle
+
+
+\section{Introduction}
+\label{sec:intro}
+
+In every language, multiword expressions (henceforth MWEs) represent a substantial part of the vocabulary, both in common and in specialist use. A lexicographical resource describing MWEs is therefore an obvious need. Such descriptions can be part of a standard lexicon or included in a dedicated lexicon of MWEs. 
+
+On the path from lexicon to grammar, many MWEs stay at least halfway between the two, some much closer to grammar than single-word lexemes. This is even more pronounced in a language such as Czech, with its free word order and rich morphology, including intricate morphosyntactic agreement patterns. Considering the flexibility of many MWEs (not only in Czech), allowing for insertions, omissions, permutations, morphosyntactic transformations, the use of synonyms, and other manifestations of variability, a satisfactory solution calls for a highly elaborate scheme for the specification of lexical entries.
+As an answer to the need for a lexical resource up to the task we introduce LEMUR, a LExicon of MUltiword expRessions of Czech.
+
+The chapter is structured as follows. \sectref{sec:previous-work} relates LEMUR to some existing common lexical resources, referring to its sources of inspiration and providing a concise summary of research on MWEs, with a specific emphasis on Czech. The extensive \sectref{sec:typology} introduces the components of a lexical entry together with the multi-dimensional taxonomy of MWEs. Next, \sectref{sec:design} presents an overview of how the lexical entries are encoded and how the whole lexicon is implemented. In \sectref{sec:use} we exemplify the current use cases of the lexicon: (i) as a resource for annotating MWEs in corpora and providing links between their occurrences in a corpus and the corresponding entries in the lexicon, and (ii) as an aid in tagging and parsing. The chapter concludes with a summary of achievements and pitfalls and some perspectives of the project (\sectref{sec:concl}).
+
+\section{LEMUR related to other MWE lexicons and previous research}
+\label{sec:previous-work}
+
+LEMUR was designed from the start as a richly structured database, with an interface suitable for use in lexicography, for teaching Czech as a foreign language, for studying theoretical issues of MWEs as entities between lexicon and grammar, and also for Natural Language Processing (henceforth NLP) tasks such as tagging, parsing and corpus annotation, including MWE identification and search, or word sense and semantic disambiguation. 
+
+\subsection{LEMUR and other MWE lexicons}
+\label{sec:previous-lexica}
+
+LEMUR is not the first lexicon of Czech MWEs. The standard reference lexicon of Czech phraseology \citep{Cermak:2009} is an impressively  large and detailed achievement, but its printed format and standard lexicographical approach favour the traditional manual look-up before other possible uses. Other resources focus either on an inventory of MWEs used for their identification in corpora, such as the FRANTALEX lexicon \citep{Hnatkova:2002,Koprivova:Hnatkova:2014}, or on extending a valency lexicon to include MWEs headed by verbs \citep{Uresova:2009,vallex:2014,Przepiorkowski:etal:2016}. LEMUR differs from the above in its broad focus: to the best of our knowledge, its entries cover more types of MWEs and capture more properties of each MWE than any other resource (for a similarly rich resource for Bulgarian and Romanian, see \citetv{chapters/03}). Moreover, it provides the option of bi-directional links between entries in the lexicon and occurrences of the multiword lexemes in a corpus.
+
+In addition to MWEs listed in traditional phraseological dictionaries, i.e.\ proverbs, similes and sayings \citep{Burger:Dobrovolskij:eds:2007}, the lexicon includes compound function words (mainly prepositions and conjunctions), scientific terms \citep{Kovarikova:Kovarik:2019}, and typical collocates (for example\ \textit{vydatná strava} `nutrient food'). However, it does not include frequent co-occurrences of function words such as \textit{ale i} `but also', \textit{že se} `that \textsc{refl}' etc.
+
+LEMUR builds on FRANTALEX, which was based on \citet{Cermak:2009} and extended by additional MWEs, found in corpora, and variants of already known MWEs.
+The MWE typology used in the lexicon is a modification of the multi-dimensional taxonomy used in lexical templates within the PARSEME  % \citep{Markantonatou:etal:2018}
+project,\footnote{\url{https://typo.uni-konstanz.de/parseme/}}\footnote{\url{https://www.lexical-resource-semantics.de/wiki/index.php/Parseme_MWE_Template:_English} (visited Nov 13, 2023)} and inspired by \citet{baldwin2010multiword}.
+An important addition to the taxonomy is the notion of morphological idiomaticity (see \sectref{sec:idiom-morph}).
+While compiling the lexicon, we also addressed theoretical issues related to the variability of MWEs \citep{Pasquer:etal:2018}. As a major theoretical contribution, we see the design of a scheme describing the variability, together with detailed descriptions of variability of each MWE. 
+
+Last but not least, the entries include the syntactic structure of each multiword lexeme as dependency and constituency trees. This view of MWEs is important also for the section of the entry where possible valency requirements of a part or the whole of the MWE may be specified.
+
+
+
+\subsection{MWE research mainly from the Czech perspective}
+\label{sec:mwes-research}
+
+Research on MWEs intensified in the late 20th century.
+Properties and usage of MWEs have been studied from various angles.
+Some of the studies deal mainly with terminology \citep{Bozdechova:2007, Temmerman:2000}, while non-compositi-onal MWEs are studied within the disciplines
+of phraseology, paremiology \citep{Cermak:2007}, and also comparative studies \citep[12--16]{Popovicova:2020}. With the development of language corpora, new possibilities for research on MWEs and collocations emerged: for terms \citep{Kovarikova:2017}, and for phrasemes (for example \cite{Colson:2017}). A new concept of terminology \citep{Klegr:2016} and new demands for the identification of MWEs within large-scale data appear. In recent years, NLP focusing on the description of MWEs has become one of the fastest growing areas, obviously relevant also for Czech \citep{Lichte:2019, Sheinfux:2019}.
+
+The description of phraseology is essential for language teaching \citep[66--67]{Cechova:2011}, lexicography \citep{Cermak:2009} and linguistic theory. In order to handle concrete data, the properties of phrasemes become important. However, individual researchers differ even here (for example \cite{Cechova:2011, Cermak:2009}): for Čechová, a MWE is characterized by the fixedness of form, while Čermák allows for the possibility of variability in some MWEs.
+We see variability as a complex phenomenon: some MWE properties, such as variation, fixedness and repetition of a lexeme, need to be described in a way more consistent with real-text data \citep{Jelinek:2018}. Thanks to the availability of large  corpora, variation and fixedness can be observed in more detail to see where  grammatical categories alternate and where new MWEs with new lexical components emerge: for example\ plural and singular alternate in \emph{cesta do pekla/pekel}, (lit. `way to hell/hells'), while a new MWE \emph{dávat logiku}, (lit. `to give logic'), is derived from its original version \emph{dávat smysl}, (lit. `to give sense'). Corpora also help to identify and annotate monocollocable components within MWEs, i.e. words with restricted usage in one or few combinations only, and to mark MWEs containing such components.
+Moreover, in our approach we also annotate fragments of MWEs since MWEs often occur in fragmentary forms. 
+
+
+In the LEMUR lexicon, we also try to reconcile the different approaches and introduce a taxonomy of MWEs that encompass different linguistic domains. This makes it possible to search for units according to criteria used by different approaches, with an emphasis on the traditional Czech MWE categorization that reflects the current educational needs. In order to classify MWEs, we use a combination of the classification presented by \citet{Cermak:2007} and \citet{Moon:2007}, with the addition of some new categories. 
+In determining the type of idiomaticity, we adopt the PARSEME taxonomy, supplemented with categories related mainly to morphology \citep{Hnatkova:etal:2017}. 
+
+\section{Typology of MWEs}
+\label{sec:typology}
+
+The MWE typology in LEMUR is inspired by the PARSEME project and by  \citet{baldwin2010multiword}, which categorizes MWEs according to their
+\begin{itemize} 
+\item \textit{idiomaticity}: lexical, syntactic, semantic, pragmatic and statistical;
+\item \textit{syntactic category};
+\item \textit{fixedness/flexibility} of ``lexicalized phrases''.
+\end{itemize}
+
+This typology was adopted and primarily extended with respect to: (i) specific properties of Czech, especially
+ morphological idiomaticity, 
+and (ii) the fact that the lexicon should be useful both for human users and software applications. For instance, in (\ref{ex:nosa}) the form \emph{nosa} ‘nose’ is a nonstandard genitive form of the noun \emph{nos} appearing exclusively in this MWE (cf. also \sectref{sec:idiom-morph}). This fact is marked on \emph{nosa} in the lexical entry.
+
+\ea \label{ex:nosa}
+\gll podle *\emph{nosa} poznáš kosa\\
+     by nose.\textsc{sg.gen} recognize.\textsc{2sg.prs} blackbird.\textsc{sg.acc}\\
+\glt `someone’s character can be recognized by her/his deeds'
+\z
+
+\noindent
+Moreover, we also extended PARSEME's approach in the following respects. In our approach, lexical idiomaticity (\sectref{sec:idiom-lexical}) encompasses not only MWE components that are not part of the conventional lexicon of Czech, such as MWEs consisting of foreign loans, for example (\textsc{lat}) \emph{mutatis mutandis}, but also (possibly almost) monocollocable words, for example \emph{překot} in \emph{o překot} ‘headlong’, negative only forms, for example \emph{nelíčená radost} ‘genuine pleasure’, macaronic structures, that is, structures combining Czech and foreign words, for example \emph{by voko} ‘by guesswork’ and other. Syntactic idiomaticity is not restricted only to MWEs whose syntax is not derived from that of their components, since we also annotate their deviations from standard syntax, such as anacolutha (cf. \ref{ex:kamenem}), attraction (cf. \ref{ex:padni}), idiosyncratic valency (cf. \ref{ex:namitek}), aposiopeses (cf. \ref{ex:nejradsi}), ellipses (cf. \ref{ex:nevim}), zeugmas and others. For capturing semantic idiomaticity, we use a 4-grade annotation scale where a MWE can be: (i) always non-compositional, i.e. not explicitly derivable from its components, for example \emph{nebrat si servítky} (lit. `not to take napkins'), ‘not to mince one's words’), (ii) rarely compositional, for example \emph{kukaččí vejce} ‘cuckoo's egg’, (iii) often compositional, i.e. often non-idiomatic, for example \emph{vlčí doupě} ‘wolf's den’, and (iv) always non-idiomatic, literal, for example \emph{přísný pohled} ‘stern look’. 
+ As for syntactic structure (\sectref{sec:syntstruct}), MWEs are identified by their syntactic category (determined by MWE's head) and assigned a dependency and a constituency tree. Moreover, the (im)possibility of MWEs' syntactic transformations (passivization, nominalization, adjectivization) is also annotated.
+As to MWE fixedness and flexibility, MWEs are specified for the (im)possibility of their lexical, morphological/morphosyntactic and syntactic variation, including internal modification of their components and/or word order fixedness or freeness. 
+
+Generally, each lexicon entry contains descriptions of two types of MWE properties: some concern the MWE as a whole, others are related to its  components (words). In addition to the three characteristics adopted from the PARSEME proj\-ect, each entry in the lexicon is described by its lemma and superlemma, definition, examples of usage,
+style marker, usage type, i.e. a collocation type classified according to the traditional Czech phraseological taxonomy, and a basic classification of adverbial MWEs. The detailed description of these features follows.
+\begin{itemize}
+\item Lemma is a string (= sequence of concatenated word forms) constituting a MWE in its prototypical form that identifies the MWE in the lexicon and in an annotated corpus, for example \emph{mateří kašička} ‘royal jelly’. Via its lemma, the MWE can be searched both in the lexicon and in the corpus.
+
+In the case of synonymous MWEs, we have to decide whether they will be included under one lemma or whether the lexicon will contain two lemmas. If they differ only in meaning, but all other properties are the same, for example, \textit{černá díra} `black hole' (a scientific term vs. collocation meaning that money disappears somewhere with no visible benefit), the dictionary will contain only one lemma with two definitions and two sets of examples. However, if there is variability in the lexical setting of one of the lemmas, or constraints on syntactic transformations, word order changes, etc., we will introduce two lemmas, as in (\ref{ex:pres-caru}).
+
+\ea
+\label{ex:pres-caru}
+\gll jít přes čáru\\
+     go over line\\
+\glt `to cross the border illegally\slash to cross the line'
+\z
+
+In the meaning `to cross the border (illegally)', we can use synonyms of the verb \emph{jít} `go' that differ in aspect or prefix: \emph{jít/přejít/přecházet/chodit přes čáru}. In the meaning `to behave in an unacceptable way', only the imperfective aspect of the verb \emph{jít} is possible, but the verb \emph{být} `be' can also be used here to describe the state when someone has crossed an imaginary boundary of decency (\emph{jít/být přes čáru}).
+
+\item Superlemma is a representative of a list of lemmas that have at least one word in common and are semantically related. These are, for example, converse MWEs such as (\ref{ex:dat-ultimatum}) and (\ref{ex:dostat-ultimatum}), or two related, but different MWEs such as (\ref{ex:kocka-verb}) and (\ref{ex:kocka-nom}). Note that (\ref{ex:kocka-nom}) is not a standard nominalization of (\ref{ex:kocka-verb}) (unlike (\ref{ex:kocka-nom}), (\ref{ex:kocka-verb}) is a comparison/simile containing the conjunction \emph{jako} ‘like’),\footnote{The standard nominalization would be \emph{hraní si na kočku a myš} where \emph{hraní} ‘playing’ is a paradigmatically derived deverbal noun.} but both share the same superlemma.
+
+\ea \label{ex:ultimatum}
+\ea
+    \gll dát ultimátum\\
+    give ultimatum\\
+    \glt `to give an ultimatum' \label{ex:dat-ultimatum}
+\ex
+    \gll dostat ultimátum\\
+    get ultimatum \\
+    \glt `to get an ultimatum' \label{ex:dostat-ultimatum}
+    \z
+\ex \label{ex:kocka}
+\ea
+    \gll hrát si jako kočka s myší\\
+    play \textsc{refl} like cat with mouse\\
+    \glt `to play like a cat with a mouse' \label{ex:kocka-verb}
+\ex
+    \gll hra kočky s myší\\
+    play {of cat} with mouse\\
+    \glt `a cat and mouse game' \label{ex:kocka-nom}
+\z
+\z 
+
+
+
+A superlemma is always an existing lemma, or a fragment thereof and must consist of at least two words. For the examples given, the superlemmas are \emph{dát ultimátum} `give an ultimatum' and \emph{hra kočky s myší} `play of a cat with a mouse', respectively. The superlemma is actually only a label indicating a list of semantically linked lemmas, and we select the shortest lemma or fragment from the list as the superlemma.
+
+\item Definition is an informal gloss of the MWE's meaning. Most glosses are adopted from \citet{Cermak:2009}.
+
+\item Examples are from corpora of contemporary Czech, representing real usage.
+
+\item Stylistic marker classifies both the MWE and its components (words) from the viewpoint of style. The following values are distinguished:
+
+\begin{itemize}
+    \item standard: used commonly in written texts: \emph{být upoután na lůžko} ‘to be confined to bed’;
+    \item colloquial: used mainly in spoken communication and understandable in every part of the country: \emph{Co jí to \textbf{vlezlo do hlavy}?} (lit. `What crept into her head?') ‘Where did she get that idea?’;
+    \item dialect: the whole MWE or one of its components is part of a particular dialect spoken only in part of the country. Such a MWE is included in the lexicon since it occurs in corpus texts (in fiction or regional newspapers); dialect phraseology as such is not included in the lexicon. For instance, in (\ref{ex:papula}) \emph{náčeňovou hadrou} ‘(with a) dish cloth’ is a dialectal expression;
+    \item slang: \emph{naprat to pod klacek} (lit. `to nail it under the stick') ‘to hoof the ball into the net’;
+    \item other: literary expressions, mainly from the Bible or classical (Greek, Roman) literature, and other sayings: \emph{překročit Rubikon} ‘cross the Rubicon’.
+\end{itemize}
+
+\ea \label{ex:papula}
+\gll lepší než náčeňovou hadrou přes papulu\\ 
+better than dish.\textsc{ins} cloth.\textsc{ins} over gob\\
+\glt `better than a poke in the eye with the sharp stick'
+\z 
+
+
+In addition to the above categories, every word and every MWE can be marked as having an expressive meaning. The words \textit{rachot}, \textit{bengál}, \textit{varvas}, \textit{bordel} denote `rumble' in different styles and all are expressive. On the other hand, \textit{\textbf{vylít} někomu \textbf{boty}} (lit. `pour out one's shoes') `throw someone out on their ear',  consists of non-expressive terms, but the entire MWE is expressive.
+
+\noindent
+Generally, the style values are mutually exclusive except for the expressive value that can be assigned to a word or to a MWE together with some other value.
+
+\item Usage type is based on a classification
+common in the Czech linguistic literature
+\citep{Cermak:2016a} and the lexeme-specific data from \citet{Cermak:2009}.
+The following values are distinguished:
+
+\begin{itemize}
+    \item proverb: \emph{Chybovat je lidské.} `To err is human.';
+
+    \item weather lore: a traditional saying used to predict or interpret weather patterns, or to suggest what people should do on certain dates (\ref{ex:jiri});
+
+    \item comparison/simile: a collocation 
+    typically formed by a verbal or adjectival phrase containing an expression to which something is compared (\ref{ex:ves});
+ 
+\item citation: part of another text presented verbatim and taken over
+from literature, film etc.: \emph{Knihy mají své osudy.} (lit. `Books have own fates.') ‘Books have their own destiny.’;
+
+
+    \item foreign collocation: a collocation taken over unchanged from a foreign
+language (typically Latin, Greek, English, German, French): (\textsc{fre}) \emph{raison d’être}, (\textsc{eng}) \emph{by the way};
+    \item scientific/professional term: \emph{diferenciální rovnice} ‘differential equation’;
+    
+    \item multiword function words: used mostly as prepositions or conjunctions: \emph{bez ohledu na} (lit. `without regard to') ‘regardless of’;
+
+
+    \item (non-specific) verbal MWE: a semantically non-compositional MWE
+including a verb form as its governor (\ref{ex:nesejde});
+    \item non-verbal MWE: a semantically non-compositional MWE not
+including a verb: \emph{něžné pohlaví} (lit. `gentle sex') ‘the fair sex’;
+
+
+    \item quasiphraseme: 
+    collocation composed of an abstract noun and one of the very limited set of phase verbs (inchoative, durative, terminative): \emph{věnovat pozornost} (lit. `donate attention') ‘pay attention’; it is usually difficult to find single-verb equivalents for these MWEs;
+    
+    \item sentential phraseme: a phraseme differing from a proverb, a weather
+lore or a citation: \emph{a co ty?} (lit. `and what you?') ‘and what about you?’;
+    \item open phraseme\slash set phrase: a MWE requiring a continuation, typically routine formulation introducing a text or conversation \citep{Coulmas:ed:1981, Aijmer:1996}, which is typically further expanded: \emph{jen si představte\ldots} ‘just imagine\ldots’;
+
+    \item (usual) collocation: a collocation based on semantic/selectional 
+    restrictions only: \emph{úhlavní nepřítel} (lit. `principal enemy') ‘arch-enemy’;
+
+\end{itemize}
+
+\ea \label{ex:jiri}
+\gll 
+Na svatého Jiří vylézají hadi a štíři.\\
+On saint.\textsc{gen} George.\textsc{gen} {creep out} snakes.\textsc{nom} and scorpions.\textsc{nom}.\\
+\glt ‘On Saint George's Day the serpents and scorpions creep out.’
+\ex \label{ex:ves}
+\gll líný jako veš\\
+     lazy like louse\\
+\glt `lazy as a bear'
+\ex \label{ex:nesejde}
+\gll na tom nesejde\\
+     on it descend.\textsc{neg}.\textsc{3sg.prs}\\
+\glt `it makes no difference'
+\z
+
+\item Adverbial MWEs are classified  by the four basic
+semantic categories (place, time, manner, circumstance):
+\begin{itemize}
+    \item  adverbials of place: \emph{na pokraji} ‘on the brink of’;
+    
+    \item  adverbials of time: \emph{dnem i nocí} ‘day and night’;
+      
+    \item adverbials of manner: \emph{po vzoru} ‘on the pattern of’;
+   
+    \item  adverbials of circumstance: \emph{u příležitosti} ‘on the occasion of’.
+
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Syntactic structure}
+\label{sec:syntstruct}
+
+As another feature inspired by the PARSEME project, each entry is characterized by its syntactic type, i.e.\ a syntactic category it constitutes in the sentence: NP, AdjP, VP (distinguishing content verb and categorial\slash light verb phrases), 
+AdvP, PP, or compound preposition\slash conjunction\slash interjection, clause, compound sentence. Moreover, for every MWE, the lexicon specifies its dependency and constituency structure, both represented as syntactic trees. Another possible way to capture the syntactic structure of the MWE is a catena \parencitetv{chapters/04}.
+Dependency trees (including syntactic functions) are produced by a parser. In the past, it was TurboParser \citep{Martins:etal:2013}, but today it is a parser from the NeuroNLP2 tools \citep{Ma:etal:2018}. The parses are
+manually checked, and then constituency trees are derived from dependency trees using a rule-based conversion system.
+
+Whenever a MWE requires some of its parts to be a lexically unspecified constituent, the syntactic head (verb or adjective) is provided with information on its valency \citep{Rosen:Skoumalova:2018}.
+If necessary, entries may specify the valency of the whole MWE.
+This is the case, for example, for some constructions consisting of a verb and a nominal or prepositional object:  they may take a complement which is required neither by the verb nor by the object. Thus, the MWE in (\ref{ex:srozumenou}) can be complemented, for example, by a \emph{that-}clause, while such a clause can complement neither the verb \emph{dát} ‘give’ nor the noun \emph{srozuměnou}.
+ 
+\ea
+\gll dát                           na      srozuměnou\\
+     give on understanding.\textsc{sg.acc}\\
+\glt `to let know' \label{ex:srozumenou}
+\z
+
+
+
+\noindent
+Thus, each MWE is described by its syntactic structure, syntactic type and -- if syntactically non-standard -- also by the kind of its syntactic idiomaticity (see \sectref{sec:idiom-synt}).
+
+
+\subsection{Variability/flexibility}
+\label{variability}
+
+Variability is understood in several different meanings \citep{Hnatkova:etal:2017}:
+
+\begin{itemize}
+    \item lexical variability: some positions in a MWE can be occupied by synonyms;
+    \item morphological variability: a MWE can possibly occur in various morphological forms;
+    \item word order variability: specific/anomalous free or fixed word order within (parts of) a MWE;
+    \item syntactic transformations: passivization, nominalization, adjectivization, etc.;
+    \item insertion of modifying elements in between the standard MWE template/{\hskip 0pt}pattern, i.e.  syntactic \textit{modifiability} of MWE components;
+    \item omission of words resulting in \textit{fragments} of standard MWEs.
+
+\end{itemize}
+Unless specified otherwise, we assume that MWEs behave in the same way as regular constructions and contain morphologically standard forms. Hence, we only indicate violations of default properties and rules of grammar. For instance, one of the general properties in Czech is its free word order, thus only specific word order configurations in MWEs are indicated in their lexicon entries.
+
+It is important to account for variability on various levels
+of linguistic description since one of the objectives of the 
+lexicon is to make it possible to identify not only MWEs in their
+standard, canonical forms (expressed, for example, in their lemmas) but also
+their modifications of various kinds. It is often the case that
+language users modify standard MWEs in a creative way. The lexicon entries cover the kinds of variability listed in  \sectref{variability-lex}, \sectref{variability-morph}, and \sectref{variability-word-order} below. 
+
+\subsubsection{Lexical variability}
+\label{variability-lex}
+Lexical variability can be indicated in each lexical position, where appropriate, ranging from a specific word to a choice of several variants (for example synonyms) to a completely free choice determined only by an appropriate word class. A special case of this type of variability is a MWE where a certain lexeme is repeated, while this lexeme can be chosen from several variants \citep{Jelinek:2020}.
+For instance, in the Biblical saying (\ref{ex:buh-dal}) 
+the lexeme \emph{Bůh}  ‘God’ is repeated in the second clause, which has the opposite meaning. This MWE can be seen as a template where both positions occupied by \emph{Bůh} ‘God’ are in fact containers that might be filled with (almost) arbitrary, but identical nouns
+(for example \emph{Život dal, život vzal} ‘Life gave, life has taken away’; \emph{Bolševik dal, bolševik vzal} ‘Bolsheviks gave, Bolsheviks has taken away’).
+
+\ea\label{ex:buh-dal}
+\gll 
+  Bůh dal, Bůh vzal.\\
+  God gave, God took.\\
+\glt 
+`The Lord gave, and the Lord has taken away.'  \hfill (the Book of Job 1,21) %`God gave, God took away'
+\z
+
+\noindent
+Single-word lexical synonyms within a MWE can sometimes have the form of a multiword microstructure, for example\ a non-reflexive verb can be expressed by its reflexive synonym consisting of a verb and its reflexive particle (\emph{se/si}) as a free morpheme, which need not occupy an adjacent position. This results in different syntactic structures of MWE's synonymous variants and may complicate a successful identification of such a MWE in texts.
+
+
+\subsubsection{Morphological variability}
+\label{variability-morph}
+Due to the rich morphological
+system of Czech, MWEs can occur in various morphological
+forms, for example\ verbs can differ in aspect (perfective, imperfective, biaspectual), nouns can appear in various cases or numbers, adjectives or adverbs can occur in the comparative or superlative degree, etc. The morphological richness is illustrated by examples (\ref{ex:pribyvat}), (\ref{ex:konec}) and (\ref{ex:koupit}). The following MWE represented by the same lexical entry 
+can appear in two variants, reflected in the entry: in the nominative plural \emph{houby} ‘mushrooms’ or genitive plural \emph{hub}:
+
+\ea \label{ex:pribyvat}
+ \gll přibývat jako houby/hub po dešti\\
+     multiply like mushroom.\textsc{pl.nom/gen} after rain.\\
+\glt `to spring up like mushrooms'
+\z
+
+\noindent
+For instance, the MWE \emph{nebrat konce} ‘to be no end to [something]’ can appear in two variants: the noun \emph{konec} ‘end’ is typically in the genitive of negation (\emph{konce}), but it can also, rarely, be in the accusative case (\emph{konec}), satisfying the object valency requirement of the transitive verb \emph{brát} ‘take’:
+
+\ea \label{ex:konec}
+\gll pořád to \emph{nebere} \emph{konce/konec}\\
+     always it take.\textsc{neg.3sg.prs} end.\textsc{sg.gen/acc}\\
+\glt `there is no end to it'
+\z
+
+\noindent
+Paradoxically, fossilized constructions with the obsolete genitive of negation are typical examples of morphological variability.
+
+Verbs in Czech, as in other Slavic languages, express aspect lexically. For instance, a single lexical
+entry can include both the perfective and imperfective variant of a verb: 
+
+
+\ea \label{ex:koupit}
+\gll \emph{koupit}/\emph{kupovat} něco \emph{za} \emph{babku}\\
+     buy.\textsc{pfv/ipfv} something for {old woman}\\
+\glt `to buy something dirt cheap'
+\z
+Since aspect is a lexical rather than morphological category,  aspectual variability is treated as lexical variability. For instance, there are MWEs permitting only one aspectual variant of a verbal lexeme: in (\ref{ex:nesejde}) the perfective verb form \emph{nesejde} `descend' cannot be replaced by its imperfective counterpart \emph{neschází}.
+% \sasa{Možná u obou příkladů řešit varianty lomítkem?}
+
+\subsubsection{Word order variability}
+\label{variability-word-order}
+
+Although free word order is a typical trait of Czech,  constructions with a fixed word order do exist: the position of prepositions within prepositional phrases, the position of prepositional phrases within noun phrases or the position of clitics within clauses or sentences. Free word order applies to clausal constituents. 
+In the entries, only anomalies concerning both free and fixed word order are captured. For instance, in a MWE consisting of a verb and its syntactic object (\ref{ex:aferu}) the verb \emph{dělat} and its object noun \emph{aféru} can appear
+% \niki{+in??}
+in either order -- this regular syntactic fact is not recorded in
+the lexicon entry. 
+
+\ea  \label{ex:aferu}
+\gll \emph{dělat} z něčeho \emph{aféru}\\
+     make from something affair.\textsc{acc}\\
+\glt `to make a big deal about something'
+\z
+\noindent
+Word order variations can also be due to standard grammar rules (concerning, for example, the position of clitics) or topic-focus articulation. The MWE in (\ref{ex:rovnat}) appears in sentence (\ref{ex:rovnatsent}) where the verb and the reflexive particle, components of the inherently reflexive verb \emph{rovnat se} ‘match’, occur in the reversed order, separated by the verb form \emph{nemohla} ‘could not’. Again, this standard grammatical word order is not indicated in the entry.
+
+\ea
+\ea  \label{ex:rovnat}
+\gll nemoci se rovnat\\
+     can.\textsc{neg.inf} \textsc{refl} match\\
+\glt `to be no match for somebody'
+\ex  \label{ex:rovnatsent}
+\gll Co se týče rozpočtů, \emph{se} nepálská studia \emph{nemohla} indickým \emph{rovnat}.\\
+     What \textsc{refl} concern.\textsc{3sg.prs} budgets, \textsc{refl} Nepali studies can.\textsc{neg.pst} Indian.\textsc{dat} match.\textsc{inf}\\
+\glt `In terms of budgets, Nepali studies could not match Indian studies.'
+\z
+\z
+\noindent
+On the other hand, in the anomalous syntactic structure in (\ref{ex:smyslu}) the noun \emph{slova} ‘word’, an attribute in the genitive case, precedes its syntactic head \emph{smyslu} `sense'; this kind of reversed word order is very rare and appears -- as well as other word order anomalies -- primarily in MWEs, duly indicated in their lexical entries.
+
+\ea \label{ex:smyslu}
+\gll v nějakém slova smyslu\\
+     in some.\textsc{loc}
+     word.\textsc{gen} sense.\textsc{loc}\\
+\glt `in some sense of the word'
+\z
+
+\subsubsection{Syntactic transformations}
+\label{variability-synt-trans}
+MWEs related by the same or
+similar meaning can appear in various syntactic structures
+that are derived by syntactic transformations from a basic variant. We
+account for transformations of the following three types, marking only the structures and patterns that are
+idiosyncratic with respect to the standard grammar of Czech:
+
+\begin{itemize}
+    \item Passivization/depassivization. The following features can be specified in lexical entries:
+\begin{itemize}
+    \item MWE cannot be passivized: a flag specified for 
+    MWEs headed by a transitive verb that cannot be passivized  in this particular MWE (as an exception to the general rule stating that every transitive verb 
+    can be passivized). For instance, the verb \emph{spatřit} `see' can be passivized in general, but cannot be passivized in (\ref{ex:spatřit}). 
+
+
+    \item MWE cannot occur in the active form, for example\ the MWE in (\ref{ex:prano}) exists only with the passive form \emph{přáno} ‘wished’.
+
+\end{itemize}
+
+\ea \label{ex:spatřit}
+\gll spatřit světlo světa\\ 
+     see light world.\textsc{gen}\\
+\glt `to come into the world'
+\ex \label{ex:prano}
+\gll nebylo mu přáno\\
+     be.\textsc{neg}.\textsc{3sg.n.pst} he.\textsc{dat} wish.\textsc{passp}\\
+\glt `he was out of luck'
+\z
+
+   \item Nominalization. We assume that a verb in a MWE can be nominalized. If this is not the case, such a verb
+%   \sasa{MWE nebo verb?}
+is flagged appropriately. For instance, in (\ref{ex:oko}) the reflexive verb \emph{hodit se} ‘be suitable’ cannot be nominalized and this
+negative fact is recorded in the MWE.
+
+\ea \label{ex:oko}
+\gll hodit se jako pěst na oko\\
+     {be suitable} \textsc{refl} like fist on eye\\
+\glt `to be completely out of place'
+\z
+
+
+   \item Adjectivization. Similarly as with nominalization, it is assumed that generally a verb in a verbal MWE can be adjectivized. If not, such a MWE is marked appropriately. In (\ref{ex:slova}), the impersonal neuter verbal participle \emph{došlo} ‘it got to’
+cannot be adjectivized and this fact is duly recorded as this MWE's
+property.
+
+
+\ea \label{ex:slova}
+\gll \emph{došlo} \emph{na} má \emph{slova}\\
+     get.\textsc{3sg.n}.\textsc{pst} on my words\\
+\glt `my words came true'
+\z
+
+\end{itemize}
+
+\subsubsection{Insertion}
+\label{variability-insertion}
+Normally, content words within MWEs can be syntactically modified; typically, adjectives modify nouns, adverbs modify verbs, adjectives or adverbs, etc. Such regular syntactic structures are not reflected in the annotation of MWEs. For instance, the MWE in (\ref{ex:nechavat}) can appear in a text as in (\ref{ex:navratil}).
+
+\ea
+\ea \label{ex:nechavat}
+\gll \emph{nechávat} \emph{si} něco \emph{pro} \emph{sebe}\\
+     keep \textsc{refl.dat} something.\textsc{acc} for oneself\\
+\glt `to keep something to oneself'
+\ex \label{ex:navratil}
+\gll Navrátil \emph{si} krutou informaci \emph{nechával} dlouho jen \emph{pro} \emph{sebe}.\\
+     Navrátil \textsc{refl.dat} cruel.\textsc{acc} information.\textsc{acc} keep.\textsc{pst} long.\textsc{adv} only for himself.\\
+\glt `Navrátil kept the harsh information only to himself for a long time.'
+\z
+\z
+
+\noindent
+In (\ref{ex:navratil}), the modifying adverbs \emph{dlouho} ‘for a long time’ and \emph{jen} ‘only’ are inserted in between the components of the standard MWE.
+
+However, there are MWEs whose components cannot be modified, i.e., no insertions in between their components are allowed: this fact is specified in MWE entries where appropriate. For example, in the MWE \emph{něco k snědku} `something to eat' the monocollocable noun form \emph{snědku} cannot be modified. There are words, however, such as \emph{příslovečný} `proverbial' or \emph{doslova} `literally', which can modify almost any MWE of the appropriate syntactic category. Indeed, lexical entries do not specify the availability of such insertions.
+
+\subsubsection{Omission/Fragments}
+\label{variability-omission}
+MWEs can sometimes appear in their reduced forms -- as \textit{fragments}, with the same meaning as the entire MWEs. Our ambition is to recognize MWEs not only in their full, canonical form but also in their partial, fragmentary form. For instance, the lexicon contains the following entry in its standard form:
+
+\ea \label{ex:zadku}
+\gll \emph{hoří} někomu \emph{koudel} \emph{u} \emph{zadku}\\
+     burn.\textsc{3sg.prs} somebody.\textsc{dat} oakum.\textsc{nom} at backside\\
+\glt `somebody is in a tight corner'
+\z
+
+\noindent
+Such an entry contains information on possible
+fragments (represented by identifiers of individual words and of
+(sub)structures) as central, nuclear parts of the MWE. This
+approach enables the user to identify even fragmentary MWEs in a text. Thus we can find fragments of standard MWEs such as (\ref{ex:karlovi}), where only the fragment  \emph{hoří koudel} ‘burns oakum’ remains while the sequence \emph{u zadku} ‘at backside’ is missing.
+
+\ea \label{ex:karlovi}
+\gll Měl asi pocit, že mu \emph{hoří} \emph{koudel} kvůli Karlovi.\\
+     have.\textsc{3sg.pst} probably
+     feeling, that he.\textsc{dat}
+     burn.\textsc{3sg.prs} oakum {because of} Karel.\\
+\glt `He had a feeling that he is in a tight corner because
+of Karel.'
+\z
+
+\begin{sloppypar}
+\noindent
+In some MWEs there may be two representative fragments that allow for identifying such MWEs in texts. For instance, the standard MWE (\ref{ex:huby}) contains two fragments that might identify the original full-fledged standard MWE: (i) \emph{mazat [někomu] med} ‘spread [someone] with honey’, (ii) \emph{med kolem huby} ‘honey around the gob’. Both fragments are marked in the entries of such MWEs.
+\end{sloppypar}
+
+\ea \label{ex:huby}
+\gll \emph{mazat} někomu \emph{med} \emph{kolem} \emph{huby}\\
+     spread somebody.\textsc{dat} honey around gob\\
+\glt `soft-soap someone\slash butter someone up'
+\z
+
+\noindent
+In this way, we also capture various modifications leading to reduced versions of standard MWEs, reflecting the authors' creativity.
+
+
+\subsection{Idiomaticity}
+\label{sec:idiom}
+
+We stick to the definition of idiomaticity proposed by \citet{baldwin2010multiword}, adopted also in the PARSEME project:
+
+\begin{quote}
+    In the context of MWEs, idiomaticity refers to markedness or deviation from the  basic  properties  of  the  component  lexemes,  and  applies  at  the  lexical, syntactic, semantic, pragmatic,  and/or  statistical  levels.   A  given  MWE  is often idiomatic at multiple levels... \citep[4]{baldwin2010multiword}
+\end{quote}
+In particular, we distinguish between lexical, morphological, syntactic, semantic, pragmatic and statistical idiomaticity. The types of idiomaticity used in the PARSEME project were extended by morphological idiomaticity to capture Czech word forms which do not exist outside the specific MWEs. For instance, in the MWE (\ref{ex:pitoma}) the adjective \emph{pitomá} ‘stupid’ is a non-inflected feminine form, but
+in the MWE it is used as an expressive form that morphologically does not agree with the masculine noun form \emph{kluk} ‘boy’:
+
+\ea \label{ex:pitoma}
+\gll kluk pitomá\\
+     boy.\textsc{noun}.\textsc{m} stupid.\textsc{adj}.\textsc{f}\\
+\glt `stupid boy'
+\z
+
+\noindent
+Below, the types of idiomaticity are described in detail.\largerpage
+
+\subsubsection{Lexical idiomaticity}
+\label{sec:idiom-lexical}
+Lexical idiomaticity concerns MWEs containing lexically
+idiomatic word forms or lexemes. The following kinds of lexical
+idiomaticity are distinguished:
+
+\begin{itemize}
+    \item Monocollocable word forms (\ref{ex:zadost}). The word \emph{zadost} ‘satisfaction’ can exist in this MWE only. Such monocollocable words are often components of terms such as \emph{kysličník osmičelý} ‘osmium tetroxide’. 
+
+
+\ea \label{ex:zadost}
+\gll učinit zadost\\
+     make satisfaction\\
+\glt `do justice'
+\z
+    
+    
+\end{itemize}
+
+\begin{itemize}
+    \item Almost monocollocable word forms, i.e. forms associated with a very
+limited set of collocates: \emph{zorný úhel} ‘angle of vision / point of view’.
+
+    
+\end{itemize}
+
+\begin{itemize}
+    \item Negative only word forms (\ref{ex:soucast}).
+    
+    
+\ea \label{ex:soucast}
+\gll nedílná součást\\
+     undivided part\\
+\glt `integral part'
+\z   
+
+\end{itemize}
+
+\begin{itemize}
+    \item Foreign loans: for example\ (\ref{ex:tyrnyx}), a collocation loaned from German, phonetically and orthographically modified.
+  
+\ea \label{ex:tyrnyx}
+\gll mírnyx týrnyx\\
+     {mir nichts} {dir nichts} \opis{\textsc{ger}} \\
+\glt lit. `nothing to me, nothing to you'\\
+\glt `casually / as if it was nothing'
+\z    
+
+\end{itemize}
+
+\begin{itemize}
+    \item Macaronic structures: for example, the following collocation consisting of the Latin preposition \emph{per} and the Czech noun \emph{huba} assigned the Latin % \textsc{f.sg.acc}
+    morph \emph{-m} (\ref{ex:hubam}).
+    
+\ea \label{ex:hubam}
+\gll per *huba-m\\
+     via.\textsc{lat} gob.\textsc{cze.f}-\textsc{lat.f.sg.acc}\\
+\glt `orally / by word of mouth'
+\z
+
+    \item Other, such as verbatim translations: \emph{potřást hlavou} ‘shake one's head’ instead of \emph{zavrtět hlavou} `turn one's head', or adaptations of foreign loans: \emph{mandatorní výdaje} ‘mandatory expenses’ instead of \emph{závazné/povinné výdaje}.
+
+
+\end{itemize}
+
+
+\noindent
+In the lexicon entry, 
+every lexically idiomatic word form in a MWE is marked. Moreover, a single idiomatic form can be marked with multiple kinds of lexical idiomaticity at the same time. In the lexicon, we also plan to mark each MWE as containing\slash not containing a lexically idiomatic word form.
+
+\subsubsection{Morphological idiomaticity}
+\label{sec:idiom-morph}
+Morphological idiomaticity concerns a morphologically non-standard morphological form existing only within a MWE. For instance, in the MWE \emph{chca nechca} ‘nolens volens’,
+the forms \emph{chca}, \emph{nechca} are non-standard, the standard forms being \emph{chtě nechtě} with the same meaning.
+
+Similarly to lexical idiomaticity, every morphologically idiomatic word form in a MWE is indicated. We also plan to mark each MWE as containing\slash not containing a morphologically idiomatic word form.
+
+Forms used in MWEs are sometimes licensed by rhyme, as in (\ref{ex:sloupich}), where \emph{sloupích} ‘columns’ is a non-standard variant of the standard form \emph{sloupech}.
+
+\ea \label{ex:sloupich}
+\gll jména hloupých na všech *sloupích\\
+     names stupid.\textsc{pl.gen} on all.\textsc{pl.loc} columns.\textsc{pl.loc} (intended)\\
+\glt `names of the stupid are on all columns'
+\z
+
+\subsubsection{Syntactic idiomaticity}
+\label{sec:idiom-synt}
+Syntactic idiomaticity accounts for the following kinds of syntactic anomalies always concerning the entire MWE. They are marked on the MWE where appropriate.
+
+\begin{itemize}
+    \item Anacoluthon: as in the modified New Testament saying (\ref{ex:kamenem}).
+  
+\ea 
+\gll Kdo po tobě kamenem, ty po něm chlebem.\\
+     who at you stone.\textsc{ins}, you  at him bread.\textsc{ins}.\\
+     \glt lit. `Whoever throws a stone at you, offer him bread.'
+     \glt `Do not repay anyone evil for evil.' \label{ex:kamenem}
+\z
+
+    \item Attraction: as in (\ref{ex:padni}), where the imperative form \emph{padni} ‘fall’ is repeated in the subordinate clause \emph{komu padni} ‘to-whom fall’. The entire construction follows the \textit{imperative wh-word imperative} template, which is realized by several different phrasemes.
+    
+\ea \label{ex:padni}
+\gll Padni komu padni.\\
+     Fall.\textsc{imp} who.\textsc{dat} fall.\textsc{imp}.\\
+\glt `Come what may.'
+\z  
+    \item Idiosyncratic valency: for instance, a noun in the obsolete genitive of negation as object of
+a negated transitive verb, the standard form being in the accusative case (\ref{ex:namitek}).
+
+\ea \label{ex:namitek}
+\gll nemám námitek\\
+     have.\textsc{neg.1sg.prs} objections.\textsc{gen}\\
+\glt `I have no objections'
+\z
+
+    \item Aposiopesis: unfinished sentence, as in (\ref{ex:nejradsi}).
+
+\ea \label{ex:nejradsi}
+\gll 
+Já bych tě {nejradši ...}\\
+I would you.\textsc{acc} {most preferably} \\
+\glt
+`As for you, I wish I could...'
+\z 
+
+    \item Ellipsis:\footnote{The brackets in example (\ref{ex:nevim}) are used for marking the ellipsis.}
+
+\ea \label{ex:nevim}
+\gll \emph{Nevím,} \emph{co} [mám dělat] \emph{dřív}.\\
+     Know.\textsc{neg}.\textsc{1sg.prs} what [have.\textsc{1sg.prs} do.\textsc{inf}] sooner.\\
+\glt `I do not know what to do first.'
+\z
+
+    \item Idiosyncratic word order: for instance, an adjective exceptionally (with respect to the grammatical system of Czech) follows its nominal syntactic governor: \emph{mše svatá} (lit. ‘mass holy’).
+
+    \item Other: ungrammatical/non-standard syntactic structures, contaminations, zeugmas, etc., such as
+(\ref{ex:nevidim}), where the verb form \emph{nevidím} ‘I do not see’ immediately follows a preposition \emph{od} ‘from’ and \emph{do} ‘to’, respectively, thus forming an ungrammatical structure:
+
+\ea \label{ex:nevidim}
+\gll od nevidím do nevidím\\
+     from see.\textsc{neg}.\textsc{1sg.prs} to see.\textsc{neg}.\textsc{1sg.prs}\\
+\glt lit. `from I can't see till I can't see' | `all the time / without interruption'
+\z  
+
+\end{itemize}
+
+\subsubsection{Semantic idiomaticity}
+\label{sec:idiom-sem}
+Semantic idiomaticity concerns a MWE's semantic (non-)compositionality, i.e. (non-)metaphoricity, viewed as the relative frequency of how often the MWE also appears in its compositional/literal meaning (as to the degree of compositionality of nominal MWEs, cf. also  \textcitetv{chapters/08}).
+We use the following scale:
+
+\begin{itemize}
+    \item MWE is always non-compositional, i.e. always idiomatic -- the situation described by the MWE can never happen in the real world: 
+\ea \label{nervy}
+  mít ocelové nervy\\
+  `to have nerves of steel'
+\z
+
+    \item MWE is rarely compositional, i.e. it is often idiomatic: 
+
+\ea
+\gll \emph{strouhat} někomu \emph{mrkvičku}\\
+     grate somebody.\textsc{dat} carrot\\
+\glt `to express Schadenfreude' % `cock a snook at sb.'
+\z  
+
+    \item MWE is often compositional, i.e. rarely idiomatic: 
+
+\ea \label{schovavana}
+\gll hrát si na schovávanou\\
+     play \textsc{refl} at {hide and seek}\\
+\glt `to play hide and seek'
+\z 
+
+    \item MWE is always compositional, i.e. non-idiomatic, literal:
+
+\ea
+dlouhodobá investice\\
+`long-term investment'
+\z 
+
+\end{itemize}
+
+
+\subsubsection{Pragmatic idiomaticity}
+\label{sec:idiom-pragm}
+A MWE is pragmatically idiomatic if it is used in specific situations. For instance, a standard invitation to a dance sounds as in (\ref{ex:dance}).
+
+\ea
+\gll Smím prosit?\\
+     May.\textsc{1sg} ask?\\
+\glt `May I have the pleasure (of this dance)?' \label{ex:dance}
+\z 
+
+
+\subsubsection{Statistical idiomaticity}
+\label{sec:idiom-stat}
+Usual, frequent, semantically non-idiomatic collocations reflecting selectional restrictions in usage fall within this category. Some of their components have a very
+limited collocability potential. The components of such MWEs can hardly be
+replaced by synonyms, for example \emph{vydatný déšť} ‘heavy rain’, or similarly in  (\ref{ex:dezolatní}) where the adjective \emph{dezolátní} is unlikely to be replaced by a synonym. In addition to usual collocations, we regard as statistically idiomatic also terms such as \emph{bezkontextová gramatika} ‘context-free grammar’,
+and multiword function words (multiword prepositions and conjunctions). 
+
+
+
+\ea \label{ex:dezolatní}
+\gll být v dezolátním stavu\\
+     be in desolate state\\
+\glt `be in a state of neglect'
+\z 
+
+
+
+\section{Design of the database}
+\label{sec:design}
+\subsection{Basic data model}
+
+For full flexibility required by the potential variability of the expressions (see \sectref{variability}), we define the entry pattern by means of \emph{slots} and \emph{fillers}.
+% \label{sec:design}
+
+The entry unit consists of \textit{slots} and \textit{features} referring to the MWE as a whole. Slots represent the components of the MWE (pattern), which is the syntagmatic dimension of the MWE. Slots consist of \textit{fillers} and the slot-specific \textit{features}. Fillers represent the paradigmatic dimension of the components: the possible variants which may be used to realize a particular component (slot). The primary role of fillers is to represent actual (terminal) tokens to be matched in the data. They are defined by means of a combination of token attributes and their values that must be matched in the text data in order to identify the MWE as a whole (for slots and fillers see examples in \sectref{sec:user-interface}). Other possible restrictions, such as those concerning word order, modifications or transformations, can be defined by means of additional features. \figref{fig:structure} shows the scheme of the entry structure.\footnote{The structure follows (in a simplified form) basic principles of the proposal for a structured lexical description presented first in \citet{Vondricka:2014} and has been described in full detail in \citet{Vondricka:2019}. In the current version of the database, the structure has been further simplified mainly by replacing filler attributes and references by dedicated features.}
+
+\begin{figure}
+ \centering
+    \begin{tikzpicture}[scale=\textwidth/19.5cm,transform shape]
+    
+    \begin{class}[text width=3cm]{MWE entry}{0,0}
+        \attribute{type : String}
+        \attribute{name : String}
+        \attribute{}
+    \end{class}
+    \begin{class}[text width=3cm]{Slot}{5,0}
+        \attribute{type : String}
+        \attribute{name : String}
+        \attribute{pos : Integer}
+    \end{class}
+    \begin{class}[text width=3cm]{Filler}{10,0}
+        \attribute{type : String}
+        \attribute{name : String}
+        \attribute{}
+    \end{class}
+    \begin{class}[text width=3cm]{Feature}{15,-3}
+        \attribute{type : String}
+        \attribute{value : *}
+        \attribute{}
+    \end{class}
+    
+    \composition{MWE entry}{}{0..*}{Slot}
+    \composition{Slot}{}{0..*}{Filler}
+    
+    \draw[umlcd style, fill=none, diamond->] (MWE entry) |- (node cs:name=Feature,angle=200) node[very near end, below]{0..*};
+    \draw[umlcd style, fill=none, diamond->] (Slot) |- (node cs:name=Feature,angle=180) node[very near end, below]{0..*};
+    \draw[umlcd style, fill=none, diamond->] (Filler) |- (node cs:name=Feature,angle=160) node[very near end, below]{0..*};
+    
+    \end{tikzpicture}
+ \caption{MWE entry structure (basic model)}\label{fig:structure}
+\end{figure}
+
+All the container objects (entries, slots and fillers) have an arbitrary \textit{name} and a type. Types are defined as a path in a hierarchy of categories defined in a separate metadatabase. This helps to achieve a better organization and systematization of object types. For example, the atomic features may be easily classified by the linguistic layers they belong to (form, morphology, syntax, semantics, pragmatics, statistical properties, etc.). At a different level of classification, they can be grouped, for example by a particular purpose, linguistic theory or relative to a particular corpus. This also allows us to store multiple similar features from different sources or for different purposes at the same time. Features can easily be used (and classified) both for purely technical purposes of NLP processing tools and for storing information aimed at human users of the database, such as definitions, examples or notes.
+
+In case we need to include multiple alternative values of some type of feature, additional custom subspecification may be used. This applies especially to user notes, examples from real texts or statistical values. For example, the basic type of feature for absolute frequency \texttt{:stats:fq:abs} is expected to be extended by additional custom subspecification of the corpus (and possibly subcorpus) used to acquire the frequency value, for example \texttt{:stats:fq:abs:BNC:fiction}. This allows the database to be searchable by features using underspecification of the type (by means of a path prefix) or its full (sub)specification as needed.
+
+As described above, the fillers are expected to match more or less specific tokens in the text data. In our case, the data is already morphologically analyzed and disambiguated. This allows for underspecification of token attributes to be matched by using incomplete matching patterns or even regular expressions. We can, for example, match some lemma generally, independently of its particular morphological form (which is especially useful for verbs), or we can restrict the form more finely to some specific morphological category (number, case, person, etc.).  It is also possible to match just some particular part of speech, such as adjective, demonstrative pronoun, etc. In case of specific valency requirements, it would be even more practical to match just whole syntactic phrases of a particular type instead of listing all their possible morphological realizations. While this is also possible in principle, unfortunately, we do not have a syntactic parser for Czech reliable enough to build upon. Therefore we need to identify MWEs solely by their realization in form of tokens on the surface level.
+
+\subsection{More advanced variability and structures}\label{sec:db:adv-variability}\largerpage[-1]
+
+The basic model as described above makes it possible to deal with variability only at the level of single tokens, since one slot only corresponds to a single token possibly realized by various (single token) fillers. However, variability often concerns multiple tokens: prepositional phrases, periphrastic word forms, etc.
+
+Instead of implementing a recursive database structure, we decided to keep it flat for practical reasons.\footnote{Indexing, querying and processing recursive data structures is still a demanding task, not very well and efficiently supported by the current database and search engines.} Instead, we implement recursion on top of the flat structure: we allow fillers to refer to other slots or their sequence. This effectively creates non-terminal fillers (and potentially slots) within the structure and allows us to build a kind of tree structure. In this way, we can define components grouping alternative multi-token variants.
+
+Since both slots and fillers can also be typed, we can easily differentiate terminal and non-terminal slots (and fillers) of different types. This allows us to define additional virtual structural relations among the terminal tokens such as constituency structures for potential syntactic analysis. A side effect of this ``broken'' virtual recursion is thus the possibility to define multiple alternative (full or partial) tree structures of the core terminal slots, with all the obvious advantages and disadvantages.\footnote{Among the advantages: multi-purpose or multi-theory use and multi-dimensionality of the core database; disadvantages: additional complex requirements on consistency and validity management, need for interpretation and filtering of the basic data on higher application levels. 
+% \sasa{add commas to make it more readable?}
+Querying the structure of the MWEs would also be rather difficult to implement, but this functionality is currently not needed.}
+
+More complex dependencies have also been already registered, for example, several optional components which may either occur exclusively, but not all at the same time, or which must actually either appear all together, or not at all. Another type is represented by example (\ref{ex:buh-dal}) (cf. \sectref{variability-lex}), showing a variable component used repeatedly. Some of these could be (in theory) easily marked at the syntactic level, but as explained above, we can currently only rely on the surface form (with morphological analysis at its best) and therefore we need more primitive methods to group, relate and classify some slots using additional dedicated supporting features to give proper hints to the parser.
+
+As mentioned in \sectref{variability-omission}, the creativity (or lack of knowledge) of language users may eventually go far beyond the bounds of any common variability and the MWE may be modified or reduced up to the point where it is just barely recognizable as the original MWE, so that we call it a \emph{fragment}. For this purpose, we add another special feature for each more complex entry: the minimal list(s) of the necessary components which must necessarily occur in the text in order to make an association with the original MWE possible at all. 
+
+\subsection{Implementation}
+
+The database has been implemented as a part of a more generic database of corpus annotation units, sharing a common infrastructure and principles. ElasticSearch\footnote{\url{https://www.elastic.co}} is used as back-end engine for searching and storing the entries in the form of JSON documents. A data model written in Python is used as an intermediate abstraction, providing a generic API. 
+
+The latest front-end user interface is designed using ReactJS.\footnote{\url{https://reactjs.org}} It uses the API and metadata about all defined object types (a kind of \textit{configuration} also managed by the API) to create a customized and highly configurable user interface on the fly.
+
+
+\subsubsection{Populating the database with entries}
+
+To populate the LEMUR database with entries, we use an automatic conversion from the FRANTALEX lexicon, which contains lemmas and tags describing the syntactic type of the lemmas. Lemmas in FRANTALEX are divided into individual variants, for example, \textit{jít přes čáru} `to cross the line' and \textit{být přes čáru} `to be beyond the line', whereas in LEMUR we group these variants under one lemma. Also, tags for syntactic types are converted into lemma descriptions. Syntactic structures are generated using a dependency parser. After a manual check they are automatically converted to constituent tree structures. The rest of the information about each lemma has to be added manually.
+
+The FRANTALEX lexicon consists of about 49,000 lemmas, of which about half have been transferred. LEMUR contains about 16,000 lemmas, but these include grouped lemmas from the original lexicon. A test corpus, which corresponds to the SYN2020 corpus \citep{Jelinek:2021}, is annotated with more than 1.3 million collocations from the FRANTALEX lexicon and more than 722,000 collocations from the LEMUR database.
+
+
+
+\subsubsection{User interface}
+\label{sec:user-interface}
+
+The user interface shows all important information about a lexical entry (its components and features) in a form suitable for human readers. Figure \ref{fig:lemma} shows the lemma \textit{mazat někomu med kolem huby} (lit. `spread honey around someone's gob') `butter somebody up'. Individual words, fillers, fill the numbered slots, where some positions can be occupied by several synonyms, variant fillers. For instance, slot [1] is filled with the variant verb fillers \textit{mazat} and \textit{namazat} `smear', slot [5] is filled with the variant noun fillers \textit{huby} `gob', \textit{pusy} `mouth' and \textit{úst} `mouth'. Below the lemma, definitions and examples from the corpus are given, as shown in Figure \ref{fig:def}. This is followed by an option to search for examples in the corpus.
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figures/01/Lemur-lemma.png}
+    \caption{MWE lemma in user interface}
+    \label{fig:lemma}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/01/Lemur-def.png}
+    \caption{Definitions, examples and search}
+    \label{fig:def}
+\end{figure}
+
+The interface also dynamically generates charts representing syntactic structures of the MWE from its flat list of slots and their fillers and links (relations) between them. In Figures \ref{fig:dependency} and \ref{fig:constituent} we show the dependency and constituent structures of the phrase \textit{bojovat pro čest a slávu} `fight for honour and glory' with all the lexical variants in place of the verb as well as the preposition.
+
+In these charts, blue nodes represent terminal slots of the MWE indicating also their actual possible fillers (for example the variable choice of prepositions \textit{pro}, \textit{za} and \textit{o} in the slot [2]). The dark yellow slots represent the (non-terminal) phrase nodes in the constituent structure. The light yellow non-terminal slot [V] represents the verb, which may be realized by three different types of verbs: (1) simple non-reflexive verbs (\textit{bojovat} `fight', \textit{zápolit} `compete, wrestle', etc.), (2) reflexive verbs using the accusative reflexive pronoun \textit{se} (\textit{bít se} `struggle, wrestle', \textit{rvát se} `brawl') and (3) a reflexive verb  using the dative reflexive pronoun \textit{si} (\textit{zahrát si} `play, act the part of'). Since the latter two types consist of two tokens, a simple list of fillers within a singular terminal slot would not be sufficient. Therefore, the verb slot is defined as a non-terminal \textit{variant-slot}, which branches both charts into three alternative sub-trees numbered by the respective fillers \textit{1, 2} and \textit{3} (shown as small elliptical yellow nodes).\footnote{In Figure \ref{fig:constituent} (constituent structure), the fillers of all the non-terminal slots are shown as elliptical yellow nodes purely for consistency reasons, despite the fact that there is otherwise always just one filler in each of the slots and therefore no other case of branching. Terminal (single token) slots do not have their fillers branched out externally in order to keep the tree as compact as possible. For other caveats concerning the visualizations see \citet{Vondricka:2019}.}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/01/dependency.png}
+    \caption{Dependency structure with multiple choices}
+    \label{fig:dependency}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figures/01/constituent.png}
+    \caption{Constituent structure with multiple choices}
+    \label{fig:constituent}
+\end{figure}
+
+In addition to the browsing mode, the database also allows editing of individual entries. In the editing mode, there is more information available that is not normally displayed, but can be queried when searching the lexicon. For example, various grammatical constraints, such as the occurrence of the verbal MWE only in the active voice, or only in the singular, or only in the 3rd person, etc., are expressed by constraints on the morphological tag or on the ``verbtag'', a positional attribute which describes the properties of the entire verb form (whether simple or compound) such as person, voice or tense \citep[see][]{Jelinek:2021}. 
+In \figref{fig:najevo} we see the collocation \emph{vyjít najevo} ‘come to light’, where we use a verbtag expressed by a regular expression to set the constraint that the verb can occur only in the 3rd person, in the active voice, or in the infinitive.
+% In the figure \ref{fig:najevo} we can see the verb \emph{vyjít} 'to come out' in the collocation \emph{vyjít najevo} 'to come to light'. The lemma and POS are shown, as well as a morphological constraint that utilizes the verbtag attribute and states that the verb \emph{vyjít} 'to come out' can only occur in the 3rd person, in the active voice, or in  infinitive.
+
+\begin{figure}%[b]
+    \centering
+%     \sffamily
+    \begin{tabular}{|lp{3cm}|ll|}
+    \hline
+    \multicolumn{2}{|l|}{\textbf{slot 1}} & \multicolumn{2}{l|}{\textbf{slot 2}} \\
+    \hline
+    lemma: & \textbf{vyjít} & lemma: & \textbf{najevo} \\    % \hline
+    tag: & \textbf{V} & tag: & \textbf{D} \\     % \hline
+    verbtag: & \textbf{V.A3..} | \textbf{VFA-{-}-} & &  \\
+    \hline
+    \end{tabular}
+    \caption{Morphological constraints on a MWE member}
+    \label{fig:najevo}
+\end{figure}
+
+
+% \ea 
+% \gll vyjít najevo \\
+%     come.\textsc{act.3} out\\
+% \glt
+%     `come to light'\label{ex:najevo}
+% \z
+
+\section{Practical use of the LEMUR lexicon}
+\label{sec:use}
+
+The lexicon can be used as a standard phraseological lexicon, but it can also be used in corpus annotation and it also has potential applications in NLP.
+
+% \sasa{standard místo classical?}
+
+\subsection{Annotation of MWEs in corpora and linking with the lexicon}
+\label{sec:annotation}
+Occurrences of MWEs in text corpora are identified and the corpus annotation is extended by the MWE lemma and type, assigned as new attributes of every token recognized as part of a MWE (in addition to the standard annotation of individual words in terms of POS tags and lemmas). Corpus users can then search for MWEs by their MWE lemma (if they know it) or they can combine various types of linguistic annotation in one search, such as a verb in imperative which is a part of a syntactically idiomatic MWE or any form of the noun \textit{holub} `pigeon' being part of a MWE.
+Using the Corpus Query Language in the KonText search environment \citep{Machalek:2020} of the Czech National Corpus, the latter query would be specified as \texttt{[lemma=\textquotedbl holub\textquotedbl{} \& mwe\_lemma!=\textquotedbl \textquotedbl]} (\texttt{mwe\_lemma} is not empty, i.e.\ the token with the lemma \textit{holub} is part of an identified MWE). The user would thus find several MWEs in their context such as \textit{pečení holubi lítají do huby} (lit. `roasted pigeons fly into the mouth') `expectation of profit without effort' or \textit{točit se jako holub na báni} (lit. `to turn around as a pigeon on a temple dome') `to turn around constantly'.
+
+Each MWE occurrence in the corpus is linked to the corresponding lexical entry in the lexicon, so that the corpus user can consult the lexicon directly, see \figref{fig:holub} (\texttt{mwe\_lemmas} are shown in bold characters after slashes). In the opposite direction, it is possible to view occurrences of a given MWE in a corpus when browsing the MWE lexicon, as shown above in \figref{fig:def}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/01/ScreenshotHolub.png}
+    \caption{Corpus concordance linked to MWE lexicon}
+    \label{fig:holub}
+\end{figure}
+
+\subsection{Use of the lexicon in POS tagging and parsing}
+A morphological tagger may
+use a module that identifies some frequent MWEs in order to decide about the most likely tag using the knowledge of such MWEs rather than general linguistic rules or a stochastic model unaware of these phenomena \citep{Hnatkova:Petkevic:2017}.
+Since MWEs are sometimes morphologically or syntactically irregular as in (\ref{ex:nevidim}), their identification, including tagging with a special module, helps to increase the tagging accuracy of the whole corpus. For instance, in (\ref{ex:bratrstvi}) the general morphosyntactic rules of Czech cannot fully disambiguate case and number of the noun \emph{bratrství} ‘brotherhood’ (following the preposition \emph{na} ‘on’, requiring accusative or locative, the noun \emph{bratrství} can be interpreted as \textsc{acc.sg, loc.sg} or \textsc{acc.pl}), whereas the morphologically fully disambiguated entry \textit{připít na bratrství} helps to disambiguate this MWE within a sentence as indicated:
+
+\ea \label{ex:bratrstvi}
+\gll připít na bratrství\\
+     drink on.\textsc{acc-val} brotherhood.\textsc{sg.acc}\\
+\glt `raise one's glass to brotherhood'
+\z  
+
+\noindent
+The proverb in (\ref{ex:odvaznemu}) includes \emph{štěstí} ‘good luck’, a highly syncretic noun form, whose interpretations are difficult to disambiguate without a MWE lexicon listing the disambiguated morphological categories. Even in this context, but without the knowledge of the proverb, the ambiguous form \emph{štěstí} ‘good luck’ can mistakenly be parsed as dative, modified by \emph{odvážnému} ‘to the brave’.
+
+\ea \label{ex:odvaznemu}
+\gll Odvážnému štěstí přeje.\\
+     brave.\textsc{m.sg.dat} {good luck}.\textsc{nom} favour.\textsc{3sg.prs}\\
+\glt `Fortune favours the brave.'
+\z  
+
+\subsection{Use of the lexicon in parsing}
+
+The lexicon of MWEs contains information about the syntactic structure of each MWE. In parsing, this information can be used to automatically correct the syntactic annotation of MWEs by comparing the annotation made by the parser with the annotation specified in the lexicon for each identified MWE. If they differ, the automatic annotation can be replaced with the annotation from the lexicon, unless this would result in an overall incorrect structure, such as a looped tree, in which case the correction is not performed.
+
+As an example, consider a simple MWE type: a noun followed by an adjective. This is a typical structure of Czech terms, for example\ \emph{anděl strážný} (lit. `angel guardian') ‘guardian angel’, \emph{kudlanka nábožná} (lit. `mantis devout') ‘praying mantis’, \emph{kyselina sírová} (lit. `acid sulphuric') ‘sulphuric acid’, etc. However, apart from
+terms, the typical word order in Czech is adjective--noun. The parser cannot acquire sufficient “knowledge” of Czech terms from the limited training data, and even the use of methods based on word embeddings (creating a mathematical representation of words using extensive ``raw'' language data, see \cite{Mikolov:etal:2013}) does not completely remove this handicap. When a term of the noun-adjective type is followed by another noun, or by an adjective and a noun, the parser decides in 58\% of cases that the adjective pre-modifies the noun to its right, sometimes even when the adjective cannot agree with the following noun in number, gender or case, as in \emph{představený kláštera Matky Boží řádu trapistů} ‘the abbot of the monastery of the Mother of God of the Trappists’, including the term \emph{Matka Boží} ‘Mother of God’, where the parser identified the adjective \emph{Boží} ‘of God’,  `divine’ as a modifier of the following noun \emph{řádu} ‘order’, instead of the preceding noun \emph{Matky} ‘mother’. By providing the correct syntactic structure for \emph{Matka Boží}, the lexicon could be used to rectify this error.
+
+The parser used for syntactic annotation is based on neural networks \citep{Ma:etal:2018} and trained on the data of the Prague Dependency Treebank \citep{Hajic:etal:2018}. Its overall results reach the state of the art but it struggles to correctly parse MWEs with unusual syntactic structures.
+
+Experiments in correcting syntactic annotation were performed in the past \citep{Jelinek:2019}: syntactic structures of MWEs identified in corpora were checked against the syntactic structures exported from the MWE lexicon. When they differed, the (supposedly erroneous) structures were replaced by the structures from the MWE lexicon. The whole sentence was then checked to make sure an incorrect sentence structure did not result from this intervention.
+Manual analysis of the results showed that using the information from the lexicon, syntactic annotation was corrected in 88\% of the identified syntactic annotation errors for MWEs, while in only 2\% of the cases was an error introduced into the annotation by the intervention. Overall, however, the number of interventions was small (partly due to the relatively low number of MWEs in the lexicon at the time of the experiment) and the overall success rate of the syntactic annotation was almost unaffected by the experiment (less than 1 word per 100,000 was corrected in this way). However, there are now significantly more MWEs in the lexicon, so we consider applying the module for the automatic correction of MWE parses in the next syntactically annotated corpus due to be released in 2025. This will still mean a relatively small improvement in the overall success rate, but we expect that the syntactic annotation of MWEs will improve noticeably, especially since some structures in MWEs are really unusual and thus unmanageable for the parser. This has not been tested yet, however.
+
+
+\section{Conclusion}
+\label{sec:concl}
+
+To answer the need for a lexicon of Czech MWEs, we designed and implemented a lexical database, coping with the variability and structure of multiword lexemes. To achieve that, lexical entries support descriptions from a number of angles. Thus, each entry specifies aspects such as the MWE's lemma, definition, examples, style, syntactic structure, idiomaticity and variability.
+
+Following the taxonomy proposed by \citet{baldwin2010multiword} and used in the PARSEME project, we use multiple types of both idiomaticity and variability, i.a.\ lexical, morphological or syntactic. While the types of idiomaticity describe the MWE's inherent properties, lexical specifications of variability describe the MWE's behaviour in language use. This concerns the cross-linguistically common phenomena of internal modification (insertion) and the use of MWE fragments (omission). 
+
+In addition to its use in a standard way for lexical lookup, the lexicon can also be used as a resource for various NLP tools, such as taggers or parsers. Moreover, lexical entries can be linked with occurrences of the multiword lexemes in a corpus, supporting both lexical lookup and corpus search directly from the corpus or the lexicon, respectively. 
+There are also plans for LEMUR to be linked with an emerging standard reference lexicon of Czech: the \textit{Academic dictionary of Contemporary Czech} \citep{Kochova:Opavska:2016a,Kochova:Opavska:2016}.\footnote{\url{https://slovnikcestiny.cz/}}
+
+Last but not least, the lexicon is being extended by adding new entries or by specifying additional features within existing entries. This (to a large extent manual) effort gradually alleviates the problem of insufficient coverage: the current number of tokens at the time of writing approaches 16,000, while the number of MWE occurrences identified and annotated using the FRANTALEX lexicon in the SYN corpus release 11 is about 49,000. However, we need a strategy for further expanding the lexicon. The lacunae that come up most often in real texts deserve to be filled first, thus helping to reach a better coverage with least efforts.
+
+In the near future, we will add all FRANTALEX lemmas to LEMUR and use the LEMUR database to annotate a new experimental version of SYN corpus \citep{Hnatkova:etal:2014}. This corpus will be accessible to interested lexicographers and linguists. The feedback they provide will be valuable for the further development of the lexicon. 
+
+The still insufficient coverage aside, we believe that LEMUR is built on solid foundations and hope that it turns out to be a useful resource for many purposes. Eventually, its design and structure may serve also other languages than Czech. 
+
+
+\section*{Abbreviations}
+
+\begin{tabularx}{.5\textwidth}{@{}lQ@{}}
+% \textsc{1sg} & 1st person singular\\
+% {\textsc 3sg} & 3rd person singular\\
+% {\textsc acc} & accusative\\
+\textsc{acc-val} & valency (required) accusative\\
+% {\textsc adj} & adjective\\
+AdjP & adjective phrase\\
+% {\textsc adv} & adverb\\
+AdvP & adverbial phrase\\
+% {\textsc aux} & auxiliary\\
+%\textsc{cze} & Czech\\
+% {\textsc dat} & dative\\
+% {\textsc f} & feminine\\
+\textsc{ger} & German\\
+\textsc{eng} & English\\
+% {\textsc gen} & genitive\\
+% {\textsc imp} & imperative\\
+% {\textsc ipfv} & imperfective aspect\\
+% {\textsc inf} & infinitive\\
+% {\textsc ins} & instrumental
+\textsc{lat} & Latin
+\end{tabularx}%
+\begin{tabularx}{.5\textwidth}{@{}lQ@{}}
+% {\textsc loc} & locative\\
+% {\textsc m} & masculine\\
+\textsc{MWE} & multiword expression\\
+% {\textsc n} & neuter\\
+% {\textsc nom} & nominative\\
+\textsc{NP} & noun phrase\\
+% {\textsc neg} & negation\\
+\textsc{NLP} & natural language processing\\
+\textsc{passp} & passive participle\\
+% {\textsc pst} & past tense\\
+% {\textsc pfv} & perfective aspect\\
+% {\textsc pl} & plural\\
+\textsc{PP} & prepositional phrase\\
+% {\textsc prs} & present tense\\
+% {\textsc refl} & reflexive\\
+% {\textsc sg} & singular\\
+\textsc{VP} & verb phrase \\
+&
+\end{tabularx}
+
+\section*{Acknowledgements}\largerpage[2]
+
+Thanks to the reviewers as well as the editors for their valuable comments that helped to improve and enrich this paper.
+
+The work on this paper was supported by the grant \emph{Czech National Corpus} LM2023044 under Large Research, Development and Innovation Infrastructures program, and by the grant \emph{Multiword Units for Digital Learning} TQ01000177 under TA ČR VS SIGMA - DC3 program.
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}

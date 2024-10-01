@@ -1,0 +1,1456 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998641}
+
+\author{Christian Chiarcos\orcid{0000-0002-4428-029X}\affiliation{Applied Computational Linguistics, University of Augsburg, Germany} and
+        Maxim Ionov\orcid{0000-0002-5631-1727}\affiliation{Institute for Digital Humanities, University of Cologne, Germany} and
+        Elena-Simona Apostol\orcid{0000-0001-6397-4951}\affiliation{Computer Science and Engineering Department, Faculty of Automatic Control and Computers, National University of Science and Technology Politehnica Bucharest} and
+        Katerina Gkirtzou\orcid{0000-0002-4725-3094}\affiliation{Institute of Language and Speech Processing, Athena Research Center, Athens, Greece} and
+        Besim Kabashi\orcid{0000-0002-6759-1808}\affiliation{Computational and Corpus Linguistics, University of Erlangen-Nuremberg, Germany} and
+        Anas Fahad Khan\orcid{0000-0002-1551-7438}\affiliation{Consiglio Nazionale delle Ricerche - Istituto di Linguistica Computazionale <<A. Zampolli>>, Italy} and
+        Ciprian-Octavian Truică\orcid{0000-0001-7292-4462}\affiliation{Computer Science and Engineering Department, Faculty of Automatic Control and Computers, National University of Science and Technology Politehnica Bucharest}         
+        }
+
+
+\title{Multiword expressions, collocations and the OntoLex vocabulary}
+
+
+\abstract{We describe challenges in and approaches for modelling multiword expressions in machine-readable dictionaries. OntoLex is a widely used community standard for lexical resources on the web, and the predominant RDF vocabulary for the purpose. The current challenge is for OntoLex users to figure out the correct modelling strategy, as different use cases require the application of different OntoLex modules. This chapter serves as an orientation point for researchers and practitioners, and for a number of real-world use cases it will describe modelling strategies and compare their advantages and disadvantages.}    
+        
+
+\lehead{Chiarcos, Ionov, Apostol, Gkirtzou, Kabashi, Khan \& Truică}
+
+\begin{document}
+\maketitle
+\lehead{Chiarcos, Ionov, Apostol, Gkirtzou, Kabashi, Khan \& Truică}
+
+
+\section{Introduction}
+%[CC+CT(+MI)] → 2.5 [DONE]}
+
+% Christian  + Proof Read by Fahad 17/07
+% Re-proofread by Fahad 25/07
+OntoLex~\citep{mccrae2017ontolex} is a widely used vocabulary for modelling lexical resources such as lexicons and machine-readable dictionaries on the Semantic Web as Linguistic Linked (Open) Data (LL(O)D).\footnote{The specifications for OntoLex can be consulted at \url{https://www.w3.org/2016/05/ontolex/}. If you wish to participate in the development of future OntoLex modules, please join the W3C Ontology Lexicon group \url{https://www.w3.org/community/ontolex/}. In addition, you can raise issues about the vocabulary at the OntoLex GitHub \url{https://github.com/ontolex/}.} It is worth noting, however, that OntoLex was not originally designed as a vocabulary for publishing language resources per se; instead it was developed, at least initially (that is, during the drafting of its original modules) for the rather more specialised task of ontology lexicalisation. Unsurprisingly, this resulted in design decisions (again, at least in its original modules) that were and that remain relatively nontransparent to many linguists, lexicographers and Natural Language Processing (NLP) engineers; with many of these design decisions pertaining to OntoLex's treatment of multiword expressions (MWEs).  Our aim, therefore, in the following chapter is to provide detailed orientation as to which of the modelling options offered by OntoLex are most appropriate for describing the most salient aspects of multiword expressions. We consider this to be a necessary contribution at this point in time as there are several alternative modelling options for encoding individual aspects of MWEs within OntoLex, each with their specific characteristics, benefits and downsides. However, before diving too far into the details of OntoLex, we will begin by clarifying what we understand by \textit{multiword expressions} in the rest of this chapter, and what we view as being the primary modelling needs and requirements in relation to such kinds of linguistic phenomena.
+
+\subsection{Background: Multiword expressions}
+% Christian
+% Fahad proofread by 25/07
+\label{section:types_mwe}
+
+% % christian; paraphrased from https://direct.mit.edu/coli/article/43/4/837/1581/Multiword-Expression-Processing-A-Survey
+% As noted by \citet{baldwin2010multiword} and others, the definition of what constitutes a word is surprisingly complex, partly due to the prevalence of multiword expressions in everyday language. MWEs are made up of several words but function as single words to some extent. For example, the expression "by and large" behaves like an adverb, with a meaning and syntactic function roughly equivalent to "mostly." This expression presents several problematic characteristics, such as (1) a syntactically anomalous part-of-speech sequence of preposition + conjunction + adjective, (2) non-compositionality, where the meaning of the whole is not transparently related to the individual words, (3) non-substitutability of its parts with synonymous words (e.g., "by and big"), and (4) ambiguity between MWE and non-MWE readings of a substring (e.g., "by and large we agree" versus "more troops are hard to come by, and large chunks of territory are already under enemy control").
+
+% Basim+Christian, revised by Fahad
+%In language technology,
+We define MWEs as linguistic forms that span conventional word boundaries and, following
+%One motivation for establishing their analysis as a research topic is that MWEs have specific, non-compositional syntax or semantics, and, typically, \emph{non-literal meanings}.
+\citet{Sag:Baldwin:2002}, we also define them as combinations of words for which the semantic or syntactic properties of the entire expression cannot be predicted from its parts.
+%%This definition of MWEs overlaps with other conceptions coming more from the linguistic literature. This includes several types of phrasal expressions that exhibit non-compositional, ``non-literal'' semantics such as idioms, metaphors, proverbs, but also names and technical terminology. All of these are relatively common in the language but not adequately covered by lexical, compositional semantics, leading to significant research in pragmatics \citet{titone1999compositional}, psycholinguistics \citet{swinney1979access}, linguistic theory \citet{levin2019lexicalization} and other fields of the language sciences.
+%As they are pervasive in most languages, MWEs require a reassessment of the traditional distinction between lexemes, words and phrases in NLP and have been studied intensively in Natural Language Processing, corpus linguistics and digital lexicography.
+%%Aside from their technical and theoretical relevance, however, multiword expressions and their meanings are essential tools for language learners to master, and for this reason, a large number of lexical resources has been created to facilitate learning and teaching these essential skills.
+%
+This is generally compatible with the view on MWEs and collocations taken by other theoretical frameworks, e.g., Meaning-Text Theory, which views them as linguistic units that consist of two or more words functioning as a single semantic and syntactic entity~\citep{mel2006explanatory}.
+% employing lexical functions to account for their stability and meaning.
+According to \citet{HueningSchluecker2015MWE}, the main types of MWEs include the following:
+% (3)
+    %\textit{verbal idioms} (e.\,g. to kick the bucket),
+    idioms (\word{to kick the bucket}),
+% (2)
+    % metaphorical expressions (\word{as sure as eggs is eggs}),
+    metaphors (\word{as sure as eggs is eggs}),
+% (7)
+    % \textit{stereotyped comparisons / similes} (e.\,g. as nice as pie, swear like a trooper),
+    stereotyped comparisons (\word{swear like a trooper}),
+% (1)
+    proverbs (\word{A bird in the hand is worth two in the bush}),
+    quotations (\word{shaken, not stirred}),
+    commonplaces (\word{one never knows}),
+% (8)
+    binomial expressions (\word{shoulder to shoulder}),
+% (9)
+    complex nominals (\word{weapons of mass destruction}),
+% (6)
+    % \textit{syntactic/quasi noun incorporation} (e.\,g. Auto waschen, i.\,e. ‘to wash car’, in German),
+    syntactic noun incorporation ((de) \word{Auto waschen} `to car wash'),
+% (4)
+    % \textit{particle/phrasal verbs} e.\,g. (to make up),
+    particle verb constructions (\word{to make up}),
+% (5)
+    % \textit{light verb constructions / composite predicates} (e.\,g. to have a look),
+    complex predicates (\word{to have a look}),
+% (10)
+    % \textit{fossilized/frozen forms} (e.\,g. all of a sudden),
+    fossilized forms (\word{all of a sudden}),
+% (11)
+    routine formulas (\word{Good morning}), and
+% (12)
+   collocations %(\word{strong tea})
+    (cf.
+    \cite{Evert2005,Evert2009,Schluecker2019CLU,FinkbeinerSchluecker2019CompoundsMWE}).
+
+Note that Hüning and Schlücker's use of the term collocation here is somewhat ambiguous in that they seemingly refer to the (more limited) case of \emph{lexicalized} collocations, namely, those collocations that exhibit non-com\-po\-si\-tio\-nal semantics or lexical selection preferences:
+%e.g., the phrase \word{heavy rain} is a common expression in %English, whereas \word{strong rain} is not.
+e.g., the phrase \word{brush one's teeth} is a common expression in English, whereas \word{polish one's teeth} or \word{wash one's teeth} are not. %However, this varies across languages. In German, the phrase "starker Regen" (strong rain'') is a common collocation, whereas "schwerer Regen" (heavy rain'') is not.
+However, in corpus linguistics, % and computational lexicography,
+the term collocation refers to \emph{any} set of words whose likelihood of co-occurrence is greater than a certain pre-determined threshold figure as determined by salient collocation metrics; this is also how we will understand collocations in the rest of the chapter.
+On this account, not every collocation observed in a corpus is a MWE, but lexicalised collocations and other MWEs generally exhibit high collocation scores, so automated collocation analysis can also be used for lexicographic purposes.
+
+Indeed, OntoLex was developed to take into account the functionality of several tools developed for such (lexicographically oriented) purposes, e.g., Sketch Engine~\citep{kilgarriff2014sketch}, Corpus WorkBench\footnote{\url{https://cwb.sourceforge.io/}}~\citep{Evert2011} and CQPweb~\citep{Hardie2012} -- so that even if these tools do not have machine-readable interface specifications, their APIs are widely used in digital lexicography. One of the individual OntoLex modules which we will be discussing below, \textbf{FrAC}~\citep{chiarcos2022modelling}, was specifically designed to address this issue and follows the requirements of these and other tools (as well as taking into consideration several other aspects of corpus-based information in lexical resources). But \textbf{FrAC} is not the only part of the OntoLex vocabulary that is relevant to the modelling of MWEs. However, in order to clarify this statement, it will be necessary to anticipate the more detailed analysis of OntoLex offered later in this chapter and give a brief resume of how the vocabulary is structured and see how it can be used to describe MWEs.
+
+\subsection{Background: Describing MWEs with Linguistic Linked Data}
+% Christian, revisedby Fahad 25/07
+The OntoLex vocabulary consists of a number of modules, four of which were part of the original specifications published in 2016. These include a core module (\textbf{OntoLex-Core}), along with modules dealing with: \textit{syntax and semantics} and in particular syntactic and semantic frames (\textbf{synsem});\footnote{\url{https://www.w3.org/2016/05/ontolex/\#syntax-and-semantics-synsem}} the \textit{decomposition} of MWEs and compounds (\textbf{decomp});\footnote{\url{https://www.w3.org/2016/05/ontolex/\#decomposition-decomp}} \textit{variation and translation} (\textbf{vartrans});\footnote{\url{https://www.w3.org/2016/05/ontolex/\#variation-translation-vartrans}} and linguistic metadata (\textbf{lime}).\footnote{\url{https://www.w3.org/2016/05/ontolex/\#metadata-lime}}  A further module dealing with lexicographic use cases (\textbf{lexicog}) was published in 2019 as part of a subsequent W3C Community Report,\footnote{\url{https://www.w3.org/2019/09/lexicog/}} and two new modules \textbf{FrAC} and \textbf{morph} are currently in advanced stages of development and will be further described in Sections \ref{sec:decomp_mwe} and \ref{section:morph_mwe}, respectively.
+
+In terms of a brief summary of the provision offered by these various different OntoLex modules for modelling multiword expressions and compound words,\footnote{Note here that we are once again anticipating topics which will be described in greater detail in the rest of the chapter.} we can say the following: \textbf{OntoLex-Core }(Sect.\ \ref{section:core_model}) introduces the concept \onto{ontolex:MultiWordExpression} as a subclass of \onto{LexicalEntry}; \textbf{decomp} offers a model to describe the \textit{inner structure} of multiword expressions~\citep{mccrae2016representing}; \textbf{FrAC} addresses metrics, techniques and data structures for automatically identifying \textit{collocations in corpora}, for compiling of \textit{collocation dictionaries} and for the linking of dictionaries with \textit{attestations of MWEs \op qua lexical entries\cp} in corpora~\citep{chiarcos2022modelling,chiarcos2022modellingGlobalex};  finally, morphological compounding is a morphological process that in some languages (e.g., German and English) creates multiword expressions, and morphological aspects of MWEs are consequently addressed by the emerging \textbf{morph} module dealing with morphology~\citep{chiarcos2022computational}.
+
+% Christian, revised by Fahad 25/07
+The distribution of these different aspects of the modelling or description of MWEs across four different OntoLex modules (\textbf{OntoLex-Core}, \textbf{decomp}, \textbf{FrAC} and \textbf{morph}) may cause misunderstandings or uncertainties as to which strategy should be used for which particular type of resource or use case. At the very least, there is a risk that people looking for ways to model multiword expressions in OntoLex will stop searching as soon as they encounter \onto{on\-to\-lex:Mul\-ti\-Word\-Ex\-pres\-sion} in the \textbf{Ontolex-Core} module. This may not be incorrect in many cases, but it might not be the best solution under all circumstances. %, as we will see below.
+
+
+% Christian, revised by Fahad 25/07
+Aside from discussing the details of the provision offered by OntoLex for modelling MWE data (the \textit{how}), another goal of this chapter is to demonstrate the applicability and advantages of doing this in the first place (the \textit{why}). We therefore posit the following requirements for modelling (lexical resources containing) multiword expressions or collocations: namely, a vocabulary for MWEs on the web should support:
+
+% christian: do not change, this is referred to in discussion, modified slightly by Fahad but still consistent with the later discussion 25/07
+
+\begin{itemize}
+    \item the \textit{identification} or categorisation of MWEs as a special type of lexical entry, in order to be able to describe their specific senses and distinguish them from non-lexicalized phrasal expressions,
+    \item \textit{different structural analyses} thus allowing the description of MWEs \emph{either} as opaque units \emph{or} by providing an analysis of their internal structure,
+    \item the provision of \textit{collocation scores} to represent candidate MWEs \textit{together with} a numerical assessment of their likelihood,
+    \item \textit{dynamic prediction} to permit the encoding of the output of web services and automated tools that produce such analyses from corpora, and
+    \item \textit{extensibility and customizability} to allow for the provision of usage examples, and detailed, resource-specific metadata or analyses.
+\end{itemize}
+In terms of resource types covered, a vocabulary for MWEs and for the analysis of MWEs should take into consideration legacy resources for multiword expressions, idiomatic expressions and collocations, including, but not limited to classical print dictionaries, dedicated collocation dictionaries, or portals and tools for corpus-based lexicography. At the same time, it should be equally applicable to web services that provide established methods for corpus analysis. %, e.g., as provided by the commercial SketchEngine tool that still represents the state of the art and common technological foundation of digital, corpus-based lexicography to this day \citet{kilgarriff2014sketch}.
+
+\section{The OntoLex Vocabulary}
+% → 5.5pp. (CC+KG)} DONE
+% The whole OntoLex Vocabulary section has been proofread by Fahad 25/07
+\label{sec:ontolex}
+
+% overall: Christian - Katerina, revised by Fahad
+
+% some additional RDF motivation
+The web of data is grounded on standards such as HTTP, URIs, and RDF; these enable the effortless linking of, and information aggregation over, distributed data on the web.  RDF technologies have been widely adopted for linguistic data and machine-readable dictionaries, thanks in particular to their enabling of transitive querying across multilingual lexical resources such as dictionaries and their seamless integration of linguistic resources with either knowledge graphs (ontologies and term bases) or electronic text (corpora and data streams).
+
+%A significant advantage of using RDF to represent language resources is that the items within the resource can be uni\-que\-ly identified by a URI, enabling simple additions of statements about them, for instance, linking them to an ontology.
+
+OntoLex is the dominant community standard for this kind of data, and its development was guided by five key principles:
+\begin{inparaenum}[(1)]
+\item it should be an RDF model with OWL semantics~\citep{owl:2004},
+\item it should support multilinguality and avoid language-specific biases,
+\item it should provide semantics by reference vis-à-vis external vocabularies,
+\item it should be open, with no costs or licensing restrictions and allow contributions from any and all interested parties, and
+\item it should reuse relevant standards and models wherever appropriate.
+\end{inparaenum}
+% Christian - Katerina, revised by Fahad 25/07
+As we have already stated, OntoLex consists of several modules.
+The core module, \textbf{OntoLex-Core}, originates from
+an earlier RDF vocabulary~\citep{mccrae2010lemon}, % ,mccrae2011linking} %% saving space
+which was developed on the basis of LexInfo~\citep{cimiano2011lexinfo} %, LIR \citet{montiel2011enriching} % cut for space
+and LMF~\citep{francopoulo2009multilingual}.
+% lexinfo and LMF are somewhat more relevant because we refer to them later
+Since 2011, OntoLex has been developed and maintained by the W3C Ontology-Lexica Community Group.
+Moreover, since the publication of the core vocabulary in 2016,
+the community group has continued to develop new OntoLex modules with an eye to increasing the practicality and versatility of the model and to ensuring its applicability to the needs of further groups of users
+and types of resources. %rewrote the previous sentence to make it a bit less awkward, FK 24/10
+
+% CC: title revised to reflect that we also give a high-level module overview
+\subsection{OntoLex-Core and OntoLex Modules} % → 2pp.}
+\label{section:core_model}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{img/ontolex.png}
+    \caption{OntoLex-Core.}
+    \label{fig-ontolex}
+\end{figure}
+
+% Christian - Katerina
+\textbf{OntoLex-Core}\footnote{\url{https://www.w3.org/2016/05/ontolex/}} (\figref{fig-ontolex}) was developed around the notion of
+\onto{on\-to\-lex:Lexi\-cal\-En\-try} as the primary unit of analysis/description of a lexical resource.
+Each \onto{Lexi\-cal\-En\-try} is associated with a set of grammatically related forms as well as a set of word senses and related concepts (that is, at least from the point of view of the \textbf{OntoLex-Core} module, other kinds of linguistic description are provided by additional OntoLex modules). The \onto{ontolex:Form} class represents one grammatical realisation of a lexical entry, e.g. its written representation, annotated with morphological features,
+while the \onto{ontolex:Lexi\-calSense}
+represents one lexical meaning of a lexical entry, e.g., a classical word sense. The \onto{ontolex:LexicalConcept} class
+is an abstraction over a collection of lexical senses, e.g., a semantic frame, a set of synonyms or a term that can be lexicalised in different ways.
+%following sentence rewritten by Fahad
+This latter class also represents semantic meanings, but differs from senses in being more abstract: lexical concepts can typically be realised by different lexical entries. This distinguishes them from senses which are associated with exactly one lexical entry in the OntoLex model.
+
+
+%in \emph{different} ways, so that they can be associated with different lexical entries.
+% CC: cut for space
+%Lexical concepts are SKOS concepts, and optionally, can be organized in a \onto{ontolex:ConceptSet}.
+%\item[\onto{ontolex:MultiwordExpression}] % Christian - Katerina + Fahad revision
+Within \textbf{OntoLex-Core},  \onto{ontolex:MultiwordExpression}
+is a subclass of \onto{onto\-lex:LexicalEntry} and is used to classify lexical entries that consist of two or more words. The core module does not provide vocabulary for further elucidating the internal structure of a MWE,\footnote{In addition to the internal structure of a MWE, information about the valency of MWEs is also useful. At the time of writing, the provision for modelling of valency information for complex predicates within the OntoLex family of modules is still very much under development. We intend to present further updates on this theme in upcoming work.} it only allows users to indicate that a lexical entry is a MWE and to provide form and sense information as with any other lexical entry.
+% Katerina - move the example below to the next section
+%\begin{verbatim}
+%:minimum_finance_lease_payments a ontolex:MultiwordExpression ;
+%  ontolex:canonicalForm [
+%    ontolex:writtenRep "minimum finance lease payments"@en
+%  ];
+%  ontolex:sense [
+%    ontolex:reference <https://www.ifrs.org/issued-standards/list-of-standards/ias-17-leases/>
+%  ] .
+%\end{verbatim}
+%\medskip
+% Christian - Katerina
+However, as mentioned above, in addition to the core model, four other OntoLex modules were published in 2016 and in the following section, we will describe \textbf{decomp}, the most relevant of these for the current discussion on modelling MWEs.
+%\begin{inparaenum}[(1)]
+%\item synSem: for modelling syntactic and semantic frames,
+%\item decomp: for the decomposition of MWEs  and compounds,
+%\item vartrans: for modelling translations and other relations between lexical entries and lexical senses, and
+%\item Lime: for metadata about OntoLex lexica.
+%\end{inparaenum}
+% from prologue
+Additionally, in 2019, a novel Lexicography Module, \textbf{lexicog}~\citep{lexicog-2019}, was published
+to address the representation of traditional print dictionary forms. To prevent information loss in the migration of lexical data to OntoLex, \textbf{lexicog} introduces the
+class \onto{lexicog:Entry} to group together lexical entries and associate shared information, e.g., to replicate the grouping of multiple lexemes under a common head word in a dictionary. Its superclass \onto{le\-xi\-cog:Le\-xi\-co\-gra\-phic\-Com\-po\-nent} provides a similar function for sub-entries, lexical senses, lexical forms, etc. For reasons of space, we will not discuss this module further here.
+% CC: cut for space
+% \item The class \onto{lexicog:LexicographicResource} is an aggregator (catalog) of multiple lexicog:Entries, similar to the \onto{lime:Lexicon} as aggregator of lexical entries.
+Other subsequent extensions include the emerging modules \textbf{FrAC} for frequency, attestation and corpus-based information in lexical resources, and \textbf{morph}, for morphology. Both are described with further detail below as they are relevant for the current discussion on MWEs.
+
+\subsection{Decomposition: decomp} % → 1p.}
+\label{section:ontolex-decomp}
+
+\begin{figure}
+% make sure to change the optional argument ([7] -- number of lines on the left) if the layout is changed
+\includegraphics[width=0.85\textwidth]{img/Lemon_Decomposition.png}
+\caption{The OntoLex decomp module.}
+\label{fig-decomp}
+\end{figure}
+
+\begin{sloppypar}
+% Christian - Katerina, minor revisions by Fahad
+The OntoLex decomposition module, namely \textbf{decomp} (\figref{fig-decomp}), allows for a formal description of the process of constituting multiword expressions or compound lexical entries. % wording follows https://www.w3.org/2016/05/ontolex/#decomposition-decomp
+It models decomposition primarily by means of \onto{decomp:Com\-po\-nent},
+which must uni\-que\-ly correspond to a lexical entry,
+a semantic frame or a syntactic argument.
+Each lexical entry which has been so decomposed then consists of a number of constituents, which correspond to its components, e.g.,
+the division of a nominal compound or a MWE into smaller units.
+These components can be annotated with morphosyntactic information, such as part of speech or morphological features, and their order can be indicated
+by \onto{rdf:\_n} properties.
+As a shorthand, lexicons that do not need to represent individual components can use the property \onto{decomp:subterm}.
+\end{sloppypar}
+
+Aside from basic decomposition, \textbf{decomp} allows us to align the
+sub-units of a composite term with a grammatical role (\onto{synsem:Argument}) or a semantic role (\onto{synsem:Frame}).
+With decomp, we can thus express both the semantics of a phra-se
+and the semantics of the individual lexemes, and beyond that, we can express the semantic relations between these terms in a specific multiword expression by mapping syntactic relations that hold between them and semantic frames (for an idea of how syntactic information might be aligned with information relating to the decomposition of a MWE in decomp see the \textit{to know} example in the W3C OntoLex guidelines).\footnote{\url{https://www.w3.org/2016/05/ontolex/\#phrase-structure}} Frames are defined by the \textbf{synsem} module and not further discussed here, the important aspect is, however, that \textbf{decomp} provides the necessary means to represent
+(a) the lexical semantics of the respective components,
+(b) the semantics of the MWE as a whole, and
+(c) the semantics and syntactic structure of a MWE side-by-side.
+
+% Katerina : comment out due to space limitations
+%From the OntoLex vocabularies for MWEs described in this paper, only OntoLex provides this level of integration with SynSem, whereas FrAC focuses on (information about) candidate MWEs and the lexical entries or lexical forms involved, morph on morphological processes involved in the process and OntoLex-Lemon only on flagging a lexical entry as a multiword expression.
+
+\subsection{Corpus information: OntoLex-FrAC} % → 1p.}
+\label{section:ontolex-frac}
+% CHristian  - Katerina
+OntoLex-FrAC (\figref{fig-frac}) \citep{chiarcos2022modelling} is an emerging vocabulary for enriching machine-readable dictionaries with corpus-based information,
+relating to word frequency and attestations~\citep{chiarcos2020modelling}, embeddings and distributional similarity~\citep{chiarcos2021embeddings} and collocations~\citep{chiarcos2022modelling,chiarcos2022modellingGlobalex}.
+The core element of \textbf{FrAC} is \onto{frac:Observable}, which refers to anything that can be observed within a corpus, such as forms (\onto{onto\-lex:Form}), lexemes (\onto{ontolex:Lexi\-calEntry}), but also lexical or ontological concepts, in case this information is present in the data.\footnote{This enumeration is vague by design since we expect that other classes that define various corpus annotations (within or outside of OntoLex) could be defined as subclasses.}
+This definition of observables is organically applicable to collocations, as well.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{img/frac-module-2022.07.png}
+  \caption{The OntoLex-FrAC module as an UML class diagram (see \citet{suchanek2020case} for notation), version July 2022.}
+  %\katerina{Suggestion: add a legend at the image explaining the different semantics of arrows for an easier and complete grasp of the model, eg empty head arrow: is-A, complete head arrow: object property, diamond arrow aggregation(?). If not maybe declare them in the caption }
+  %% CC: that's standard UML, clarified by reference ;)
+  \label{fig-frac}
+\end{figure}
+
+In \textbf{FrAC}, collocations are not considered as lexical units, but rather
+as an arbitrary co-occurring group of observables characterised by a collocation score.
+% redundant with chap.1
+%High score values can suggest that a collocation is a lexicalized MWE, however, these scores can be calculated for any combination of words.
+% CC; paraphrased from GlobaLex
+Since collocations can consist of two or more words, we model
+\onto{frac:Col\-lo\-ca\-tion} as an RDF container of \onto{frac:Observable}s, not as a relationship between words. Also, collocations themselves are taken to be \onto{frac:Observable} entities, possessing properties such as attestations, frequency information, similarity sco\-res, etc.
+    % GlobaLex
+Additional parameters, such as the size of the context window used for collocation analysis can be provided in human-readable form in \onto{dct:descript-ion}.
+
+    % Collocations are \texttt{frac:Observable}s, i.e., they can be ascribed
+    % \texttt{frac:frequency}, \texttt{frac:attestation},
+    % \texttt{frac:embedding}, they can be described in terms of their
+    % (embedding) similarity, and they can be nested inside larger
+    % collocations.
+
+% Katerina - Rephrase from GlobaLex
+In automated collocation analysis, collocations can be described with various collocation scores (\onto{frac:cscore}, sub-property of \onto{rdf:value}).
+If multiple metrics are used, then the appropriate sub-property of \onto{frac:cscore} should be used.\footnote{For specific collocation metrics within \textbf{FrAC} see Appendix~\ref{sec:scores}.}
+For asymmetric scores (e.g., relative frequency, \onto{frac:relFreq}),
+we distinguish the lexical
+element they are about (using the property \onto{frac:head}) from its collocate(s).\footnote{
+The property \onto{frac:head} is restricted to
+indicate the directionality of asymmetric collocation scores. It must not be confused with the notion of \textit{head} in certain fields of linguistics, e.g., in dependency syntax or morphological compounding. Also, it should not
+be used to model the structure of collocation dictionaries into headwords and associated collocations -- for this function, please resort to \textbf{lexicog}.}
+
+\subsection{Morphology: OntoLex-Morph} % → 1.5p.}
+\label{section:ontolex-morph}
+
+%Christian
+The Ontolex-Morph module is an emerging module designed for describing \emph{both} the morphological structure of linguistic forms/lexical entries) in morphological dictionaries~\citep{klimek2019challenges}
+\emph{and} the processes and technical components for generating and parsing inflected or derived word forms as used in computational applications~\citep{chiarcos2022computational}.
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{img/module_draft_4_18.png}
+    \caption{The OntoLex-Morph module, version 4.18 (October 2023).}
+    \label{fig-morph}
+\end{figure}
+
+% morph-LDL-2022
+The class \onto{morph:Morph} is a subclass of \onto{ontolex:LexicalEntry} that represents a concrete primitive element of (morphological) analysis.
+%Note that this definition blends aspects of two distinct categories in linguistics.
+An OntoLex morph is like a morpheme in that it constitutes a lexical entry, i.e., a lexicalised or grammaticalised morphological unit, but at the same time, it differs from the classical understanding of \emph{morpheme} in that different allomorphs of the same morpheme can be modelled as distinct morphs -- if needed.
+%this is they way they are treated in the underlying resource
+% cut for space:
+%\footnote{OntoLex morphs are not to be confused with segments of a specific morphological analysis (which is what `morph' normally refers to), but the same OntoLex morph can be referred to in morphological analyses of different words.}.
+
+% morph-LDL-2022, paraphrased
+OntoLex morphs are the central elements of the \onto{morph:WordFormationRule}s and \onto{morph:InflectionRule}s that involve them.
+Both types of rules can be defined by a \onto{morph:example} (a string for descriptive morphology) or a \onto{morph:re\-place\-ment} (replacement pattern).
+The characteristic of word formation rules is that they describe
+a \emph{lexical} process that creates an instance of \onto{ontolex:Lexical\-Entry}.
+%
+% mrph-LDL-2022, paraphrased
+While a word formation rule formulates or illustrates a general pattern, the lexico-semantic relation between two specific lexical entries (such as the base and a derived word, or a constituent word and a compound) is modelled as \onto{morph:Word\-For\-ma\-tion\-Re\-la\-tion}. In the case of compounding, the head can be made explicit using \onto{morph:CompoundHead}. If no head is marked, one can use either \onto{morph:Com\-poun\-ding\-Re\-la\-tion} or \textbf{decomp}.
+
+% Katerina - comment out due to space limitations and repetion with a subsection " Decomp Vs. Morph"
+% Christian
+%For languages in which morphological compounding can result in expressions that consist of multiple word forms, Morph represents a viable alternative to using Decomp for modelling MWEs, or, a large group of MWEs, at least.
+%In the past, this has led to some confusion as to whether to use Morph or Decomp, or potentially both for the representation of morphological compounds. To some extent, our paper aims to address and resolve that uncertainty.
+
+
+%Christian
+%In the remainder of this chapter, we describe the application of and the interaction between these vocabularies for a number of representative use cases.
+
+\section{Modelling multiword expressions in OntoLex} %[FK,EA,KG] $\to$ 5.5 pages}
+% Proofreading and revision by Fahad 25/07
+% cuts by christian
+
+As the reader will no doubt have appreciated by now, the \textbf{OntoLex-Core} vocabulary is not sufficient in and of itself for the task of describing how MWEs are formed and limits itself to allowing users to flag lexical entries as MWEs. We can make up for these expressive shortcomings, however, by availing ourselves of other OntoLex modules. The overall goal of the current section, then, is to delineate strategies for combining and/or choosing between \textbf{decomp}, \textbf{morph} or \textbf{FrAC}, on the basis of the intended use case.  Generally speaking, \textbf{decomp} deals with the internal structure and combinatory semantics of MWEs, whereas \textbf{morph} deals with their morphological structures. \textbf{FrAC} deals with collocation analysis, its interplay with MWEs and is described in the following section. Before going into details, however, it should be noted that whereas \textbf{morph} and \textbf{FrAC} contain relatively little overlap between them, \textbf{decomp} has potential overlaps with both \textbf{morph} and \textbf{FrAC}.
+
+\begin{description}
+\item[decomp vs. morph:] MWEs that involve specialised morphemes (e.g., linking elements that can be used to form nominal compounds) can be described either with \textbf{decomp} (in case the resource or task calls for an emphasis on their semantics), with \textbf{morph} (in case the resource or task calls for an emphasis on their morphology), or with elements from both vocabularies, depending on the situation in question. The intention is that \textbf{decomp} should be used in cases in which we wish to give a ``shallow" morphological description of a MWE; it should therefore be considered the default choice and will be suitable for most non-specialist use cases. Alternatively,
+% %The
+\textbf{morph} %module
+(optionally in conjunction with \textbf{decomp}) to be preferred in cases where a more ``in-depth" morphological description of MWEs, and their constituents, is to be given: namely, where the focus is on the analysis of individual morphemes.
+
+% Christian, revision by Max
+\item[decomp vs. FrAC:] \textbf{Decomp} and \textbf{FrAC} offer two opposing strategies for the analysis of MWEs/collocations – top-down and bottom-up, respectively. \textbf{Decomp} provides a mechanism for splitting a lexical entry into smaller components, whereas FrAC collocations consist of several observables (e.g.~lexical entries). Due to this, \textbf{decomp} is preferred for collocations and MWEs that are \emph{confirmed} lexical entries (with optional FrAC collocation scores), such as idiomatic expressions, and the emphasis is on their metadata. On the other hand, the FrAC collocation class should be used primarily for cases in which the emphasis is on the collocations and their components, especially if they are represented in a corpus or extracted from there by automated methods. Additionally, \textbf{FrAC} should be used for collocations with variable word order since \textbf{decomp} requires fixed order of the components and \textbf{FrAC} only requires observables to occur in the same context (even if they have other words in between).
+\end{description}
+
+\subsection{OntoLex-Core: Declaring a lexicalized multiword expression} % [FK+CC]}
+\label{ssec-mwe-lemon}
+
+% Fahad, revision by christian
+%Indeed
+MWEs that are
+confirmed as % considered
+%separate
+lexical entries in their own right
+%(i.e., those that have a high collocation score and that can function as a semantic or conceptual unit, see for instance \citet{finkbeiner2019compounds})
+can be represented as individuals of \onto{ontolex:MultiWordExpression} class; sense information may then be associated with individual such MWEs via the \onto{ontolex:sense} property. The LexInfo property \onto{lexinfo:termType}
+can be used to give a more fine-grained classification of these MWEs as e.g., one of \onto{lexinfo:compound}, \onto{lexinfo:idiom},
+    \onto{lexinfo:phraseologicalUnit} or \onto{lexinfo:setPhrase}.
+In addition, the \textbf{FrAC} mo-dule can be used to describe the frequency and distribution of a MWE in a corpus and provide evidence of its status as a lexical unit.
+
+We illustrate this with the word \word{cat's-eye}, \word{cat's eye} or \word{catseye} by which is meant a retroreflective safety device used in road markings.\footnote{We broadly follow Wiktionary (\url{https://en.wiktionary.org/wiki/cat's-eye}), but also cf. \word{cat's eye} in \citet{brewer1991brewer}, and \word{catseye} in the Longman Dictionary of Contemporary English, \url{https://www.ldoceonline.com/dictionary/catseye}.}
+% space:
+%As the spellings suggest, this can be analyzed as a multiword expression, but also as a single word (morphological compound), with the spelling with hyphens compatible with either view.
+In this case, we assume that we are dealing with a multiword expression with different orthographic variants.
+Using the \textbf{OntoLex-Core} vocabulary, we can state that it is a (lexicalised) MWE with its specific meaning:\footnote{Note that in the following listing and in the rest of this chapter we will be using the turtle syntax, see \url{https://www.w3.org/TR/turtle/}. }
+
+{\listingsize
+\begin{verbatim}
+:cat_s_eye_lex a ontolex:LexicalEntry, ontolex:MultiwordExpression ;
+  ontolex:canonicalForm
+    [ ontolex:writtenRep "cat's eye"@en, "cat's-eye"@en, "catseye"@en ] ;
+  ontolex:sense
+    [ ontolex:reference <http://dbpedia.org/resource/Cat's_eye_(road)> ] .
+\end{verbatim}
+}
+
+\noindent Of course, separate lexical entries for \onto{:cat} and \onto{:eye} can be added, but we need specialised modules to clarify their relationship.\footnote{We exclude the \textbf{lexicog} vocabulary here. It is, indeed, capable of expressing the \emph{placement} of the phrase \word{cat's eye} under the head word \word{cat} (as in \citealt[88]{brewer1991brewer}), but this carries no information about the function and meaning of this grouping preference. For this, we need \textbf{decomp}, \textbf{morph} or \textbf{FrAC} in addition to \textbf{lexicog}.}
+
+\subsection{decomp: MWE Syntax and Semantics}
+\label{sec:decomp_mwe}
+
+% CC+FK (all that follows)
+%We illustrate the use of Decomp for describing the structure of MWEs and compounds with the example of the German noun-noun compound, \textit{Lungenentzündung}  (`pneumonia' literally `lung inflammation').
+
+We decompose the entry into its constituent terms \onto{:cat\_lex} and \onto{:eye\_lex} (each an OntoLex lexical entry in its own right):
+
+{\listingsize
+\begin{verbatim}
+:cat_s_eye_lex decomp:subterm :cat_lex ; decomp:subterm :eye_lex .
+\end{verbatim}
+}
+
+\noindent According to the OntoLex specifications, ``[i]t is important to mention that the subterm property is a relation between lexical entries and neither indicates the specific inflected word of a lexical entry that appears in the compound nor the position at which it appears".\footnote{\url{https://www.w3.org/2016/05/ontolex/\#decomposition-decomp}}
+The structure of the entry does not thus fully reflect the surface strings. Also, in this example, the genitive morpheme \word{'s} is not expressed in the decomposition -- neither in \textbf{OntoLex-Core} nor in \textbf{decomp}, would we normally consider this a lexical entry in its own right.
+
+Alternatively, in \textbf{decomp}, we can use the \onto{Component} class to reflect the particular realisation of a lexical entry that forms part of a compound lexical entry:
+
+{\listingsize
+\begin{verbatim}
+:cat_s_eye_lex decomp:constituent :cat_s_const ; decomp:subterm :eye_lex .
+:cat_s_const a decomp:Component ; decomp:correspondsTo :cat_lex .
+\end{verbatim}
+}
+
+\noindent Optionally, morphosyntactic constraints can be added to a component. As an example, the string \word{cat's} (resp. \word{cats-} in \word{catseye}) can be interpreted as a genitive singular. This analysis can be added to \onto{:cat\_s\_const}:
+
+{\listingsize
+\begin{verbatim}
+:cat_s_const lexinfo:number lexinfo:singular ;
+             lexinfo:case lexinfo:genitive .
+\end{verbatim}
+}
+
+\noindent This analysis captures the syntactic (constituent) structure of the MWE, and it is assumed to be unique. In addition to that, a semantic interpretation can be given by creating \onto{decomp:correspondsTo} relations between a decomp component and a \onto{synsem:Argument} or a \onto{synsem:Frame}.
+We now model the same example using morph and highlight the differences in the kinds of information which can be expressed.
+
+\subsection{OntoLex-Morph: MWE morphology} % → 2pp. [EB+CC]}
+\label{section:morph_mwe}
+
+% Christian + Fahad
+
+Languages differ in the extent to which they employ morphology in the formation of multiword expressions. In English, this is relatively rare, but exhibited in our example.
+The modelling of \word{cat's eye} above did not require the use of the \textbf{morph} vocabulary. Indeed, we suggest using the latter only in case a detailed analysis at the level of individual morphemes is required. This is not necessary in order to simply point out that \word{cat's} is a genitive form (this can be a morphosyntactic feature of the component) but \emph{is} necessary if we want to provide morpheme-level segmentation, i.e. if we want to state that \word{'s} is a nominal inflection morpheme that indicates genitive singular. For this purpose, \textbf{morph} makes use of \onto{morph:Morph}:
+
+{\listingsize
+\begin{verbatim}
+:_s_morph a morph:Morph;
+  ontolex:canonicalForm [ ontolex:writtenRep "'s"@en ] ;
+  morph:grammaticalMeaning
+    [ lexinfo:number lexinfo:singular ; lexinfo:case lexinfo:genitive ] ;
+  morph:baseConstraint [ lexinfo:noun ] .
+\end{verbatim}
+}
+
+\noindent
+As morph morphs are OntoLex lexical entries, \onto{:\_s\_morph} could just be added as a \onto{decomp:subterm} as before. A more transparent analysis is to make explicit that it operates as a linking element in a compound:\footnote{%
+    Although this analysis is normally not applied to English, it is the standard way of describing linking morphemes in languages where genitive morphemes in compounds bleached and were subsequently stripped off their original grammatical meaning. German \word{Katzenauge} (lit. `cats' eyes') ``cats' eye'', uses the linking element \word{-en-}, originally for a genitive \emph{plural}. Yet, there is no plural semantics involved: One eye can belong to no more than one cat.
+    Especially with the spelling \word{catseye}, this way of modelling is appropriate for English as well, as the spelling obfuscates the original genitive marker in a similar way.
+}
+
+{\listingsize
+\begin{verbatim}
+:_s_compound_rule a morph:CompoundingRule ;
+  morph:generates :cat_s_eye_lex ; morph:involves :_s_morph .
+\end{verbatim}
+}
+
+\noindent
+With \onto{morph:replacement}, we can provide one or more different replacement patterns for the morpheme, using standard regular expressions with capturing groups as provided, for example, by the RDF query language SPARQL\footnote{%
+    \url{https://www.w3.org/TR/rdf-sparql-query/\#funcex-regex}
+} and all major programming languages since Perl:\footnote{Note that this rule describes only one of the three aforementioned orthographic variants, ``cat's [eye]'' since every rule should generate exactly one form. To model the other two, additional (alternative) compounding rules must be provided.}
+
+{\listingsize
+\begin{verbatim}
+:_s_compound_rule morph:replacement
+  [ morph:source "([^s])$" ; morph:target "\1's" ] .
+\end{verbatim}
+}
+
+\noindent
+Even without further addenda, these statements can be used to complement the decomp analyses given above, as they all refer to the same URI \onto{:cat\_s\_eye\_lex}, each adding more information.
+Furthermore, \textbf{morph} also allows us to add more information about the structure of the compound. For example, we can define a \onto{morph:Com\-pound\-Head} relation between the two lexical entries to identify the morphological head of the compound:
+
+{\listingsize
+\begin{verbatim}
+[ a morph:CompoundHead ;
+  vartrans:source :eye_lex ; vartrans:target :cat_s_eye_lex ] .
+\end{verbatim}
+}
+
+In order to link the part of the expression that undergoes morphological transformations with the corresponding rule, we can use a \onto{morph:Com\-pound\-Re\-la\-tion}:
+
+{\listingsize
+\begin{verbatim}
+[ a morph:CompoundRelation ;
+  vartrans:source :cat_lex ; vartrans:target :cat_s_eye_lex ;
+  morph:wordFormationRule :_s_compound_rule ] .
+\end{verbatim}
+}
+
+\noindent
+Morph word formation relations like \onto{morph:Com\-pound\-Head} and \onto{morph:Com\-pound\-Re\-la\-tion} are lexical relations as defined in \textbf{vartrans}, but in the context of \textbf{morph}, they are also reifications of \onto{decomp:subterm} and can be used to provide additional metadata to subterm relations.
+We use this here to associate a word formation rule with \word{cat's}. (Note that we point to the word formation rule only from the node that undergoes morphological transformation modifier because it is the only node that is affected by that replacement.)
+
+In this example, morpheme order is left implicit. However, in concrete applications, it can be inferred from language-specific constraints on the placement of heads and modifiers in morphological compounds.
+
+Note that the reified representation is not the only way to indicate the order of head, modifier, and linking morpheme within a compound.
+As recommended in \textbf{decomp}, the RDF properties \onto{rdf:\_1}, \onto{rdf:\_2}, etc. can be used to make the order of components explicit. Alternatively, as recommended in \textbf{morph}, ordering information can be captured at the level of \onto{ontolex:Form}:
+
+{\listingsize
+\begin{verbatim}
+:cat_s_eye_lex ontolex:canonicalForm :cat_s_eye_form .
+:cat_s_eye_form a ontolex:Form ;
+  ontolex:writtenRep "cat's eye"@en ;
+  morph:consistsOf :cat_stem, :_s_morph, :eye_stem .
+  rdf:_1 :cat_stem ; rdf:_2 :_s_morph ; rdf:_3 :eye_stem .
+\end{verbatim}
+}
+
+\noindent
+In this analysis, we introduce separate URIs for the \word{cat} and \word{eye} morphemes for the sake of clarity. Alternatively, we can also directly make use of \onto{:cat\_lex} and \onto{:eye\_lex}, but note that their use as objects of \onto{morph:consistsOf} entails (by RDFS semantics) that these are \onto{morph:Morph} (in addition to the explicitly stated information that they are OntoLex lexical entries).
+
+\section{Modelling collocations in OntoLex}
+% Proofread by Fahad started and ended 24/07
+% Have not changed the things that were assigned to others, Fahad 24/07
+So far, we have focused on representative lexical examples for illustrating modelling choices. For collocation analysis in \textbf{FrAC}, we will need to ground our discussion in real-world data. For reasons of presentation, we focus on relatively simple data, but \textbf{FrAC} is equally applicable to more advanced use cases.
+
+\subsection{Collocations in OntoLex-FrAC}\label{section:mwe_context}
+\label{section:mwe_frac}
+\label{sec-mwe-frac}
+%merged with
+%\subsection{Collocation Statistics from a Database of N-Grams → 1.5pp. (MI)}
+
+% katerina: moved the content to section 2.3
+% christian: replaced by revised example from former 3.3
+
+
+% christian
+N-Grams are the most elementary assessment of collocations, and can thus be used for the automatically supported detection of MWEs. \textit{N}-Gram databases are thus practically relevant addenda to lexical resources, but they are normally not seen as full-fledged lexical resources in their own right. In particular, without further analysis, \textit{n}-grams  are not necessarily lexicalized MWEs or the result of a morphological process, so they are clearly within the realm of \textbf{FrAC}, and should not be modelled as \onto{ontolex:MultiWordExpression} or by means of \textbf{morph} or \textbf{decomp}.
+
+% guidelines, paraphrased, example replaced
+A seminal collection of \textit{n}-grams is provided by
+Google Books\footnote{\url{http://storage.googleapis.com/books/ngrams/books/datasetsv2.html}} and features \textit{n}-gram frequencies per publication year as
+tab-separated values. For example, if we are interested in word usage in the year 2008, the second edition of Google Books provides token and document frequencies for the bigram \emph{cat's} + \emph{eye}:\footnote{%
+\texttt{eye\_NOUN} is retrieved from the file of the English 1-gram (googlebooks-eng-all-1gram-20120701-e.gz), while \textit{cat's eye} corresponds to a trigram \texttt{cat\_NOUN 's\_PRT eye\_NOUN} and is retrieved from the corresponding list of 3-grams (googlebooks-eng-all-3gram-20120701-ca.gz).
+}
+
+% SPACE
+% \footnote{%
+%     The counts provided are for lexical entries, i.e., words that are lemmatized and tagged. Google Book ngrams also provides plain string tokens. These can be equivalently modelled as a FrAC collocation over OntoLex forms.
+% }
+
+{\listingsize
+\begin{verbatim}
+ngram                     year match_count volume_count
+eye_NOUN                  2008 1837106     167735
+eyes_NOUN                 2008 5672681     176942
+cat_NOUN 's_PRT eye_NOUN  2008 515         356
+cat_NOUN 's_PRT eyes_NOUN 2008 937         751
+cats_NOUN '_PRT eye_NOUN  2008 2           2
+cats_NOUN '_PRT eyes_NOUN 2008 169         140
+\end{verbatim}
+}
+
+\noindent where \texttt{match\_count} denotes how many times the \textit{n}-gram occurred overall, i.e. \textit{n}-gram frequency, while
+\texttt{volume\_count} denotes in how many distinct books of the Google corpus, i.e. document frequency.
+\noindent
+Note that Google Books provide information about wordforms, not lexemes, so we need to take into account all possible forms of a word in question. On the basis of this, we create OntoLex lexical entries:
+
+{\listingsize
+\begin{verbatim}
+gb:eye_lex a ontolex:LexicalEntry; lexinfo:partOfSpeech lexinfo:noun;
+  ontolex:canonicalForm [ ontolex:writtenRep "eye"@en ] .
+\end{verbatim}
+}
+
+\noindent
+Since in this example we are interested in a specific time frame only, we can introduce specialised subclasses for collocation and frequency type for this particular corpus and time frame. This is an efficient way to provide a much more compact encoding, as metadata does not have to be repeated for each individual observable.
+
+{\listingsize
+\begin{verbatim}
+gb:GB_2008 a owl:Class;  # an auxiliary class introduced
+  rdfs:subClassOf      # for the convenient handling
+    [ owl:Restriction; # of frac:corpus and dct:temporal
+      owl:onProperty frac:corpus ;
+      owl:hasValue
+        <http://storage.googleapis.com/books/ngrams/books/datasetsv2.html> ];
+    [ owl:Restriction;
+      owl:onProperty dct:temporal; owl:hasValue "2008"^^xsd:date ] .
+
+gb:GB_2008_coll rdfs:subClassOf
+  frac:Collocation, frac:Seq, # a class for ordered collocations
+  gb:GB_2008 .         # that inherits frac:corpus and dct:temporal
+
+gb:GB_2008_doc_freq rdfs:subClassOf
+  frac:Frequency, # a frequency class
+  gb:GB_2008,       # that inherits frac:corpus and dct:temporal
+  [ owl:Restriction;       # and provides document frequencies
+    owl:onProperty dct:description; owl:hasValue "document frequency" ] .
+
+gb:GB_2008_freq rdfs:subClassOf
+  frac:Frequency, # a frequency class
+  gb:GB_2008,       # that inherits frac:corpus and dct:temporal
+  [ owl:Restriction;          # and provides token frequencies
+    owl:onProperty dct:description; owl:hasValue "token frequency" ] .
+\end{verbatim}
+}
+
+\noindent
+With these corpus-specific classes, we can now provide raw and document frequencies for observables (lexical entries and collocations), as well as relative frequencies (\onto{frac:relFreq}, obtained from the bigram token frequency divided by the token frequency of the head of the collocation):
+
+{\listingsize
+\begin{verbatim}
+# unigram (lexeme) frequencies
+gb:eye_lex frac:frequency
+  [ rdf:value "344677"; a gb:GB_2008_doc_freq ] ,
+  [ rdf:value "7509787"; a gb:GB_2008_freq ] .
+
+# bigram (collocation) frequencies
+[ rdf:1_ gb:cat_lex; rdf:_2 gb:eye_lex ] a gb:GB_2008_coll ;
+  frac:frequency
+    [ rdf:value "1249"; a gb:GB_2008_doc_freq ] ,
+    [ rdf:value "1623"; a gb:GB_2008_freq ] ;
+  frac:relFreq "0.00022"; # = 1623/7509787
+  frac:head gb:eye_lex .
+\end{verbatim}
+}
+
+\begin{sloppypar}
+\noindent The value of \onto{frac:relFreq} corresponds to $p(\langle \text{\onto{:cat\_lex},\onto{:eye\_lex}} \rangle | \text{\onto{:eye\_lex}})$.
+This can be compared with the relative frequency of \onto{:cat\_lex} in the overall corpus to assess its lexicographic significance, calculated from the absolute frequency of lexical entries divided by the \onto{frac:total} number of tokens of the corpus.
+\end{sloppypar}
+
+This encoding not only provides well-defined da\-ta\-ty\-pes for the information in the original table, but it is also relatively compact: for each bigram in the original database, we produce 3 triples to define components and type, 3 triples per frequency count and type, and 2 triples per collocation score.
+% % SPACE
+% Without custom subclasses of frequency and collocation, there would have been 9 more triples, so our encoding yields a 45\% reduction of the number of triples per line.
+% The price is that it requires OWL2/DL reasoning to infer FrAC concepts and metadata properties.
+% Alternatively, subclass relations and OWL2/DL restrictions can also be queried directly using SPARQL.
+
+% % SPACE
+% Note that the n-gram example is a somewhat simplistic use case, but the modelling of more elaborate collocation statistics as provided by other web sources, e.g., the Leipzig Corpora Collection / Deutscher Wortschatz, a project of Leipzig University, the Saxon Academy of Sciences and Humanities in Leipzig and the Institute for Applied Informatics \citet{goldhahn2012building}, is fully analoguous, except that a broader band-width of collocation scores is supported.
+
+%\section{Use Cases: Data Modelling and Information Aggregation in Practice → 6.5pp.}
+
+% In this section, we describe a number of use cases, and discuss the applicability of one or more of the aforementioned modelling strategies in OntoLex.
+
+\subsection{The OZDIC collocation dictionary} % [CC]}
+\label{sec:use_case_ozdoc_dict}
+
+The OzDictionary website (OZDIC)\footnote{\url{https://ozdic.com/}} is a collocation dictionary designed as a learning tool for assisting students in preparing for the Test for English as a foreign language (TOEFL) and similar writing tests.
+% The dictionary shows
+% for each headword words and phrases commonly used in combination with
+% it,  with more than 150,000 collocations for nearly 9,000 headwords and over 50,000 examples
+% that illustrate collocation context, in parts also with information on grammar and register.
+For each headword, the dictionary shows which words and phrases are commonly used in combination with
+it. It includes more than 150,000 collocations for nearly 9,000 headwords and over 50,000 examples
+that illustrate collocation context, including, in parts, information on grammar and register.
+
+\begin{figure}
+    \centering
+\includegraphics[width=0.6\textwidth]{img/image1.png}
+    \caption{OZDIC: example \word{apply} (verb).}
+    \label{fig-ozdic1}
+\end{figure}
+
+The lexical entry shown in \figref{fig-ozdic1} is divided into several patterns with different associated senses, and this can be made explicit with \textbf{OntoLex-Core}:
+
+{\listingsize
+\begin{verbatim}
+oz:apply-v a ontolex:LexicalEntry ;
+  lexinfo:partOfSpeech lexinfo:verb ;
+  ontolex:sense oz:apply-v-sense1 ;
+  ontolex:canonicalForm [ ontolex:writtenRep "apply"@en ] .
+oz:apply-v-sense1 skos:definition "be relevant" .
+\end{verbatim}
+}
+
+\noindent
+The above statements can be further enriched with morphosyntactic information about the collocation and its parts:
+
+{\listingsize
+\begin{verbatim}
+oz:equally-adv a ontolex:LexicalEntry;
+  lexinfo:partOfSpeech lexinfo:adverb ;
+  ontolex:canonicalForm [ ontolex:writtenRep "equally"@en ].
+\end{verbatim}
+}
+
+%It is not made explicit in OZDIC whether \word{apply equally} qualifies as a \onto{ontolex:MultiWordExpression}. It is not the head word of a dictionary entry.
+%If modelled as a \onto{ontolex:MultiWordExpression}, i.e., a \onto{ontolex:LexicalEntry}, then \onto{:apply-v} must \emph{not} be a lexical entry, but has to be a \onto{lexicog:Entry}, instead (in OntoLex, lexical entries must not contain other lexical entries).
+As standard lexical resources for English %would, however, normally
+treat \onto{:apply-v} as a lexical entry, and OZDIC does not explicitly distinguish MWEs, phrasal expressions, and syntactic patterns, we model \word{apply-equally} as a FrAC collocation, assuming that this reflects corpus evidence.
+With \textbf{FrAC}, attestations (and, subsequently, collocation scores) can also be provided.
+% \footnote{Note that if a resource comes without corpus-based attestations (etc.), a modelling with Decomp would be preferred.
+% SPACE:
+% It is important to note the difference between `example' and `attestation' here. An attestation is grounded in an external resource (`locus'), e.g., a corpus, as, here, the BNC corpus.
+% A mere example comes without context and can just be made up for the sake of illustration.
+% These can be modelled using \onto{decomp:usageExample}.
+% }
+
+% Using the FrAC vocabulary, the collocation `apply equally' can then be defined as follows:
+
+{\listingsize
+\begin{verbatim}
+oz:apply-equally a frac:Collocation, rdfs:Seq ;
+  rdf:_1 oz:apply-v-sense1; rdf:_2 oz:equally-adv ;
+  frac:attestation [
+    frac:quotation "These principles apply equally in all cases." ;
+    frac:corpus <http://www.natcorp.ox.ac.uk/> ] ;
+  frac:head :apply-v-sense1 .
+\end{verbatim}
+}
+
+\noindent
+Note that here we include the information (given as a statement on the OZDIC website) that the collocations in the dictionary are grounded in the British National Corpus by making use of \onto{frac:at\-tes\-ta\-tion} (for corpus evidence);\footnote{It is important to note that in \textbf{FrAC}, ``corpus evidence'' is understood broadly, i.e. is not limited only to linguistic corpora. Since the module has not been published yet and this is one of the issues currently being debated, we recommend referring to the FrAC model specification for the details on what constitutes a \onto{frac:Attestation}.} the alternative, in cases of examples constructed without provenance, is to use \onto{lexicog:usageExample}.
+Although OZDIC provides no other corpus-based information at this point in time, this is a sufficient criterion to recommend modelling with \textbf{FrAC}.
+
+Without that statement or the need to encode the source of collocations, an alternative modelling with \textbf{decomp} seems feasible:
+
+{\listingsize
+\begin{verbatim}
+:apply-equally a decomp:Component;
+  decomp:constituent :apply-v , :equally-v ;
+  rdf:_1 :apply-v ; rdf:_2 :equally-adv .
+\end{verbatim}
+}
+
+\noindent
+Note, however, that this modelling is deficient in that we cannot directly refer to \onto{:apply-v-sense1}, but only to its lexical entry.
+At the same time, \onto{lexicog:usageExample} cannot be used because the domain of this property is \onto{ontolex:LexicalSense} and not \onto{decomp:Component} (whereas using \onto{frac:at\-tes\-ta\-tion} does not have this restriction).
+So, given the lack of other OntoLex modules to adequately reflect the structure of this dictionary entry, we recommend the use of \textbf{FrAC} in this case.
+
+% % SPACE
+% If we want to emphasize that this collocation is represented as such in the underlying lexical resource, we can make this explicit using the lexicog vocabulary by the nesting of lexicographic components:
+% {\listingsize
+% \begin{verbatim}
+% :apply-v lexicog:subComponent :apply-v-sense1-component .
+% :apply-v-sense1-component a lexicog:LexicographicComponent;
+%   lexicog:describes :apply-v-sense1 ;
+%   lexicog:subComponent :apply-equally-component .
+% :apply-equally-component a lexicog:LexicographicComponent;
+%   lexicog:describes :apply-equally.
+% \end{verbatim}
+% }
+
+% \christian{alternative is to describe the oxford collocation dictionary, but a fahad isn't available much more and we need to wrap up, I commented it out for the moment}
+
+% \subsection{Collocation Dictionary}
+% \label{sec-oxford}
+
+% \christian{why is this modelling part in querying? should be a usecase or removed}
+
+%     % GlobaLex
+%     We illustrate the application of FrAC to (a) the conversion of an existing collocation dictionary to a machine-readable format, and (b) its enrichment with collocation scores obtained from an external corpus.
+%     It is to be noted, however, that FrAC is not an independent vocabulary, but that it builds on OntoLex (and can thus complement existing OntoLex data). It can also be applied in conjunction with other OntoLex modules.
+%     %This includes Lexicog
+%     %, a vocabulary developed for the demands of lexicographical resources, and for structuring or grouping of lexical entries and their components in a lexical resource,
+%     We illustrate the conjoined application of FrAC and Lexicog to the Oxford Collocation Dictionary for Students.
+
+%     % GlobaLex
+%     We show an example of the application of Ontolex-FrAC by looking at an example encoding of
+%     % Fahad
+%     the entry for the word \textit{point} from \textit{the Oxford Collocations Dictionary for Students of English} (OCDS)~\citet{oxford}. Figure~\ref{fig-point} shows  how the OCDS
+%     groups together the entry with individual collocations for better accessibility and readability.
+
+%     % GLobaLex
+%     \begin{figure}
+%         \centering
+%         \includegraphics[scale = 0.5]{img/ex-oxford.png}
+%         \caption{Entry for \textit{point} in the Oxford Collocations Dictionary}
+%         % CC: img could be cut after "discuss"
+%         \label{fig-point}
+%     \end{figure}
+
+
+%     % Globalex
+%     For instance \word{point}-collocations are first grouped together on the sense level, then on the basis of the part of speech of the collocated word and/or whether the collocation constitutes a phrase, and finally at the level of similarity of meaning of the collocation (note that there is also a division of examples for the same meaning grouping). In the OCDS the separation of groupings on the basis of meaning is visually effected by the $|$ symbol. We refer to these (potentially nested) groupings of collocation information as \textit{collocation patterns} in what follows. The \textit{point} example is interesting for showing how FrAC can be used together with the Lexicographic model.
+
+%     % Globalex
+%     Note that in our RDF modelling we represent the collocations themselves using the FrAC vocabulary and the domain-specific segmentation of the entry into collocation patterns using Lexicog. Indeed we use the class \onto{lexicog:LexicographicComponent} to represent this organisation that is so typical of collocation dictionaries.
+
+%     % Globaldx
+%     We start by looking at the modelling of the lexical content of the entry and introduce the \onto{:point} lexical entry, giving part of speech information about the word and about its lemma form. We also introduce \onto{:ls\_point\_1}, the first sense of the word corresponding to the first sense listed in the dictionary entry in Figure~\ref{fig-point} (we only look at this first sense in the following example).
+
+%     % GLobalex
+%     {\footnotesize \begin{verbatim}
+%     :point a ontolex:LexicalEntry ;
+%       lexinfo:partOfSpeech lexinfo:noun ;
+%       ontolex:sense :ls_point_1 ;
+%       ontolex:canonicalForm
+%         [ ontolex:writtenRep "point"] .
+
+%     :ls_point_1 a ontolex:LexicalSense ;
+%         # p_s
+%         skos:definition "thing said as part
+%             of a discussion" .
+
+%     \end{verbatim}}
+
+%     % Globalex
+%     The following lexical entries represent the collocates of the word \textit{point}. We will refer to these entries in the descriptions of the collocations below:
+
+%     % Globalex
+%     {\footnotesize \begin{verbatim}
+%     :have a ontolex:LexicalEntry ;
+%       lexinfo:partOfSpeech lexinfo:verb ;
+%       ontolex:canonicalForm
+%         [ ontolex:writtenRep "have"] .
+
+%     :see a ontolex:LexicalEntry ;
+%       lexinfo:partOfSpeech lexinfo:verb ;
+%       ontolex:canonicalForm
+%         [ ontolex:writtenRep "see" ] .
+
+%     :take a ontolex:LexicalEntry ;
+%       lexinfo:partOfSpeech lexinfo:verb ;
+%       ontolex:canonicalForm
+%         [ ontolex:writtenRep "take" ] .
+%     \end{verbatim}}
+
+%     % Globalex
+%     The collocations of \textit{point}, or to be more accurate the collocations of the first sense of the word \textit{point}, are represented using the FrAC classes which we introduce as follows.
+
+%     % GlobaLex
+%     {\footnotesize \begin{verbatim}
+%     :col_have_point a frac:Collocation ,
+%         rdf:Seq ;
+%       lexinfo:example "She's got a point" ;
+%       frac:head :ls_point_1 ;
+%       rdf:_1 :have ;
+%       rdf:_2 :ls_point_1 .
+
+%     :col_see_point a frac:Collocation ,
+%         rdf:Seq ;
+%       lexinfo:example "I see your point" ;
+%       frac:head :ls_point_1 ;
+%       rdf:_1 :see ;
+%       rdf:_2 :ls_point_1 .
+
+%     :col_take_point a frac:Collocation ,
+%         rdf:Seq ;
+%       lexinfo:example "Point taken" ;
+%       frac:head :ls_point_1 ;
+%       rdf:_1 :take ;
+%       rdf:_2 :ls_point_1 .
+%     \end{verbatim}}
+
+%     % Globalex
+%     Note the use of the property \onto{head} to specify the head of the collocation in each case, as well as that of the lexinfo property \onto{example} to give the example presented in the original entry. Note in addition the use of \onto{rdf:\_1} and \onto{rdf:\_2} to represent the order of the collocates.
+
+%     % Globales
+%     Next we represent the arrangement of this information as it is found in the dictionary itself using lexicog classes and \onto{lexicog:Lexico graphicComponent} in particular.  The dictionary entry (as opposed to the lexical entry) for \textit{point} is represented by \onto{:e\_point} an individual of type \onto{lexicog:Entry}. As we can see below, \onto{:e\_point} is linked to the lexical entry \onto{:point} via the \onto{lexicog:describes} property.
+
+%     % Globalex
+%     %{\footnotesize \begin{verbatim}
+%     {\small \begin{verbatim}
+%     :e_point a lexicog:Entry ;
+%       lexicog:describes :point ;
+%       lexicog:subComponent
+%       [     a lexicog:LexicographicComponent ;
+%         lexicog:describes :ls_point_1 ;
+%         lexicog:subComponent
+%           :lc_point_pattern_1 ,
+%           :lc_point_pattern_2 ] .
+%     \end{verbatim} } %size
+
+%     % Globalex
+%     For reasons of space we only (partially) model two of the collocation patterns in the entry in our RDF encoding: those pertaining to the collocation of the word \textit{point} with an adjective and those pertaining to its collocation with a proceeding verb. These are \onto{:lc\_point\_pattern\_1} and \onto{:lc\_point\_pattern\_2} respectively. Both of these are lexicog lexicographic components. The text associated with each in the original entry is specified using the property \onto{dct: description}.
+
+%     % Globalex
+%     {\footnotesize \begin{verbatim}
+%     :lc_point_pattern_1
+%       a lexicog:LexicographicComponent ;
+%       dct:description "ADJ" .
+
+%     :lc_point_pattern_2
+%       a lexicog:LexicographicComponent ;
+%       dct:description "VERB + POINT" ;
+%       lexicog:subComponent :lc_have_point ,
+%              :lc_see_take_point .
+%     \end{verbatim} } %size
+
+%     % Globalex
+%     Note that \onto{:lc\_point\_pattern\_2} is broken up into two further collocation patterns; the first, \onto{:lc\_have\_point}, describes the word's collocates with \textit{have}, and the second,  \onto{:lc\_see\_take\_point}, its collocates with \textit{see} and \textit{take}. These are described below.
+
+%     % Globales
+%     {\footnotesize \begin{verbatim}
+%     :lc_have_point
+%       a lexicog:LexicographicComponent ;
+%       lexicog:describes :col_have_point .
+%     :lc_see_take_point
+%       a lexicog:LexicographicComponent ;
+%       lexicog:describes :col_see_point ,
+%             :col_take_point .
+%     \end{verbatim} } %size
+
+% % unused
+% The next three entries are the collocates of the word \textit{point} as listed in its OCDS entry.
+% {\small \begin{verbatim}
+% :have a ontolex:LexicalEntry;
+%  lexinfo:partOfSpeech lexinfo:verb .
+
+% :see a ontolex:LexicalEntry;
+%  lexinfo:partOfSpeech lexinfo:verb .
+
+% :take a ontolex:LexicalEntry;
+%  lexinfo:partOfSpeech lexinfo:verb .
+% \end{verbatim} } %size
+
+% % unused
+% There follow the definitions of the two collocation patterns \onto{:point\_colloc\_pattern\_1} and \onto{:point\_colloc\_pattern\_2} (both of which are \onto{lexicog:LexicographicComponents}). The second one of these is broken up into two further collocation patterns; the first describes the word's collocates with \textit{have}, and the second its collocates with \textit{see} and \textit{take}.
+% {\small \begin{verbatim}
+% :point_colloc_pattern_1 a
+%   lexicog:LexicographicComponent;
+%  dct:description "ADJ. " .
+% \end{verbatim} } %size
+
+% {\small \begin{verbatim}
+% :point_colloc_pattern_2 a
+%   lexicog:LexicographicComponent ;
+%  dct:description "VERB + POINT" ;
+% lexicog:subComponent :have_coll ,
+%                  :see_take_coll .
+% \end{verbatim} } %size
+
+% % unused
+% The next level of organisation which we encode in our example describes the collocation of \textit{point} with \textit{see} and \textit{take}, respectively. Here we link the lexicographic components (collocation patterns) with lexical content, in this case FrAC collocations. In what follows we see RDF encodings of  the three individual collocation objects referred to so far below, namely \onto{:col\_1}, \onto{:col\_2\_1}, \onto{:col\_2\_2} below.  Note the use of \onto{rdf:\_1} and \onto{rdf:\_2} to model ordered sequences.
+
+% {\small \begin{verbatim}
+
+% :col_have_point a frac:Collocation , rdf:Seq ;
+%     lexinfo:example "She's got a point" ;
+%     frac:head :ls_point_1 ; # really?
+%     rdf:_1 :have ;
+%     rdf:_2 :ls_point_1 .
+
+% :col_see_point a frac:Collocation , rdf:Seq ;
+%     lexinfo:example "I see your point" ;
+%     frac:head :ls_point_1 ;
+%     rdf:_1 :see ;
+%     rdf:_2 :ls_point_1 .
+
+% :col_take_point a frac:Collocation , rdf:Seq ;
+%     lexinfo:example "Point taken" ;
+%     frac:head :ls_point_1 ;
+%     rdf:_1 :take ;
+%     rdf:_2 :ls_point_1 .
+
+% :have_coll
+%      a lexicog:LexicographicComponent ;
+%      lexicog:describes :col_1 .
+% :see_take_coll
+%      a lexicog:LexicographicComponent ;
+%      lexicog:describes :col_2_1, :col_2_2  .
+
+% :col_1 a frac:Collocation;
+%  lexinfo:example "She's got a point";
+%  frac:head :point_sense_1;
+%  rdf:_1 :point_sense_1;
+%  rdf:_2 :have .
+
+% :col_2_1 a frac:Collocation;
+%  lexinfo:example "I see your point";
+%  frac:head :point_sense_1;
+%  rdf:_1 :point_sense_1;
+%  rdf:_2 :see.
+
+% :col_2_2 a fracCollocation;
+%  lexinfo:example "Point taken";
+%  frac:head :point_sense_1 ;
+%  rdf:_1 :point_sense_1;
+% rdf:_2 :take.
+% \end{verbatim} } %size
+
+% \subsection{A Database of Compounds [CC]}
+% \label{sec:use_case_db_ngrams}
+% % christian, new
+% A dataset specifically designed to collect morphological compounds is a natural candidate for illustrating the application of the Morph vocabulary.
+% However, this is the recommended approach only if specifically morphological information is provided, e.g., morpheme-level (rather than lexeme-level) segmentation, links to morpheme or rule inventories or metadata about morphological relations that requires a reified view on decomposition.
+% If none of these conditions hold, the recommended way of modelling is by means of Decomp, alone.
+% At the same time, and in the interest of consistency, it is recommended to model the same phenomenon in the same way across a language resource. So, if \emph{some} of the data in a dictionary requires using the Morph vocabulary, \emph{all} its data should be modelled with that rather than with decomp.
+
+% Either way, additional attestations or collocation scores can be added using the FrAC vocabulary, as \onto{morph:Morph}, \onto{decomp:Components} and \onto{ontolex:LexicalEntry} instances all qualify as \onto{frac:Observables}.
+
+% % Christian
+% For illustrating the application of Morph to formalizing morphological compounding, we focus on split compounds from GermaNet following the lines of \citet{chiarcos2022unifying}.
+% Although the following is primarily motivated by compounding \emph{as a morphological process}, and designed to account for morphemes involved in the process, a language in which compounding exists as a morphological process should provide a uniform handling for compounding with and without explicit morphological markers. German is such a language. German is indeed, relatively famous for its excessive use of compounding, but traditionally, these compounds were spelled as single words. Since the German spelling reform of 1996 \citet{upward-1997-german-spelling}, however, it is now allowed (and in some cases, required) to write compounds as separate words. As an example, this is possible for compositions with \word{nicht} `not' (\word{nicht öffentliche Sitzung} or \word{nichtöffentliche Sitzung} `non-public meeting'), and required for some combinations of nouns and verbs (\word{Rad fahren} `go by bike' instead of earlier \word{radfahren}), cf. \citet{duden-2022-spelling}.
+
+% % LREC-2022-morph draft
+%     In German,
+% componding
+%     is a highly productive process, and one that can involve
+%     additional morphemes, in particular the
+% linking elements
+% \word{-e},
+% \word{-(e)s-},
+% \word{-(e)n-},
+%     etc. that have diachronic roots in nominal inflection but that have lost
+%     the original grammatical
+% meaning.
+
+% % LREC-2022-morph draft
+%     We are not aware of any large-scale effort to collect compounds comparable in scale and scope
+%     with Unimorph. For German, however, one of the available resources is provided as a complement to
+%     GermaNet and in a format comparable to the UniMorph TSV format.
+
+% % LREC-2022-morph draft
+%     GermaNet is a proprietary German WordNet that originates from the EuroWordNet project and that
+%     thus inherits a large concepts of (and links with) the English Princeton WordNet.
+%     The split compounds are provided separately, overall a list of 106,980 compounds in a simple
+%     tabular format:
+
+% % LREC-2022-morph draft
+% \begin{verbatim}
+% Lungenentzündung	Lunge	Entzündung
+% \end{verbatim}
+
+% % LREC-2022-morph draft
+%     The first column contains the compound, the second column contains one or multiple
+%     space-separated modifiers and the last column contains the head of the compound.
+%     Note that the example
+% \word{Lungenentzündung} `pneumonia'
+%     features the
+% linking morpheme \word{-(e)n-},
+%     but that this is not made explicit, and instead,
+%     only the lemmas of the
+% components are provided.
+
+% % LREC-2022-morph draft
+%     As for Unimorph, the conversion is done by means of TARQL, i.e., with a single
+%     SPARQL query that transforms line by line
+% from a CSV file in a particular format
+%     into RDF.
+%     In this case, we create the lexical entry URIs from the lemmas, so that homonyms
+%     are grouped together (the data includes mostly nouns, adjectives and verbs, and
+%     by their surface form, resp., their spelling, these can be reliably distinguished).
+%     For each lexical entry, we provide the lemma as \onto{ontolex:canonicalForm}.
+
+% The basic structure according to Morph does not actually require Morph-specific vocabulary, but instead relies on OntoLex-Lemon and Decomp data structures as defined in the guidelines:
+
+% % new
+% \begin{verbatim}
+% @base <http://purl.org/acoli/morph/de/GermaNet16.0/>
+
+% <entry#Lungenentzündung> a ontolex:LexicalEntry ;
+%     decomp:subterm <entry#Entzündung>, <entry#Lunge> ;
+%     ontolex:canonicalForm <form#Lungenentzündung> .
+%     # analoguous for <entry#Entzündung> and <entry#Lunge>
+
+% <form#Lungenentzündung> a ontolex:Form ;
+%     ontolex:writtenRep "Lungenentzündung" .
+%     # analoguous for <form#Entzündung>, <form#Lunge>
+% \end{verbatim}
+
+% But the source data conveys more information, as such, it conveys information about head and modifier status within the compound (in the order of columns).
+% To capture this aspect, we use
+% \onto{morph:WordFormationRelation} (a subclass of \onto{ontolex:LexicalSemanticRelation})
+% and its subclasses \onto{morph:CompoundingRelation} (pointing from a lexical elements of the compound to the compound) and \onto{morph:CompoundHead} (compounding relation pointing from the head to its compound[s]).
+
+% The GermaNet dataset doesn't provide explicit information about linking morphemes, but these can be extrapolated using automated methods:
+% % LREC-2022-morph draft
+%     The
+% linking element
+%     is established
+% as a \onto{morph:Morph} by means of a
+%     string comparison between normalized (lowercase,
+%     punctuation and whitespace stripping) representations of modifiers and head in comparison
+%     with the compound. It is bound only if a non-empty string value can be ascertained,
+%     and the URI is generated from thhis string alone (as interfixes are the only morphemes
+%     in this data set, there is no risk of confusion).
+
+% So, the following pieces of Morph-specific information are added:
+
+% \begin{verbatim}
+% <rel#Lungenentzündung-Lunge> a morph:CompoundingRelation ;
+%     morph:contains <morph#n> ;
+%     morph:wordFormationRule <rule#n> ;
+%     vartrags:source <entry#Lunge> ;
+%     vartrans:target <entry#Lungenentzündung> .
+
+% <rel#Lungenentzündung-Entzündung> a morph:CompoundHead ;
+%     vartrans:source <entry#Entzündung> ;
+%     vartrans:target <entry#Lungenentzündung> .
+
+% <morph#n> a morph:Morph, ontolex:Affix ;
+%     ontolex:lexicalForm <form#-n-> .
+
+% <form#-n-> a ontolex:Form ;
+%     ontolex:writtenRep "n" .
+% \end{verbatim}
+
+% Note that the word formation rule is only marked on the modifier here because it is applied to its value before it becomes part of the compound. Opposed to this, no alternations apply to the head (in this case).
+
+% As \onto{<morph\#n>} is created in a fully automated process from information only implicitly conveyed in the original resource, we generate one morph per allomorph, not per morpheme.
+% This is also reflected in using \onto{ontolex:lexicalForm} instead of \onto{ontolex:canonicalForm}.
+
+% In addition to these lexical entries and entry-specific statements, the following (additions to) lexeme-independent statements are created automatically:
+
+% \begin{verbatim}
+% <rule#n> a morph:WordFormationRule ;
+%     morph:example "Lunge + Entzündung > Lungenentzündung" ;
+%     morph:generates <entry#Lungenentzündung> .
+% \end{verbatim}
+
+% In case the interested reader is wondering at this point on how this relates to MWEs, we would like to point out that the GermaNet dataset contains a total of 2,464 compounds whose parts are separated by \word{-} or whitespaces. By analogy with the example above, these, as well as all compounds where no linking morpheme is used, are to be modelled by means of Morph.
+
+\subsection{Enrichment with collocation scores} % → 1p. [KG]}
+% written by CC, to be cut by Katerina
+
+In Section \ref{sec-mwe-frac}, we described the creation of an OntoLex-FrAC resource on the basis of the information contained in a lexicographic resource. With lexical resources, collocation dictionaries, and frequency lists available in OntoLex, we can now trivially bring all of these together.
+% katerina: cut and merge this commented text due to space limitations
+%For the OZDIC example above, the collocation `apply equally' can thus be complemented with n-gram statistics.
+%Assuming that this corresponds to the Google Books bigram \texttt{apply\_VERB equally\_ADV} and using the class definitions introduced in the last section, we can state for the year 2008 that:
+%
+%\begin{verbatim}
+%:apply-equally
+%  frac:frequency
+%    [ rdf:value "7545"; a gb:GB_2008_freq ],
+%    [ rdf:value "6018"; a gb:GB_2008_doc_freq ] .
+%\end{verbatim}
+%
+%It is a little bit harder to provide corpus collocation scores directly over a collocation element, because we have to create one collocation object per corpus slice (here, the year). However, as the OZDIC collocations originate from another corpus, this would produce conflicting metadata entries for \onto{frac:corpus}, anyway, and would thus not be feasible.
+%
+%Instead, we create a novel, corpus-specific collocation object and link it to OZDIC by means of %\onto{skos:exactMatch}:
+%
+For the OZDIC example in Section~\ref{sec:use_case_ozdoc_dict}, the collocation “apply equally” can be complemented with \textit{n}-gram statistics from the corresponding bigram \texttt{apply\_VERB equally\_ADV} in Google Books, with frequencies of the corresponding lexemes and a relative frequency \onto{frac:relFreq} calculated based on the frequency of the collocation and the frequency of its head (``apply') in all possible inflected forms: % using the class definitions introduced in Section~\ref{sec:use_case_db_ngrams}:
+
+{\listingsize
+\begin{verbatim}
+gb:apply-equally a gb:GB_2008_coll;
+  frac:frequency
+    [ rdf:value "16747"; a gb:GB_2008_freq ],
+    [ rdf:value "13824"; a gb:GB_2008_doc_freq ] ;
+  frac:relFreq "0.00567" ; # = 16747/2954990
+  frac:head :apply-v .
+oz:apply-equally skos:closeMatch gb:apply-equally .
+\end{verbatim}
+}
+
+\noindent
+Note that as the OZDIC collocations originate from another corpus, we would produce conflicting metadata entries for \onto{frac:corpus} if we directly related it to the collocation information from Google Book. Thus, we opted to create a new, corpus-specific collocation object and link it to OZDIC by means of \onto{skos:close\-Match}. We suggest \onto{skos:exactMatch} if the collocation contains exactly the same elements (just with a specific basis for calculating their scores),
+\onto{skos:closeMatch}, if it contains equivalent elements (but, e.g., addressing different aspects, e.g., their entry, form or sense), or \onto{rdfs:seeAlso} if no 1:1 mapping can be established.
+%, so that -- in most applications -- they can be used interchangeably.
+%For this reason, we also omitted declaration of components involved.
+%% german section cut for reasons of space
+% Similarly, the extension of German \word{Lungenentzündung} is analoguous, except that we provide a \onto{skos:broadMatch} to the English collocation that constitutes the literal translation:\footnote{
+%     We are aware of the methodological issues of porting collocation statistics from one language to another.
+%     For cross-lingual applications, such a transfer of statistics between languages is, however, often applied in practice, especially in the creation of multilingual embeddings, which are another kind of \onto{frac:Observation}s that has to be modelled analoguously.
+% }
+%
+% \begin{verbatim}
+% gb:lung_inflammation a :GB_2008_coll ;
+%   rdf:1_ :lung_f; rdf:_2 :inflammation_f;
+%   frac:frequency
+%     [ rdf:value "208"; a :GB_2008_doc_freq ] ,
+%     [ rdf:value "342"; a :GB_2008_freq ] ;
+%   frac:relFreq "0.00221";  # = 342/154547
+%   frac:head :inflammation_f.
+% :Lungenentzündung skos:broadMatch gb:lung_inflammation.
+% \end{verbatim}
+%
+%The collocation \onto{gb:lung\_inflammation} is semantically equivalent with the anonymous blank node from the example above.
+%
+It is important at this point that this modelling decision is fully independent of whether \onto{:apply-equally} is % or \onto{:Lungenentzündung} are
+modelled as \onto{ontolex:MultiWordExpression},
+\onto{decomp:Com\-po\-nent}, \onto{lexi\-cog:Lexi\-co\-gra\-phic\-Com\-po\-nent}, \onto{frac:Collocation}: All of these are \onto{frac:Ob\-ser\-va\-ble}.
+
+\section{Discussion and outlook} %
+\label{sec:app}
+% Section Proof started and completed by Fahad 24/07
+In this chapter we have focused on describing OntoLex and its modules for the benefit of users who wish to use these vocabularies for modelling multiword expressions and collocations. Correspondingly, our primary goal has been to give such users some general orientation with regards to the full range of modelling options available in OntoLex for describing such linguistic phenomena in terms of their syntactic, semantic, and morphological structure, as well as in relation to relevant corpus data such as attestations, frequency and collocation scores. For reasons of brevity, we have sought to avoid in-depth descriptions of single use cases, choosing instead to focus on those aspects which will be helpful to anyone modelling similar kinds of data. In terms of an actual resource in which these modelling options have been applied in a comparative manner we can cite a dataset of German compounds (bundled with GermaNet, \citealt{hamp1997germanet}). In this case two approaches were taken with a view to meeting two different goals:
+
+\begin{itemize}
+    \item In the first case, with the aim of providing a phrasal analysis without morpheme segmentation; \citet{declerck2016towards} describe a shallow representation using \textbf{decomp}.
+    \item In the second case, with the aim of facilitating the integration of the data-set with other OntoLex datasets for German morphology; \citet{chiarcos-etal-2022-lrec-morph} describe a representation with morpheme-level segmentation and analysis using \textbf{morph}.
+\end{itemize}
+
+\noindent
+As demonstrated above, both of these versions of the dataset -- or indeed any other OntoLex data -- can be integrated with collocation data as provided, for example by Google N-Grams (see above), the Leipzig Wortschatz portal~\citep{goldhahn2012building}, Sketch\-En\-gi\-ne corpora and the Sketch Engine API~\citep{kilgarriff2014sketch}, etc. -- regardless of whether their modelling originally made use of \textbf{morph}, \textbf{decomp} or just plain OntoLex-Core lexical entries.
+
+OntoLex modules can thus be used together in combination (indeed they have been developed for that very purpose). Nonetheless in cases where users of OntoLex are uncertain about which module to use (i.e., their data is not obviously biased towards one module or the other), we recommend that they consider the modules in terms of their order of creation and that such users:
+
+\begin{enumerate}
+    \item Begin by attempting to model their data using \textbf{OntoLex-Core} only;  if  this is insufficient, then
+    \item Try and apply, in addition, the \textbf{synsem}, \textbf{decomp}, \textbf{vartrans} and \textbf{lime} modules; if this also turns out to be insufficient, then
+    \item Consult, the \textbf{lexicog} module; if this is once again to be insufficient, then
+    \item Consult, the \textbf{FrAC} and \textbf{morph} modules; if this still fails to meet their modelling needs then
+    \item As a last resort, join the W3C Community Group where they are invited to discuss their problems or proposed solutions. (Alternatively, create an issue in the respective OntoLex GitHub repository.)\footnote{\url{https://github.com/ontolex/}}
+\end{enumerate}
+
+\noindent
+At the same time, it is advisable to minimise the number of vocabularies involved, so if you \textit{already} know that \textbf{morph} will meet your primary modelling needs (e.g., because your dataset or task explicitly requires an emphasis on morphological descriptions), there is no need to combine it with elements of \textbf{synsem}, \textbf{decomp}, \textbf{vartrans}, \textbf{lime} or \textbf{lexicog} (unless recommended as such in the \textbf{morph} vocabulary itself). Such situations of conflict should, however, arise very rarely, because existing modules were taken into account when \textbf{lexicog}, \textbf{morph} and \textbf{FrAC} were developed.
+
+Before closing this chapter, it will be necessary to discuss the advantages and disadvantages of modelling MWEs with OntoLex with reference to the requirements we were initially identified (Section \ref{ssec-eval-ontolex-criteria}), and in comparison with pre-RDF technologies (Section \ref{ssec-relres}). We also argue for the usability of OntoLex representations of MWEs, with Section \ref{sec-querying} illustrating this in the case of the elementary task of querying, whereas the final section, Section \ref{sec-applications}, discusses prospective applications.
+
+\subsection{Modelling MWEs with OntoLex and RDF technology} % 1.5pp, okay}
+\label{ssec-eval-ontolex-criteria}
+%Section proofread by Fahad, started + ended 24/07
+This chapter began with the proposal to evaluate current multiword expression modelling strategies in OntoLex according to five criteria. These are the facility with which we can:
+{\bfseries identify MWEs} (i.e., to classify them as such); % allow to identify multiword expressions, to provide their specific meaning, and to distinguish them from non-lexicalized phrasal expressions,
+model the {\bfseries structure of MWEs}; % allow to represent MWEs \emph{either} as opaque units \emph{or} along with an analysis of their internal structure,
+provide {\bfseries MWE confidence scores}; % allow to represent candidate MWEs along with a numerical assessment of their likelihood according to different metrics,
+facilitate the {\bfseries dynamic prediction} of MWEs with web services and automated tools over existing corpora; and
+keep the vocabulary {\bfseries extensible and customizable}, i.e., the capacity of providing concrete usage examples, and detailed, resource-specific metadata or analyses about the respective MWEs, if provided by the underlying resource.
+
+\begin{table}
+\fittable{\begin{tabular}{lccccc}
+\lsptoprule
+             & OntoLex- & OntoLex-  & OntoLex-      & OntoLex-     & OntoLex \\
+   criterion & Lemon (core)  & decomp    & FrAC      & morph     &  (all) \\ \midrule
+identification  & +                   & >\,Lemon & (collocation)  & >\,Lemon & +\\
+structure       & −                   & +               & (+)             & >\,decomp & + \\
+scores          & −                   & −               & +               & −                  & + \\
+dynamic &  −                & −               & (+)             & (+)                 & (+)\\
+prediction & \\
+extensible      & (+)                 & (+)             & (+)             & (+)                 & (+)\\
+\lspbottomrule
+\end{tabular}}
+\caption{Modelling MWEs with OntoLex. “(+)” indicates partial compatibility.}
+\label{tab-comparison}
+\end{table}
+
+As shown in \tabref{tab-comparison}, none of the single OntoLex modules discussed here fulfil \emph{all} of these criteria by themselves, but it is important to keep in mind that they are meant to be used \emph{in conjunction} with each other, and in many cases, to build on each other. The \textbf{OntoLex-Core} provides the vocabulary to identify MWEs as lexical entries, and in a broader sense, FrAC collocations serve a similar purpose for all combinations of co-occurring expressions.
+The description of the syntactic and semantic structure of MWEs is handled within \textbf{decomp}, and \onto{decomp:subterm} is used for this function in \textbf{morph}. \textbf{FrAC} allows for the description of nested collocations (i.e., a collocation that contains another collocation, according to the consideration that collocations are themselves observables), and this can be used to represent phrasal structures -- but without any assumptions about their syntactic or semantic interpretability.
+Collocation scores are a core feature of \textbf{FrAC}, and can be applied to all observables defined in other modules.
+
+As for the dynamic prediction and potential utilisation of these vocabularies for the creation of web services,  we focus here on data modelling, and strictly speaking, the vocabularies describe data, not its processing. They are, however, grounded in web standards thus facilitating any subsequent uptake by language technology web services; it should also be borne in mind that such real-world applications have been a driving force throughout the development of OntoLex.
+In fact, one feature that sets OntoLex apart from competing standards is that it is not tied to a particular serialisation, but that any RDF format (and any format for which an RDF wrapper or injection technology has been designed) can be used, be it a native RDF formalism such as Turtle, JSON, XML, CSV, a triple store, a graph database or a relational database management system, and that data from all of these sources can be trivially transformed using off-the-shelf technology. Competing non-RDF models often claim that they are not inherently tied to any particular serialisation either, but most of the technology developed for working with such models is strongly associated with some preferred format.
+
+As for extensibility, this is another aspect inherent to RDF technology. Standard RDF  semantics operate under the open world assumption, i.e., information describing a resource is never taken to be complete by default. Accordingly, native RDF databases are schema-free and data can be extended on demand.
+At the same time, extensibility does not imply creating novel vocabulary elements in established namespaces. So, while users are encouraged to provide custom vocabulary if necessary, they are also encouraged to put these into separate namespaces rather than polluting the common vocabulary. Such custom vocabularies, if sufficiently mature, and in cases where they enjoy a certain uptake amongst a given user base as well as demonstrating  patterns of re-use by third parties,  represent the seed for future modules -- if there is a consensus in the community and among W3C Community Group chairs about their relevance to OntoLex and its application. But even in this case, this will normally not affect previously published vocabularies: in accordance with general W3C practice, these may be updated at some point in the future, but then, under a different namespace that reflects the time and version of the vocabulary.
+
+\subsection{Comparison with non-RDF formalisms} % (merge text from 3.1) → 2pp. [FK]}
+\label{ssec-relres}
+%Section proofread by Fahad, started and ended 24/07
+% \begin{verbatim}
+% describe SOTA on MWEs across dictionary models and in NLP
+% notes below are collocations, only
+% \end{verbatim}
+
+%In this section we give a brief summary of how two other models\footnote{Although here strictly speaking it would be better to speak of \textit{families} of models for lexical resources.} for lexical resources, namely the \textbf{Lexical Markup Framework} (LMF) and the \textbf{Textual Encoding Initiative} (TEI),  deal with multiword expressions. We have chosen these two because of their influence and popularity as standards for the creation of lexical resources\footnote{LMF in particular was hugely influential on the definition of OntoLex-Lemon itself.}.
+
+%Christian original + Fahad reworked material from above
+
+In this section, we give a brief summary of how two other models for lexical resources,\footnote{Although it would be better here to speak of \textit{families} of models for lexical resources.} namely the {Lexical Markup Framework} (LMF) and the {Text Encoding Initiative} (TEI),  deal with multiword expressions. We have chosen these two because of their influence and popularity in the sector. Indeed OntoLex is historically grounded in LMF,\footnote{LMF is specified using the Unified Modelling Language (UML) and is agnostic about serialisations, although the original standard included an XML serialisation and the latest version of the standard has an associated XML serialisation via TEI. TEI is closely coupled with XML.} the original version of which was published in 2008 by the International Standards Organization (ISO) as standard 24613:2008 and intended as a “standardized framework for the construction of computational lexicons”. LMF originally included a dedicated morphology extension with specific provision for MWEs via the \textbf{List of Components} class which allowed for the representation of the “aggregative aspect” of a MWE as well as permitting  a recursive description of individual MWE components. This version of LMF also featured a {multiword expression pattern extension}, which was intended for the representation of the “internal” structure of a MWE and in particular for describing variation within MWEs; this was done via a phrase structure grammar.  LMF is currently under revision as a multi-part standard~\citep{romary2019lmf}. However, that part of the new LMF standard which deals with morphology has not yet been published although it is under development. At the time of writing we are aware of no plans to include a MWE pattern component in this latest version of the standard.\footnote{Note that the previous version of LMF has been withdrawn as a standard; it is for interest therefore for historical reasons only.}
+%It should be noted that the expressive capabilities of LMF capabilities roughly correspond to the union of OntoLex-Lemon, Decomp, Synsem, Vartrans, and Lime, but that OntoLex modules developed since 2016 (Lexicog, Morph, FrAC) have no precedent in LMF and usually exceed its capabilities or intended domain of application.
+Moreover, LMF does not (and did not in its original version) have a direct equivalent to \textbf{FrAC} and thus lacks specific provision for collocation analysis and the identification of lexicalized MWEs as such: something that is within the scope of applications that consume or produce LMF data.
+% \fahad{The following assertion might prove controversial and I would suggest not including it} % OK
+% Whereas RDF technology in general and OntoLex in particular have been designed with focus on applications, LMF design has been driven by a focus on data.
+
+
+
+% christian
+
+
+
+%Christian's original text, part of which Fahad has reworked into the above
+%Although LMF is not inherently tied to any specific serialization, its primary serialization has been XML, and since 2011, both standards diverged to a certain extent. It should be noted that LMF capabilities roughly correspond to the union of OntoLex-Lemon, Decom, Synsem, Vartrans, and Lime, but that OntoLex modules developed since 2016 (Lexicog, Morph, FrAC) have no precedent in LMF and usually exceed its capabilities or intended domain of application. This also includes collocation analysis and the detection of lexicalized MWEs, which is normally not subject to the scope of LMF, but within the scope of applications that consume or produce LMF data. Whereas RDF technology in general and OntoLex in particular have been designed with focus on applications, LMF design has been driven by a focus on data.
+
+%Fahad text
+%The Text Encoding Initiative guidelines "define and document a markup language for representing the structural, renditional, and conceptual features of texts"\footnote{\url{https://tei-c.org/guidelines/}}. In particular, Chapter 9 of the guidelines provides extensive guidance on encoding dictionaries or related lexicographic resources\footnote{\url{https://tei-c.org/release/doc/tei-p5-doc/en/html/DI.html}}. However as Tasovac et al point out in \citet{tasovac2020encoding} they do not give very much detailed guidance when it comes to MWEs\footnote{The authors of \citet{tasovac2020encoding} refer to MWEs as polylexical units.}. The original TEI guidelines gave rise to TEI-Lex0\footnote{\url{https://dariah-eric.github.io/lexicalresources/pages/TEILex0/TEILex0.html}}, a stricter set of guidelines which while being based on the former focus exclusively on lexical resources with the specific aim of establishing "a baseline encoding and a target format to facilitate the interoperability of heterogeneously encoded lexical resources" (\citet{tasovac2020encoding}). As Tasovac et al demonstrate, TEI-Lex0 gives much more detailed provision for encoding MWEs than the original TEI guidelines, and especially in lexicographic resources. In particular, using the \texttt{entry} element recursively, together with the \texttt{gramGrp} element (with this latter being used to encode the fact that an entry is a MWE, as well as which type of MWE is), they are able to give a consistent representation to the lexical content of dictionary entries that have a distinct visual and/or typographical organisation while sharing a similar underlying conceptual organisation. This approach which distinguishes between the content and visual organisation of lexicographic information is shared with the lexicog module (described in Section ...).
+The XML-based TEI guidelines ``define and document a markup language for representing the structural, renditional, and conceptual features of texts''.\footnote{\url{https://tei-c.org/guidelines/}} In particular, Chapter 9 of the guidelines provides extensive guidance on encoding dictionaries or related lexicographic resources~\citep{tei-dict}.\footnote{\url{https://tei-c.org/release/doc/tei-p5-doc/en/html/DI.html}} In doing so  -- and notwithstanding the fact that TEI is not intended as a linked data based model -- the TEI guidelines provide an informative precedent for the description of collocations in computational lexical resources.
+%
+We can identify at least three ways in which collocations can be represented in TEI.
+%For instance we can use the \code{colloc} (`sequence of words that co-occur with the headword with significant frequency')\footnote{\url{https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-colloc.html}}
+%\medskip
+    % GlobaLex reworked by Fahad into the text above
+    %Some precedent may be seen in the collocation vocabulary for lexical entries as described in  the XML-based \href{https://tei-c.org/}{Text Encoding Initiative (TEI)} guidelines \citet{tei-dict}. Although TEI is not Linked Data based, it does give us a useful point of reference for seeing how collocations can be representing as structured data in computational lexicons.
+    % GlobaLex
+    %In fact, there are at least three different ways of representing collocations in TEI lexicons, using different vocabulary elements, one being \code{colloc} (`sequence of words that co-occur with the headword with significant frequency')\footnote{\url{https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-colloc.html}}.
+
+One way is to make use of the \onto{<colloc>} element defined as containing ``any sequence of words that co-occur with the headword with significant frequency''.\footnote{\url{https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-colloc.html}} \onto{<colloc>} can be contained in the elements \onto{<cit>} and \onto{<nym>} as well as the following elements from the dictionary module: \onto{<dictScrap>}, \onto{<entryFree>},  \onto{<form>} and \onto{<gramGrp>}.\footnote{In order to see the kinds of attributes which can be used with this element please check the site \url{https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-colloc.html}} In case  the element is located in \onto{<gramGrp>}, the collocation becomes part of the grammatical information of the entry.  Secondly, collocations can also be specified using the \onto{<gram>} element     %(as part of the grammatical description of a lexical entry),
+    as is seen in the analysis of French \word{de médire} in Section 9.3.2 of the TEI guidelines. Thirdly, collocations can be described using the usage element \onto{<usg>} by specifying the \onto{@type} attribute of the element as “colloc”.
+
+TEI-Lex0 represents a  customisation of the original TEI guidelines with %exclusive focus on lexical resources and
+the specific aim of establishing “a baseline encoding and a target format to facilitate the interoperability of heterogeneously encoded lexical resources”\footnote{\url{https://dariah-eric.github.io/lexicalresources/pages/TEILex0/TEILex0.html}}~\citep{tasovac2020encoding}. TEI-Lex0, as clearly demonstrated by \citet{tasovac2020encoding}, offers much more detailed provision for encoding MWEs than the original TEI guidelines. % in lexicographic resources.
+In particular, by using the \texttt{<entry>} element recursively together with the \texttt{<gramGrp>} element (note that \texttt{<gramGrp>} encodes the information that an entry is a MWE as well as specifying which type of MWE it is), TEI-Lex0 makes it possible to give a consistent representation to the lexical content of dictionary entries with a distinct visual and/or typographical organisation but similar underlying conceptual organisation. TEI Lex0 recommends a single way of encoding collocates, via \onto{<gram type="collocate">}.
+
+
+%The TEI Lex-0 customization of the \href{https://dariah-eric.github.io/lexicalresources/pages/TEILex0/TEILex0.html}{TEI schema} intended specifically for lexicographic data with a view to simplifying Chapter 9 of the TEI guidelines recommends using \onto{<gram type="collocate">} to represent collocates.
+    % GlobaLex
+The important insights to be drawn from the TEI guidelines are that (a) there is a demand for modelling collocations in the context of dictionaries (hence multiple, incompatible ways to model it, driven by different use cases and requirements), but that (b) at the moment, the support for modelling collocation scores in this context is severely limited.
+From the options mentioned above only \code{<colloc>} allows for the specification of collocation scores by adding a \code{<certainty>} element and \emph{ab}using its \code{@cert} attribute, which, however, is only used with human-readable labels in the guidelines,\footnote{\url{https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-certainty.html}} but with neither numerical scores nor with a systematic means of defining the type of the collocation score.
+
+% christian
+With respect to the criteria for MWE and collocation support applied above, it seems
+% SPACE:
+% \footnote{
+%     We cannot be fully certain about features that TEI does \emph{not} possess, because it is continuously extended in customizations and a process of analogy-driven expansion. That means that existing markup elements are re-defined and extended in their semantics if modelling challenges arise that seem to have been previously unforeseen. On the one hand, this flexibility is considered a plus when it comes to its practical application in diverse contexts, and to a large extent, it explains the longevity of TEI as a community standard. Also, this flexibility is not unconstrained, as projects are encouraged to document their customizations in a standardized way. On the other hand, it makes TEI semantics weak and unreliable, to the extent that TEI conformancy is no longer seen as sufficient to achieve interoperability, but merely transformability, cf. \citet{cummings-2018-tei-myths} for a discussion.
+% }
+that TEI is capable of encoding MWEs and their structure, but that it largely fails at collocation scores.
+Further, it is extensible by means of ODD customizations. As for dynamic prediction of MWEs, this does not seem to exist as a usage scenario for the TEI, as its deficits in capturing collocation scores reflect. Instead, TEI dictionaries seem to focus on modelling static data, only.
+In comparison to that, we have argued above that OntoLex captures the demand for MWEs in lexical resources beyond static resources, and shown how \textbf{FrAC} provides the necessary vocabulary for collocation analysis and collocation scores. The current chapter show how OntoLex allows for the seamless integration of MWE-relevant information from different sources, and using SPARQL keywords such as \texttt{FROM}, \texttt{LOAD} and \texttt{SERVICE}, we can even consult data sets (\texttt{FROM}, \texttt{LOAD}) and RDF databases (\texttt{SERVICE}) provided by third parties over the web.
+This aspect of cross-platform federation is what makes RDF technology truly unique.
+
+
+What remains to be shown is that it is a technology that can be practically useful, and a minimal requirement for that is \emph{queriability}; this is the topic of the next section.
+
+In summary, then the current version of LMF is limited in its provision for modelling MWEs. It is, however, still missing a morphology part, which when published should somewhat help to improve the situation (even if details are currently short on the ground). TEI on the other hand offers a lot of flexibility in representing MWEs, which can be done via three different elements, namely, \onto{<colloc>}, \onto{<gram>}, and \onto{<usg>}. Indeed in a sense, it offers too much flexibility: there are too many ways of doing the exact same task. TEI-Lex0 helps to overcome this redundancy, and adds some more expressiveness. However, as we have discussed the result is still limited in terms of provision for collocation scores and dynamic prediction of MWEs.
+
+
+
+% reconsider if web services are re-enabled:
+%     We further illustrate the potential for prospective applications with two key aspects: Improving the queriability over heterogeneous sets of MWE data with OntoLex and providing a community standard for web services for automatically supported collocation analysis.
+
+\subsection{Querying MWEs in OntoLex} % [BK, FK|MI] → 1p., queries to appendix}
+\label{sec-querying}
+% Proofreading started by Fahad; but I'm not sure how much is to be rewritten
+% \christian{changed to OZDIC data, the text is shorter}
+% \christian{other than that, the text needs to be rephrased from globalex}
+
+\begin{sloppypar}
+    % GlobaLex
+    For any downstream application of
+lexical data,
+    queriability is the most elementary requirement for a user. Indeed, a key benefit of modelling lexical resources in OntoLex is that they can be processed by standard RDF tools and Linguistic Linked Open Data (LLOD) technology.
+%    Using HTTP-resolvable URIs for shared vocabularies allows to operate on consistent, well-defined and machine-readable data models, so that data can be more easily re-used. Using HTTP-resolvable URIs for the data itself allows to establish links between resources hosted by different providers, and thus to develop a decentralized ecosystem for language technology and lexical resources on the web.
+    %Over such data,
+For Linguistic Linked Open Data, SPARQL provides
+    the possibility to query across data hosted by different providers (SPARQL federation) and across heterogeneous data, i.e., stored in different kinds of technical backends, be it exposed as plain files (SPARQL LOAD), via a web service (SPARQL SERVICE, e.g., an endpoint) or by means of a wrapper technology created around another kind of data source (e.g., a relational data base, using R2RML technology,\footnote{\url{https://www.w3.org/TR/r2rml/}} over XML data with GRDDL\footnote{\url{https://www.w3.org/TR/grddl/}} or over JSON data with JSON-LD\footnote{\url{https://www.w3.org/TR/json-ld/}} context definitions).
+\end{sloppypar}
+    
+    % GlobaLex
+We demonstrate the viability of our modelling for collocations with
+    the application of SPARQL to the OntoLex collocations described above:\footnote{%
+        Queries were tested with Apache Jena 4.2.0, using the arq command line tool.
+For prefixes and namespaces
+see the Appendix to this chapter.
+    }
+
+{\listingsize
+%\begin{lstlisting}[language=SPARQL, label=sparql1]
+\begin{verbatim}
+    SELECT DISTINCT ?collocation ?member ?order
+    WHERE {
+      ?collocation a frac:Collocation ; ?prop ?member .
+      FILTER(?prop=rdfs:member || regex(str(?prop),".*#_[0-9]+$"))
+      OPTIONAL { ?collocation ?nrel ?member .
+                 FILTER(regex(str(?nrel),".*#_[0-9]+$"))
+                 BIND(replace(str(?nrel),".*#_([0-9]+)$","$1") AS ?order )
+      } } ORDER BY ?collocation ?order ?member
+\end{verbatim}
+}
+
+    % GlobaLex
+\noindent
+    % ORIGINAL: This query evaluates two kinds of membership queries, either via \onto{rdfs:member} (unordered) or (filter \code{||}) in their sequential order (if defined with \onto{rdf:\_1}, \onto{rdf:\_2}, ...).   -- @Elena: already appears in LREC2022
+    This query analyzes two types of membership queries: (1) via \onto{rdfs:member}  (2) via filters (||) with members in their sequential order (if defined with \onto{rdf:\_1}, \onto{rdf:\_2}, ...). In other words, this query captures either unordered membership (using rdfs:member property)
+or ordered membership (by filtering on string representation of \onto{rdf:\_1}, \onto{rdf:\_ 2}, etc.properties).
+    Note that with RDFS reasoning enabled at the query engine, \onto{rdfs:member} would also be inferred from \onto{rdf:\_1}, etc.
+For the OZDIC sample data from above, a query with Apache Jena retrieves the following table:
+
+{\listingsize
+\begin{verbatim}
+                   | collocation      | member          | order |
+                   ==============================================
+                   | :apply-equally   | :apply-v-sense  | "1"   |
+                   | :apply-equally   | :equally-adv    | "2"   |
+\end{verbatim}
+}
+
+\noindent
+Appendix~\ref{app-queries} provides  additional queries to illustrate the retrieval of all collocations for a given lexical entry and the aggregation of string labels for MWEs.
+Admittedly, SPARQL queries with aggregation can be complex and difficult to write, particularly for those without technical background in software development or data management. However, in the context of OntoLex, SPARQL is not intended to be exposed to end users, but rather as a backend technology used by % developers %and other
+technical professionals % who are
+familiar with the intricacies of querying large data sets. %These individuals have the knowledge and skills required to write complex SPARQL queries to retrieve the specific information they need from RDF data sources, while end users may struggle with the complexity of the language.
+
+% SPARQL Queries are complex, so these are not tailored to end users but to developers
+% FK complex queries, maybe simplify with having a string pattern and then aligning variables
+% CC: yes, this is exactly the idea of the syntactic pattern/query extension
+
+% christian
+Although these queries demonstrate the capabilities of OntoLex to address both modelling and information integration challenges in lexical resources in general and for MWEs and collocation analysis in particular, it is clearly a backend technology. What needs to be done at this point is to complement the capabilities of SPARQL with a more user-friendly technical frontend, where queries are generated rather than typed, very much in analogy to how SQL technologies are ubiquitous in modern web technology but almost never exposed to their users.
+They can play a role, however, in web services that provide or consume lexical data and collocation scores, and in downstream applications that build upon these web services.
+
+\subsection{Prospective applications}
+\label{sec-applications}
+
+
+% e.g., for recommender systems, then able to use lexicographic resources (suggested by Ciprian)
+
+Identifying and sharing information about MWEs in lexical resources is supported by OntoLex, but unlike its support for RDF, this is not a unique feature among data standards commonly used in this field.
+What does seem to be unique at the moment is its built-in support for automated collocation analysis, i.e., the inclusion of collocation scores.
+
+% GlobaLex
+Collocations and collocation analysis have been used successfully in information integration for downstream applications.
+One such application is recommendation systems. \citet{Kompan2011} include collocations into the preprocessing steps used in text mining to create a news recommendation system.
+The system relies on collocations extracted from the articles' characteristics, e.g., title, content, topics, etc., to recommend news content to users.
+%
+    % GlobaLex
+\citet{Chu2018} build a collocation corpus for academic writing in engineering and science fields, then use it to establish a sentence-wide collocation recommendation and error detection system.
+    %for academic writing.
+After
+extracting collocations, these
+are classified to create  %the collocation
+a corpus which is then used to detect collocation errors.
+
+% christian
+Another application is % can be seen
+in computational lexicography, where the well-known platform Sketch Engine currently dominates the market. Sketch Engine provides an API to search and evaluate corpora for automated lexical analyses (``word sket\-ches"), but this is a proprietary system whose services have been disabled for certain groups of users in the past.\footnote{%
+This includes changes of licensing conditions (\url{https://www.sketchengine.eu/access-after-elexis/}) or political reasons (\url{https://www.sketchengine.eu/news/no-business-as-usual-with-russia-anymore/}).
+}
+With OntoLex-compliant web services, it now becomes possible to develop an open, distributed and provider-independent ecosystem that makes it easier for users to resort to alternative services and data, but that, at the same time, remains inclusive about benefitting from commercial services and data provided by Sketch\-En\-gi\-ne or commercial dictionary providers~-- that is, if these implement OntoLex specifications in their web services as well. It can thus be viewed as a tool to democratise the market for lexicography, language resources and NLP tools, and to facilitate interoperability and the flow of services and resources between providers and consumers of lexical data and data analytics on the web, for collocation analysis as well as for lexical data in general.
+
+\section*{Acknowledgments}
+The research described in this paper was
+conducted
+in the context of the COST Action CA18209 \emph{Nexus Linguarum. European network for Web-centred linguistic data science}.
+This chapter partially builds on \citet{chiarcos2022modelling, chiarcos2022modellingGlobalex}, and we would like to thank GlobaLex 2022 reviewers and audience for feedback and suggestions. Moreover, the authors would like to thank all OntoLex FrAC and OntoLex morph contributors.
+
+The recent development of OntoLex-Morph and OntoLex-FrAC was partially supported by the H2020 Research and Innovation Action Prêt-à-LLOD (2019--2022, ERC grant agreement no. 825182, for Maxim Ionov) and the Early Career Research Group LiODi. Linked Open Dictionaries (2015--2022, BMBF eHumanities programme, for Christian Chiarcos and Maxim Ionov).
+
+
+\section*{Abbreviations}
+
+\begin{tabularx}{\textwidth}{@{}lQ@{}}
+API & application programming interface\\
+CSV & comma-separated values\\
+HTTP & Hypertext Transfer Protocol\\
+LexInfo & data category ontology for OntoLex\\
+LLOD & Linguistic Linked Open Data\\
+LMF & Lexical Markup Framework\\
+LOD & Linked Open Data\\
+JSON & JavaScript Object Notation\\
+JSON-LD & JSON for Linked Data\\
+MWE & multiword expression\\
+NLP & natural language processing\\
+ODD & One Document Does it All, schema language for/in TEI-XML\\
+OntoLex & Ontology-Lexica, W3C Community Group and reference vocabulary developed by them\\
+OntoLex-Core & The core module of OntoLex\\
+(OntoLex-)decomp & OntoLex module for decomposition\\
+(OntoLex-)FrAC & OntoLex module for frequency, attestation and corpus-based information\\
+(OntoLex-)lexicog & OntoLex module for lexicography\\
+(OntoLex-)lime & OntoLex module for lexicon metadata\\
+(OntoLex-)morph & OntoLex module for morphology\\
+(OntoLex-)synsem & OntoLex module for syntax and semantics\\
+(OntoLex-)vartrans & OntoLex module for variation and translation\\
+OWL & Web Ontology Language\\
+RDF & Resource Description Language\\
+RDFS & RDF Schema\\
+SKOS & Simple Knowledge Organization Scheme\\
+SPARQL & SPARQL Protocol and RDF Query Language\\
+SQL & Structured Query Language \\ %for relational database management systems\\
+TARQL & Tables for SPARQL\\
+TEI & Text Encoding Initiative\\
+TSV & tab-separated values\\
+Turtle & Terse RDF Triple Language\\
+URI & Uniform Resource Identifier\\
+W3C & World Wide Web Consortium\\
+XML & Extensible Markup Language\\
+% \end{tabularx}%
+% \begin{tabularx}{.5\textwidth}{@{}lQ@{}}
+% ... & \\
+% ... & \\
+\end{tabularx}
+
+\section*{RDF namespace prefixes}
+
+\begin{tabularx}{\textwidth}{@{}lQ@{}}
+\onto{dbr:} & \url{http://dbpedia.org/resource/}\\
+\onto{dct:} & \url{http://purl.org/dc/terms/}\\
+\onto{decomp:} & \url{http://www.w3.org/ns/lemon/decomp}\\
+\onto{frac:} & \url{http://www.w3.org/ns/lemon/frac}\\
+\onto{lexicog:} & \url{http://www.w3.org/ns/lemon/lexicog}\\
+\onto{lexinfo:} & \url{http://www.lexinfo.net/ontology/3.0/lexinfo}\\
+\onto{lime:} & \url{http://www.w3.org/ns/lemon/lime}\\
+\onto{morph:} & \url{http://www.w3.org/ns/lemon/morph}\\
+\onto{ontolex:} & \url{http://www.w3.org/ns/lemon/ontolex}\\
+\onto{owl:} & \url{http://www.w3.org/2002/07/owl}\\
+\onto{rdf:} & \url{http://www.w3.org/1999/02/22-rdf-syntax-ns}\\
+\onto{rdfs:} & \url{http://www.w3.org/2000/01/rdf-schema}\\
+\onto{skos:} & \url{http://www.w3.org/2004/02/skos/core}\\
+\onto{synsem:} & \url{http://www.w3.org/ns/lemon/synsem}\\
+\onto{vartrans:} & \url{http://www.w3.org/ns/lemon/vartrans}\\
+\end{tabularx}
+
+
+\input{chapters/06-appendix}
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}

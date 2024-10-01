@@ -1,0 +1,1037 @@
+\section{Extraction in HPSG}
+\label{ch:hpsg-extraction}
+
+The \emph{synsem} feature \textsc{nonloc} encodes features that are used for non-local dependencies. I take as a starting point the definition of \textsc{nonloc} adopted in \citet{Borsley.2020.HPSG.UDC}. They follow a lexicalist approach to extractions and long-distance dependencies~-- strongly inspired by \citet{Bouma.2001} and \citet{Ginzburg.2000}~-- in which (i) no empty categories are needed; and (ii) constructions involving non-local dependencies receive different analyses via different non-local features. \citet{Sag.2010} provides a detailed overview of the different extractions in English and shows that they are heterogeneous. With that in mind, I propose a way to account for the different extraction constructions discussed in this work: relative clauses (based on the analysis of \citet{Abeille.2007.Relatives}), interrogatives and \emph{c'est}-clefts (based on the analysis of \citet{Winckel.2020}). My goal is to show how syntax and information structure interact in these constructions.
+
+\subsection{A traceless analysis}
+
+% discussion about empty elements in Müller 2016, chapter 19.2
+% Müller, Stefan (2016), Grammatical Theory: From Transformational Grammar to Constraint-Based Approaches (Textbooks in Language Sciences 1). Berlin: Language Science Press.
+
+Objects of the type \emph{nonloc} have three features, \textsc{slash}, \textsc{rel} and \textsc{que}. They all take as value a set: a set of \emph{loc} objects for \textsc{slash}, a set of \emph{index} objects for \textsc{rel} and a set of \emph{relations} (EPs) objects for \textsc{que}.
+A non-empty \textsc{slash} set denotes the presence of a ``missing'' element, i.e.\ an object of type \emph{gap}.
+HPSG analyses generally assume a set value for the \textsc{slash} feature (instead of a list), because this allows two gaps to combine into a single gap \citep{Pollard.1990}. This property accounts for cases like (\ref{ex:slash-set-double-gap}), where two gaps are linked to the same filler.%
+\footnote{\citet{Chaves.2020.UDC} propose that the value of \textsc{slash} (\textsc{gap} in their terminology) is a list. Instead of the \textsc{slash} Amalgamation Principle (\ref{avm:slash-amalgamation}) below, they assume a function of list joining \citep[248]{Chaves.2020.UDC}. Their proposal has the advantage of licensing not only cases like (\ref{ex:slash-set-double-gap}), but also cases in which two gaps combine into a single gap while keeping distinct indices, as in (i): while in (\ref{ex:slash-set-double-gap}) the document signed is the same as the document read, in (i) what is eaten can hardly be the same as what is drunk.
+\begin{itemize}
+    \item[(i)] What$_{i+j}$ do you think [Ed ate~\trace{}$_i$ and drank~\trace{}$_j$ at the party]? \citep[246]{Chaves.2020.UDC} 
+\end{itemize}
+For the sake of simplicity, I adopt the analysis of extractions in \citet{Borsley.2020.HPSG.UDC}, which is sophisticated enough to formalize the FBC constraint. But my analysis is also compatible with \citeauthor{Chaves.2020.UDC}'s proposal.}
+
+\ea[]{[Which document]$_i$ did you sign~\trace{}$_i$ [without reading~\trace{}$_i$]?} 
+\label{ex:slash-set-double-gap}
+\z 
+
+Cases like (\ref{ex:slash-set-double-gap}) are challenging under a movement-based approach, which is why these accounts treat one of the gaps as ``parasitic'' (see Section~\ref{ch:parasitic-gaps} for a discussion of parasitic gaps and arguments against them). 
+
+\ea Definition of \emph{nonloc}:\nopagebreak
+
+\avm{[\type*{nonloc}\\
+slash & set of loc\\
+rel & set of index \\
+que & set of relations]}
+\z 
+
+In Section~\ref{ch:hpsg-syntax} I described the way arguments in the \textsc{arg-st} list are selected for canonical or non-canonical realization, based on the type hierarchy of \emph{synsem} in \figref{fig:hrch-syssem}. Dependents of the type \emph{gap} are defined as follows:\footnote{The original definition is in \citet[160]{Pollard.1994}.} 
+
+\ea Definition of \emph{gap}:\nopagebreak
+
+\avm{[\type*{gap}\\
+loc & \1\\
+nonloc|slash & \{\1\}]}
+\z 
+
+A word ``gathers'' the elements of its arguments' \textsc{slash} set into its own \textsc{slash} set. Because \emph{gap} objects have a non-empty \textsc{slash} set, their \textsc{loc} value is also stored in the \textsc{slash} set of the word that subcategorized for them. If the NP argument of a verb is realized canonically but has an element in its \textsc{slash} set, as is the case in subextractions from subjects or objects, this gap element recursively ends up in the \textsc{slash} set of the verb. 
+
+\ea \textsc{slash} Amalgamation Principle adapted from \citet[169]{Ginzburg.2000}\nopagebreak
+
+\textit{word} \avm{$\to$ 
+ [slash & / \1 $\cup$ \dots $\cup$ \tag{n}\\
+arg-st & <[slash & / \1] \dots [slash & / \tag{n}]>]}
+\label{avm:slash-amalgamation}
+\z 
+
+This \textsc{slash} Amalgamation Principle is a default constraint. Some kinds of words, like the copula in \emph{c'est}-clefts (see below) or adjectives that allow so-called ``\emph{tough} constructions'' \citep{Pollard.1994,Ginzburg.2000}, select a complement with a non-empty \textsc{slash} set and do not contain the slashed element in their own \textsc{slash} list. 
+%We can avoid the use of a default rule if we define two subtypes for \emph{word}, one with a canonical \textsc{slash} amalgamation like (\ref{avm:slash-amalgamation}), one (or more) with specific ways to build their \textsc{slash} set. 
+
+The same mechanism applies to the other \textsc{nonloc} features \textsc{rel} and \textsc{que}. The \textsc{slash} Amalgamation Principle (\ref{avm:slash-amalgamation}) can therefore have as a corollary a (default) \textsc{que} Amalgamation Principle and a (default) \textsc{rel} Amalgamation Principle. Alternatively, we may adopt the general \textsc{nonloc} Amalgamation Principle in (\ref{avm:nonloc-amalgamation}).
+
+\ea \textsc{nonloc} Amalgamation Principle\nopagebreak
+
+For every \textsc{nonloc} feature \textsc{f}: \nopagebreak
+
+\textit{word} \avm{$\to$ 
+ [f & / \1 $\cup$ \dots $\cup$ \tag{n}\\
+arg-st & <[f & / \1], \dots, [f & / \tag{n}]>]}
+\label{avm:nonloc-amalgamation}
+\z 
+
+The Argument Realization Principle (\ref{avm:arp}) and the \textsc{nonloc} Amalgamation Principle (\ref{avm:nonloc-amalgamation}) are sufficient to account for non-local dependencies in this work, which only deals with the extraction of arguments in headed structures. Specific requirements would be necessary to account for extractions of adjuncts, out of adjuncts and out of non-headed structures.\footnote{For adjuncts, some HPSG analyses posit a supplementary valence feature in \textsc{cat} which appends the elements of \textsc{arg-st} and the modifiers (e.g.\ the feature \textsc{deps} in \citealt{Bouma.2001}). Others assume that extracted modifiers are also part of the \textsc{arg-st} list (similar to the proposal in \citealt[17]{Abeille.1997}), and extraction of or out of adjuncts is treated using the same rules as in extraction of and out of arguments. Yet others such as \citet{Przepiorkowski.2016} cast doubt on the relevance of the argument/adjunct distinction and see ``argumenthood'' as a continuum.} I leave this question open.
+
+Let us go through the argument realization in a prototypical sentence in a bottom-up fashion: The \textsc{comps} list of the verb is first worked off as the verb combines with its complement(s) through \emph{head-comps-structure}; then the \textsc{subj} list is worked off as the verb combines with its subject through   \emph{head-subj-structure}; and finally, the \textsc{slash} set of the verb is worked off as the verb combines with the filler(s) through \emph{head-filler-structure}. \figref{fig:hrch-headed-structure-with-filler} shows the type hierarchy in \figref{fig:hrch-headed-structure} completed with \emph{head-filler-structure}. %AVMs of the type \emph{head-filler-structure} take as their head daughter an AVM with an empty \textsc{comps} list and an empty \textsc{spr} list. 
+
+\begin{figure}[ht]
+\begin{forest}
+[\textit{headed-structure}
+    [head-filler-\\structure, font=\itshape, align=center, name = filler]
+    [head-comps-\\structure, font=\itshape, align=center, name = comps]
+    [head-subj-\\structure, font=\itshape, align=center, name = subj]
+    [head-spr-\\structure, font=\itshape, align=center, name = spr]
+    [head-mod-\\structure, font=\itshape, align=center, name = mod]
+]
+\end{forest}
+    \caption{Type hierarchy of \emph{headed-structure}}
+    \label{fig:hrch-headed-structure-with-filler}
+\end{figure}
+
+The formal definition of linguistic objects of the type \emph{head-filler-structure} is given in \figref{avm:head-filler-structure}. They have a non-head daughter with a \textsc{loc} value that is structure-shared with one element of the head daughter's \textsc{slash} set. This same element is missing from the mother node's \textsc{slash} set. The type \emph{head-filler-structure} is used to account for interrogatives and relative clauses with a relative pronoun, but \emph{c'est}-clefts and relative clauses with a complementizer are analyzed differently, as I will show below.
+
+\begin{figure}[ht]
+\textit{head-filler-structure} \avm{$\to$} 
+\avm{[slash & \1\\
+head-dtr & [\type*{phrase}\\
+              slash & \{\2\} $\cup$ \1]\\
+nhead-dtrs & <[local & \2]>]}
+\caption{Definition of \emph{head-filler-structure}}
+\label{avm:head-filler-structure}
+\end{figure}
+
+The GHFP (\ref{avm:ghfp}) guarantees that the mother inherits the \textsc{slash}-set from the head daughter in the other headed structures. Consequently, all heads along an extraction path have the property \avm{[slash & non-empty set]}. Extraction path effects are indeed attested cross-linguistically: there are phonological or morphosyntactic alternations depending on this factor, one form being used outside the extraction path, another one along the extraction path (\citealt{Zaenen.1983,Hukari.1995}; \citealt[Section 3.2]{Bouma.2001}).
+% French qui/que alternation
+
+\figref{fig:avm-extraction-simple} is the representation of the \emph{wh}-question (\ref{ex:extraction-simple}), in which the direct object undergoes simple extraction.
+
+\ea[]{\gll Qui l' innovation enthousiasme-t-elle?\\
+who the innovation[\textsc{f}] excites-0-\textsc{3sg.f.sbj}\\
+\glt `Who does the innovation excite?'} 
+\label{ex:extraction-simple}
+\z 
+
+\begin{figure}[ht]
+\centering
+\begin{forest}
+where n children=0{tier=word}{}
+[S\\
+\avm{[\type*{head-filler-structure}\\
+slash & <>]}
+    [NP\\
+    \avm{[\type*{word}\\
+          loc & \1]}
+          [qui]
+    ]
+    [S\\
+    \avm{[\type*{head-subj-structure}\\
+          slash & \2]}
+          [NP\\
+          \avm{[synsem & \3]}
+            [l'innovation, roof]
+          ]
+          [V\\
+          \avm{[\type*{word}\\
+          slash & \2 \{\1\}\\
+          arg-st & <\3 [\type*{canonical}\\
+                        slash & <>], 
+                        [\type*{gap}\\
+                         loc & \1\\
+                         slash & \{\1\}]>]}
+            [enthousiasme-t-elle]
+          ]
+    ]
+]
+\end{forest}
+\caption{Simple extraction}
+\label{fig:avm-extraction-simple}
+\end{figure}
+
+\citet[7]{Ginzburg.2000} define a variety of different constructions to account for interrogatives and relative clauses in English. For example, \emph{wh-int-cl} (\emph{wh}-questions with extraction), \emph{polar-int-cl} (polar questions) and \emph{in-situ-int-cl} (question without extraction) all have certain semantic properties in common (they denote a question) and are therefore all subtypes of \emph{inter-cl}. But only \emph{wh-int-cl} is also a subtype of \emph{head-filler-structure}.\footnote{\emph{hd-fill-ph} in their terminology.} 
+
+I adopt a similar analysis, but with the type hierarchy of \emph{clause} from \citet{Winckel.2020}, adapted from \citet[48]{Abeille.2007.Relatives}. The hierarchy is given in \figref{fig:hrch-clause} on page \pageref{fig:hrch-clause}. This hierarchy differs from \citet[7]{Ginzburg.2000}, because in their proposal relative clauses are all headed by a filler, and hence a subtype of \emph{head-filler-structure}.\footnote{This is the case for \emph{that} relative clauses, even though in many analyses \emph{that} is not treated as a filler.} I have argued above that \emph{que}, \emph{qui} and \emph{dont} in French are complementizers and not fillers (Section~\ref{ch:intro-disscussion-French}). As a consequence, only some relative clauses are a subtype of \emph{head-filler-structure}. Furthermore, some proposals treat clefts as a special type of clause or construction \citep[a.o.][]{Kim.2012}, but in my analysis \emph{c'est}-clefts result from a special lexical entry of \emph{être} (`be').
+
+\begin{figure}
+\begin{forest}
+[\textit{sign}
+    [\textit{clause}
+        [\textit{core-cl}
+            [\textit{decl-cl}] 
+            [\textit{inter-cl}, name = intercl]
+        ]
+        [\textit{rel-cl}, l sep=2\baselineskip,
+            [\textit{comp-rel-cl}, name = obj]
+            [\textit{wh-rel-cl}, name = subj
+                [\textit{wh-inter-cl}, name = inter, no edge
+                    [\textit{standard-wh-inter-cl}]
+                    [\textit{rhetorical-wh-inter-cl}]
+                ]
+                [{}, no edge]
+            ]
+        ]
+    ]
+    [\textit{phrase}
+        [head-comps-\\structure, align=center, base=bottom, font=\itshape, name = comp]
+        [\textit{...}]
+        [{}, no edge[{}, no edge
+            [noncomp-comps-\\structure, align=center, base=bottom, font=\itshape, no edge, name = noncomp]
+            [\textit{sent-comps}, no edge, name = sentcomps]
+        ]]
+        [head-filler-\\structure, align=center, base=bottom, font=\itshape, name = filler]
+    ]
+]
+\draw[thin] (inter.north)--(filler.south);
+\draw[thin] (inter.north)--(intercl.south);
+\draw[thin] (subj.north)--(filler.south);
+\draw[thin] (obj.north)--(comp.south);
+\draw[thin] (noncomp.north)--(comp.south);
+\draw[thin] (sentcomps.north)--(comp.south);
+\end{forest}
+\caption{Cross-classification of \emph{clause} and \emph{phrase}}
+\label{fig:hrch-clause}
+\end{figure}
+
+
+\subsection{\emph{Wh}-questions}
+
+I will first discuss interrogatives before turning to the other extractions. I only present \emph{wh}-questions (with a \emph{wh}-word), but refer the interested reader to \citet[218--222]{Ginzburg.2000} for an analysis of polar questions. 
+
+There are different question types in French, and some of them have special pragmatic properties \citep[see a corpus study in][]{Abeille.2012}. Three of them involve extraction of the \emph{wh}-word: SVO-questions (\ref{ex:question-svo}), questions with suffixed subjects (\ref{ex:question-inversion}), and \emph{est-ce que} questions (\ref{ex:question-esk}).\footnote{Another interrogative form is possible, but it involves \emph{c'est}-clefting and will be addressed in Section~\ref{ch:hpsg-clefts}.} There is a fourth type: in-situ questions, with no extraction of the \emph{wh}-word (\ref{ex:question-insitu}). 
+
+\eal 
+\ex[]{\gll Qui$_i$ l' innovation enthousiasme~\trace{}$_i$?\\
+who the innovation excites\\
+\glt `Who does the innovation excite?'} 
+\label{ex:question-svo}
+\ex[]{\gll Qui$_i$ (l' innovation) enthousiasme-t-elle~\trace{}$_i$?\\
+who the innovation[\textsc{f}] excites-0-\textsc{3sg.f.sbj}\\
+\glt `Who does it excite?'} 
+\label{ex:question-inversion}
+\ex[]{\gll Qui$_i$ est - ce que l' innovation enthousiasme~\trace{}$_i$?\\
+who is {} it that the innovation excites\\
+\glt `Who does the innovation excite?'} 
+\label{ex:question-esk}
+\ex[]{\gll L' innovation enthousiasme qui?\\
+the innovation excites who\\
+\glt `The innovation excites who?'} 
+\label{ex:question-insitu}
+\zl 
+
+Embedded questions must be formed via extraction, and cannot involve a suffixed subject. 
+
+\eal 
+\judgewidth{??}
+\ex[]{\gll Je me demande qui$_i$ l' innovation enthousiasme~\trace{}$_i$.\\
+I \textsc{refl} ask who the innovation excites\\
+\glt `I wonder who the innovation excites.'} 
+\ex[??]{\gll Je me demande qui$_i$ (l' innovation) enthousiasme-t-elle~\trace{}$_i$.\\
+I \textsc{refl} ask who \sbar{}the innovation[\textsc{f}] excites-0-\textsc{3sg.f.sbj}\\
+\glt `I wonder who the innovation excites.'} 
+\label{ex:question-inversion-iq}
+\ex[]{\gll Je me demande qui$_i$ est - ce que l' innovation enthousiasme~\trace{}$_i$.\\
+I \textsc{refl} ask who is {} it that the innovation excites\\
+\glt `I wonder who the innovation excites.'} 
+\label{ex:indir-question-esk}
+\ex[*]{\gll Je me demande l' innovation enthousiasme qui.\\
+I \textsc{refl} ask the innovation excites who\\
+\glt `I wonder who the innovation excites.'} 
+\label{ex:question-insitu-iq}
+\zl 
+
+The feature \textsc{main clause (mc)} is a head feature of verbs, and has a value of type \emph{bool} (+/$-$), positive for the main clause and negative for embedded clauses. Direct questions are \avm{[mc & \normalfont{+}]} and embedded questions \avm{[mc & $-$]}.\footnote{The topic of subject-verb inversion in French is not completely orthogonal to our main concern, given that sentence-final subjects seem to bear focus \citep{Lahousse.2011}. In this respect, the FBC constraint certainly makes some prediction for subject-verb inversion, but there are no empirical data bearing on this issue yet so I leave it for future work.}
+
+To account for the different question types, I assume that subjects can be realized as clitics if the verb subcategorizes for an extracted interrogative phrase. Clitic doubling is also allowed, thus the subject may be realized as a clitic and as an NP like in (\ref{ex:question-inversion}). However, subject suffixes are restricted to \avm{[mc & \normalfont{+}]}. 
+
+To my knowledge, there is no complete HPSG analysis of \emph{est-ce que} questions in French. \citet[70]{Abeille.2012} treat \emph{est-ce que} as a complementizer and assume a special subtype of interrogatives, \emph{est-ce-que-cl}. If this is on the right track, the type \emph{est-ce-que-cl} should have two subtypes, one inheriting from polar questions (\emph{polar-int-cl}) and one inheriting from \emph{wh}-questions with an extraction (\emph{wh-inter-cl}). In polar \emph{est-ce que} questions, the complementizer selects an S without subject-verb inversion and contributes the interrogative interpretation of the sentence. In a \emph{wh}-question with \emph{est-ce que}, the head daughter is \avm{[head & comp]} and has a non-empty \textsc{slash} set. 
+I leave a more detailed analysis of \emph{est-ce que} questions for future work and, for the sake of simplicity, I do not include \emph{est-ce-que-cl} and its subtypes in my hierarchy of clauses (\figref{fig:hrch-clause}).
+
+All interrogatives are instances of \emph{inter-cl}. \citet[42]{Ginzburg.2000} assume that objects of the type \emph{inter-cl} have some common semantic properties. They may also have some common pragmatic properties. In my fragment, the semantic content of questions is contributed on a lexical level by the \emph{wh}-word with an appropriate EP. For example, the interrogative \emph{qui} can either have an empty \textsc{que} set when it is in-situ or a non-empty \textsc{que} set when it is extracted. This is shown by the lexical entry in \figref{ex:avm-qui}, adapted from \citet[185]{Ginzburg.2000}, with a simplified semantic representation like the one adopted in the LinGO English Resource Grammar for \emph{wh}-words.
+%\footnote{I assume in general that all interrogative words have an EP of the type \emph{which\_q}. It is a quantifier, and as such can have scope over the whole clause even if the \emph{wh}-word is in situ. For the same reason, \citet{Ginzburg.2000} also assume that the semantic contribution of \emph{wh}-words are quantifiers, but adopt a different representation. I do not elaborate on the mechanism for quantification, but see \citet{Copestake.2005} for a detailed explanation of MRS and underspecified quantification scopes.}.
+
+\begin{figure}[h]
+\avm{[phon & < \type{qui} >\\
+loc & [cat|head & noun\\
+                 cont|rels & <[\type*{person}\\
+                               arg0 & \tag{i}],
+                               \1 [\type*{which\_q}\\
+                               arg0 & \tag{i}]>]\\
+        nonloc & [que & \{\1\} $ \vee$ \{\}\\
+        rel & \{\}]\\
+arg-st <>]}
+\caption{Lexical entry for interrogative \emph{qui} (`who')}\label{ex:avm-qui}
+\end{figure}
+
+
+As far as information structure is concerned, I have also argued in Section~\ref{ch:exp11} that in-situ questions may not always involve focalization. Therefore, I do not propose any constrain on the type \emph{inter-cl}, but acknowledge that other semantic or pragmatic aspects may be involved.
+
+\subsubsection{Extracted \emph{wh}-phrase}
+
+Objects of the type \emph{wh-inter-cl} inherit the properties of \emph{head-filler-structure}. The filler in \emph{wh-inter-cl} must have a non-empty \textsc{que} value \citep[see the Filler Inclusion Constraint in][228]{Ginzburg.2000}. As a consequence, in-situ interrogative words are never used in \emph{wh-inter-cl} structures. The element in the \textsc{que} set is saturated when the filler combines with the S on the clausal level. This is reflected by the definition of \emph{wh-inter-cl} in (\ref{ex:avm-wh-inter-cl}). 
+
+\ea \textit{wh-inter-cl} \avm{$\Rightarrow$}\nopagebreak
+
+\avm{[que & \1\\
+head-dtr & [que & \{\2\} $\cup$ \1]\\
+nhead-dtrs & <[que & \{\2\}]>]}
+\label{ex:avm-wh-inter-cl}
+\z 
+
+\figref{fig:wh-question-simple} demonstrates the analysis of the \emph{wh}-question in (\ref{ex:question-svo}). Through the \textsc{nonloc} Amalgamation Principle (\ref{avm:nonloc-amalgamation}), the value of \textsc{que} is struc\-ture-shared with the whole filler phrase. This is how pied-piping structures like (\ref{ex:wh-question-complex}) are accounted for as well, as illustrated by \figref{fig:wh-question-complex} on page \pageref{fig:wh-question-complex}.
+
+\ea[]{\gll [De l' anniversaire de qui]$_i$ tu parles~\trace{}$_i$?\\
+\sbar{}of the birthday of who you talk\\
+\glt `Whose birthday are you talking about?'} 
+\label{ex:wh-question-complex}
+\z
+
+\begin{figure}[ht]
+\centering
+\begin{forest}
+where n children=0{tier=word}{}
+[S\\
+\avm{[\type*{wh-inter-cl}\\
+      slash & \{\}\\
+      que & \{\}]}
+    [NP\\
+    \avm{[loc & \1\\
+          que & \{\2\}]}
+          [qui\\who]
+    ]
+    [S\\
+    \avm{[\type*{head-subj-structure}\\
+          slash & \{\1\}\\
+          que & \{\2\}]}
+          [NP
+            [l'innovation\\the innovation, roof]
+          ]
+          [VP\\
+          \avm{[slash & \{\1\}\\
+          	que & \{\2\}]}
+            [enthousiasme\\excites]
+          ]
+    ]
+]
+\end{forest}
+\caption{Simplified tree for ``Qui$_i$ l'innovation enthousiasme~\trace{}$_i$?'' (`Who does the innovation excite?')}
+\label{fig:wh-question-simple}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\begin{forest}
+where n children=0{tier=word}{}
+[S\\
+\avm{[\type*{wh-inter-cl}\\
+      subj & <>\\
+      comps & <>\\
+      slash & \{\}\\
+      que & \{\}]}
+    [PP\\
+    \avm{[loc & \1\\
+          que & \{\2\}]}
+          [P \\ \avm{[que & \{\2\}]} [de\\of]]
+          [NP \\ \avm{[que & \{\2\}]}
+            [Det [l'\\the]]
+            [N$'$ \\ \avm{[que & \{\2\}]}
+                [N \\ \avm{[que & \{\2\}]}[anniversaire\\birthday]]
+                [P \\ \avm{[que & \{\2\}]}
+                    [P \\ \avm{[que & \{\2\}]} [de\\of]]
+                    [NP \\ \avm{[que & \{\2\}]} [qui\\who]]
+                ]
+            ]
+          ]
+    ]
+    [S\\
+    \avm{[\type*{head-subj-structure}\\
+          subj & <>\\
+          comps & <>\\
+          slash & \{\1\}]}
+          [\avm{\3} NP
+            [tu\\you]
+          ]
+          [VP\\
+          \avm{[subj & <\3>\\
+                comps & <>\\
+                slash & \{\1\}]}
+            [parles\\talk]
+          ]
+    ]
+]
+\end{forest}
+\caption{Simplified tree for [\textit{De l'anniversaire de qui}]$_i$ \textit{tu parles}~\trace{}$_i$\textit{?} (`Whose birthday are you talking about?')}
+\label{fig:wh-question-complex}
+\end{figure}
+
+Furthermore, I assume cross-classifications of \emph{clause} and \emph{speech-act}. The type hierarchy of \emph{speech-act} is given in \figref{fig:hrch-speech-act} on page~\pageref{fig:hrch-speech-act}. Speech acts refer to the act performed when expressing an utterance. Typically, we think of interrogatives as requests for information, and in our analysis this speech act is defined as \emph{standard-question}. Interrogatives can, however, be non-standard, as is the case in rhetorical questions. Thus all \emph{wh}-questions are not necessarily focalizations. I presented in Section~\ref{ch:attested-questions-subextraction} some examples with felicitous extraction out of the subject, such as (\ref{ex:internet-ahmadinejad}) reproduced in (\ref{ex:internet-ahmadinejad-bis}). I argued that it is probably best analyzed as a rhetorical question, where the filler is a continuation topic in the context of the utterance. This explains why extraction out of the subject is felicitous. A rhetorical question is a ``biased question whose answer is Common Ground and whose dialogue impact requires the activation of such a content'' \citep[441]{Marandin.2008}. 
+
+\begin{figure}[ht]
+\centering
+\oneline{
+\begin{forest}
+sn edges,
+[\textit{speech act}
+    [\textit{assertion}]
+    [\textit{question}
+        [\textit{standard-question}]
+        [\textit{non-standard-question}]
+    ]
+    [\dots]
+]
+\end{forest}}
+    \caption{Type hierarchy of \emph{speech-act}}
+    \label{fig:hrch-speech-act}
+\end{figure}
+
+\ea[]{\gll [De quel pays]$_i$ [la dépense militaire~\trace{}$_i$] dépasse annuellement mille milliards de dollars~[\dots]~?\\
+\sbar{}of which country \sbar{}the budget military exceeds yearly thousand billion of dollars\\
+\glt `Of which country does the military budget exceed yearly 1000 B.\ dollars?'}
+\label{ex:internet-ahmadinejad-bis}
+\z 
+
+I assume that all subtypes of \emph{inter-cl} can inherit from either \textit{standard-question} or \textit{non-standard-question}. A linguistic object can therefore be \emph{wh-inter-cl} and \emph{standard-question}: these objects are \emph{standard-wh-inter-cl}. A linguistic object can also be \emph{wh-inter-cl} and \emph{non-standard-question}: these objects are \emph{non-standard-wh-inter-cl}. 
+
+I propose the constraint \REF{avm:standard-wh-inter-cl} on information structure for standard \emph{wh}-questions, borrowed from \citet[117]{Winckel.2020}\footnote{The main difference is that  \citeauthor{Winckel.2020} define this constraint on \emph{wh-inter-cl}. The FBC constraint then excludes extraction of the complement of topic subjects, allowing only extraction out of non-topic subjects. I doubt that it is what is at stake in example (\ref{ex:internet-ahmadinejad-bis}) and therefore think that it is necessary to make a distinction between the speech acts involved.}:\largerpage[2.25]
+
+\ea 
+\textit{standard-wh-inter-cl} \avm{$\to$}\nopagebreak
+
+\avm{[head-dtr & [index & \1]\\
+nhead-dtrs & <[ index & \2 \\
+                      icons-key & [\type*{semantic-focus}\\
+                                 target & \2\\
+                                 clause & \1]]>]
+}
+\label{avm:standard-wh-inter-cl}
+\z 
+
+The exact information structure for non-standard questions would need further investigation. I assume for the time being that non-standard \emph{wh}-questions imply a \emph{non-focus} object in the \textsc{icons} list, though this is most probably an oversimplification.
+
+\ea 
+\textit{non-standard-wh-inter-cl} \avm{$\to$}\nopagebreak
+
+\avm{[head-dtr & [index & \1]\\
+filler-dtr & [index & \2 \\
+            icons-key [\type*{non-focus}\\
+                                 target & \2\\
+                                 clause & \1]]]}
+\z
+
+\subsubsection{\emph{Wh}-phrase in situ}
+
+As stated previously, in-situ \emph{wh}-words have an empty \textsc{que} set. The type \textit{in-situ-int-cl} is constrained to be \avm{[mc & \normalfont{+}]}, so that it cannot apply to embedded questions \citep[271]{Ginzburg.2000}. However, if there are several \emph{wh}-words in an embedded question, only one has to be extracted, the other one(s) can remain in situ. Additional rules are necessary to account for superiority effects in questions \citep[247--254]{Ginzburg.2000}.
+
+The discussion around the pragmatic status of in-situ questions was briefly touched upon in Section~\ref{ch:exp14-discussion}. At present there is not enough evidence concerning the real status of the \emph{wh}-word in situ, but it would be possible, for example, to constrain \textit{in-situ-int-cl} to be backgrounded or to be discourse-given. 
+
+\subsection{Relative clauses}\largerpage[2]
+
+Just as extracted interrogative words have a non-empty \textsc{que} set, relative words have a non-empty \textsc{rel} set. A \emph{wh}-word like \emph{où} (`where') can be used as an interrogative word or as a relative word. Hence, it has the lexical entry in \figref{ex:avm-ou}.\footnote{French \emph{où} can also have a temporal interpretation, but I disregard this detail as it is unrelated to my analysis.}
+
+\begin{figure}[h]
+\small
+\avm{[phon & < \type{où} >\\
+loc & [cat|head & prep\\
+                 cont|rels & <[\type*{place}\\
+                               arg0 & \tag{i}]>]\\
+        nonloc & [que & \{\}\\
+        rel & \{\tag{i}\}]  \\
+arg-st < >]} $ \vee$ \avm{[phon & < \type{où} >\\
+loc & [cat|head & prep\\
+                 cont|rels & <[\type*{place}\\
+                               arg0 & \tag{i}],\\
+                               \1 [\type*{which\_q}\\
+                               arg0 & \tag{i}]>]\\
+        nonloc & [que & \{\1\}\\
+        rel & \{\}]\\
+arg-st < >]}
+\caption{Lexical entry for the \emph{wh}-word \emph{où} (`where')}\label{ex:avm-ou}
+\end{figure}
+
+According to \citet{Godard.1988}, relative words in French are either relative pronouns (e.g.\ \emph{où} `where', \emph{lequel} `which') or complementizers (e.g.\ \emph{dont} `of which').\footnote{Contrary to \citet{Sag.1997}, who analyses the relativizer \emph{that} as a relative pronoun, homonymous with the complementizer \emph{that}.} Details of her arguments are presented in Section~\ref{ch:intro-disscussion-French}. I adopt \citegen{Abeille.2007.Relatives} cross-classification of relative clauses.
+I assume with them that only relative pronouns or PPs comprising relative pronouns can serve as fillers, and that complementizers are heads \citep[see also][]{Borsley.2020.HPSG.UDC}. Following the type hierarchy of \emph{clause} presented in \figref{fig:hrch-clause}, relative clauses (\textit{rel-cl}) either inherit from \textit{head-comps-structure} and are \textit{comp-rel-cl} or they inherit from \textit{head-filler-structure} and are \textit{wh-rel-cl}. 
+
+Relative clauses are headed by a verbal category, i.e.\ either a \emph{verb} or a \textit{comp}(\textit{lementizer}), see \figref{fig:hrch-pos}.\footnote{I do not discuss here gapless and verbless relatives in French. See \citet{Bilbiie.2010} for verbless relative clauses and \citet{Abeille.2007.Relatives} for HPSG analysis of gapless relative clauses.} Relative clauses have an empty \textsc{slash} set, because extraction out of relative clauses is not allowed in French, and an empty \textsc{rel} set for the same reason.
+
+\ea \textit{rel-cl} \avm{$\to$
+       [ head & [\type*{verbal} \\
+                 mod & [head & noun\\
+                        spr & <>] ]\\
+                slash & \{\}\\
+                 rel & \{\}] 
+    \label{avm:rel-cl}
+}
+\z\largerpage[-1]\pagebreak
+
+Relative clauses modify NPs.\footnote{\citet{Jackendoff.1977} suggests that restrictive relative clauses attach to N$'$ while non-restrictive relative clauses attach to NP. My analysis is compatible with this proposal, if the value of \textsc{spr} is left unconstrained in (\ref{avm:rel-cl}). However, it would then be necessary to explain how restrictive relative clauses can attach to coordinated nouns \citep[293]{Kiss.2005}: 
+\begin{itemize}
+\item[(i)] \gll la femme et l' enfant [dont Nicole a parlé hier~\trace{}]\\
+the woman and the child \sbar{}of.which Nicole has talked yesterday\\
+\glt `the woman and the child that Nicole talked about yesterday'
+\end{itemize}}
+We also follow \citegen{Kuno.1976} claim that extraction in relative clauses is topicalization. In \citegen{Song.2017} model, relative pronouns and complementizers do not have an information structure status, thus the relative phrase is not the topic of the relative clause (contra \citealt{Bresnan.1987} a.o.). Furthermore, not all languages have relative phrases to introduce relative clauses and bear the topic function. Rather, the antecedent serves as the topic of the relative clause. 
+That the antecedent is a topic with respect to the relative clause is a semantic contribution of the relative clause (via \textsc{c-cont}). The following constraint can then be added to the French fragment:{\interfootnotelinepenalty=10000\footnote{\label{fn:non-standard-gapless-rc}The constraint in (\ref{avm:rel-cl-is}) differs from a similar constraint proposed by \citet[182]{Song.2017} because he assumes that all relatives are \emph{filler-head-str}. In (\ref{avm:rel-cl-is}), the antecedent, and not the filler, is the topic of the relative clause. (\ref{avm:rel-cl-is}) is also more compatible with the analysis of relative clauses without a gap in non-standard French, in which the antecedent is the topic \citep{Abeille.2007.Relatives}:
+\begin{itemize}
+    \item[(i)] (\citealt{Deulofeu.1981}; cited by \citealt[38]{Abeille.2007.Relatives})
+    \item[] \gll Vous avez des feux [qu' il faut appeler les pompiers tout de suite].\\
+    you have some fires \sbar{}that it must call.\textsc{inf} the firemen all at now\\
+    \glt `There are some fires that one needs to call the firemen immediately.'
+\end{itemize}
+}}
+
+\ea \textit{rel-cl} \avm{$\to$
+       [head|mod|index & \tag{i}\\
+       cont|clause-key & \tag{e}\\
+       c-cont|icons &  <[\type*{topic}\\
+                          target & \tag{i}\\
+                          clause & \tag{e}]>] 
+    \label{avm:rel-cl-is}
+}
+\z 
+
+% aboutness topic would be better, but contrastive topic is needed for clefts. Anyway, Song has focus-or-topic.
+
+\subsubsection{\textit{comp-rel-cl}}\largerpage
+
+\emph{Qui} (`who') relative clauses are extractions of the subject (regardless of animacy); \emph{que} (`that') relative clauses are extractions of the object; and both \emph{qui} and \emph{que} are complementizers. Complementizers select an S complement. The complementizer \emph{qui} is a variant of \emph{que} used whenever the S complement has a gapped subject. It follows that, in long distance dependencies, \emph{qui} is used to introduce the S containing the missing subject, and not as the head of the relative clause, see example (\ref{ex:qui-que-rule}). This alternation is known as the \emph{que-qui} rule \citep[see a.o.][]{Pesetsky.1982,Koopman.2014}. 
+
+\eal\label{ex:qui-que-rule}
+\ex \gll Je veux [que Daniel vienne]$_{\text{comp}}$.\\
+I want \sbar{}that\textsubscript{que} Daniel comes\\
+\glt `I want Daniel to come.'
+\ex \citep[194]{Melis.1988}\\
+\gll l' homme [que je veux [qui~\trace{} vienne]$_{\text{comp}}$]$_{\text{RC}}$\\
+the man \sbar{}that\textsubscript{que} I want \sbar{}that\textsubscript{qui} comes\\
+\glt `the man who I want to come' (i.e., I want that man to come)
+\zl 
+
+The two lexical entries for \emph{que} and complementizer \emph{qui} in \figref{avm:lexical-entry-que-qui} are directly borrowed from \citet[50]{Abeille.2007.Relatives}. The complement S must be finite (see Section~\ref{ch:intro-disscussion-French}).\largerpage
+
+\begin{figure}[h]
+\caption{Lexical entries for the French complementizers \emph{que} and \emph{qui}}\label{avm:lexical-entry-que-qui}
+
+\begin{subfigure}[b]{\linewidth}\centering
+\avm{[phon <\type{que}>\\
+synsem|loc|cat & [head & comp\\
+marking & que\\
+comps & <[vform & finite\\
+          subj & <>]>]]}
+
+\caption{\emph{que}}
+\end{subfigure}\medskip\\
+\begin{subfigure}[b]{\linewidth}\centering
+
+\avm{[phon <\type{qui}>\\
+synsem|loc|cat & [head & comp\\
+marking & que\\
+comps & <[vform & finite\\
+          subj & < [\type{gap}] >] > ]]}
+          
+\caption{Complementizer \emph{qui}}
+\end{subfigure}
+\end{figure}
+
+Notice the presence of a syntactic feature \textsc{marking}, defined for complementizers and prepositions (also possibly nouns, see a.o.\ \citealt[159]{Sportiche.1998}; I will come back to this issue in Section~\ref{ch:hpsg-prep}). The value of \textsc{marking} is an object of type \emph{marking}, whose hierarchy is given in \figref{fig:hrch-marking}. Complementizers may have a \textsc{marking} \emph{que} or \emph{dont}. Prepositions have a \textsc{marking} value matching their form (e.g.\ \emph{de}, \emph{sur}). 
+
+\begin{figure}[ht]
+\centering
+\scalebox{1}{
+\begin{forest}
+sn edges,
+[\textit{marking}
+    [\textit{comp-marking}
+        [\textit{que}]
+        [\textit{dont}]
+    ]
+    [\textit{prep-marking}
+        [\textit{de}]
+        [\textit{a}
+            [\textit{a-dat}]
+            [\textit{a-loc}]
+        ]
+        [\textit{sur}]
+        [\textit{par}]
+        [\textit{avec}]
+        [\dots]
+    ]
+]
+\end{forest}}
+    \caption{Type hierarchy of \emph{marking}}
+    \label{fig:hrch-marking}
+\end{figure}
+
+The \textsc{marking} for PPs ensures that the right preposition is selected if the PP is a complement; ensures the use of the right clitic for \emph{à}-PP (\emph{lui} for dative, \emph{y} for locative); and also ensures that \emph{dont} is used to only relativize a \emph{de}-PP. Hence, the lexical entry for \emph{dont} is (\ref{avm:dont-lex}).
+
+
+\ea Lexical entry for \emph{dont}:\nopagebreak
+
+\avm{[phon & < \type{dont} >\\
+synsem|loc|cat & [head & comp\\
+marking & dont \\
+comps & <S[slash & \{[marking & de\\
+                      subj & < >]\}]>]]}
+\label{avm:dont-lex}
+\z 
+
+In the standard relative clauses discussed so far, the complementizers take as complement an S with a non-empty \textsc{slash} set.\footnote{\label{fn:que-non-standard}But notice that the lexical entries for \emph{que/qui} in \figref{avm:lexical-entry-que-qui} can take complements with empty \textsc{slash} sets. This is necessary for two reasons: (i) they can introduce a gapless clause as complement of a verb (e.g.\ \emph{dire} `say'); and (ii) in non-standard French, \emph{que/qui} relative clauses can be gapless (see fn.\ \ref{fn:non-standard-gapless-rc}). Furthermore, in non-standard French, the gap in the \emph{que/qui} relative clause sometimes does not correspond to an NP:
+\begin{itemize}
+    \item[(i)] \gll J' ai besoin du livre.\\
+    I have need of.the book\\
+    \glt `I need the book.'
+    \item[(ii)] \gll le livre dont j' ai besoin\\
+    the book of.which I have need\\
+    (standard French)
+    \glt `the book I need'
+    \item[(iii)] \gll le livre que j' ai besoin\\
+    the book that I have need\\
+    (non-standard French)
+    \glt `the book I need'
+\end{itemize}
+} The gap is coindexed with the antecedent of the relative clause. The whole relative clause is monoclausal, the main event being the event of the main verb (hence of the non-head daughter).
+%Even though the complementizer is the syntactic head of the structure, the semantic head is the S, and the relative clause has the same \textsc{icons-key} than the S. --> we don't need that?
+This leads to the definition of \textit{comp-rel-cl} in (\ref{avm:comp-rel-cl}). Notice that this constraint overwrites the default \textsc{slash} Amalgamation Principle (\ref{avm:slash-amalgamation}), because the mother node does not inherit from the \textsc{slash} values of its daughters, even though \textit{comp-rel-cl} is an instance of \emph{head-comps-str}.\footnote{Other kinds of \emph{head-comps-str} are \emph{noncomp-comps-structure} and \emph{sent-comps}. The type \emph{noncomp-comps-structure} is defined as \avm{[head & non-comp]}. The type \emph{sent-comps}, for sentential complements introduced by a complementizer, is defined as \avm{[mod & none]}.} Furthermore, because \textit{rel-cl} may not have an empty \textsc{slash} set in French, the constraint means that the S complement of the complementizer necessarily has only one element in its \textsc{slash} set in French.\footnote{\citet{Abeille.2007.Relatives} assume that \emph{dont} in standard French takes a finite complement, and that \emph{comp-rel-cl} hence always implies a finite complement. But infinite \emph{dont}-CPs seem at least marginally acceptable (see Section~\ref{ch:intro-disscussion-French}), so I see no need to rule them out.
+
+The rule in (\ref{avm:comp-rel-cl}) implies that the non-head daughter has a non-empty \textsc{slash} set. To account for non-standard relative clauses, a disjunction is probably necessary: either the non-head daughter has an empty \textsc{slash} set and has then \avm{[marking & que]} (not compatible with \emph{dont}), or  (\ref{avm:comp-rel-cl}) applies.}
+
+\ea \textit{comp-rel-cl} \avm{$\to$
+[clause-key & \tag{e}\\
+slash & \1\\
+head-dtr & [head & [\type*{comp}\\
+                    mod & [index & \tag{i}]]]\\
+nhead-dtrs & <[loc|clause-key & \tag{e}\\ 
+             non-loc|slash & \{[index & \tag{i}]\} $\cup$ \1]>]
+}
+\label{avm:comp-rel-cl}
+\z
+
+\figref{fig:rc-simple} shows the relative clause introduced by a complementizer in (\ref{ex:rc-que}).
+
+\ea[]{\gll mes collègues$_i$ [que l' innovation enthousiasme~\trace{}$_i$]\\
+my colleagues \sbar{}that the innovation excites\\
+\label{ex:rc-que}
+\glt `my colleagues that the innovation excites'}
+\z 
+
+\begin{figure}[htbp]
+\centering
+\begin{forest}
+where n children=0{tier=word}{}
+[NP\\
+\avm{[\type*{head-mod-str}]}
+[NP\\
+\avm{[synsem & \1 [index & \2]]}
+[mes collègues\\my colleagues, roof]]
+[S\\
+\avm{[\type*{comp-rel-cl}\\
+      head & comp\\
+      mod & \1\\
+      subj & <>\\
+      comps & <>\\
+      slash & \{\}\\
+      rel & \{\}]}
+    [COMP
+          [que\\that]
+    ]
+    [S\\
+    \avm{[\type*{head-subj-structure}\\
+          subj & <>\\
+          comps & <>\\
+          slash & \{\3\}]}
+          [\avm{\4} NP
+            [l'innovation\\the innovation, roof]
+          ]
+          [VP\\
+          \avm{[subj & <\4>\\
+                comps & <>\\
+                slash & \{\3 [index & \2]\}]}
+            [enthousiasme\\excites]
+          ]
+    ]
+]]
+\end{forest}
+\caption{Simplified tree for \textit{mes collègues} [\textit{que}$_i$ \textit{l'innovation enthousiasme}~\trace{}$_i$] (`my colleagues that the innovation excites')}
+\label{fig:rc-simple}
+\end{figure}
+
+\subsubsection{\textit{wh-rel-cl}}
+
+I will assume that fillers in relative clauses must be PPs: subjects and objects are extracted with a complementizer, and pied-piping of an NP is not allowed in French, as illustrated in (\ref{ex:prep-filler}).\footnote{But see a discussion of some exceptions in Section~\ref{ch:deq-corpus}.}
+\largerpage[-1]\pagebreak
+
+\eal  \label{ex:prep-filler}\judgewidth{??}
+\ex[]{the people who live in Purus, [the majority of whom] are poor\footnote{\url{https://www.theguardian.com/environment/andes-to-the-amazon/2013/may/24/peru-amazon-rainforest}, last access 25/07/2020}}
+\ex[??]{\gll les habitants de Purús, [la majorité desquels] sont pauvres\\
+the inhabitants of Purus \sbar{}the majority of.the.which are poor\\}
+\zl 
+
+The definition of \textit{wh-rel-cl} is given in \figref{avm:wh-rel-cl}. The non-local feature \textsc{rel} of the filler is coindexed with the antecedent of the relative clause. The relative clause is headed by the verb. 
+
+\begin{figure}[ht]
+\textit{wh-rel-cl} \avm{$\to$
+[head-dtr & [head & [\type*{verb}\\
+mod & [index & \tag{i}]]]\\
+filler-dtr & [head & prep\\
+rel & \{\tag{i}\}]]
+}
+\caption{Definition of \textit{wh-rel-cl}}
+\label{avm:wh-rel-cl}
+\end{figure}
+
+\figref{fig:rc-complex} shows the relative clause introduced by a filler in (\ref{ex:wh-question-complex}). Notice that \emph{qui} (`who') here is not the complementizer but a relative pronoun that is used only as a complement to prepositions.\footnote{There are hence four versions of \emph{qui} (`who'): the interrogative \emph{qui} extracted, the interrogative \emph{qui} in situ (\figref{ex:avm-qui}), the complementizer \emph{qui} (\figref{avm:lexical-entry-que-qui}b) and the relative pronoun \emph{qui}.} In accordance with the \textsc{nonloc} Amalgamation Principle (\ref{avm:nonloc-amalgamation}), the value of \textsc{rel} of the relative pronoun is percolated to the maximal projection of the filler.
+
+\ea[]{\gll Gaetan, [[de l' anniversaire de qui]$_i$ tu parles~\trace{}$_i$]\\
+Gaetan \ssbar{}of the birthday of who you talk\\
+\glt `Gaetan, whose birthday you are talking about'} 
+\label{ex:rc-complex}
+\z
+
+\begin{figure}
+\oneline{%
+\begin{forest}
+where n children=0{tier=word}{}
+[NP\\
+\avm{[\type*{head-mod-str}]}
+[NP\\
+\avm{[synsem & \1 [index & \3]]}
+[Gaetan\\Gaetan]]
+[S\\
+\avm{[\type*{wh-rel-cl}\\
+      head & verb\\
+      mod & \1\\
+      slash & \{\}\\
+      rel & \{\}]}
+    [PP\\
+    \avm{[loc & \2\\
+          rel & \{\3\}]}
+          [P \\ \avm{[rel & \{\3\}]} [de\\of]]
+          [NP \\ \avm{[rel & \{\3\}]}
+            [Det [l'\\the]]
+            [N$'$ \\ \avm{[rel & \{\3\}]}
+                [N \\ \avm{[rel & \{\3\}]}[anniversaire\\birthday]]
+                [P \\ \avm{[rel & \{\3\}]}
+                    [P \\ \avm{[rel & \{\3\}]} [de\\of]]
+                    [NP \\ \avm{[rel & \{\3\}]} [qui\\who]]
+                ]
+            ]
+          ]
+    ]
+    [S\\
+    \avm{[\type*{head-subj-structure}\\
+          slash & \{\2\}]}
+          [NP
+            [tu\\you]
+          ]
+          [VP\\
+          \avm{[slash & \{\2\}]}
+            [parles\\talk]
+          ]
+    ]
+]]
+\end{forest}}
+\caption{Simplified tree for \textit{Gaetan,} [[\textit{de l'anniversaire de qui}]$_i$ \textit{tu parles}~\trace{}$_i$] (`Gaetan, whose birthday you are talking about')}
+\label{fig:rc-complex}
+\end{figure}
+
+% Ev. have an semantic analysis of restrictive/non-restrictive
+
+\subsection{\emph{C'est}-clefts}
+\label{ch:hpsg-clefts}
+
+% prosodic contrast
+%C'est avec des fleurs] que Pierre a reçu Marie
+%C'est avec plaisir que je vous recevrai ] 
+%Doetjes et al. 2004
+
+In my analysis, I will distinguish two kinds of \emph{c'est}-clefts, which both involve focalization of the pivot. I leave aside presentationals introduced by \emph{c'est} or \emph{il y a} \citep[see][]{Karssenberg.2018}.  The first kind of \emph{c'est}-cleft is the one usually discussed in the French literature \citep{Doetjes.2004}. It has a \emph{que}-clause, similar to the \emph{that}-clause in English \emph{it}-clefts. An analysis of these \emph{c'est}-clefts was already published in \citet{Winckel.2020}.
+
+I assume the entry for \emph{être} in \figref{ex:etre-cleft-entry}, which takes (expletive) \emph{ce} as a subject and two complements: the pivot, which can be of any category; and the \emph{que}-clause with a gap coindexed with the pivot.%
+\footnote{It follows from \figref{ex:etre-cleft-entry} that colloquial French should allow \emph{que}-clauses in \emph{c'est}-clefts like (ii) in which the gap does not correspond to an NP (see fn.~\ref{fn:que-non-standard} on page~\pageref{fn:que-non-standard}):
+
+\begin{itemize}
+    \item[(i)] \gll C' est ce livre dont j' ai besoin. (standard French)\\
+it is the book of.which I have need\\
+\glt `It's the book that I need.'
+    \item[(ii)] \gll C' est ce livre que j' ai besoin. (non-standard French)\\
+it is the book that I have need\\
+\glt `It's the book that I need.'
+\label{ex:cleft-colloquial}
+\end{itemize}
+
+% "C'est un feu qu'il faut appeler les pompier tout de suite" is not possible (no gap), but it's probably a presentational rather than a cleft with focus. 
+}
+The pivot is interpreted as focus, and the whole \emph{c'est}-cleft is treated as a single semantic clause (the main event is the event denoted by the finite verb of the \emph{que}-clause).
+
+\begin{figure}
+\caption{\emph{être}$^1$ in \textit{c'est}-cleft}\label{ex:etre-cleft-entry}
+\resizebox{\textwidth}{!}{\avm{[loc|clause-key & \1\\
+nonloc|slash & \2 $\cup$ \3 \\
+arg-st <NP[\type{ce}], 
+        [loc & \4 [index & \5\\
+                  icons-key & [\type*{focus}\\
+                                      target & \5 \\
+                                      clause & \1]]\\ 
+          slash & \2], 
+        S[marking & que\\
+          clause-key & \1\\
+          slash & \{\4\} $\cup$ \3] >]}}
+\end{figure} 
+
+The lexical entry in \figref{ex:etre-cleft-entry} overrides the default Slash Amalgamation Principle (\ref{avm:slash-amalgamation}): the verb inherits the \textsc{slash} information of the pivot and the \textsc{slash} information of the \emph{que}-clause that is not coindexed with the pivot. This enables extraction out of the \emph{que}-clause (see the discussion in Section~\ref{ch:analysis-clefts}, and (\ref{ex:online-cleft-extraction-que-clause}) for an attested example).
+Extraction out of the pivot is allowed as well:\footnote{Example (\ref{ex:internet-cleft-extraction-pivot}) from \url{http://mysticlolly.eklablog.com/la-maitresse-a-une-vie-a45200461}, last access 03/08/2020}
+
+\eal 
+\ex \citep{Winckel.2020}\\
+\gll un élève [dont$_i$ [c' est toujours [le père~\trace{}$_i$]$_j$ que je vois~\trace{}$_j$ aux réunions]]\\
+a pupil \sbar{}of.which \sbar{}it is always \sbar{}the father that I see at.the meetings\\
+\glt `a pupil of which it is always the father that I see at the meetings'
+\ex \gll les enfants [dont$_i$ [c' est [les parents~\trace{}$_i$]$_j$ qui~\trace{}$_j$ vous ont repérée]]\\
+the children \sbar{}of.which \sbar{}it is \sbar{}the parents who you\textsc{.acc} have spotted\\
+\glt `the children of whom it is the parents who spotted you' (i.e.\ the parents of this child spotted you)
+\label{ex:internet-cleft-extraction-pivot}
+\zl 
+
+Notice that the \emph{que}-clause can be elided. Furthermore, at least in colloquial French, the whole pivot can be extracted, as in (\ref{ex:Renaud}). \citet{Bresnan.1987} also provide example (\ref{ex:bresnan}) for English that they judge acceptable.
+
+\eal \label{ex:cleft-extraction-pivot-interr}
+\ex (title of a song by Renaud, 1980)\\
+\gll Où$_i$ [c' est~\trace{}$_i$ qu' j' ai mis mon flingue~\trace{}$_i$]?\\
+where \sbar{}it is that I have put my gun\\
+\glt `Where did I leave my gun?'
+\label{ex:Renaud}
+\ex \citep[759]{Bresnan.1987}\\
+Who$_i$ [it was~\trace{}$_i$ that Marilyn suspected~\trace{}$_i$]?
+\label{ex:bresnan}
+\zl 
+
+Extraction in (\ref{ex:cleft-extraction-pivot-interr}) is possible because the pivot and the interrogative filler are both focus. There is thus no discourse clash. However, relativization is not felicitous in this configuration. This contrast with interrogatives is also noted by \citet[759]{Bresnan.1987} for English.
+
+\eal 
+\ex \citep[759]{Bresnan.1987}\\
+* the person who$_i$ [it was~\trace{}$_i$ that Marilyn suspected~\trace{}$_i$]
+\ex[*]{\gll Marine, dont [c' est~\trace{}$_i$ que je me méfiais]\\
+Marine of.which \sbar{}it was that I \textsc{refl} distrusted\\
+\glt `Marine, who it was that I did not trust' (i.e. Marine, it was her that I did not trust)}
+\zl 
+
+The contrast can be straightforwardly accounted for in the analysis of relative clauses and \emph{c'est}-clefts sketched above. The clefted pivot should be focus (constrained by the element in the \textsc{slash} list) with respect to the semantic head, or \textsc{clause-key}, of the clause (\emph{suspected/méfiait}), but the antecedent of the relative clause is constrained to be topic with respect to the semantic head of the relative (which is again \emph{suspected/méfiait}). This results in a discourse clash and the sentence is unacceptable.\footnote{This case is a further argument in favor of encoding information structure inside \textsc{loc}, see Section~\ref{ch:hpsg-is}.}
+
+%Pollard and Sag discuss binding theory: It is himself that John likes most
+%slash could also inherit from que-cl if we want to allow extraction out of cleft: un endroit où c'est toujours moi qui vais; otherwise no other extraction is allowed even though it is a complement
+
+The \emph{que}-clause in \figref{ex:etre-cleft-entry} is not a relative clause, but a sentential complement with a gap. Relative clauses have an empty \textsc{slash} set and therefore cannot match the description of the selected complement. The fact that the \emph{que}-clause is a sentential complement could explain it allows extraction, in contrast to extraction out of relative clauses. Cross-linguistically, the sentential complement in \emph{it}-clefts does not always have the same syntactic properties as relative clauses. For example, in Martinique Creole, relative clauses have an optional post-clausal article \emph{a}, while sentential complements in \emph{it}-clefts do not (Stéphane Térosier, p.c.):
+
+\begin{exe}
+\ex (Stéphane Térosier, p.c.)
+\begin{xlist}
+\ex[]{\gll jardinié  a      man wè  (a)\\
+gardner \textsc{det} \textsc{1sg} see \textsc{det}\\
+\glt `the gardner that I saw'}
+\ex[]{\gll Sé     jardinié    a      man wè   (*a)\\
+\textsc{foc} gardner \textsc{det} \textsc{1sg} see \textsc{det}\\
+\glt `It is the gardner that I saw.'}
+\end{xlist}
+\end{exe}
+
+The pivot in \figref{ex:etre-cleft-entry} can be of any category, for example a PP as in (\ref{ex:cleft-basic}). It may also be an interrogative phrase, at least in colloquial French, like in (\ref{ex:cleft-pivot-question}). \figref{fig:cleft-basic} shows the structure of (\ref{ex:cleft-basic}).
+
+\eal
+\ex[]{\label{ex:cleft-basic}
+\gll C' est de Gaetan que je parle.\\
+it is of Gaetan that I talk\\
+\glt `It's Gaetan that I'm talking about.'}
+\ex[]{\label{ex:cleft-pivot-question}
+\gll C' est [avec qui]$_i$ que tu parles~\trace{}$_i$~?\\
+it is \sbar{}with who that you talk\\
+\glt `Who are you talking to?'}
+\zl 
+
+\begin{figure}[h]
+\begin{forest}
+sn edges,where n children=0{tier=word}{}
+[S \\
+ \avm{[\type*{head-subject-structure}\\
+ slash & \{\}]}
+    [NP [C'\\it]]
+    [VP\\
+\avm{[\type*{noncomp-comps-structure}\\
+slash & \{\}]}
+        [VP\\
+        \avm{[\type*{noncomp-comps-structure}\\
+        slash & \{\}]}
+        [V \\
+        \avm{[slash & \{\}]}
+        [est\\is]]
+       [\avm{\1} PP [de Gaetan\\of Gaetan, roof]]
+       ]
+        [S\\
+\avm{[\type*{sent-comps}\\
+slash & \{\1\}]}
+        [COMP [que\\that]]
+        [S \\
+        \avm{[\type*{head-subject-structure}\\
+            slash & \{\1\}]}\\
+         [NP\\
+       [je\\I]]
+       [V \\
+       \avm{[slash & \{\1\}]}
+       [parle\\talk]]]
+    ]
+]
+]
+\end{forest}
+\caption{Simplified tree for \textit{C'est de Gaetan que je parle.} (`It's Gaetan that I'm talking about.')}
+\label{fig:cleft-basic}
+\end{figure}
+
+The second kind of \emph{c'est}-cleft always has an NP pivot and the second complement closely ressembles a relative clause. Compare (\ref{ex:cleft-basic-2}) with (\ref{ex:cleft-basic}).
+
+\ea[]{\gll C' est Gaetan de qui je parle.\\
+it is Gaetan of who I talk\\
+\glt `It's Gaetan that I'm talking about.'}
+\label{ex:cleft-basic-2}
+\z 
+
+These \emph{c'est}-clefts have not received much attention, thus I have to make several assumptions, mostly relying on consistency within the analysis. Undoubtedly, more work needs to be done on this kind of \emph{c'est}-clefts. First, I will assume that the second complement of such clefts is indeed a relative.
+
+In the corpus studies presented in this work, the only example of extraction out of a subject in a cleft that is non-presentational was (\ref{ex:d1900-clefts-subj-1}), reproduced in (\ref{ex:d1900-clefts-subj-1-bis}).
+
+\ea (Jean-Christophe : Le Buisson ardent, Romain Rolland, 1911)\\
+\gll C' était lui maintenant, dont [les yeux~\trace{}] évitaient les yeux de l' autre.\\
+it was him now of.which \sbar{}the eyes avoided the eyes of the other\\
+\glt `Now it was him whose eyes avoided the other's eyes.'
+\label{ex:d1900-clefts-subj-1-bis}
+\z 
+
+The pivot in this sentence seems to be contrastive.\footnote{In the book, this scene, in which Jean-Christophe avoids Ana's gaze, is echoing a previous scene, in which Ana was avoiding Jean-Christophe's gaze.} For this reason, I assume that it is a contrastive topic. Because \emph{contrast-topic} is a subtype of \emph{topic}, this analysis is compatible with the information structure of relative clauses. And because contrastive topics are non-focus, the subextraction in (\ref{ex:d1900-clefts-subj-1-bis}) does not violate the FBC constraint. 
+
+Consequently, I assume the second entry for \emph{être} in \figref{ex:etre-cleft-entry-2}, which takes (expletive) \emph{ce} as a subject and two complements: an NP pivot and a relative clause that modifies an NP coindexed with the pivot.
+The pivot is interpreted as contrastive topic, and the whole \emph{c'est}-cleft is considered a single clause, as in \figref{ex:etre-cleft-entry}.
+
+\begin{figure}[h]
+\caption{\emph{être}$^2$ in \textit{c'est}-cleft}\label{ex:etre-cleft-entry-2}
+\avm{[loc|clause-key & \1\\
+nonloc|slash & \2 \\
+arg-st <NP[\type{ce}], 
+        NP \3[icons-key & [\type*{contrast-topic}\\
+                                      target & \3 \\
+                                      clause & \1]\\ 
+          slash & \2], 
+        S[\type{rel-cl}\\
+          clause-key & \1\\
+          mod & \3] >]}
+\end{figure} 
+
+The lexical entry in \figref{ex:etre-cleft-entry-2} predicts that extraction out of the pivot is allowed, while extraction out of the relative clause is ruled out (the \textsc{slash} set of relative clauses is empty). These predictions need to be corroborated with empirical evidence, which I leave for future work.
+\figref{fig:cleft-basic-2} shows the structure of (\ref{ex:cleft-basic-2}).
+
+\begin{figure}[h]
+\begin{forest}
+where n children=0{tier=word}{}
+[S \\
+ \avm{[\type*{head-subj-structure}\\
+ slash & \{\}]}
+    [NP [C'\\it]]
+    [VP\\
+\avm{[\type*{noncomp-comps-structure}\\
+slash & \{\}]}
+        [VP\\
+\avm{[\type*{noncomp-comps-structure}\\
+slash & \{\}]}
+        [V \\
+        \avm{[slash & \{\}]}
+        [est\\is]]
+       [\avm{\1} NP [Gaetan\\Gaetan]]
+       ]
+        [S\\
+\avm{[\type*{wh-rel-cl}\\
+mod & \1 [index & \2]\\
+slash & \{\}]}
+        [PP\\
+        \avm{[loc & \3\\
+              rel & \{\2\}]}
+            [de qui\\of who, roof]]
+        [S \\
+        \avm{[\type*{head-subj-structure}\\
+            slash & \{\3\}]}\\
+         [NP\\
+       [je\\I]]
+       [V \\
+       \avm{[slash & \{\3\}]}
+       [parle\\talk]]]
+    ]
+]
+]
+\end{forest}
+\caption{Simplified tree for \textit{C'est Gaetan de qui je parle.} (`It's Gaetan that I'm talking about.')}
+\label{fig:cleft-basic-2}
+\end{figure}
+
+Notice that the \emph{c'est}-cleft in (\ref{ex:cleft-both}) can be an instance of both kinds of clefts, and the \emph{que}-clause can be either a sentential complement or a relative clause. This should not be a problem, because in the present analysis each possibility leads to a different information structure for the pivot.
+
+\ea[]{\gll C' est mes collègues que l' innovation enthousiasme.\\
+it is my colleagues that the innovation excites\\
+\label{ex:cleft-both}
+\glt `It's my colleagues that the innovation excites.'}
+\z 
+
+% LFG analysis with information structure in Bresnan & Mchombo 1987
+% Bresnan, Joan & Sam A Mchombo. 1987. Topic, pronoun, and agreement in Chicheŵa. Language 63(4). 741–782.
+
+% Song (2017:129):
+% - focus constituent is head
+% - that-clause is realized as a relative  clause
+
+\subsection{Long-distance dependencies}
+\label{ch:hpsg-basics-ldd}
+
+On the clausal level, the head's \textsc{clause-key} is identified with its \textsc{index} \citep[120]{Song.2017}. This ensures that the whole clause shares the same \textsc{clause-key} down the tree.
+
+\ea
+\textit{clause} \avm{$\to$}\nopagebreak
+
+\avm{[head-dtr & [hook & [index & \tag{e}\\
+clause-key & \tag{e}]]]}
+\label{avm:clause-clause-key}
+\z 
+
+To simplify, I will assume that sentential and infinitival subjects and complements are licensed for some verbs, and that this is part of their lexical entry.\footnote{This is subject to further restrictions that are not relevant to my analysis, see \citet[151--156]{Pollard.1994} and \citet{Webelhuth.2012} a.o.\ for more details.}
+
+For example, the lexical entry for bridge verbs like \emph{suppose} (`to suppose') subcategorizes for a sentential complement, and the lexical entry for experiencer object verbs like \emph{agacer} (`annoy') subcategorizes for a sentential subject. 
+
+\eal
+\ex[]{I suppose [that you agree with me].}
+\ex[]{\gll Je suppose [que tu es d' accord avec moi].\\
+I suppose \sbar{}that you are of agreement with me\\
+\glt `I suppose that you agree with me.'}
+\label{ex:supposer-sentential-complement}
+\zl 
+
+\eal 
+\ex[]{[That Kim was late] annoyed Lee.}
+\ex[]{\gll [Que Kim soit en retard] aga\c{c}ait terriblement Lee.\\
+\sbar{}that Kim be\textsc{.subj} in late annoyed 
+awfully Lee\\
+\glt `That Kim was late annoyed Lee awfully.'}
+\zl 
+
+When sentential complements and sentential subjects are finite, the lexical entry additionally specifies the discourse relation between the embedded clause and the embedding clause via an \emph{info-str} object in \textsc{icons}. The information structure may be underspecified.
+The \textsc{clause-key} of the embedded clause and the \textsc{clause-key} of the embedding verb are not structure-shared: this results in two different clauses.\footnote{Except for raising and control verbs, which co-index their \textsc{clause-key} with the \textsc{index} (or \textsc{clause-key}) of the embedded clause, see \citet[141]{Song.2017}. The \emph{être} in \emph{c'est}-clefts does the same, as discussed previously.} 
+
+See as an example the lexical entry for \emph{supposer} (`to suppose') in \figref{ex:avm-supposer} that licenses (\ref{ex:supposer-sentential-complement}). From now on, I use the shortcut \emph{lnis} for \emph{list of non-is} (cf.\ \figref{fig:hrch-icons}).
+
+\begin{figure}
+
+\avm{[phon & < \type{suppos-} >\\
+cont & [hook & [clause-key & \tag{e1}\\
+                icons-key & [\type*{info-str}\\ 
+                             target & \tag{e2}\\
+                             clause & \tag{e1}]\\
+                index & \tag{e2}]\\
+        icons & < [\type*{info-str}\\
+                  target & \tag{e3}\\
+                  clause & \tag{e2}] > $\oplus$ \type{lnis}]\\
+arg-st & < NP[clause-key & \tag{e1}], S[marking & que\\
+                                        mod & none\\
+                                        index & \tag{e3}] >]}
+\caption{Lexical entry for \emph{supposer} (`to suppose')}
+\label{ex:avm-supposer}
+\end{figure}
+
+Notice that the verb in \figref{ex:avm-supposer} selects for a \emph{que}-clause (therefore finite) that is not a modifier (and can thus not be a relative clause). 
+
+In general, any NP, PP, infinitival complement or infinitival subject is defined by the lexical entry of the verb that selects for it as sharing its \textsc{clause-key} value with its own.
+
+Extractions out of sentential and infinitival complements are handled straightforwardly by the same mechanisms that account for extraction in general. The content of the \textsc{slash} set of the sentential or infinitival complement is inherited through \textsc{arg-st} by the embedding verb. It can then lead to interrogatives, relative clauses or \emph{it}-clefts.

@@ -1,0 +1,1415 @@
+\documentclass[output=paper,colorlinks,citecolor=brown,draft]{langscibook}
+\ChapterDOI{10.5281/zenodo.10641185}
+\author{Alexander Pfaff\orcid{}\affiliation{University of Stuttgart}}
+%\ORCIDs{}
+
+\title[How to measure syntactic diversity: Patternization]{How to measure syntactic diversity:  Patternization, methods, algorithms}
+
+\abstract{This chapter develops an  approach to diagnosing,  comparing, and measuring word order variation in a systematic fashion, attempting to put numbers on the degrees of that variation -- in isolation and in comparison. Moreover, it explores some ways of giving these numbers a graphical realization thus visualizing syntactic diversity. Since it operates on strings of syntactic categories referred to as \textit{patterns}, the method itself will be labelled \textit{Patternization}.  {Patternization} is a purely mathematical approach based on some simple combinatorial and statistical notions, and presupposes an annotated corpus (minimally, part-of-speech tagging). For illustration, the discussion is primarily based on the NPEGL annotation system and the databases of Old Germanic noun phrases in NPEGL, but the methodology described here as such is intended to be applicable more generally.
+
+\keywords{syntactic variation, Old Germanic noun phrase patterns, mathematical methods,   permutations, probabilistic distributions, (Python)}
+}
+
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[2]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+When comparing \isi{noun} phrases in two languages such as, say, \ili{Spanish} and modern \ili{German}, one noticeable feature is the position of adjectives relative to their head \isi{noun}: \textit{un coche \textbf{rojo}} --  \textit{ein \textbf{rotes} Auto}  `a red car'. Thus when studying (\isi{word order}) \isi{variation} in the \isi{noun} phrase, the positioning of certain elements is a useful point of departure.
+
+In a pilot study leading up to the NPEGL project (\citetv{chapters/3Modifiers}), the \isi{prenominal} vs. \isi{postnominal} distribution of a range of modifier elements in some Old \ili{Germanic} languages was examined. Table \ref{tab:pilot} illustrates the positions of adjectives and possessives in relation to the \isi{noun} (relative frequencies).\footnote{One output of the project \textit{Constraints on syntactic variation: Noun phrases in early Germanic languages} (NPEGL), led by Kristin Bech, is the creation of an annotated noun phrase database  comprising material from Old Icelandic, Old English, Old Saxon, Old Swedish, Old High German and Gothic. For an overview and discussion, the reader is explicitly referred to \textcitetv{chapters/1Database}; relevant details are briefly discussed in Section \ref{sec:npegl} below.}
+
+
+\begin{table}
+\caption{Modifier–noun order in Old English, Old High German, Old Icelandic, and Old Saxon (\citetv[82, Table 2]{chapters/3Modifiers})}
+\label{tab:pilot}
+%  \begin{tabularx}{.5\textwidth}{lcccc}
+%   \lsptoprule
+%   & {OE} & {OHG} & {OS} & {OI}\\
+%   &  \%  & \%  & \%  & \%\\\midrule
+%   ADJ--N  & 96.6  & 81.7  & 81.3  & 86.9\\
+%   N--ADJ  & 3.4  & 18.3  & 18.7  & 13.1\\
+%   . . . &  &   &   &    \\
+%   POSS--N & 99.7  & 82.0  & 93.7  & 30.5\\
+%   N--POSS  & 0.3  & 18.0  & 6.3  & 69.5\\
+%  . . . &   &  &   &  \\
+%   \lspbottomrule
+%  \end{tabularx}
+ \begin{tabularx}{\textwidth}{Xrrrr}
+  \lsptoprule
+  & {Old English} & {Old High German} & {Old Icelandic} & {Old Saxon}\\
+  \midrule
+  ADJ--N  & 96.6\%  & 81.7\%  & 86.9\%  & 81.3\%\\
+  N--ADJ  & 3.4\%  & 18.3\%  & 13.1\%  & 18.7\%\\
+  . . . &  &   &   &    \\
+  POSS--N & 99.7\%  & 82.0\%  & 30.5\%  & 93.7\%\\
+  N--POSS  & 0.3\%  & 18.0\%  & 69.5\%  & 6.3\%\\
+ . . . &   &  &   &  \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+Such a procedure puts numbers on the preference of a given kind of modifier to occur either in pre- or \isi{postnominal} position, and these numbers can be seen a measurement of diversity. While this sort of binary approach is clearly an important first step and a widely used method, it is limited in scope. For one thing, it reveals a certain bias -- justified though it may be -- in that the categories to be compared are pre-determined. In a relevant sense, it is not exhaustive. Secondly, it is not very flexible in that it focuses on one binary parameter (pre- vs. \isi{postnominal}) for one variable category.  Thirdly, and related to the previous point, potential co-dependencies are not captured.
+
+
+Relying on a number of computational methods, this chapter attempts to develop a more sophisticated and systematic approach to diagnosing, measuring and visualizing \isi{word order} \isi{variation}.  
+In the remainder of this section, I will provide some information about the source material/NPEGL, and establish some technical background. Notably, I will define the central component of the approach to be developed here: the \textit{Pattern}.  
+Section \ref{sec:PatDiv} introduces the numbers of the current NPEGL entries that will be the basis for further discussion; in addition, a simple measurement for diversity is presented. In Section \ref{sec:CoFlxx},  a more subtle method to explore diversity is developed. I will show how potential permutations of category labels can be related to actual attestations of \isi{noun} phrase patterns, and how this allows us to measure the degree of \isi{variation} as well as the limitations of that \isi{variation}. Section \ref{sec:SMpat} discusses some macro specifications of ``patterns'' and shows how these can be used to probe for certain correlations between two categories. A somewhat different perspective is taken in Section \ref{sec:schrodinger}, where I sketch a probabilistic model to describe the distribution of categories in the nominal space. I will also explore a possibility to visualize that \isi{probabilistic distribution}. Section \ref{sec:SUM} concludes. In addition, there is an appendix briefly describing some Python methods that underlie the procedures discussed in this chapter. 
+
+\subsection{The NPEGL database(s): Category labels and restrictions}
+\label{sec:npegl}
+
+Technically speaking, NPEGL is not one \isi{database}, but a collection of databases (for \ili{Old Icelandic}, Old \ili{English}, \ili{Old Saxon}, etc.) that are all based on the same annotation system. This system employs flat annotation, i.e. it essentially encodes linearity, but not dependency or constituency. On the other hand, by definition, every \isi{database} entry is a constituent, viz. a \isi{noun} phrase (= NP).  
+
+The central unit in this annotation system is the category: every NP component receives a category label. The notion of category underlying the NPEGL annotation conflates parts of speech and constituents; in the X-bar theoretic sense, the category inventory of NPEGL comprises both X$^0$s (single word units like the head \isi{noun}, demonstratives, adjectives etc.) and XPs (phrasal units like \isi{genitive} phrases and clauses like relative clauses). Thus, at the outset, all NP components are on equal footing due to the flat annotation; they differ primarily by their category label and their linear position. In the NPEGL system, it is possible to encode a number of dependencies; moreover, it also involves a rich annotation for morphological and semantic features, information about syntactic function, and various kinds of metainformation (see \citetv{chapters/1Database}, \citealt{Pfaff2019Annot}) for a detailed overview and discussion), but these aspects are irrelevant here since we will first and foremost be concerned with linear properties of categories.  
+
+
+Some categories allow for sub-specification of up to four levels, which is encoded via path notation (the levels are separated by a dot); for instance, the modifier category distinguishes cardinal elements and adjectives, and the \isi{adjective} category, in turn,  distinguishes \textit{lexical adjectives} and  \textit{functional adjectives} etc. This is illustrated in (\ref{exCat}), based on the NPEGL entry (OIce.629.122).   
+
+\begin{exe}
+  \ex \label{exCat}
+  \glll \phantom{`}marga    aðra  röskva  menn   {[er \textthorn{á} voru ...]}   \\
+    \phantom{`}Md.Card    Md.Aj.Fn.Dt  Md.Aj.Lx.Pro  N.C {\db}RC \\
+   `many  other    brave    men  {\db}{who then were} {\dots}'\\
+\end{exe}
+
+Here, the components of the labels of  the first three elements are to be read as follows (the arrows indicate the fully specified label): 
+
+\begin{enumerate}
+    \item[] \textbf{Md} \hfill = class of modifiers
+    \begin{enumerate}
+        \item[] Md.\textbf{Card}  \hfill  = class of cardinal elements
+        \begin{enumerate}
+            \item[$\rightarrow$] Md.Card.\textbf{WQ}  \hfill = weak quantifiers
+        \end{enumerate}
+        \item[] Md.\textbf{Aj}   \hfill = class of adjectives 
+        \begin{enumerate}
+            \item[] Md.Aj.\textbf{Fn}  \hfill = class of functional adjectives
+            \begin{enumerate}
+                \item[$\rightarrow$] Md.Aj.Fn.\textbf{Dt}  \hfill = determiner-like adjectives
+            \end{enumerate}
+            \item[] Md.Aj.\textbf{Lx}  \hfill = class of lexical adjectives
+            \begin{enumerate}
+                \item[$\rightarrow$] Md.Aj.Lx.\textbf{Pro} \hfill = prototypical  adjectives
+            \end{enumerate}
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+
+In other words, depending on the level of construal, this example can be seen as involving three modifiers, or a cardinal element and two adjectives, or a weak \isi{quantifier}, a functional \isi{adjective} and a lexical \isi{adjective}. These (sub-)category levels will be referred to as cat$^0$ (X), cat$^1$ (X.Y), cat$^2$ (X.Y.Z) and cat$^3$ (X.Y.Z.W). 
+The class of nouns (N) allows a cat$^1$ distinction between common nouns (N.C) and proper nouns (N.P), whereas relative clauses (RC) are not distinguished further. 
+Whenever I report findings from NPEGL, I will use the original annotation labels,\footnote{With one exception: for the sake of readability, I will use ``Md.Card'' instead of the rather bulky label ``Md.Nu/WQ'' for cardinal elements used in the official NPEGL annotation. 
+
+At the end of the chapter, an overview of the category labels used here is given; for the full overview, see \textcitetv{chapters/1Database}, \citet{Pfaff2019Annot}.} but in the running text, I  will often simply use e.g. ``Adj'' instead of Md.Aj.Lx, ``N'' instead of N.C, or ``Num'' instead of Md.Card.Num. 
+
+The numbers to be presented here are based on the contents of the NPEGL databases, but it is \isi{essential} to be explicit about what they relate to.  NPGEL employs a pre-sorting strategy apriori excluding certain irrelevant (e.g. one-word) \isi{noun} phrases, and, since annotation is still in progress at the time of writing,  ``100\%'' can never mean ``all \isi{noun} phrases in the respective text(s)'', but merely ``all relevant NPs currently annotated'' (see Table \ref{tab:tp1}).  It is thus crucial to emphasize that the numbers reported here are mainly intended as an illustration for the underlying methodology rather than as final results in their own right.   
+
+For the sake of exposition and for rather practical purposes, I will put two further restrictions on the available data sets in NPEGL by creating \textit{working databases \textbf{ndb$_x$}} (= ``nominal \isi{database}'')\footnote{In the following, I will use the shorthand form ndb where the subscript indicates the respective language. For instance, ndb\textsubscript{OEng} means ``working nominal \isi{database} for Old \ili{English}''. } that  
+\begin{enumerate}[(i)]
+    \item only include NPs that contain exactly one ``N.C'' (= \isi{common noun}),\footnote{Thus ruling out elliptic \isi{noun} phrases (without overt head \isi{noun}), but also  proper names, which behave differently from common nouns in relevant (syntactic) respects. } and
+    \item do not include NPs comprising a \isi{coordination} structure.
+\end{enumerate} 
+Condition (i) ensures that the core component of the \isi{noun} phrase, i.e. the head \isi{noun}, is present; otherwise, notions like \textit{pre-} vs. \textit{postnominal} would be nonsensical. 
+Condition (ii) reduces the number of  unnecessary complications and unnecessarily long NPs, which do not add anything to the present discussion.  
+
+
+
+
+\subsection{Caveat: Patternization }
+
+The ideas and methods reported here emerged from experimenting with some peculiarities of the NPEGL annotation system and the question of how the \isi{database} contents can be utilized to study \isi{word order} \isi{variation}.\footnote{Originally, this chapter was intended as a mere appendix to \textcitetv{chapters/1Database}.} No excessive claim to novelty is made here insofar as the approaches taken are largely based on simple mathematical and combinatorial procedures. Yet the purpose here is not to develop a full-fledged statistical analysis (nor a syntactic analysis, for that matter); the goal is more modest, viz. to offer some practical suggestions and methodological reflections on how to think about \isi{word order} \isi{variation}. 
+
+At the outset, several procedures, as described here,  will either appear rather trivial, or tedious and cumbersome (or downright impossible) -- if performed manually.  It is therefore crucial to emphasize that the methods discussed here (and  their execution) rely on computational assistance, and the actual ``protagonist'' remains hidden: ``{Patternization}'' is a Python tool that I have been developing in the course of the above-mentioned experimenting, and it is this tool that does the actual work. 
+In its current shape, {Patternization} is adapted to the NPEGL annotation system and processes the NPEGL databases. 
+
+This chapter is not, however, meant to be a tool documentation, even though some functionalities will be briefly described in the appendix.  Rather its purpose is to show what {Patternization} actually does and what the motivation for a given procedure is, instead of focusing on technical details of execution. At a more abstract level, the intention is to motivate \textit{Patternization} as a general approach to syntactic diversity, independent of any concrete tools and independent of a specific annotation scheme.  
+
+
+\subsection{Patterns}
+\label{sec:patz}
+
+\citet{Pfaff2015,Pfaff2019} uses the term ``\isi{pattern}''  in order to have labels with which to describe the surface diversity found in modified definite \isi{noun} phrases in Icelandic; the relevant patterns are illustrated in (\ref{4patterns}) (from \citealt[29]{Pfaff2015}).
+
+\begin{exe}
+  \ex \label{4patterns} 
+        \begin{xlist}
+             \ex \textbf{A-\textsc{wk} N-\textsc{def}  \hfill(I)} \\
+                \gll gul-\textbf{i} bíll -\textbf{inn}\\
+                yellow-\textsc{wk} car -\textsc{def}\\           
+             \ex \textbf{\textsc{art} \ A-\textsc{wk} N \hfill(II)} \\
+               \gll \textbf{hinn} fullkomn-\textbf{i} glæpur \\ 
+               \textsc{art}  perfect-\textsc{wk} crime\\      
+            \ex \textbf{N-\textsc{def} \ A-\textsc{wk} \hfill(III)} \\
+             \gll heimspekingur -\textbf{inn} mikl-\textbf{i}  \\
+              philosopher -\textsc{def} great-\textsc{wk}\\     
+             \ex \textbf{A-\textsc{str} N-\textsc{def}  \hfill(IV)} \\  
+                \gll full-\textbf{ur} strákur -\textbf{inn} \\
+                 drunk-\textsc{str}  boy -\textsc{def}  \\  
+\end{xlist}
+\end{exe}
+
+
+The labels given – \isi{pattern} (I), \isi{pattern} (II) etc. – each stand for a (linear) surface string with specific formal properties and ordering, without, however, suggesting any theoretical status.\footnote{\citet{Pfaff2019} moreover shows that the same \isi{pattern} (in the sense of identical surface strings) can have a different syntactic construal at different times.  }   In this setup,  syntactic category (Adj, N),  \isi{adjectival inflection} (strong/weak), and \isi{article} form (free/suffixed) are formal parameters (or distinctive features) that make up a \isi{pattern}. 
+
+Ultimately,  these patterns are  just members of a small pre-determined set. In order to deal with diversity within the \isi{noun} phrase at large, however, certain extensions are inevitable  since we cannot tell apriori what  kind of patterns we may encounter, or how many.  In the following, I will generalize this basic notion of \isi{pattern} in a particular way that makes best-possible use of the annotation system in NPEGL. 
+
+
+Let us define a \isi{pattern} simply as a string of objects within a given domain where  ``domain'' essentially corresponds to a syntactic constituent; in the present case: domain = \isi{noun} phrase/NP.  A \isi{pattern} will be represented as  as an $n$-tuple constituting a linear sequence of $n$ formal objects: (X$_1$, X$_2$,  ... X$_n$). The most obvious value for ``formal object'', which we will be using here, is that of a category (label), and since NPEGL allows for four levels of categorial annotation, we have, in principle, four repositories of pattern-building elements. Differently from the narrow conception in (\ref{4patterns}), we allow for patterns consisting of potential components from a considerably larger pool  and, moreover, for patterns  of variable length (minimally, though, of length $>$ 1). 
+
+Consider the Icelandic example in Table \ref{tab:tp} (meaning `these two big horses') with the corresponding NPEGL category labels (see Section \ref{sec:npegl}). 
+
+\begin{table}
+\caption{Four pattern construals of the same NP  }
+\label{tab:tp}
+\begin{tabular}{l  c  c  c  c  r}
+\lsptoprule
+   & \textit{þessir}  & \textit{tveir} & \textit{stóru} & \textit{hestar} &  \\
+   \midrule
+  \textbf{cat$^0$} & \phantom{X}\textbf{Dem}\phantom{X} & \textbf{Md} & \textbf{Md} & \textbf{N} & $\rightarrow$ \ \textit{\textbf{patt$^0$}} \\  
+  \textbf{cat$^1$} & Dem & \textbf{Md.Card} & \textbf{Md.Aj} & \textbf{ N.C} & $\rightarrow$ \ \textit{\textbf{patt$^1$}}  \\  
+  \textbf{cat$^2$} & Dem & \textbf{Md.Card.Nu} & \textbf{Md.Aj.Lx} & N.C & $\rightarrow$  \ \textit{\textbf{patt$^2$}}	  \\  
+  \textbf{cat$^3$} & Dem & Md.Card.Nu & \textbf{Md.Aj.Lx.Pro} & N.C & $\rightarrow$  \ \textit{\textbf{patt$^3$}}  \\  
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+
+
+This arrangement of labels gives us four possible \isi{pattern} construals  at a different level of granularity,  
+where \textit{patt$^n$} is to be read as ``\isi{pattern} instantiated by a given NP at the cat$^n$ level of annotation (or simply cat$^n$ \isi{pattern})'':  
+
+\begin{enumerate}
+   \item[$patt^0$]:  \ (Dem, \ Md, \ Md, \ N)
+   \item[$patt^1$]: \  (Dem, \ Md.Card, \ Md.Aj, \ N.C)
+   \item[$patt^2$]:  \ (Dem, \ Md.Card.Nu, \ Md.Aj.Lx, \ N.C)
+   \item[$patt^3$]: \  (Dem, \ Md.Card.Nu, \ Md.Aj.Lx.Pro, \ N.C)
+\end{enumerate}  
+
+Notice that pattern construal is not limited,  in principle, by category level and can also tap into the maximal pool   of category labels CAT$^0$ $\bigcup$ CAT$^1$ $\bigcup$ CAT$^2$ $\bigcup$ CAT$^3$, or a subset thereof.  For instance, the above example can just as well be construed as \isi{pattern} (Dem, \textbf{Md}, Md.Aj.Lx, N.C). In this \isi{pattern}, the first modifier slot is underspecified as it were (restricted to \textit{some} modifier category), so it would also capture \isi{noun} phrases like 
+
+\begin{enumerate}[$\bullet$]
+   \item   \textit{these \textbf{few} big horses} \ \  (Md $\rightarrow$ Md.Card.WQ),  
+   \item  \textit{these \textbf{other} big horses} \ \ (Md $\rightarrow$ Md.Aj.Fn),  
+   \item   \textit{these \textbf{beautiful} big horses} \ \  (Md $\rightarrow$ Md.Aj.Lx).  
+\end{enumerate}  
+
+A definition of patterns as a sequence of category labels has to be understood relative to a given categorizing system. NPEGL categories include phrasal and clausal categories, thus the patterns to be discussed here are not simply sequences of words, even though the above examples may suggest so. This system also includes patterns such as the following: 
+
+\begin{enumerate}[$\bullet$]
+   \item   (Md.Aj.Lx, \ N.C, \ \textbf{GenP, \ PP})  \hfill \isi{genitive} phrase + prepositional phrase
+   \item   (Md, \ N.C, \ Dem, \ \textbf{RC}) \hfill \isi{relative clause}
+   \item   (Dem, \ Md.Aj.Lx, \ N.C, \ \textbf{CC.Fi}) \hfill complement clause (finite)
+\end{enumerate}  
+
+Even though GenP may and the other boldprint categories  will comprise several words, formally, they are treated as one category, and in this sense, these examples behave just like the above examples, viz. as 4-tuples (= patterns involving four categories). 
+
+
+\section{Basic numbers and Pattern Diversity}
+\label{sec:PatDiv}
+
+
+The current numbers of NPs, categories, and patterns (sorted by category level) in the NPEGL databases, more specifically, in their respective ndb databases, are illustrated in Table \ref{tab:tp1}.  
+By definition, every NP in ndb$_x$ contains exactly one lexical \isi{noun} ``N.C'' (see Section \ref{sec:npegl}),  thus the respective numbers of occurrences of that category is the same as the numbers of NPs given in Table \ref{tab:tp1}. Table \ref{tab:tp1z}  lists  the next three most frequent categories.  
+
+\begin{table}
+\caption{ndb-subdatabases in NPEGL:  NPs, categories, patterns}
+\label{tab:tp1}
+\begin{tabular}{ll@{}rrrrr}
+\lsptoprule
+        &	& Old	Icel. & Old \ili{English} &	OH \ili{German} & Old  \ili{Swedish} & \ili{Old Saxon} \\\midrule
+\multicolumn{2}{l}{NPs} & 7981   &  3260  & 604  & 687 & 6696   \\
+\multicolumn{2}{l}{CATs}    \\
+        & cat$^0$ & 19  & 16 & 16  & 17  & 16	 \\
+        & cat$^1$ &  25  & 22 & 20 & 21   & 20 \\
+        & cat$^2$ & 28  & 27 & 23  & 24   & 23 \\
+        & cat$^3$ & 34  & 30  & 28  & 31  & 28  \\
+\multicolumn{2}{l}{PATTs}   \\
+        & patt$^0$ & 384 & 151  & 92 & 75 & 245   \\
+        & patt$^1$ &  509  & 191  & 103  & 86  & 289 \\
+        & patt$^2$ & 590  & 214  & 113  & 99  & 351  \\
+        & patt$^3$ &  708  & 260  & 124  & 107  &  383   \\
+\lspbottomrule
+\end{tabular}
+
+%%% The data can also be printed very compact:
+% % \tabcolsep=.9\tabcolsep
+% % \begin{tabular}{l *9{c}}
+% % \lsptoprule
+% %               &          & \multicolumn{4}{c}{CATs} & \multicolumn{4}{c}{PATTs}\\\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+% %               &   NPs    & cat$^0$ & cat$^1$ & cat$^2$ & cat$^3$ & patt$^0$ & patt$^1$ & patt$^2$ & patt$^3$\\\midrule
+% % Old	Icelandic & 7981 &  19 & 25 & 28 & 34 & 384 & 509 &  590 & 708 \\ 
+% % Old English &   3260 &  16 & 22 & 27 & 30 & 151 & 191 &  214 & 260 \\ 
+% % OH German &     \phantom{1}604  &  16 & 20 & 23 & 28 & \phantom{1}92  & 103 &  113 & 124 \\ 
+% % Old  Swedish &  \phantom{1}687  &  17 & 21 & 24 & 31 & \phantom{1}75  & \phantom{1}86  &  \phantom{1}99  & 107 \\ 
+% % Old Saxon    &  6696 &  16 & 20 & 23 & 28 & 245 & 289 &  351 & 383 \\
+% % \lspbottomrule
+% % \end{tabular}
+\end{table}
+
+\begin{table}
+\caption{Most frequent categories at cat\textsuperscript{2} --  
+absolute frequencies and occurrence in patterns }
+\label{tab:tp1z}
+%  \begin{tabularx}{\textwidth}{X  rrrrr}
+%   \lsptoprule
+%   & Old & Old &	Old High & Old & Old  \\
+%   & Icelandic & \ili{English} &	\ili{German} & \ili{Swedish} & Saxon \\
+% \midrule
+% 	category & Md.Aj.Lx & Dem & Dem & GenP & Dem \\
+% 	abs. freq. & 2013 & 1302 & 260 & 178 &  2485  \\
+% 	\textsc{Cat\_in\_Patt} & 200 & 75 & 41 & 21 &  108  \\
+% \midrule
+%
+% 	category & Poss & Md.Aj.Lx & Poss & Poss & Md.Aj.Lx  \\
+% 	abs. freq. & 1706 & 853 & 134 & 173 & 1759   \\
+% 	\textsc{Cat\_in\_Patt} & 94 & 82 & 18 & 15 & 122  \\
+% \midrule
+% 	category	& Dem & GenP & GenP & Md.Card.Nu & GenP  \\
+% 	abs. freq. & 1677 & 604 & 77 & 163 & 1642  \\
+% 	\textsc{Cat\_in\_Patt} & 162 & 59 & 20 & 22 & 124  \\
+%
+%   \lspbottomrule
+%  \end{tabularx}
+
+\fittable{%
+ \begin{tabular}{l@{}r@{~~}r@{~~}r@{~~}r@{~~}r@{~~}}
+  \lsptoprule
+  & \ili{Old Icelandic} & Old \ili{English} &	OH \ili{German}& \ili{Old Swedish} & \ili{Old Saxon} \\
+  \midrule
+
+	category & Md.Aj.Lx & Dem & Dem & GenP & Dem \\
+	abs. freq. & 2013 & 1302 & 260 & 178 &  2485  \\
+	\textsc{Cat\_in\_Patt} & 200 & 75 & 41 & 21 &  108  \\
+
+	\tablevspace
+
+
+	category & Poss & Md.Aj.Lx & Poss & Poss & Md.Aj.Lx  \\
+	abs. freq. & 1706 & 853 & 134 & 173 & 1759   \\
+	\textsc{Cat\_in\_Patt} & 94 & 82 & 18 & 15 & 122  \\
+
+	\tablevspace
+
+	category	& Dem & GenP & GenP & Md.Card.Nu & GenP  \\
+	abs. freq. & 1677 & 604 & 77 & 163 & 1642  \\
+	\textsc{Cat\_in\_Patt} & 162 & 59 & 20 & 22 & 124  \\
+
+  \lspbottomrule
+ \end{tabular}}
+\end{table}
+
+The label \textit{Occurrences} in Table \ref{tab:tp1z} indicates the absolute frequency of the respective category, while \textit{Cat\_in\_Patt} indicates in how many different patterns that category occurs. As can be seen, the two numbers do not necessarily correlate; a category can be very frequent without being very versatile, and vice versa.  For space reasons, we will not look at individual patterns in detail here; suffice it to say  that the most frequent \isi{pattern} in each ndb$_x$ is of length 2: (N.C, Poss), (Dem, N.C), (Poss, N.C), etc.
+
+Given the basic numbers in Table \ref{tab:tp1}, we can calculate a simple type-token ratio~-- patterns per NPs -- which  will be referred to as \textit{Pattern Diversity} (\textsc{PattDiv}), where, hypothetically, a value of 1.0 = 100\% indicates maximal diversity (every NP instantiates a different \isi{pattern}). If we take these numbers at face value, we get the ratios illustrated in Table \ref{tab:tp2}.\largerpage[-2]
+
+\begin{table}
+\caption{Pattern Diversity: Patterns per NPs (see Table \ref{tab:tp1}) }
+\label{tab:tp2}
+ \begin{tabularx}{\textwidth}{Xrrrrr}
+  \lsptoprule
+  & \ili{Old Icelandic} & Old \ili{English} & OH	\ili{German} & \ili{Old Swedish} & \ili{Old Saxon} \\
+\midrule
+	 cat$^0$ & 4.8\% & 4.6\% & 15.2\% & 10.9\% & 3.7\%  \\ 
+	 cat$^1$ & 6.4\% & 5.9\% & 17.1\% & 12.5\% & 4.3\%  \\ 
+	 cat$^2$ & 7.4\% & 6.6\% & 18.7\% &	14.4\% & 5.2\%  \\ 
+	 cat$^3$ & 8.9\% & 8.0\% & 20.5\% & 15.6\% & 5.7\%  \\ 
+  
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+However, a note of caution is in order, for the numbers in Table \ref{tab:tp2}  give a distorted impression. Notice, in particular,  that the numbers of annotated NPs in the various language databases  are of different sizes,  with a significant difference between \ili{Old Icelandic}/\ili{Old Saxon} and Old High \ili{German}/\ili{Old Swedish}. In the course of annotation, a certain degree of saturation will be reached, meaning that, while the number of NPs increases steadily, it happens less and less often that a new \isi{pattern} is introduced and thus the ratio -- patterns per NPs -- gets ``diluted''. In other words, for a large number of NPs, the diversity index becomes smaller. 
+
+It is, therefore, prudent to establish a \textit{standardized common denominator} \textbf{scd} of, say,  \textbf{scd} = 1000, i.e. patterns per 1000 NPs, in order to provide a more balanced picture. When calculating the values for \textsc{PattDiv} on that basis, we get the numbers in Table \ref{tab:tp3}.\footnote{In the Appendix, we will briefly address the technicalities of this procedure. Also, since the ndbs for Old High \ili{German} and \ili{Old Swedish} are of  size < 1000, they will be ignored here. }    % ($\Rightarrow$ Section \ref{sec:PatD}): 
+
+\begin{table}
+\caption{Revised \textsc{PattDiv} with scd = 1000 }
+\label{tab:tp3}
+ \begin{tabularx}{\textwidth}{Xrrrrr}
+  \lsptoprule
+  & \ili{Old Icelandic} & Old \ili{English} &	{\color{gray}OH German} & {\color{gray}Old Swedish} & \ili{Old Saxon} \\
+  \midrule
+
+	 cat$^0$ & 13.1\% & 8.6\% &  & & 9.5\%  \\
+	 cat$^1$ & 16.5\%   & 10.6\%  & & & 10.2\%  \\
+	 cat$^2$ & 18.5\% & 11.7\% & & & 12.6\% \\
+	 cat$^3$ & 21.8\% & 13.8\% & & & 13.4\% \\
+  
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+
+
+
+One straightforward observation is that we can put a number on diversity and claims such as ``the \ili{Old Icelandic} \isi{noun} phrase has more \isi{variation} than the Old \ili{English}/Saxon \isi{noun} phrase'' can be given numerical substance via the  \textsc{PattDiv} index. Thus, while simple,  \textsc{PattDiv} gives us an elegant measurement for (degrees of) syntactic diversity. 
+ 
+
+
+
+\section{Combinatorial flexibility}
+\label{sec:CoFlxx}
+
+We will now look at some more advanced issues; consider the examples in (\ref{freVa}), found in \ili{Old Icelandic} saga texts.\footnote{Retrieved from the  \textit{Saga Corpus}: \url{http://malheildir.arnastofnun.is/?mode=forn\#?corpus=forn}. }
+
+
+\begin{exe}
+  \ex  \label{freVa}  
+    \begin{xlist}
+      \ex  \gll  sína  \textit{fullkomna} \textbf{vináttu}  \\ 
+       \textsc{poss} perfect friendship  \\         
+      \ex    \gll    \textit{fullkomna} \textbf{vináttu} sína \\  
+        perfect friendship \textsc{poss}  \\     
+      \ex  \gll   \textbf{vináttu} sinni  \textit{fullkominni} \\ 
+        friendship \textsc{poss} perfect    \\   
+      \ex   \gll    \textit{fullkominni} sinni  \textbf{vináttu} \\ 
+        perfect \textsc{poss} friendship   \\         
+      \ex  \gll   sinni \textbf{vináttu}  \textit{fullkominni}\footnotemark{} \\ 
+        \textsc{poss} friendship perfect    \\   
+        \glt  `his perfect/complete friendship'\footnotetext{The possessive and the \isi{adjective} visibly differ with respect to case, accusative vs. \isi{dative} (as a consequence of being governed by different verbs). Such case differences are irrelevant in the present context. }
+    \end{xlist}  
+    
+\end{exe}
+
+
+These examples present a rather peculiar instance of diversity  insofar as the same lexical items, and,  a fortiori, the same categories are involved in all five cases, but in different constellations, i.e.  patterns. Now instead of comparing frequencies, 
+let us take the fact \textit{attestation} at face value and focus on the three categories involved.  The maximal number of permutations involving three elements, such as {\small\scshape\{N, Adj, Poss\}},  is $3! = 3 \times 2 \times 1 = 6$  possible constellations  -- five of which are shown in (\ref{freVa}), while the missing one does not seem to be attested.\footnote{The usual disclaimers apply: ``not attested'' in a (historical) \isi{corpus} does not necessarily entail that the construction in question is, in fact, ungrammatical. \\ \indent
+ In the following, the term \textsc{attestation} will be used  as a binary parameter (+/--\textsc{Att}) indicating \textit{whether} a particular configuration is found in a given language/text in the first place -- rather than \textit{how often}; when talking about (absolute) frequencies, we will instead use \textsc{occurrence}.     } 
+We can encode this observation with a feature [+/--\textsc{Att}], or simply assign a truth value, cf. (\tabref{tab:freVaX}).
+
+
+\begin{table}
+  \begin{tabularx}{.8\textwidth}{l C  C c}
+\lsptoprule
+	&  \{\textsc{N, Poss, Adj }\}  & & \textbf{5/6}  \\
+\midrule
+i. & \textbf{\textsc{ Poss  \ Adj \ N}}   	&	\textsc{[+Att]}	&		\textbf{\textsc{True}} 		\\
+ii. & \textbf{\textsc{ Adj \ N \ Poss  }}  &	\textsc{[+Att]}	& \textbf{\textsc{True}} 		\\
+iii. & \textbf{\textsc{ N \ Poss  \ Adj }}  &	\textsc{[+Att]}	& \textbf{\textsc{True}} 		\\
+iv. & \textbf{\textsc{ Adj \ Poss  \ N }}  &	\textsc{[+Att]}	& \textbf{\textsc{True}} 		\\
+v. & \textbf{\textsc{ Poss \ N  \ Adj }}  &	\textsc{[+Att]}	& \textbf{\textsc{True}} 		\\
+vi. & \textbf{\textsc{ N \ Adj \ Poss }}  &	\textsc{[--Att]}	&		\textbf{\textsc{False}} 		\\
+\lspbottomrule
+\end{tabularx}
+ \caption{Attested and non-attested patterns of \{\textsc{N, Poss, Adj }\}}
+\label{tab:freVaX}
+\end{table}
+
+
+We will take the observation that five out of six possible patterns (involving three categories) are {attested} as a measurement of \textit{combinatorial flexibility} and notate it as \textbf{\textsc{CombFlex({\small\scshape\{N, Adj, Poss\}})}} $=$ 5/6.\footnote{In
+  accordance with the project title \textit{Constraints on syntactic variation},   \tabref{tab:freVaX} can also be given a purely extensional interpretation: Rows i-v in \tabref{tab:freVaX} represent the \isi{variation},  Column vi. is the constraint (on \isi{variation}).
+} Thus \isi{combinatorial flexibility} tells us something about which categories combine in how many ways. Differently from \isi{pattern} diversity, it tells us something about actual diversity in relation to potential diversity by making reference to the maximum of possible permutations.
+
+When assessing \isi{combinatorial flexibility}, the actual number of \textsc{occurrences}  of the respective patterns is irrelevant; what counts is their \textsc{attestation} value.  By default, \textsc{[--Att]}  is tantamount to zero occurrences.   However, for many practical purposes, %also depending on the \isi{corpus} size, 
+a \textit{threshold value} X might be warranted such that {\textsc{[+Att]} requires there to be $x$ $\geq$  X \textsc{occurrences}; in that case, \textsc{[--Att]} is the result of  $x$ $<$  X \textsc{occurrences}.} For the sake of illustration, the following discussion is based on the minimum setting X = 1 and \textsc{[+Att]} $\leftrightarrow$  $x$ $\ge$ 1.   % to exclude random outliers, 
+
+The illuminating example (\ref{freVa}) above was an accidental finding, but it led to an interesting way of looking at syntactic diversity. In the following, we will develop this into a full-blown method that is systematic and, above all, exhaustive in the sense that it enables us to examine the whole spectrum of  attested per potential permutations in a given domain. Before addressing the actual procedure, I will give a brief definition of the  mathematical notions \textit{permutation} and  \textit{combination} and some terminology  relevant for the implementation.
+
+
+
+\subsection{Basic combinatorics refresher}
+
+Combinatorics is a branch of mathematics that examines the ways in which (arrangements of) objects can be counted. For the discussion to follow, we will especially rely on the concepts \textit{(sub-)permutation} and \textit{combination}. Given a set S with n distinct elements, then n! (read: n \isi{factorial}) is the number of possible permutations, i.e. different arrangements, of the n elements; the ordering of the elements matters. A \isi{combination} is essentially a set, here a subset of S, and the number of k-combinations is the number of different subsets of S of cardinality k. We have  ${n}\choose{k}$ (read: n choose k) k-combinations in S. Being a set, the internal ordering of a \isi{combination} does not matter.   
+%\clearpage 
+The relevant details are summarized and illustrated below:\footnote{Following common mathematical conventions, we will notate actual, that is unordered Sets with curly brackets: \{a, b, c\}, while tuples, which are ordered sequences, will be notated with parentheses: (a, b, c).   }  
+
+\largerpage
+
+\noindent $\Rightarrow$ Given a \textit{sample space} (= set) S, with |S| = $n$, and  $k$ $\in$ $\mathbb{N}$  $\le$ $n$, then there are 
+\begin{enumerate}
+\item[$\bullet$] $n!$ { \color{gray} = $n \times (n-1) \times (n-2) \times ... \times 2 \times 1$ } \ (full)  \textit{\textbf{permutations}}     \hfill  {\color{gray}  of size $n$}
+\item[$\bullet$]    ${n}\choose{k}$ =   {$\dfrac{ n! }{ k!(n-k)! } $} \ \textit{\textbf{k-combinations}}  \hfill  {\color{gray}$\sim$ sub-sets of size $k$}
+\item[$\bullet$]    ${n}\choose{k}  \times k!$  {\color{gray} =  {\footnotesize$\dfrac{ n! }{ (n-k)! } $}} \ \textit{\textbf{k-permutations}}   \hfill {\color{gray}$\sim$ sub-permutations of size $k$}  \\ 
+\end{enumerate}
+
+\noindent $\Rightarrow$  Suppose \textbf{S  =  \{A, B, C, D, E, F\}} with  $n$ = \textbf{|S| = 6}; let $k$ = 3; then there are
+
+
+\begin{enumerate}
+\item[\textbf{(I)}]     ${6}\choose{3}$ =   {\footnotesize$\dfrac{ 6! }{ 3!(6-3)! } $} = \textbf{20} possible  \textit{\textbf{3-combinations}}: 
+
+
+ \begin{tabularx}{.765\textwidth}{l l l l l}
+%   \lsptoprule
+	\{A, C, B\}{\color{white}X} & \{A, C, D\}{\color{white}X} & \{A, D, E\}{\color{white}X} & \{A, C, E\}{\color{white}X} & \{A, B, D\} \\
+	\{A, D, F\} 	&	\{A, E, F\} &	\{A, C, F\} &	\{A, E, B\} 	&	\{A, B, F\} \\ 
+	\{F, D, C\} 	&	\{F, E, B\} 	&	\{B, C, D\} &	\{C, E, B\} &	\{B, C, F\} \\ 
+	\{B, D, F\} 	&	\{C, D,  E\} 	&	\{B, D, E\} &	\{C, E, F\} &	\{D, E, F\} \\  
+%   \lspbottomrule
+ \end{tabularx}
+
+
+Combinations are sets, hence the ordering does not matter; therefore \\   \{A, C, B\} $=$ \{C, A, B\} $=$ \{B, A, C\} $=$ \{B, C, A\} etc. \\  %(General: for any S, |S| = n and |c| = k: ${n}\choose{k}$ =   {\footnotesize$\dfrac{ n! }{ k!(n-k)! } $})
+
+\item[\textbf{(II)}]${6}\choose{3} \times 3!$ =  \textbf{20}  {\small \textbf{x}} \textbf{6}  = \textbf{120}  possible \textit{\textbf{3-permutations}}: %. \\         {\footnotesize$\dfrac{ 6! }{ (6-3)! } $} 
+
+\begin{longtable}{l l l l l l} 
+	(A,  C, B)              & (A, B, C)                 & (B, A, C)                 & (B, C, A)     & (C, A, B)     & (C, B, A) \\
+	(A, C, D) 				& 	(A, D, C)				& 	(C, A, D)				& 	(C, D, A)	& 	(D, A, C) 	&	 (D, C, A) \\
+	(A, D, E) 				& 	(A, E, D)				& 	(D, A, E) 				& 	(D, E, A)	& 	(E, A, D) 	& 	(E, D, A) \\
+	(A, C, E) 				& 	(A, E, C)				& 	(C, A, E) 				&	 (C, E, A)	& 	(E, A, C) 	&	 (E, C, A) \\
+	(A, B, D) 				& 	(A, D, B)				& 	(B, A, D) 				& 	(B, D, A)	& 	(D, A, B) 	& 	(D, B, A) \\
+	(A, D, F) 				& 	(A, F, D)				& 	(D, A, F) 				& 	(D, F, A)	& 	(F, A, D) 	& 	(F, D, A) \\
+	(A, E, F) 				& 	(A, F, E) 				& 	(E, A, F) 				& 	(E, F, A) 	& 	(F, A, E) 	& 	(F, E, A) \\
+	(A, C, F) 				& 	(A, F, C)				& 	(C, A, F) 				& 	(C, F, A)	& 	(F, A, C) 	& 	(F, C, A) \\
+	(A, E, B) 				& 	(A, B, E) 				& 	(B, A, E) 				& 	(B, E, A) 	& 	(E, A, B) 	& 	(E, B, A) \\
+	(A, B, F) 				& 	(A, F, B) 				& 	(B, A, F) 				& 	(B, F, A) 	& 	(F, A, B) 	& 	(F, B, A) \\
+	(F, D, C) 				&	(C, F, D) 				&	 (D, C, F) 				& 	(D, F, C) 	&	 (F, C, D) 	& 	(C, D, F) \\ 
+	(F, E, B) 				& 	(B, F, E) 				& 	(E, B, F) 				& 	(E, F, B) 	& 	(F, B, E) 	& 	(B, E, F) \\
+	(B, C, D) 				& 	(B, D, C)				& 	(C, B, D) 				& 	(C, D, B)	& 	(D, B, C) 	& 	(D, C, B) \\
+	(C, E, B) 				& 	(B, E, C) 				& 	(C, B, E) 				& 	(B, C, E) 	& 	(E, B, C) 	& 	(E, C, B) \\
+	(B, C, F) 				& 	(B, F, C) 				& 	(C, B, F) 				& 	(C, F, B) 	& 	(F, B, C) 	& 	(F, C, B) \\
+	(B, D, F) 				& 	(B, F, D) 				& 	(D, B, F) 				& 	(D, F, B) 	& 	(F, B, D) 	& 	(F, D, B) \\
+	(C, D, E) 				& 	(C, E, D)				& 	(D, C, E) 				& 	(D, E, C)	& 	(E, C, D) 	& 	(E, D, C) \\ 
+	(B, D, E) 				& 	(B, E, D) 				& 	(D, B, E) 				& 	(D, E, B) 	& 	(E, B, D) 	& 	(E, D, B) \\
+	(C, E, F) 				& 	(C, F, E) 				& 	(E, C, F) 				& 	(E, F, C) 	& 	(F, C, E) 	&	 (F, E, C) \\
+	(D, E, F) 				& 	(D, F, E) 				& 	(E, D, F) 				& 	(E, F, D) 	& 	(F, D, E) 	& 	(F, E, D) \\  
+ \end{longtable}
+
+(Sub-)permutations will be represented as tuples since the ordering does matter: (A,  C, B) $\not=$ (C, A, B) $\not=$ (B, C, A) etc.  
+\end{enumerate} 
+
+In the following, I will use the term \textit{\isi{permutation} group} for the set of possible permutations of a given \isi{combination}: \\
+
+
+\begin{tabular}{c  l } 
+  \isi{combination} 	& \{A, C, B\}	 \\
+\midrule  \isi{permutation}  & \{ (A, B, C), (A, C, B), (B, C A), (B, A, C), (C, A, B), (C, B, A) \}  \\
+  group & \\
+\end{tabular} 
+
+
+
+\subsection{Patterns and permutations}
+\label{sec:pattper}
+
+For the present purpose, the relevant sample space S$_{cat}$ obviously makes reference to category labels (or annotation features more generally).  S$_{cat}$ may be the entire categorial inventory or constitute a more or less random selection/subset of  category labels, e.g. 
+\begin{itemize}
+  \item  S$_{cat}$ = CAT   \ \ = \ \ cat$^0$ $\bigcup$ cat$^1$ $\bigcup$ cat$^2$ $\bigcup$ cat$^3$  \hfill (complete category set)
+  \item S$_{cat}$ =   cat$^2$ \hfill (cat$^2$ categories)
+  \item S$_{cat}$ =  \{Poss, Md.Aj, PP, Q, Dem, GenP, N.C,  RC\}  \hfill (random selection)
+\end{itemize} 
+
+
+The general procedure is as follows:
+after establishing  S$_{cat}$ and  the prospective \isi{pattern} size $k$, we generate all  ${|S_{cat}|}\choose{k}$ \isi{permutation} groups, which will then serve as search patterns to browse the \isi{database}. The query results, in turn,  will allow us to determine  \textsc{CombFlex({\small \{c$_1$, c$_2$ ... c$_k$\}})} for any $k$ categories \textsc{\small c$_1$, c$_2$ ... c$_k$}  {\small $\in$}  S$_{cat}$. 
+
+For convenience, we can reduce some unnecessary noise. Since the ndb restriction guarantees that every NP contains exactly one \isi{noun}, we will take advantage of that and only consider combinations that include a \isi{noun}. Thus with  $k$ = 3,  we first  generate \textit{all}  3-combinations of S$_{cat}$, but sort out those that do not contain a category label ``N.C'', as  in (\ref{nons}). For those combinations that do, however, we will then generate the respective \isi{permutation} groups, cf.  (\ref{perms}).
+
+
+\begin{exe}
+  \ex \label{nons}
+{\color{gray}    \begin{xlist}
+      \ex\{RC, Dem, Q\}  \hfill  (combinations \textit{not} satisfying
+     \ex \{Mdmd, GenP, Poss\} \hfill  the restriction  >>contains ``N.C''<<
+     \ex \{Dem, Q, Poss\}  \hfill   will be ignored) \\ 
+       \end{xlist} }
+
+  \ex \label{perms}
+    \begin{xlist}
+
+      \ex  \{ \textbf{N.C}, Poss, Md.Aj \} \hfill (satisfies the restriction) \\ $\Rightarrow$  generate permutations:  
+    
+        \gll  {(Poss, N.C, Md.Aj)}, { \ \ \ \ \ \ }  {(Poss, Md.Aj, N.C)},  { \ \ \ \ \ \ }    {(N.C, Md.Aj, Poss)},  \\
+      {(N.C, Poss, Md.Aj),} {}  {(Md.Aj, Poss, N.C),} {} {(Md.Aj, N.C, Poss) } \\  
+ 
+      \ex  \{ Dem,  \textbf{N.C}, RC \} \hfill (satisfies the restriction) \\ 
+      $\Rightarrow$  generate permutations:   
+      
+       \gll  {(Dem, N.C, RC),} { \ \ \ \ \ \ \ } {(N.C, Dem, RC),} { \ \ \ \ \ \ \  } {(Dem, RC, N.C),} \\ 
+      {(RC, Dem, N.C),}  { \ \ \ \  }  {(N.C, RC, Dem),} { \ \ \ \  } {(RC, N.C, Dem)} \\  
+
+\end{xlist}
+ etc. . . . . .
+\end{exe} 
+
+\largerpage[2]
+In the next step, the respective ndb$_x$ will be probed for attestations of each member of all \isi{permutation} groups generated.  In (\ref{cbf}), a small selection of the results for a search in  ndb\textsubscript{OIcel} with $k$ = 3 is given.  
+
+\begin{exe}
+  \ex \label{cbf}
+     \begin{xlist}
+        \ex \textbf{\uline{ \{Md.Aj, App, N.C\}: \hfill 1 / 6 } }
+          \begin{xlist}
+              \ex  (App, Md.Aj, N): \hfill \textsc{false}
+              \ex  (App, N.C, Md.Aj)  \hfill \textsc{false}
+              \ex (Md.Aj, App, N.C):  \hfill \textsc{false}
+              \ex (Md.Aj, N.C, App): \hfill \textsc{true}
+             \ex (N.C, App, Md.Aj):   \hfill \textsc{false}
+             \ex  (N.C, Md.Aj, App):  \hfill \textsc{false} \\ 
+          \end{xlist}
+
+        \ex \label{cbfb} \textbf{\uline{ \{N.C, Dem, RC\}: \hfill 2 / 6   } }
+          \begin{xlist}
+              \ex (Dem, N.C, RC):   \hfill \textsc{true}
+              \ex (N.C, Dem, RC):   \hfill \textsc{true}
+              \ex (RC, N.C, Dem):   \hfill \textsc{false}
+              \ex (RC, Dem,  N):  \hfill  \textsc{false}
+              \ex (N.C, RC, Dem):   \hfill \textsc{false}
+              \ex (Dem, RC, N.C):   \hfill \textsc{false}  \\ 
+          \end{xlist}
+
+        \ex \textbf{\uline{ \{N.C, Dem, Md.Aj.Lx\}: \hfill 3 / 6}}
+          \begin{xlist}
+              \ex (Dem, Md.Aj, N.C): \hfill \textsc{true}
+              \ex (Dem, N.C, Md.Aj): \hfill \textsc{true}
+              \ex (Md.Aj, N.C, Dem): \hfill \textsc{false}
+              \ex (N.C, Dem, Md.Aj): \hfill \textsc{true}
+              \ex (Md.Aj, Dem,  N.C): \hfill \textsc{false}
+              \ex (N.C, Md.Aj, Dem): \hfill \textsc{false} \\ 
+          \end{xlist}
+
+        \ex \textbf{\uline{ \{N.C, Md.Card.WQ, Md.Aj\}: \hfill 4 / 6 } }
+          \begin{xlist}
+              \ex (Md.Aj, Md.Card.WQ, N.C): \hfill \textsc{true}
+              \ex (Md.Aj, N.C, Md.Card.WQ): \hfill \textsc{true}
+              \ex (Md.Card.WQ, Md.Aj, N.C): \hfill \textsc{true}
+              \ex (Md.Card.WQ, N.C, Md.Aj): \hfill  \textsc{true}
+              \ex (N.C, Md.Aj, Md.Card.WQ): \hfill  \textsc{false}
+              \ex (N.C,Md.Card.WQ, Md.Aj):  \hfill \textsc{false}  \\ 
+          \end{xlist}
+
+        \ex \textbf{\uline{ \{N.C, Md.Aj, Poss\}: \hfill 5 / 6 } }
+          \begin{xlist}
+              \ex (Md.Aj, N.C, Poss): \hfill \textsc{true}
+              \ex (Poss, Md.Aj, N): \hfill \textsc{true}
+              \ex (N.C, Poss, Md.Aj): \hfill \textsc{true}
+              \ex (Poss, N.C, Md.Aj): \hfill  \textsc{true}
+              \ex (Md.Aj, Poss,  N.C): \hfill  \textsc{true}
+              \ex (N.C, Md.Aj, Poss):  \hfill \textsc{false} \\ 
+          \end{xlist}
+
+        \ex \textbf{\uline{ \{Q, N.C, Md.Aj\}: \hfill 6 / 6 }}
+          \begin{xlist}
+              \ex (Q, Md.Aj, N.C):   \hfill \textsc{true}
+              \ex (Q, N.C, Md.Aj):   \hfill \textsc{true}
+              \ex (Md.Aj, Q, N.C):   \hfill \textsc{true}
+              \ex (Md.Aj, N.C, Q):   \hfill \textsc{true}
+              \ex (N.C, Md.Aj, Q):   \hfill \textsc{true}
+              \ex (N.C, Q, Md.Aj):  \hfill  \textsc{true}
+          \end{xlist}
+
+     \end{xlist}
+\end{exe} 
+
+As might be expected, in many cases, not more than one or two of the permutations are \textsc{attested}, and often those are not very insightful.\footnote{For instance, the fact that only permutations with the \isi{relative clause} in final position are attested, cf. (\ref{cbfb}), is not really surprising.  }  
+However,  we also find combinations, for which up to all six out of six possible permutations are \textsc{attested}, and \isi{permutation} groups with \textsc{CombFlex} = 4/6 or higher are surely worth closer examination. But the most outstanding feature of this procedure is that it is completely exhaustive: for any 3-\isi{permutation} in  S$_{cat}$, we will determine whether it is \textsc{attested} or not, and, concomitantly, for any \isi{permutation} group, we will ascertain its \isi{combinatorial flexibility} -- as partially illustrated in (\ref{cbf}).  
+In Table \ref{tab:cflex}, the numbers of \isi{permutation} groups for each value of \textsc{CombFlex} are given.
+
+\begin{table}
+\caption{Combinatorial flexibility in S\textsubscript{cat} = cat\textsuperscript{2} with  $k$ = 3 }
+\label{tab:cflex}
+\fittable{
+ \begin{tabular}{ l  rrrrr   }
+  \lsptoprule
+   \textsc{CombFlex} & 	Old  Icelandic &  Old \ili{English} & OH \ili{German} & \ili{Old Swedish} & \ili{Old Saxon}  \\
+    \midrule
+
+	1$\boldsymbol{/}$6 & 31 & 41 & 27 & 31 & 13    \\   
+	2$\boldsymbol{/}$6 & 59 & 41 & 19 & 17 & 28   \\ 
+ 	3$\boldsymbol{/}$6 & 20 & 10 & 6 & 7 & 20       \\ 
+ 	4$\boldsymbol{/}$6 & 13 & 2 & 0 & 3 & 10  \\   
+	5$\boldsymbol{/}$6 & 19 & 5 & 0 & 0 & 4  \\    
+ 	6$\boldsymbol{/}$6 & 11 & 0 & 0 & 0 & 6  \\  
+  \lspbottomrule
+ \end{tabular}
+ }
+\end{table} 
+
+Thus we have, for instance, six \isi{permutation} groups in \ili{Old Saxon} with the maximal \textsc{CombFlex} 6/6, five \isi{permutation} groups in Old \ili{English} with \textsc{CombFlex} 5/6 etc. Based on those numbers, we can, in turn, calculate a mean \isi{combinatorial flexibility} $\mu$-\textsc{CombFlex} that tells us how many permutations we find on average -- per permuation group and per language, cf. Table \ref{tab:cflex2}.
+
+
+\begin{table}
+\caption{Mean combinatorial flexibility in S\textsubscript{cat} = cat\textsuperscript{2} with  $k$ = 3}
+\label{tab:cflex2}
+\fittable{
+\begin{tabular}{ l@{}  rrrrr   }
+  \lsptoprule
+    & \ili{Old Icelandic} & Old \ili{English} & OH \ili{German} & \ili{Old Swedish} & \ili{Old Saxon}  \\
+    \midrule
+
+	$\mu$-\textsc{CombFlex} & 2.8/6 & 1.9/6 & 1.6/6 & 1.7/6 & 2.8/6 \\   
+ 
+   \lspbottomrule
+ \end{tabular}
+ }
+\end{table} 
+
+The numbers in Table \ref{tab:cflex2} constitute a simplification insofar as they are based on the number of \isi{permutation} groups of which at least one \isi{permutation} yields \textsc{true}, while \isi{permutation} groups with \textsc{CombFlex} 0/6 are not considered here. Let us refer to a \isi{permutation} group with \textsc{CombFlex} 1/6 -- 6/6 as C$_{att}$ (= ``attested \isi{combination}''), and  conversely, to every potential \isi{permutation} group  generated on the basis of the respective category inventory (see Table \ref{tab:tp1}) as  C$_{pot}$ (= ``potential \isi{combination}'').  %\footnote{As an example: \ili{Old Icelandic} has 28 \textsc{attested} cat$^2$ categories including the label ``N.C''. Since, by stipulation, every \isi{combination} must contain a \isi{noun}, we can ignore this one category, and the procedure will generate ${ 28 - 1  }\choose{ 2 }$ = 351 \ 3-combinations that contain ``N.C'', thus C_{pot} = 351. } 
+With the numbers for these, we can calculate the ratio attested \isi{permutation} groups per potential \isi{permutation} groups; %{\tiny$\dfrac{ C_{att} }{ C_{pot} } $}. This is the proportion of \isi{permutation} groups that have a \isi{combinatorial flexibility} of 1/6 or more; 
+effectively, this ratio tells us how often three categories can co-occur, given the entire spectrum of categories available and the resulting possible three-way combinations. 
+Likewise we can calculate the mean \isi{combinatorial flexibility} that includes non-\textsc{attested} \isi{permutation} groups (i.e. with the value 0/6); call this $\mu$-\textsc{CombFlex}$^0$, cf. Table \ref{tab:cflex3}.
+
+
+
+\begin{table}
+\caption{Potential and attested combinations; modified combinatorial flexibility }
+\label{tab:cflex3}
+\fittable{
+ \begin{tabular}{ l@{}rrrrr   }
+  \lsptoprule
+    &\ili{Old Icelandic} & Old \ili{English} & OH \ili{German} & \ili{Old Swedish} & \ili{Old Saxon}  \\
+    \midrule
+
+	categories & 28 & 27 & 23 & 24 & 23   \\  
+
+    \textbf{C$_{pot}$} & 351 & 325 & 231 & 253 & 231 \\  
+
+    \textbf{C$_{att}$} & 153 & 99 & 52 & 58 & 81	\\  
+
+     {\footnotesize $\dfrac{ C_{att} }{ C_{pot} } $} & 0.436 & 0.305 & 0.225 & 0.229 & 0.351	\\  
+
+    $\mu$-\textsc{CombFlex}$^0$\phantom{$^I$}   & \textbf{1.2$\boldsymbol{/}$6} & \textbf{0.6$\boldsymbol{/}$6} & \textbf{0.4$\boldsymbol{/}$6} & \textbf{0.4$\boldsymbol{/}$6} & \textbf{1.0$\boldsymbol{/}$6}  \\
+    
+   \lspbottomrule
+  \end{tabular}
+  }
+\end{table} 
+
+Obviously, since a \isi{permutation} is a discrete sequence, we cannot literally have something like \textit{1.9} or  \textit{0.6 (out of 6) permutations}. $\mu$-\textsc{CombFlex} and $\mu$-\textsc{CombFlex$^0$} must be understood more abstractly as the overall degree of categorial versatility indicating how likely categories $\in$ S$_{cat}$ are to combine with other categories $\in$ S$_{cat}$. Hence mean \isi{combinatorial flexibility} allows us to measure the overall \textit{potential} syntactic diversity in relation to a maximum  -- thus entailing a measurement of the constraints on that diversity.
+
+
+
+\subsection{Patterns in the patterns}
+
+Even though the procedure as described above involves \isi{permutation} groups at large, implicitly we have already stipulated a condition:  ``N.C''; i.e. we have been looking at potential permutations in the presence of a \isi{noun}. We can go one step further by fixing a second parameter. Consider the \isi{permutation} group  \{ N.C, Md.Aj, \textbf{ X }\} where X is a variable over categories $\in$ S$_{cat}$. Here we are constructing a macro \isi{permutation} group probing for the distribution of categories X in the context of a \isi{noun} and an \isi{adjective}. 
+
+For instance, with  X = \{Dem, Num, Poss, Q, WQ\} we can examine the behaviour of elements that (on a generous conception) may be considered \isi{determiner}(-like) elements in that context. Below, the results for ndb\textsubscript{OIcel} are given, indicating how many and which x $\in$ X are attested in the respective \isi{permutation}:
+
+\begin{exe}
+  \ex \label{macroCombF}
+     \begin{xlist}
+
+        \ex \label{macroCombFa} ( \textbf{x}, \ Md.Aj,  \ N.C  ): \ \ \  	5	\hfill x $\in$ \{WQ, Dem, Num, Poss, Q\}  = X
+        
+        \ex \label{macroCombFb} ( \textbf{x}, \ N.C, \ Md.Aj ): \ \ \   5 \hfill x $\in$  \{WQ, Dem, Num, Poss, Q\} = X
+
+        \ex \label{macroCombFc} (  Md.Aj, \ \textbf{x}, \ N.C  ): \ \ \  	5	\hfill x $\in$  \{WQ, Dem, Num, Poss, Q\} = X
+        
+        \ex \label{macroCombFd} ( Md.Aj, \ N.C, \ \textbf{x} ): \ \ \	4 \hfill x $\in$ \{Dem, Num, Poss, Q\}	$\subset$ X
+        
+        \ex \label{macroCombFe} (  N.C, \ \textbf{x}, \ Md.Aj ): \ \ \	 4	\hfill x $\in$ \{Dem, Num, Poss, Q\}  $\subset$ X 
+        
+        \ex \label{macroCombFf} ( N.C, \ Md.Aj, \ \textbf{x} ): \ \ \ 1 \hfill x $\in$ \{Q\} $\subset$ X 
+        
+     \end{xlist}
+\end{exe} 
+
+For this particular sample, we can, among other things, infer that all items in X occur in the permutations in (\ref{macroCombFa})--(\ref{macroCombFc}), and that demonstratives, possessives and numerals have an identical distribution in the context of nouns and adjectives: all three occur in the permutations (\ref{macroCombFa})--(\ref{macroCombFe}), and all three do not occur in the \isi{permutation} (\ref{macroCombFf}).\footnote{Be careful not to confuse the numbers given in (\ref{macroCombF})  with values for \isi{combinatorial flexibility}; \textsc{CombFlex}(\{N.C, Md.Aj, \textbf{x}\}) is 6/6 for x = Q, 5/6 for x = Dem/Num/Poss, and 3/6 for x = WQ.}  
+
+Provided the dataset is large enough, instead of merely considering  Md.Aj, we can use any category y $\in$ S$_{cat}$ as a second parameter and let X = $\in$ S$_{cat}$ in order to probe into \{ N.C, \textbf{y}, \textbf{ X }\} and examine the entire categorial space and determine the overall extent of co-distributions.  
+
+
+
+\subsection{Markedness hierarchies(?)}
+
+In Section \ref{sec:pattper}, we looked at \isi{permutation} groups and \isi{combinatorial flexibility} from a purely quantitative perspective; Table \ref{tab:cflex3} only gives the numbers of categories and \isi{permutation}  groups, but no information about \textit{which} categories are involved in \textit{which} \isi{permutation} group, or \textit{which} \isi{permutation} groups occur in \textit{which} language with \textit{which} \isi{combinatorial flexibility}. 
+
+
+Naturally, we can perform various qualitative re-runs of the whole procedure by  examining \textit{which} \isi{permutation} groups are \textsc{attested} in all or some (or none) of the individual languages. 
+%\footnote{... meaning that the respective three categories do not combine (in any order) in that language! ... only meaningful for a big enough sample ....}
+Specifically, for every \isi{permutation} group $pg$ $\in$ \textbf{C$_{pot}$} (i.e. the entirety of \isi{permutation} groups generated), we can compare \textsc{CombFlex}($pg$) for the respective languages. In Table \ref{tab:cflexC}, one \isi{permutation} group is illustrated.
+
+
+
+
+\begin{table}
+\caption{\textsc{CombFlex}(\{Poss, N, Md.Aj\})  in comparison }
+\label{tab:cflexC}
+ \begin{tabularx}{\textwidth}{ p{2.5cm}CCCCC   }
+  \lsptoprule
+    & Old & Old & Old High & Old & Old \\
+    & Icelandic & {English} & {German} & {Swedish} & Saxon  \\
+\midrule
+    {\{Md.Aj, Poss, N\}} & 5/6 & 1/6 & 2/6 & 3/6 & 2/6 \\
+\midrule
+    (Poss, Md.Aj, N) & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true}  \\
+
+    (Poss, N, Md.Aj) & \textsc{true} & \redfalse & \textsc{true} & \textsc{true} & \textsc{true}    \\
+
+    (N, Poss, Md.Aj) & \textsc{true} & \redfalse & \redfalse & \textsc{true} & \redfalse \\
+
+    (Md.Aj, N, Poss) & \textsc{true} & \redfalse & \redfalse & \redfalse & \redfalse  \\
+
+    (Md.Aj, Poss, N) & \textsc{true} & \redfalse & \redfalse & \redfalse & \redfalse \\
+
+    (N, Md.Aj, Poss) & \redfalse & \redfalse & \redfalse & \redfalse & \redfalse  \\
+
+   \lspbottomrule
+ \end{tabularx}
+
+%  \begin{tabularx}{\textwidth}{ p{2.5cm}CCCCC }
+%  \lsptoprule
+%    & Old & Old & Old High & Old & Old \\
+%    & Icelandic & \ili{English} & \ili{German} & \ili{Swedish} & Saxon  \\
+%\midrule
+%    {\{Md.Aj, Poss, N\}} & 5/6 & 1/6 & 2/6 & 3/6 & 2/6 \\
+%\midrule
+%    (Poss, Md.Aj, N) & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true}  \\
+
+%    (Poss, N, Md.Aj) & \textsc{true} & \redfalse & \textsc{true} & \textsc{true} & \textsc{true}    \\
+
+%    (N, Poss, Md.Aj) & \textsc{true} & \redfalse & \redfalse & \textsc{true} & \redfalse \\
+
+%    (Md.Aj, N, Poss) & \textsc{true} & \redfalse & \redfalse & \redfalse & \redfalse  \\
+
+%    (Md.Aj, Poss, N) & \textsc{true} & \redfalse & \redfalse & \redfalse & \redfalse \\
+
+%    (N, Md.Aj, Poss) & \redfalse & \redfalse & \redfalse & \redfalse & \redfalse  \\
+
+%   \lspbottomrule
+% \end{tabularx}
+\end{table}
+
+
+This way, we can directly compare the individual permutations and their \textsc{attestation} in the respective languages.  That is we can   examine whether there is a regularity as to whether a given \isi{permutation} is \textsc{attested} or not. Notice, in particular, that the individual permutations in Table \ref{tab:cflexC} are  arranged in a particular manner such that like values form ``blocks'' as it were: there is a \textsc{true}-block and a \textsc{false}-block, but no \textsc{true}-\textsc{false}-\textsc{true} alternations in any language.
+
+While this is merely an initial observation, it can be formulated as an empirical and methodological question: can all \isi{permutation} groups be arranged in this way? In order to illustrate the relevance of this question, consider the  scenario for the hypothetical languages V--Z in Table \ref{tab:cflexHYP}.\largerpage
+
+\begin{table}
+\caption{\textsc{CombFlex}(\{A, B, C\}) -- hypothetical (idealized) scenario }
+\label{tab:cflexHYP}
+ \begin{tabularx}{\textwidth}{ p{2.5cm}CCCCC   }
+  \lsptoprule
+	& {\textbf{V}}\phantom{\LARGE I} & \textbf{W} & \textbf{X} & \textbf{Y} & \textbf{Z} \\
+\midrule
+
+     {\{A, B, C\}} & 5/6 & 4/6 & 3/6 & 2/6 & 1/6 \\
+\midrule
+    (A, B, C) & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true} \\    
+    
+    (B, C, A) & \textsc{true} & \textsc{true} & \textsc{true} & \textsc{true} & \redfalse \\
+
+    (B, A, C) & \textsc{true} & \textsc{true} & \textsc{true} & \redfalse & \redfalse  \\
+
+    (A, C, B) & \textsc{true} & \textsc{true} & \redfalse & \redfalse & \redfalse  \\
+
+    (C, A, B) & \textsc{true} & \redfalse & \redfalse & \redfalse & \redfalse   \\
+
+    (C, B, A) & \redfalse & \redfalse & \redfalse & \redfalse & \redfalse  \\
+       
+   \lspbottomrule
+ \end{tabularx}
+\end{table} 
+
+
+
+
+
+These ``results''  plausibly suggest that (A, B, C) is the unmarked or default \isi{pattern} in the \isi{permutation} group since it is \textsc{attested} in all languages under consideration. Given the arrangement, we can moreover construe the left-hand column, read top-down, as a markedness hierarchy, or even as an implicational hierarchy; e.g. if a language has (B, A, C), it also has (B, C, A) etc. %. This in turn would suggest that diversity is not completely arbitrary 
+
+The extent to which this arrangement is possible is of course an empirical question, but whenever it is possible, \textsc{CombFlex} not only gives a measurement for flexibility as such, but can also be understood as an indicator of the degree of markedness possible/allowed in a given language (relative to a given \isi{permutation} group). \\ %\footnote{Obviously, this arrangement will not always be possible due to a range of factors. In some cases, we can at most determine the default \isi{pattern} -- the general unmarked \isi{pattern} if the same \isi{pattern} is found in all languages, or the respective unmarked \isi{pattern}. The latter will often be a reflex of language-specific default positions (e.g. pre- vs. \isi{postnominal} adjectives in \ili{German} vs. \ili{Spanish}, as mentioned in the introduction). }  
+
+%\noindent It is, of course, possible to refine these procedures in various directions and probe for other kinds of macro patterns in order to determine (un)markedness or dependencies. We can, for instance, examine whether a specific position for a category is contingent on another category, or whether two given categories display the same ordering in pre- vs.\isi{postnominal} position, or whether they display a mirror ordering (cf. \cite{Cinque2005U20}). A simple illustration of the former is given in section \ref{sec:SMpat}. 
+
+
+\section{Search patterns and matched patterns}
+\label{sec:SMpat}
+
+So far we have used the term ``patterns'' indiscriminately for strings of category labels. In this subsection, we will have a look at some possible refinements. When working with databases and search interfaces, an obvious distinction is that between a query and the output to that query. Consequently, I will make a distinction between \textit{search patterns} (S-patterns) and \textit{matched patterns} (M-patterns), where the former abstractly define properties that we are interested in, while the latter are the concrete findings in a given \isi{database} satisfying the respective criteria. Notably, we will allow specifications where the two are not necessarily a perfect match. 
+In Table \ref{tab:SM}, some possible configurations for S-patterns (red) and corresponding M-patterns (blue) are given.\footnote{\label{regex}More advanced refinements could include the incorporation of aspects of the regular expression \isi{syntax}, which would allow S-patterns such as (A, \{\textsc{B or F}\}, C) or (A, \{\textsc{not B}\}, C ). } 
+
+\begin{table}
+\caption{S-patterns and M-patterns }
+\label{tab:SM}
+ \begin{tabularx}{.9\textwidth}{ l c  }
+  \lsptoprule
+
+      {\texttt{precise\_pattern}({\color{red}A, B, C})}:\hspace{22mm} & {( {\color{blue} A, B, C} )} \\
+
+      {\texttt{rigid\_pattern}({\color{red}A, B, C})}: & {( {\color{blue} {\color{gray}. . .  }A, B, C {\color{gray} . . .} })} \\
+      
+     {\texttt{flexi\_pattern}({\color{red}A, B, C}):} & {( {\color{blue} {\color{gray}. . .  }A, {\color{gray}. . .  }B, {\color{gray}. . .  }C {\color{gray}  . . .} })} \\
+
+
+     {\texttt{Left\_rigid\_pattern}({\color{red}A, B, C}):} & \multicolumn{1}{l}{{( {\color{blue}  A, B, C {\color{gray} . . .}} )}} \\
+
+    {\texttt{Left\_flexi\_pattern}({\color{red}A, B, C}):} & \multicolumn{1}{l}{{( {\color{blue}  A, {\color{gray}. . .  }B, {\color{gray}. . .  }C {\color{gray}  . . .}} )}}   \\
+
+    {\texttt{Right\_rigid\_pattern}({\color{red}A, B, C}):} & \multicolumn{1}{r}{{( {\color{blue} {\color{gray}. . .  }A, B, C} ) }} \\
+    
+    {\texttt{Right\_flexi\_pattern}({\color{red}A, B, C}):} & \multicolumn{1}{r}{{( {\color{blue} {\color{gray}. . .  }A, {\color{gray}. . . }B, {\color{gray}. . .  } C} )}} \\
+    
+   \lspbottomrule
+ \end{tabularx}
+\end{table} 
+
+
+A \texttt{precise\_pattern} works according to the motto \textit{what you search is what you get}; we have a perfect match.   
+In \isi{contrast}, the corresponding \texttt{rigid\_pattern} yields \textsc{true} also for those cases that contain material preceding or following the actual search string. 
+Finally, a \texttt{flexi\_pattern} also yields \textsc{true} if somethings intervenes between the labels specified in the S-\isi{pattern}, in other words, it merely encodes the relative linear ordering, but not adjacency. 
+
+The findings presented in the previous sections are based on \texttt{precise\_pattern}, but of course, \textsc{CombFlex} can also be computed on the basis of \texttt{rigid\_pattern} or \texttt{flexi\_pattern}. This may be useful e.g. when we are not interested in accompanying material such as NP-final relative clauses, or intervening adverbials (like \textit{very}). In particular, the procedure as described so far treats e.g. (Dem, Adj, N), (Dem, Adj, Adj, N), (Q, Dem, Adj, N) and (Dem, Adj, N, RC) etc. as distinct patterns, and we may miss generalizations. Specifications such as  \texttt{flexi\_pattern}(Dem, Adj, N) allow us to treat those as one \isi{pattern} at a relevant and more abstract level, e.g. conflate patterns where demonstratives precede adjectives in \isi{prenominal} position etc. 
+
+The \texttt{Left\_/Right\_} alignment patterns impose the additional condition that the first/last category matches. One possible application of these will be illustrated with an example from ndb\textsubscript{OIcel}. Demonstratives in \ili{Old Icelandic} can occur prenominally and postnominally, with or without accompanying material; notably, they can occur \isi{noun} phrase finally (\ref{exDemDem1}).
+
+
+\ea \label{exDemDem1}
+    \gll sá maður\hspace{35mm}   maður sá  \\  
+             \textsc{dem} man    man \textsc{dem} \\
+             \glt `that man'
+\z
+
+Now assume we have S$_{cat}$ = {\small \{Poss, Q, Md.Aj.Lx, Md.Aj.Fn, Md.Card.Nu, GenP, Md.Card.WQ\}} and are interested in their compatibility with demonstratives postnominally.  To that end, we compare two S-patterns (N, x, Dem),  with x {\small$\in$}  S$_{cat}$. In (\ref{SMDem1}), the number of occurrences in that \isi{pattern} are given for each category, first for an alignment  \isi{pattern} and next for the corresponding non-alignment version.
+
+\begin{exe}
+   \ex \label{SMDem1}  $\forall$ $cat$ $\in$  S$_{cat}$: \\   
+   \indent \hspace{5mm}$\forall$ $np$ $\in$  ndb\textsubscript{OIcel}:  
+   
+   \begin{xlist}\small 
+      \ex \label{AlFlex} $\rightarrow$  \texttt{Right\_flexi\_\isi{pattern}($np$, N.C, $cat$,  Dem)}   \\ \indent \hfill returns \textsc{true} for $[_{NP}$  ... N.C  ... $cat$ ... Dem $]$  \\ 
+
+$cat$ = 
+\begin{tabular}{l l }
+\midrule	Poss 			&	0 \\
+	Q 			&	0 \\
+%	N.C  			&	52 \\
+	Md.Aj.Lx 		&	0 \\
+	Md.Aj.Fn		& 	0   \\
+	Md.Card.Nu  	& 	0     \\
+	Md.Card.WQ  	& 	0  \\
+	GenP 		 	&	0  \\
+\midrule \\
+\end{tabular} 
+
+    \ex \label{NFlex} $\rightarrow$   \texttt{flexi\_\isi{pattern}($np$, N.C,  $cat$, Dem)} \\ 
+    \indent \hfill returns \textsc{true} for $[_{NP}$ ... N.C  ... $cat$ ...  Dem ...  $]$ \\ 
+
+$cat$ = 
+\begin{tabular}{l l }
+\midrule	Poss 			&	21 \\
+	Q 			&	10 \\
+%	N.C  			&	468 \\
+	Md.Aj.Lx 		&	5 \\
+	Md.Aj.Fn		& 	1   \\
+	Md.Card.Nu  	& 	9     \\
+	Md.Card.WQ  	& 	8  \\
+	GenP 		 	&	21  \\
+\midrule
+\end{tabular}  
+   \end{xlist}
+\end{exe}
+
+\begin{sloppypar}
+We observe an interesting discrepancy. 
+The alignment \isi{pattern} in (\ref{AlFlex}) yields zero hits for each category, showing that demonstratives cannot follow those in \isi{postnominal} position \textbf{and} simultaneously be pattern-final. On the other hand, (\ref{NFlex}) shows that each \isi{pattern} does occur once the alignment constraint is dropped. This means that a \isi{demonstrative} actually can follow those categories postnominally provided it is itself followed by other material. In this present case, we can identify the cause as relative clauses; in \ili{Old Icelandic}, the \isi{demonstrative} \textit{sá} often co-occurs with a \isi{relative clause} (or sometimes a complement clause).  If we modify the S-\isi{pattern} accordingly, we get the results in (\ref{SMDem2}).
+\end{sloppypar}
+
+
+\begin{exe} \small
+  \ex \label{SMDem2} $\rightarrow$   \texttt{flexi\_\isi{pattern}($np$, N.C, $cat$, Dem, RC)} \\
+       \indent \hfill returns \textsc{true} for $[_{NP}$  ... N.C  ...  $cat$ ...  Dem ... {\bfseries RC} ...   $]$ \\
+
+$cat$ = 
+\begin{tabular}{l l }
+\midrule	Poss 			&	20 \\
+	Q 			    &	10 \\
+%	N.C  			&	402 \\
+	Md.Aj.Lx 		&	5 \\
+	Md.Aj.Fn		& 	1   \\
+	Md.Card.Nu  	& 	9     \\
+	Md.Card.WQ  	& 	8  \\
+	GenP 		 	&	19  \\
+\midrule\end{tabular}
+\end{exe}  
+
+
+
+These numbers are almost identical to those in (\ref{NFlex}), suggesting that the presence of a \isi{relative clause} is indeed a pre-condition for demonstratives to follow the categories in \isi{postnominal} position.\footnote{Moreover, a closer inspection of the respective M-patterns reveals that the \isi{demonstrative} must be adjacent to the \isi{relative clause} in \isi{postnominal} position: [... N.C ... $cat$ ... Dem, RC ...].  Some authors even suggest that \textit{sá} is a relative \isi{pronoun} in this use, e.g. \citet{wagenerRC}; \citet{sapp2019RC}. } Some examples are given for illustration in (\ref{exDemGen}) (intervening material is underlined). 
+
+\ea \label{exDemGen}
+    \ea \gll líkamir \textit{dauðra} \textit{manna} þeir er í moldu höfðu legið \\  
+             bodies dead.\textsc{gen} men.\textsc{gen} \textsc{dem}  \textsc{rel} in ground had lain \\
+        \glt `the bodies of dead men that had lain in the ground'  
+        (OIce.509.120) 
+%    \ex \gll  sex höfðingjar aðrir þeir að mestir eru \\  
+%              six chieftains other \textsc{dem} \textsc{rel} greatest are \\
+%        \glt `six other chieftains that are (among) the greatest' \\ 
+%         (OIce.905.994) 
+    \ex \gll konur \textit{nokkurar} þær er hann hafði leyst af óhreinum öndum \\ 
+          women some \textsc{dem} \textsc{rel} he had released of impure spirits \\ 
+          `some woman whom he had released of impure spirits' 
+        (OIce.861.230) 
+        \glt 
+    \ex \gll wind \textit{hvassan}  þann er för þeirra flutti í góða höfn \\ 
+        wind sharp \textsc{dem} \textsc{rel} journey their transported in good harbour \\ 
+        `a sharp wind that brought them to a good harbour'  
+        (OIce.915.632)  
+        \glt 
+    \z
+\z
+
+In short, different specifications for S-patterns allow us to examine patterns at different levels of granularity; all methods described in the previous sections are applicable. Moreover, the approach of comparing two S-patterns gives us a simple method of probing for correlations or co-dependencies by examining discrepancies. 
+
+\section{Schrödinger's \textit{Cats} }  %-- A probabilistic model
+\label{sec:schrodinger}
+
+In the previous sections, we examined the details of \isi{word order} \isi{variation} in the NP  focusing on patterns and permutations. 
+In this section, we will abstract from concrete patterns, and look at the distribution of categories from a  non-discrete perspective. More specifically, we will first have a look at a probabilistic category distribution across the entire NP. In a next step, we will take the \isi{noun} as an anchoring position dividing the NP into a \isi{prenominal} and a \isi{postnominal} space, and examine the distribution of categories (modulo N.C) in those narrow domains. Finally, we will visualize this \isi{probabilistic distribution} in a Cartesian coordinate system. 
+
+
+
+\subsection{Probablistic category distribution } 
+\label{sec:proCaz}
+
+We begin by counting category occurrences per positon. In the first round, we simply start at the NP-initial position and count the categories in position 1, position 2 ... up  to position $n$, where $n$ is the number of categories comprised by the longest NP in the respective \isi{database}. For illustration, consider the following patterns; the subscripts indicate the position (or column in a table):
+
+
+\begin{exe}
+    \ex 
+    \begin{xlist}
+        \ex Dem$_1$ Adj$_2$ N$_3$
+        \ex Adj$_1$ N$_2$ 
+        \ex Q$_1$ Dem$_2$ Adj$_3$ N$_4$ RC$_5$
+        \ex N$_1$ Dem$_2$ RC$_3$
+        \ex Q$_1$ Adj$_2$ N$_3$
+        \ex . . . . . . . .
+    \end{xlist}
+\end{exe}
+
+Since this procedure is numeric and not phrase structure sensitive, the same category can occur in different positions, and different categories can occur in the same position. In other words, this notion of position is not a syntactic one, but simply indicates left-alignment.  When all NPs in a given \isi{database} are thusly aligned, we add the category occurrences per column as well as the overall total of items in each column. In a parallel fashion, category occurrences can be counted backwards starting from the final position (= right-aligned), i.e. positions -1,  -2, -3 ... -$n$. %\footnote{The negative subscripts indicate positions from the final position . }  
+
+In Tables \ref{tab:prob1} and \ref{tab:prob2}, the overall column totals and the numbers for some categories in ndb\textsubscript{OIcel}  are given for the first and last five slots starting from the initial and final positions, respectively.
+
+\begin{table}
+\caption{Category occurrences in Old Icelandic, left-aligned }
+\label{tab:prob1} \small 
+%  \begin{tabularx}{.93\textwidth}{ | l | l | l | l | l  }
+%   \lsptoprule
+%
+%     \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} &\textbf{5} \\
+% \midrule    N.C: 2437       &  N.C: 4145    &   N.C: 1277   &  RC: 391      &  RC: 93     \\
+%     Md.Aj.Lx: 1113  & Md.Aj.Lx:\hspace{0.15mm}705 &   RC: 630     & N.C: 117      & Dem: 10  \\
+%     Dem: 1051       &  Dem: 351     &  Dem: 213     &   Dem: 50     &  N.C: 5      \\
+%     RC: ---         &  RC: 6        & Md.Aj.Lx:\hspace{0.15mm}147 & Md.Aj.Lx:\hspace{0.15mm}44  & Md.Aj.Lx: 4 \\
+%     . .	. . . .     & . . . . . .	& . . . . . .   &. . . . . .	& . . . . . .	 	\\
+%
+% \midrule    total: 7981     &  total: 7981  &  total: 3280  & total: 946    &  total: 163     \\
+%
+%    \lspbottomrule
+%  \end{tabularx}
+
+  \begin{tabularx}{\textwidth}{X@{}r X@{}r X@{}r X@{}r X@{}r }
+  \lsptoprule
+
+    &\textbf{1} && \textbf{2} && \textbf{3} && \textbf{4} &&\textbf{5} \\
+    \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}
+    N.C:&  2437       &  N.C:&  4145    &   N.C:&  1277   &  RC:&  391      &  RC:&  93     \\
+    Md.Aj.Lx:&  1113  & Md.Aj.Lx:& \hspace{0.15mm}705 &   RC:&  630     & N.C:&  117      & Dem:&  10  \\
+    Dem:&  1051       &  Dem:&  351     &  Dem:&  213     &   Dem:&  50     &  N.C:&  5      \\
+    RC:&  ---         &  RC:&  6        & Md.Aj.Lx:& \hspace{0.15mm}147 & Md.Aj.Lx:& \hspace{0.15mm}44  & Md.Aj.Lx:&  4 \\
+    . .	. . . .     && . . . . . .	&& . . . . . .   &&. . . . . .	&& . . . . . .	 	\\
+    \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}
+    total:&  7981     &  total:&  7981  &  total:&  3280  & total:&  946    &  total:&  163     \\
+
+   \lspbottomrule
+ \end{tabularx}
+\end{table} 
+
+
+\begin{table}
+\caption{Category occurrences in Old Icelandic, right-aligned }
+\label{tab:prob2} \small 
+%  \begin{tabularx}{.951\textwidth}{l | l | l | l | l |}
+%   \lsptoprule
+%
+%     \textbf{-5} & \textbf{-4} & \textbf{-3} & \textbf{-2} &\textbf{-1} \\
+% \midrule    Dem: 34 & Dem: 174 & N.C: 745 & N.C: 3299 &  N.C: 3769  \\
+%     N.C: 25 & N.C: 140 & Dem: 544 & Md.Aj.Lx:\hspace{0.15mm}1325 & RC: 1090   \\
+%     Md.Aj.Lx: 10 & Md.Aj.Lx: 113 & Md.Aj.Lx:\hspace{0.15mm}368 & Dem: 869 & {\small Md.Aj.Lx}:\hspace{0.15mm}194   \\
+%     RC: ---  & RC: --- & RC: 5  & RC: 39  &  Dem: 54  \\
+%     . . . . . .  &  . . . . . .  &. . . . . . & . . . . . . & . . . . . .\\
+% \midrule    total: 163  & total: 946 & total: 3280 & total: 7981 &  total: 7981   \\
+%
+%    \lspbottomrule
+%  \end{tabularx}
+  \begin{tabularx}{\textwidth}{X@{}r X@{}r X@{}r l@{}r X@{}r }
+  \lsptoprule
+
+    &\textbf{-5} && \textbf{-4} && \textbf{-3} && \textbf{-2} &&\textbf{-1} \\
+    \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}
+Dem:&  34 & Dem:&  174 & N.C:&  745 & N.C:&  3299 &  N.C:&  3769  \\
+    N.C:&  25 & N.C:&  140 & Dem:&  544 & Md.Aj.Lx:& \hspace{0.15mm}1325 & RC:&  1090   \\
+    Md.Aj.Lx:&  10 & Md.Aj.Lx:&  113 & Md.Aj.Lx:& \hspace{0.15mm}368 & Dem:&  869 & {\small Md.Aj.Lx}:& \hspace{0.15mm}194   \\
+    RC:&  ---  & RC:&  --- & RC:&  5  & RC:&  39  &  Dem:&  54  \\
+    . . . . . .  &&  . . . . . .  && . . . . . . && . . . . . . && . . . . . .\\
+    \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}
+total:&  163  & total:&  946 & total:&  3280 & total:&  7981 &  total:&  7981   \\
+
+   \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+
+
+With these numbers, we can calculate some simple distributional ratios. For instance, the ratio \textit{category column total per overall column total} indicates the probability for a randomly selected NP, that the respective position is occupied by the respective category; let us notate this as \textbf{\textsc{PosProb}}($position$, $category$). For instance: \textsc{PosProb}(2, Md.Aj.Lx) =  %{\footnotesize $\dfrac{ 705 }{ 7981 }$} = 
+8.8\%, or \textsc{PosProb}(-1, RC) =  %{\small $\dfrac{ 1090 }{ 7981 }$} = 
+13.6\%.  
+
+
+
+Likewise, we can calculate \textit{category column total per overall category total} (see Table \ref{tab:tp1z}), which  indicates the probability that the respective category will occur in that particular position; for instance: the probability that a lexical \isi{adjective} will occur in the initial position  is % {\footnotesize $\dfrac{ 1113 }{ 2013 }$} = 
+55.3\%. 
+
+
+In other words, these ratios allow us to map out the probabilities of category distribution within the average NP.   
+But so far, all categories have been treated alike, and, other than left/right alignment, there is no ordering or structural criterion. A third position from either direction could, in principle, amount to a \isi{prenominal} or a \isi{postnominal} position -- which is obviously relevant information not accessible here.  
+Since we are investigating \isi{noun} phrases, the head \isi{noun} is obviously a designated category. More to the point, since, by our ndb-restriction, every NP contains exactly one \isi{noun}, we can use the \isi{noun} as a special anchoring point and divide the NP into a \isi{prenominal} and a \isi{postnominal} space, while leaving the \isi{noun} as such out of the consideration (= assigning it position +/-0).  This reduces the numbers of positions in a non-trivial way, and puts them in relation to the \isi{noun} so that we will be talking e.g. about the \textit{final \textbf{prenominal} position}, or the \textit{second \textbf{postnominal} position}.  
+
+Once we have partitioned the NP relative to the N position, we apply the same procedure as described above. In Tables \ref{tab:probpra} and \ref{tab:probprab}, the numbers for some categories are given.  
+
+\vfill
+\begin{table}[H]
+\caption{Category occurrences in the prenominal field, left-aligned }
+\label{tab:probpra}
+%  \begin{tabularx}{.808\textwidth}{ | l | l | l | l   | }
+%   \lsptoprule
+%
+%     \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} \\
+% \midrule
+%     Md.Aj.Lx: 1113  &  Md.Aj.Lx: 575    & Md.Aj.Lx: 67  &  Md.Aj.Lx: 3      \\
+%     Dem: 1051       &  Dem: 62          & GenP: 6       &  GenP: 1     \\
+%     GenP: 194       &  GenP: 35         & Dem: 2        &  Dem: ---     \\
+%     . .	. . . .     & . . . . . .	    & . . . . . .   &. . . . . .	\\
+% \midrule    total: 5544     &  total: 1399      & total: 122    & total: 5      \\
+%    \lspbottomrule
+%  \end{tabularx}
+
+ \begin{tabularx}{\textwidth}{Xr Xr Xr Xr}
+  \lsptoprule
+  &  \textbf{1} && \textbf{2} && \textbf{3} && \textbf{4} \\
+        \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+Md.Aj.Lx:&  1113  &  Md.Aj.Lx:&  575    & Md.Aj.Lx:&  67  &  Md.Aj.Lx:&  3      \\
+    Dem:&  1051       &  Dem:&  62          & GenP:&  6       &  GenP:&  1     \\
+    GenP:&  194       &  GenP:&  35         & Dem:&  2        &  Dem:&  ---     \\
+    . .	. . . .     && . . . . . .	    && . . . . . .   &&. . . . . .	\\
+    \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}
+    total:&  5544     &  total:&  1399      & total:&  122    & total:&  5      \\
+   \lspbottomrule
+ \end{tabularx}
+\end{table} 
+\vfill
+\pagebreak
+
+
+\begin{table}
+\caption{Category occurrences in the postnominal field, left-aligned }
+\label{tab:probprab}
+%  \begin{tabularx}{.96\textwidth}{ | l | l | l | l | l | }
+%   \lsptoprule
+%
+%     \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} &\textbf{5} \\
+% \midrule    RC: 501       &  RC: 523    &   RC: 93   &  RC: 14      &  RC: 2     \\
+%
+%     Md.Aj.Lx: 170  & Md.Aj.Lx: 60 &   Md.Aj.Lx: 22     & Md.Aj.Lx: 3      & Md.Aj.Lx: --  \\
+%
+%     Dem: 488       &  Dem: 69     &  Dem: 4     &   Dem: --     &  Dem: --      \\
+%     PP: 125         &  PP: 28        & PP: 4 & PP: 1  & PP: -- \\
+%     . .	. . . .     & . . . . . .	& . . . . . .   &. . . . . .	& . . . . . .	 	\\
+% \midrule    total: 4212     &  total: 913  &  total: 168  & total: 28    &  total: 2     \\
+%
+%    \lspbottomrule
+%  \end{tabularx}
+ \begin{tabularx}{\textwidth}{X@{}r l@{}r X@{}r X@{}r l@{}r}
+  \lsptoprule
+
+    &\textbf{1} && \textbf{2} && \textbf{3} && \textbf{4} &&\textbf{5} \\
+        \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule{9-10}
+    RC:&  501       &  RC:&  523    &   RC:&  93   &  RC:&  14      &  RC:&  2     \\
+
+    Md.Aj.Lx:&  170  & Md.Aj.Lx:&  60 &   Md.Aj.Lx:&  22     & Md.Aj.Lx:&  3      & Md.Aj.Lx:&  --  \\
+
+    Dem:&  488       &  Dem:&  69     &  Dem:&  4     &   Dem:&  --     &  Dem:&  --      \\
+    PP:&  125         &  PP:&  28        & PP:&  4 & PP:&  1  & PP:&  -- \\
+    . .	. . . .     & . . . . . .	& . . . . . .   &. . . . . .	& . . . . . .	 	\\
+        \cmidrule(lr){1-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule{9-10}
+    total:&  4212     &  total:&  913  &  total:&  168  & total:&  28    &  total:&  2     \\
+
+   \lspbottomrule
+ \end{tabularx}
+\end{table} 
+
+
+\begin{sloppypar}
+There are four columns in Table \ref{tab:probpra} and five columns in Table \ref{tab:probprab} because that is the maximum number of categories that occur simultaneously in ndb\textsubscript{OIcel}, prenominally and postnominally, respectively. This is an abstraction over those spaces, because the enumerations obviously also include NPs with less than four \isi{prenominal} and less than five \isi{postnominal} categories,\footnote{Thus, for instance, 5544 is the number of NPs containing \textit{at least} one \isi{prenominal} category, 1399 NPs containing \textit{at least} two \isi{prenominal} categories etc.  }   but disregards the \isi{noun} itself. If there is only one \isi{prenominal} category $cat$, the total of $cat$,  and thus the column total, increases by one in position 1 (or -1),\footnote{With only one \isi{prenominal} element, the initial position is  identical to the final position.} 
+but nothing happens to the other positions. % in particular, the \isi{noun} would theoretically occupy the second position, but since it is not a element of the \isi{prenominal} space itself, it is not counted or marked positionally here. 
+For this reason, the column total is highest in position 1/-1, and decreases as we move to the left/right since there are more NPs with at least one \isi{prenominal} category than with two, etc. 
+\end{sloppypar}
+
+%Nonetheless, we can calculate the probabilities of categorial distribution the same way as illustrated above for the entire NP. For instance, \textsc{PosProb}(2, Dem)$_{pre}$ = {\small $\dfrac{ 62 }{ 1399 }$} = 4.4\%, and \textsc{PosProb}(-2, Dem)$_{pre}$ = {\small $\dfrac{ 155 }{ 1399 }$} = 11.1\%. 
+
+
+\subsection{Distance from N: Visualizing categorial distribution}
+\label{sec:distanz}
+
+As just noted, the overall total numbers decrease for columns further to the right. But this correlation does not (necessarily) apply to the ratio  \textsc{PosProb}; for instance, \textsc{PosProb}(1, Dem)$_{pre}$ and \textsc{PosProb}(1, Md.Aj.Lx)$_{pre}$ are about the same, ca. 20\%. However, while that ratio steadily increases for adjectives from position 1 to 4 (20.1\% -- 41.1\% -- 54.9\% -- 60.0\%), it decreases for demonstratives (19.0\% -- 4.4\% -- 1.6\% -- 0.0\%). 
+
+Obviously, this trend also tells us something about the distributional properties of categories. When comparing ratios, we abstractly observe that some categories \textit{tend to be closer to the noun}: they score  high(er) in the positions to the right (e.g. adjectives), which means that they are often preceded by material,  while others \textit{tend to be further away from the noun}: they score high(er) in the positions to the left (e.g. demonstratives), which means that they often precede material. Obviously, this is a reflex of more general \isi{word order} regularities; after all when co-occurring, e.g. demonstratives normally precede adjectives (in \isi{prenominal} position; see a.o. \citealt{Cinque2005U20}).     
+Theoretical \isi{syntax} has a number of discrete, formal devices to capture those regularities, e.g. phrase structure rules, topological fields,  functional sequences etc., but as stated above, in this section, we will consider category distribution in a continuous, non-discrete space.
+
+
+The general idea is that, if we apply the sequences of column ratios for each category  against each other in an appropriate fashion, we will get a mean value $x$ $\in$ $\mathbb{R}$, with 4 $\geq$ $x$  $>$ 0, for each category indicating ``distance from N''. For simplicity, the maximal score here is 4 because there are four columns; also, the minimal score is greater than zero since 0 abstractly denotes the \isi{noun} itself.  There are several possible parameters to take into consideration, but also a number of non-trivial complications.  I will not discuss the mathematical technicalities of deriving an optimal algorithm to calculate $x$ here; instead I will use a simpler method for the calculation (see Appendix). 
+For \ili{Old Icelandic}, Old \ili{English} and \ili{Old Saxon},  the respective scores for the most frequent categories are given in Table \ref{tab:MAXI}. 
+
+\begin{table}
+\caption{``Distance-from-the-noun'' scores (prenominally)}
+\label{tab:MAXI}
+
+%   \lsptoprule
+\subtable[OIcel]{
+\begin{tabular}{l r}
+\lsptoprule
+    Mdmd:           &   4.0 \\  
+    Q:              &   3.6 \\ 
+    Dem:            &   3.1 \\ 
+    Md.Card.WQ:     &   2.4 \\
+    Md.Card.Nu:     &   2.1 \\ 
+    Poss:           &   1.9 \\      
+    Md.Aj.Fn:       &   0.5 \\ 
+    GenP:           &   0.5 \\  
+    Md.Aj.Lx:       &   0.2  \\
+    \lspbottomrule
+\end{tabular}}
+\subtable[OEngl]{
+\begin{tabular}{l r}
+\lsptoprule
+    Mdmd:           &   4.0 \\  
+    Q:              &   3.7 \\ 
+    Dem:            &   3.5 \\ 
+    Poss:           &   3.2 \\      
+    GenP:           &   2.1 \\  
+    Md.Card.Nu:     &   1.8 \\ 
+    Md.Card.WQ:     &   1.1 \\
+    Md.Aj.Fn:       &   0.3 \\ 
+    Md.Aj.Lx:       &   0.1  \\ 
+    \lspbottomrule
+\end{tabular} 
+}
+\subtable[OSax]{
+\begin{tabular}{l r}
+\lsptoprule
+    Mdmd:           &   3.9 \\  
+    Md.Card.Nu:     &   3.9 \\ 
+    Dem:            &   3.8 \\ 
+    Q:              &   3.1 \\ 
+    Poss:           &   2.6 \\      
+    Md.Aj.Fn:       &   1.0 \\ 
+    GenP:           &   0.7 \\  
+    Md.Aj.Lx:       &   0.3  \\ 
+    Md.Card.WQ:     &   -- \\ 
+    \lspbottomrule
+\end{tabular}
+}
+% \lspbottomrule
+
+\end{table} 
+
+
+Now we construe the NP as a Cartesian plane such that the $y$-axis ($x$ = 0) represents the \isi{noun} (position) in abstracto, the negative $x$-axis the \isi{prenominal} space, and the positive $x$-axis   the \isi{postnominal} space. Since we are focusing on the \isi{prenominal} space, we have to conceive of the above values as negative numbers.  We will furthermore map (absolute) category frequencies onto the $y$-axis, which allows us to treat categories as coordinates in the Cartesian plane, i.e. to locate categories in two-dimensional space. In addition, precedence relations are represented as a graph network where precedence scores are calculated on the basis of co-occurrences of two categories A and B in the individual NPs (how often do A and B co-occur, and in which order(s)?). These precedence relations are specified as follows: A {\color{red}$\rightarrow$} B (red arrow) -- A always precedes B when co-occurring; A {\color{green}$\rightarrow$} B (green arrow) -- A precedes B in more than 66\% of co-occurrences; A {\color{cyan}$\rightarrow$} B (blue arrow) -- A always precedes B, but there are fewer than 10 co-occurrences.
+
+In Figures \ref{fig:catprobICE}--\ref{fig:catprobENG} I give an illustration of the \isi{prenominal} space of the \ili{Old Icelandic}, Old \ili{English} and \ili{Old Saxon} NP based on the above scores and specifications. 
+
+\vfill
+\begin{figure}[H]
+\caption{Categorial distribution in the Cartesian plane (Old Icelandic)}
+\includegraphics[width=\textwidth]{figures/CatProb_Ice.png}
+\label{fig:catprobICE}
+\end{figure}
+\vfill\pagebreak
+
+\begin{figure}[p]
+\caption{Categorial distribution in the Cartesian plane (Old Saxon)}
+\includegraphics[width=\textwidth]{figures/CatProb_Sax.png}
+\label{fig:catprobSAX}
+\end{figure}
+
+\begin{figure}[p]
+\caption{Categorial distribution in the Cartesian plane (Old English)}
+\includegraphics[width=\textwidth]{figures/CatProb_Engl.png}
+\label{fig:catprobENG}
+\end{figure}
+
+\clearpage
+``Distance from the \isi{noun}'' (= position along the $x$-axis) is  an abstract value without a concrete (or discrete) structural counterpart; it does not neatly map onto position or precedence, even though it is calculated on the basis of positional relations between individual categories. As shown in Figure \ref{fig:catprobICE}, for instance, lexical adjectives have a somewhat lower score than \isi{genitive} phrases, but the former precede the latter in the few instances of co-occurrences, similarly, for functional adjectives and numerals. In other words, this distance value does not translate to precedence relations.\footnote{As an extreme case, consider Mdmd, which virtually has a perfect score. 
+This is partially due to rounding and does not entail that it necessarily precedes three other categories. In the current setup, it means that it is almost never preceded by another category (the green arrow in Figure \ref{fig:catprobICE} indicates that it is sometimes preceded by Q), but it always precedes something else. In particular, Mdmd never occurs adjacent to the \isi{noun} because there is always at least one intervening category, viz. the modified modifier, cf. \textit{very *(big/many) horses}; this latter observation is highlighted above by a different font colour. }  
+
+\begin{sloppypar}
+Presumably, co-occurrence frequency should be given greater prominence since it allows us to assess the generality of the precedence relation. After all, if there is only one co-occurrence of A and B, the precedence ratio is trivially 100\%, but this may not always be very insightful.  Since we are only considering NPs with at least two \isi{prenominal} categories here, there are no isolated categories in these diagrams, i.e. categories that are not connected by an arrow. For simplicity, co-occurrence frequency is indicated by the colour code, but it could also be represented separately: for any two categories A and B that are connected by an arrow, the pair (A, B) is mapped onto the number of their co-occurrences, which could be represented as a value along the $z$-axis thus rendering a three-dimensional representation. I have refrained here from doing so mostly for practical reasons, because there are limits as to how much information can be visualized simultaneously. 
+\end{sloppypar}
+
+In the same fashion, the \isi{postnominal} space or the entire NP can be visualized. For the latter case, there are two possible scenarios: (i) the \isi{prenominal} and the \isi{postnominal} spaces are combined, or (ii) the scores are calculated on the basis of the numbers in Tables \ref{tab:prob1} and \ref{tab:prob2}. In scenario (i), several categories will show up twice, prenominally and postnominally. Moreover, the two spaces do not communicate, and precedence relations across N (x=0) are trivial because \isi{prenominal} material always precedes \isi{postnominal} material. In scenario (ii), each category occurs once, and all potential precedence relations between categories are captured. However, we lose, the nominal anchoring restriction; in other words, there is no distance from the \isi{noun}, but merely distance from first or final position. 
+
+Even though (several aspects of) this method can  be refined in various ways, it does give us an insightful way of visualizing categorial distribution. Provided the dataset is large enough, the diagrams in Figures \ref{fig:catprobICE}-\ref{fig:catprobENG} can be seen as the ``fingerprints'' of the prototypical NP in the respective language (or at least, in a given \isi{database} or text).  Clearly, these fingerprints are different, not merely due to their distance scores, see Table \ref{tab:MAXI}, but also in terms of category frequency, see Table \ref{tab:tp1z}, and co-occurrence frequency. In other words, categorial distribution as illustrated  in Figures \ref{fig:catprobICE}--\ref{fig:catprobENG} allows us to graphically represent distributional differences between languages, and, by extension, to visualize syntactic diversity itself.
+
+
+
+
+\section{Summary}
+\label{sec:SUM}
+
+I have attempted to show that there are more sophisticated ways of diagnosing and quantifying \isi{word order} \isi{variation} in the \isi{noun} phrase than merely comparing \isi{prenominal} vs. \isi{postnominal} occurrences of certain elements. Based on the itself rather unspectacular notion of a \isi{pattern} and some simple mathematical operations, we have given a numerical expression to various dimensions and limitations of syntactic diversity, versatility and \isi{probabilistic distribution} of categories. % (e.g. \textsc{PattDiv, CombFlex, PosProb}). 
+
+As has already been suggested, almost every aspect of \textit{Patternization} can be modified and refined in various ways. For one thing, the components of patterns were characterized as ``formal objects'', which allows for patterns to include, apart from category/part-of-speech labels, e.g. morphological or semantic information (depending on the annotated information available in the source \isi{database}). In other words, there is room for a more complex \isi{pattern} architecture than the one we have used here. 
+
+The focus on \isi{noun} phrase patterns in this chapter is due to the fact that this work emerged from the NPEGL project, but obviously, nothing prevents us from patternizing VPs or clauses in the same fashion. Even though the patterns may become more complex or larger, the methods for calculating \textsc{PattDiv} or \textsc{CombFlex} will be the same.  
+We are not even obliged to merely consider constituents as the framework for patterns; in principle, any sequence can serve that purpose. We have already seen how the NP can be divided into a \isi{prenominal} and a \isi{postnominal} field even though neither is a constituent. Nonetheless, both can be patternized and processed in the same fashion as the NP as a whole. Even though not shown here, we can also determine \textsc{PattDiv} and \textsc{CombFlex} e.g. for the \isi{postnominal} space alone. 
+
+Finally, the procedures and methods described here are, of course, not dependent on the NPEGL annotation, but are applicable more widely. The minimal prerequisite for Patternization is that a given \isi{database} has at least some part-of-speech annotation, and, when comparing two datasets,  that they be annotated with the same set of labels and according to the same criteria. 
+
+I will leave further explorations to future work. 
+
+ 
+\section*{Abbreviations}
+
+\begin{tabularx}{\textwidth}{@{}lQ@{}}
+\textsc{+/-Att} & attestation value \\
+C$_{att}$ & attested {combination} \\
+C$_{pot}$ & potential {combination} \\
+cat$^n$ & (sub)category at level $n$ \\
+\textsc{CombFlex} & {combinatorial flexibility} \\
+%IXP & index phrase/NP \\
+$\mu$-\textsc{CombFlex} & mean {combinatorial flexibility} \\
+M-{pattern}  & matched {pattern} \\
+ndb & working {database} \\
+patt$^n$ & {pattern} at level $n$ \\
+\textsc{PattDiv} & {pattern} diversity \\
+\textsc{PosProb} & probability of a category occurring in a given position \\
+S-{pattern} & search {pattern} \\
+S$_{cat}$ & sample space of category labels \\
+scd & standardized common denominator \\
+\end{tabularx}
+
+\section*{NPEGL annotation labels}
+\begin{tabbing}
+Md.Card.Num \= numeral\kill
+Dem \> {demonstrative} \\
+CC.Fi \> finite complement clause \\
+GenP \> {genitive} phrase \\
+Md \> modifier \\
+Md.Aj \> {adjective} \\
+Md.Aj.Fn \> functional {adjective} \\
+Md.Aj.Lx \> lexical {adjective} \\
+Md.Card \> cardinal element \\
+Md.Card.Num \> {numeral} \\
+Md.Card.WQ \> weak {quantifier} \\
+Mdmd \> modifier of modifier \\
+N.C \> {common noun} \\
+PP \> prepositional phrase \\
+Q \> {quantifier} \\
+RC \> {relative clause} \\
+\end{tabbing}
+
+
+\section*{Appendix}
+\label{sec:APP} 
+
+\begin{sloppypar}
+In this section, I will briefly discuss some functionalities of (the Python-based tool)  \textit{Patternization}.  {Patternization} takes the individual annotated databases in NPEGL as input and returns \textit{\isi{database} objects}. Those objects provide some default constants, e.g. \isi{database} size and a list of all annotated NPs in the \isi{database} (i.e. the \isi{database} itself), and a number of methods with various parameters and default settings to analyze and process the contents of the \isi{database}. Some methods are described below; this is not an exhaustive list, and I will merely address issues that are pertinent to the above discussion. 
+\end{sloppypar}
+
+%var = \textbf{\texttt{NPEGL}}(\isi{database}) \hfill creates a \isi{database} object  
+
+\subsection*{Working databases}
+
+
+\begin{enumerate} 
+    \item[$\circ$] \textbf{\texttt{restrict\_Val}}(val, present=True) 
+\end{enumerate}
+
+\noindent This method restricts the current \isi{database} in accordance with certain specifications: the argument \textit{val} can be a category label, but also a semantic or morpho-syntactic feature, or even a lemma. The argument \textit{present} determines whether \textit{val} must be present or not. The ndb-restriction is encoded via \texttt{restrict\_Val}(``N.C'', present=True) \textsc{and} \texttt{restrict\_Val}(``\&'', present=False). This procedure is actually a simple query and the modified working \isi{database} (= ndb) can be taken to be an output in its own right, but the method is recursive, and the modified \isi{database} has the same functionalities as the original one. That means an output of \texttt{restrict\_Val} can be restricted further or processed otherwise.
+
+\subsection*{Categories and patterns}
+\label{sec:CtPt}
+
+\begin{enumerate} 
+    \item[$\circ$] \textbf{\texttt{Categorize}}(level=2) 
+
+    \item[$\circ$] \textbf{\texttt{Patternize}}(level=2) 
+
+    \item[$\circ$] \textbf{\texttt{Cat\_in\_Patt}}(cat, level=2) 
+
+\end{enumerate}
+
+\noindent These methods check the basic inventory of the current working \isi{database}: \texttt{Categorize} returns all attested categories and \texttt{Patternize} all attested patterns (i.e. NP types, not tokens). The parameter \textit{level} specifies cat$^{level}$ (default: cat$^2$). \texttt{Cat\_in\_Patt} returns all patterns in which a given category \textit{cat} occurs, cf. Table \ref{tab:tp1z}. The number of patterns and categories can be concomitantly retrieved via the Python in-built function \texttt{len}(). 
+
+
+
+\subsection*{Pattern Diversity}
+\label{sec:PatD}
+
+\begin{enumerate} 
+
+    \item[$\circ$] \textbf{\texttt{PattDiv}}(level=2, x=False, rnd=False, run=100, size=1000) 
+    \item[$\circ$] \textbf{\texttt{Randomize}}(size=1000) 
+    
+\end{enumerate}
+
+\noindent The method \texttt{PattDiv} with the default setting rnd=False calculates \textsc{PattDiv} as \textit{patterns per NP}; see Section \ref{sec:PatDiv}, Table \ref{tab:tp2}. But as noticed in that section, this ratio plausibly requires a standardized common denominator, e.g. scd = 1000.   The method \texttt{Randomize}() creates a randomized sub-\isi{database} \texttt{randomDB} from the current working \isi{database} with the default size 1000 NPs (=scd). We can now  calculate $p/1000$ with $p$ = number  of patterns in a given \texttt{randomDB}.  
+Due to the randomness involved, however, we are bound to get different values for $p$ for different \texttt{randomDB}s. One straightforward way to establish a representative value for $p$ is to run the procedure a sufficiently large number $n$ of times and calculate the  mean  value $\mu_p$ as follows (with  $p_i$ = number of patterns in sub-\isi{database} \texttt{randomDB}\_i): 
+% \ea 
+\begin{equation}\label{paDi}
+\mu_p = \dfrac{1}{n}   \sum\limits_{i=1}^n p_i \quad \Rightarrow \quad \textsc{PattDiv} =  \dfrac{\mu_p}{\text{scd}}
+\end{equation} 
+% %    
+
+The method \texttt{PattDiv} with the setting rnd=True does exactly that. The parameter \textit{run} specifies the number $n$ of repetitions, and calculates \textsc{PattDiv} according to (\ref{paDi}).  Obviously, the larger the value $n$, the more precise is the value for $\mu_p$.  There is, however, a practical (computational) problem. In a perfect world, we we should consider all possible sub-databases in order to get the most balanced value $\mu_p$, but this is impossible. For instance, ndb\textsubscript{OSax} contains 6696 NPs, so we would have ${6696}\choose{1000}$  sub-databases to take into consideration, which is a number with more than 1000 digits. Therefore, an exhaustive procedure is unrealistic. The results in Table \ref{tab:tp3} are based on the setting (rnd=True, run=500), which already returns a relatively good and stable approximation. 
+
+\subsection*{S-patterns and Combinatorial Flexibility}
+
+
+\begin{enumerate} 
+
+    \item[$\circ$] \textbf{\texttt{precise\_pattern}}(np, *cats)  \\ \hfill (likewise:  \textbf{\texttt{rigid\_pattern}}, \textbf{\texttt{flexi\_pattern} . . .} \hfill = S-patterns, see Section \ref{sec:SMpat})
+
+    \item[$\circ$] \textbf{\texttt{CombFlex}}(samspac, long=3, restrict=``N.C'', func=\texttt{precise\_pattern}, \\  \phantom{.} \hfill count=bool, threshold=1, group\_threshold=2) 
+
+\end{enumerate}
+
+The methods to diagnose  S-patterns such as \texttt{precise\_pattern} take an NP as a first and a sequence of category labels (i.e. a \isi{pattern}) as a second argument. They return True if the NP  satisfies the  specification of the  S-\isi{pattern} (Table \ref{tab:SM}) in question. 
+
+\texttt{CombFlex} is a rather complex method, but essentially performs the procedure described in Section \ref{sec:pattper} to determine \isi{combinatorial flexibility}. The only mandatory argument is   \textit{samspac}, which takes a list of category labels as input and thus establishes the sample space. In a first step, it will generate all combinations of length \textit{long}, and if the argument \textit{restrict} is specified (by default ``N.C''), it will sort out those combinations that do not satisfy the restriction (here: contain ``N.C''). It then generates the respective \isi{permutation} groups from the combinations remaining. In a next step, it browses the current working \isi{database} examining every individual NP. Every \isi{permutation} generated constitutes an S-\isi{pattern} specified by the parameter \textit{func} (by default, \texttt{precise\_pattern}). Essentially, the output of \texttt{CombFlex} is the number of times the method \textit{func} yields True for each \isi{permutation}, with permutations sorted into \isi{permutation} groups. By default, this is encoded as Boolean values, as illustrated in (\ref{cbf}) via the setting (count=bool); the alternative setting (count=int) gives the actual number of \textsc{occurrences} for each individual \isi{permutation}. 
+
+The output can be modified by establishing a {threshold} value: the parameter \textit{threshold} determines the minimal number of \textsc{occurrences} required in order for a given \isi{permutation} to be considered \textsc{true (= +Att;} see the discussion in section \ref{sec:CoFlxx}). Similarly, the parameter \textit{group\_threshold} determines the minimal number of \textsc{occurrences} required within a \isi{permutation} group, and can serve as a fine-tuning mechanism. Plausibly, \textit{group\_threshold} $\geq$ \textit{threshold}. If a given \isi{pattern}/\isi{permutation} occurs less than \textit{threshold} times, it is assigned the value \textsc{False (--Att)}, and if there are less than  \textit{group\_threshold} \textsc{occurrences} within a given \isi{permutation} group, that \isi{permutation} group will not be part of the output (i.e. that \isi{permutation} group will not be in C$_{att}$). 
+
+
+
+\subsection*{Ranking positions and distance from the noun}\largerpage
+
+\begin{enumerate} 
+
+    \item[$\circ$] \textbf{\texttt{rankFirst/rankLast}}(level=2, part=-1) 
+
+    \item[$\circ$] \textbf{\texttt{I\_precede\_cats/I\_follow\_cats}}(level=2,  part=-1, pair=True) 
+
+    \item[$\circ$] \textbf{\texttt{Probabilize}}(level=2, part=-1) 
+
+\end{enumerate}
+
+The ranking methods perform the procedure described in Section \ref{sec:proCaz}: they count category occurrences according to their position, where \texttt{rankFirst} starts with the first position and proceeds to the right (= left-aligned) and vice versa for \texttt{rankLast} (= right-aligned). The parameter \textit{part} determines which partition of the NP is to be considered: a negative value identifies the \isi{prenominal} space thus producing  output as displayed in Table \ref{tab:probpra}, a positive value the \isi{postnominal} space, cf. Table \ref{tab:probprab}, and the value 0 the entire NP, see Tables \ref{tab:prob1} and \ref{tab:prob2}. 
+
+The precedence methods \texttt{I\_precede\_cats/I\_follow\_cats} calculate for each category cat$_A$ which other categories cat$_{B_n}$ it precedes/follows, and how often. The parameter \textit{pair} determines whether general precedence (A, . . . B) is to be counted (\textit{pair}=False), or whether  only immediate precedence (A,B) is to be considered (the default setting \textit{pair}=True). The precedence scores graphically represented (with colours) in Figures \ref{fig:catprobICE}-\ref{fig:catprobENG} are based on \texttt{I\_precede\_cats}(part=-1, pair=True). 
+
+
+Finally, the method \texttt{Probabilize} calculates the distance-from-N scores (see Section \ref{sec:distanz}) with a simple method that glosses over some complications. It considers only patterns of len $>$ 2; for the setting \textit{part}=0 (entire NP), this is a given, but when considering the pre- or \isi{postnominal} space, it means that NPs with only one pre-/\isi{postnominal} category are ignored. 
+Each category occurrence is assigned a score depending on its relative position and \isi{pattern} length in relation to a common multiple of all \isi{pattern} lengths. The scores are added up per column, and once the procedure is completed, the category score is divided by the number of category occurrences in the respective column. In addition, I have appended a factor that renders the maximum score as equal to the maximum of columns (in the examples used in this chapter, it was 4), but nothing hinges on that. The scores in Table \ref{tab:MAXI} are calculated with this method. 
+
+As mentioned, this is a rather simple method to calculate a mean distance value, and there are certainly more sophisticated ways. However, in several alternatives, the scores accumulate around the middle score (i.e. ca. 2.0) and hardly show any spread, which would not be a very useful basis for assessing precedence relations, and for visualization more generally. Mainly for this reason, the above method was chosen here. 
+
+
+\section*{Acknowledgements}\largerpage
+
+This chapter grew out of tinkering with the NPEGL \isi{database} material, and was originally intended to be a mere appendix to \textcitetv{chapters/1Database}. Many thanks to Gerlof Bouma for sending me the most recent \isi{database} files several times. Thanks to Dag Haug and Gerlof Bouma for help with a number of Python-related questions. Finally, I would like to thank two reviewers for commenting on a previous draft of this chapter, which led to substantial improvements and clarifications.  
+
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}

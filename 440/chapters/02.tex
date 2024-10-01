@@ -1,0 +1,963 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998633}
+
+\author{Stella Markantonatou\orcid{0000-0002-9256-8300}\affiliation{Institute for Language and Speech Processing, ATHENA Research Center, Greece} and 
+Nikolaos T. Kokkas\orcid{0009-0002-7274-4546}\affiliation{Democritus University of Thrace, Greece} and
+Panagiotis G. Krimpas\orcid{0000-0001-7271-9653}\affiliation{Democritus University of Thrace, Greece} and
+Ana O. Chiril\orcid{0009-0006-6178-1797}\affiliation{Institute for Language and Speech Processing, ATHENA Research Center, Greece} and
+Dimitrios Karamatskos\orcid{}\affiliation{Institute for Language and Speech Processing, ATHENA Research Center, Greece} and
+Nicolaos Valeontis\orcid{}\affiliation{Institute for Language and Speech Processing, ATHENA Research Center, Greece} and
+George Pavlidis\orcid{0000-0002-9909-1584}\affiliation{Institute for Language and Speech Processing, ATHENA Research Center, Greece}}
+%Other Author\orcid{}\affiliation{University of Luna}
+%Other Author\orcid{}\affiliation{University of Luna}
+
+
+%\ORCIDs{}
+
+\title[Description of Pomak within IDION]{Description of Pomak within IDION: Challenges in the representation of verb multiword expressions}
+
+\abstract{Pomak is a non-standardised, endangered language variety of the East South  Slavic dialect continuum. This article presents an online resource of 165 Pomak verbal multiword expressions collected via fieldwork. The resource has been developed with IDION, which is a web-based environment for the documentation of a wide range of multiword properties.   The following information is encoded in this resource: lemma form of the expression, variants (if attested), definition in Pomak and translation in other languages, gloss, usage examples for 60 verb multiword expressions, morphosyntactic analysis in the Universal Dependencies framework as well as certain lexical relations among multiword expressions and verb alternations (if attested). Observations on the collected material that are not encoded in the Pomak edition of IDION but are presented in the article concern the types of verbal multiword expressions found in the data (light verb constructions, idioms) and the occurrence of very similar expressions in Modern Greek.  The contents of Pomak-IDION are openly available; they belong to a set of resources of Pomak (corpus, morphological and syntactic models, embeddings, lexica) that have been developed as a case study of the Philotis project, which provides technological support for the documentation of living languages.}
+
+\begin{document}
+\lehead{Markanatonatou, Kokkas, Krimpas, Chiril, Karamatskos, Valeontis \& Pavlidis}
+\maketitle
+\lehead{Markanatonatou, Kokkas, Krimpas, Chiril, Karamatskos, Valeontis \& Pavlidis}
+\section{Introduction} 
+\label{sec:02-intro}
+
+This article presents a freely available online resource\footnote{{\url{https://pomak.idion.athenarc.gr/admin}}} that documents aspects of Pomak verbal multiword expressions (henceforth VMWEs). The resource, which will be referred to as Pomak-IDION,  is intended to be useful to human users and Natural Language Processing (henceforth NLP) practitioners. 
+
+Pomak-IDION is a rare resource in a world where VMWE databases of endangered languages are sparse. \citet{Piirainen_2005}, who has offered a very precise picture of idiom research in Europe, noted that idiom data existed for some standard European languages. She reported that minor languages and dialects were completely ignored (with a couple of exceptions).  Of course, progress has been made over the years; however, databases with detailed information on idiom data for (not only European) endangered languages are still really few. Even the term ``less resourced" language does not really describe the situation of endangered languages such as Pomak. An example is the report of \citet{irishdatabase}  on the development of an idiom database for Irish, which is a less-resourced European language in this respect. However, even this database draws on prepublished substantial work. On the contrary,  there is no prepublished work on Pomak idioms.
+
+
+Pomak is a living, endangered and non-standardised  East South Slavic language variety with few written resources in various scripts. Pomak-IDION belongs to a set of state-of-the-art resources for this language (lexica, corpus, treebank, morphological and syntactic models, embeddings) that have been developed in the framework of Philotis. The  Philotis project\footnote{\url{https://philotis.athenarc.gr/}}  has developed an infrastructure to facilitate the development of state-of-the-art NLP resources of living languages. The Pomak treebank has been annotated according to the Universal Dependencies  formalism (henceforth UD) \citep{gurt2023}.\footnote{\url{https://universaldependencies.org/}} 
+
+165 Pomak VMWEs have been collected via fieldwork. Both idioms and light verb constructions (henceforth LVCs) have been identified in this material.  Several Pomak VMWEs have literal equivalents in Modern Greek. This fact suggests the presence of contact phenomena since trilingualism (Pomak, Greek, Turkish) is widespread in the Pomak community; native speakers of Greek, on the other hand, rarely speak Pomak.  
+
+
+To the best of our knowledge, this is the first systematic encoding of Pomak VMWEs that can be useful both to the human user and to NLP practitioners. Considerable field work was required for this task since, although usages of the VMWEs abound in everyday speech, they are extremely rare in the little available Pomak textual legacy. Lexical semantic relations among VMWEs, such as synonymy,  are even more difficult to identify in the available corpora. We were fortunate enough to enjoy the cooperation of the Pomak community who embraced this effort and offered oral evidence.
+
+We begin this discussion by introducing the Pomak language variety. In \sectref{sec:aboutpomak} we provide information about Pomak and the existing resources: \sectref{sec:sourcepomak} describes the corpus of Pomak and \sectref{sec:script} the script and the orthography used in the corpus. The same orthography and script have been used in Pomak-IDION. Basic information about Pomak morphology and syntax is presented in  \sectref{sec:morphology}
+and \sectref{sec:syntax} respectively and the UD Pomak treebank is introduced.  \sectref{sec:oralmaterial} describes the collection of linguistic material about Pomak VMWEs. 
+
+Next, we present some observations on the collected material. \sectref{sec:lvcsgreek} summarises the syntactic patterns observed in the collected material as sequences of Part of Speech (henceforth PoS) UD tags. In the collected material, both  LVCs (\sectref{sec:lvcs}) and idioms (\sectref{sec:idioms}) were identified; possible manifestations of contact phenomena between Pomak and Modern Greek are also addressed in these sections.  More material about Pomak LVCs and idioms is provided in Appendix A and Appendix B respectively. 
+ 
+The  Pomak VMWEs were encoded with the web-based IDION database which we introduce in  \sectref{sec:idion}. In this section, we briefly discuss issues to which state-of-the-art  databases of VMWEs have to provide a response. Then,  in light of this discussion,  we explain our choices regarding the basic design principles of IDION.
+
+There are two interfaces to the database: one available to users who access the database only to look up a VMWE (henceforth external users) and one used by registered linguists who document the VMWEs (henceforth encoders). Here, we present the interface available to external users. \sectref{sec:idionpomak} is divided into subsections each describing the searches that are available with Pomak data. Searches supported by fuzzy matching retrieve VMWEs in lemma form (\sectref{sec:fuzzy}). Once the desired VMWE has been identified, other searches are available: variants (if any has been attested), gloss, translations (\sectref{sec:lemmaform}), usage examples and their translations (\sectref{sec:usagesearch}), morphosyntactic analysis of the variants and the usage examples in the UD framework (\sectref{sec:udsearch}), and lexical relations among VMWEs (some of them of semantic nature), if attested (\sectref{sec:synonymy}). 
+
+
+
+
+\section{About Pomak}
+\label{sec:aboutpomak}
+
+Pomak (endonym: Pomácky, Pomácko, Pomácku or other dialectal variants)  is a non-standardised East South Slavic language variety. Apart from Greece, it is spoken in parts of Bulgaria and East Thrace (Türkiye) and in the places of Pomak diaspora \citep[35]{Constantinides}. In Greece, it is spoken by about 35,000 people inhabiting the Rhodope Mountain area mainly  \citep{adamou}. The Pomak dialect continuum has been influenced by Greek and Turkish due to extensive bilingualism or trilingualism.
+
+Pomak scores low on all six factors of language vitality and endangerment proposed by UNESCO \citep{unesco}: there is little written legacy with only symbolic significance for the speakers of Pomak, the language is not taught at school, it is used mainly in family settings, and the dominant languages, namely Greek and Turkish, begin to penetrate family settings.
+
+\subsection{Textual resources of Pomak}
+\label{sec:sourcepomak}
+
+Sporadic transcriptions and recordings of Pomak folk songs and tales have been published over the last 80 years \citep{theocharidisg,theocharidisl}  as well as a very few modern texts; these mostly include journalistic texts, translations from Greek and English into Pomak \citep{sebatr}, and material for teaching Pomak to Greeks as a second language \citep{kokkas}. 
+In addition, descriptive works on Pomak morphology and grammar have been published \citep{papadimitrioudial,papadimitrioudiap,sandry}. 
+ Selected parts of this textual material have been included in a corpus of about 140,000 words, which will be made available for research purposes by Philotis. The corpus is presented here because it is the largest searchable collection of texts in Pomak and has been used as a source of VMWE instances while developing Pomak-IDION.
+
+\tablename~\ref{tab:table1} shows the text genres included in the corpus and the size of the respective texts in words. Where possible, the geographical origin of the texts is also given as a hint to the  Pomak variant appearing in the text.
+
+
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{lrl}
+\lsptoprule
+Text types & Words & Geographical origins \\
+\midrule
+Folk tales & 43,817 & Aimonio, Glafki, Dimario, Echinos\\
+           &        & Myki, Pachni, Oreo\\
+Language description & 19,524 & mixed \\ 
+Journalism & 25,236 & Myki \\ 
+Translations into Pomak & 24,208 & Myki, Pachni \\
+Folk songs              & 18,434 & mixed \\
+Proverbs                & 550 & mixed \\
+Other                   & 5,325 & Myki \\
+\midrule
+Total & 137,094 & \\
+\lspbottomrule
+\end{tabular}
+\caption{Pomak corpus: Type, size and geographical origins of texts.\label{tab:table1}}
+\end{table}
+
+
+The morphological and syntactic analysis adopted in this work draws on the approach to Pomak language that was developed in the Philotis project and is outlined in \citet{karahoga-morphologically} and \citet{gurt2023}. A Pomak treebank has been made available on the UD treebank repository along with the relevant detailed documentation.\footnote{\url{https://universaldependencies.org/qpm/index.html}}
+
+\subsection{Pomak script and orthography}
+\label{sec:script}
+
+A variety of scripts and orthographies have been used so far in the Pomak textual legacy, ranging from Bulgarian-based Cyrillic to Modern Greek to an English-based Latin alphabet. Homogenisation of these texts in order to form a processable corpus required the adoption of a common script and a common orthography. To this end,  the Latin-based alphabet devised and proposed by Ritvan Karahoǧa and Panagiotis G. Krimpas (henceforth K\&K alphabet), which has a language resource-oriented accented version and a non-accented all-purpose version, has been used to transliterate the corpus semi-automatically and for the documentation of Pomak VMWEs in IDION. 
+
+The K\&K alphabet has been developed to satisfy the following requirements \citep{karahoga-morphologically}:  use of Unicode to ensure portability of the alphabet, phonetic transparency, easily learned representations of sounds (ensured by the use of similar diacritics for the same articulation sounds and the absence of digraphs) and, finally, consistent spelling not affected by predictable allophony. It should be noted that the K\&K alphabet is based on the Pomak variety spoken in the area of Myki but can also partially serve as an all-variety script by allowing various predictable pronunciations of the same graph depending on the variety.
+
+
+The orthographic tradition of other Slavic language varieties was taken into consideration if it did not contradict distributional and phonological evidence. For instance,   certain interrogative, indefinite and negative pronouns, conjunctions and adverbs are spelled as a single word in most Slavic languages but, in the adopted Pomak orthography,  are spelled as two words, e.g., \textit{at kak} for \textit{atkák} `since’, \textit{ní kutrí} for \textit{níkutrí} ‘nobody' because the first word can be independently identified as a preposition or particle, and the second as an interrogative pronoun or adverb e.g., \textit{at} ‘from; out of’, \textit{kak} ‘how; as; like’.
+
+\subsection{Pomak morphology at a glance}
+\label{sec:morphology}
+
+Pomak common and proper nouns, determiners, adjectives, pronouns, participles and some of the numerals are morphologically marked for gender, number, case and (in)definiteness. The opposition \textit{Animate vs. Inanimate} is overt with the nominative case of masculine plural adjectives, participles and 3rd person plural pronouns and rarely with masculine singular nouns, where it is found as residual morphological genitive/accusative. Pomak has three genders, namely masculine, feminine and neuter, and four cases, namely nominative, dative/genitive, accusative and vocative; the morphological dative case has assumed the functions of the historical dative and genitive cases, so we speak of dative/genitive case and use a notation reminiscent of this fact in glossing the Pomak examples.   With possessive determiners both the number of the possessor and of the possessed object are encoded. Like most Balkan languages, Pomak has a rich inventory of diminutive and augmentative forms of nouns, adjectives, adverbs, and certain passive participles.
+
+Pomak is special among East South Slavic languages in that, although it uses a tripartite enclitic definite article \textit{-s}, \textit{-t}, \textit{-n} \citep{adamou,constandinidestrip,krimpas} like Macedonian, this article is of the \textit{-s}, \textit{-t}, \textit{-n} rather than \textit{-v}, \textit{-t}, \textit{-n} type and occurs not only with nominals, but also with deictic adverbs as a deictic and definiteness marker, denoting:
+
+\begin{itemize}
+\item  Proximity to the speaker, e.g., \textit{čul{\'{\ae}}kos} `the man close to the speaker'. 
+\item Proximity to the listener, e.g., \textit{čul{\'{\ae}}kot} `the man close to the listener'. 
+\item Distance from both the speaker and the listener, e.g., \textit{čul{\'{\ae}}kon} `the man who is away (or out of sight) from both the speaker and the listener'.
+\end{itemize}
+
+Verbs have finite and non-finite forms. There are three types of non-finite verb forms: converbs, participles and (residual) infinitives. The residual, i.e., Proto-Slavic, infinitive forms the prohibitive imperative when following the particles \textit{na/ne} and \textit{namój} (sing.)/\textit{namójte} (pl.) `not', e.g., \textit{namój barzá} `do not rush'. Interestingly, Pomak has another, innovative form of infinitive, which may be called \textit{the morphologically reduplicated infinitive}. This residual infinitive of a small number of imperfective verbs is repeated to form fixed multiword expressions that denote the continuous/monotonous/rythmic repetition of a motion, e.g. \textit{čúktiti čúktiti} `hit and hit'.
+
+ Finite verbs are always marked for mood, number and person. Verbs in the indicative mood are marked for tense, either past or present. \textit{Som} `be' is the auxiliary verb used to form perfect verb tenses and the passive voice. Future tenses are formed with the indeclinable auxiliary particle \textit{še} `will', which historically derives from the verb meaning `want'.
+
+
+\subsection{Pomak syntax at a glance}
+\label{sec:syntax}
+
+
+Pomak is a nominative-accusative language, where subjects are typically marked with the nominative case and objects with the accusative; in addition, some verbs select objects in the dative/genitive case. Indirect objects are marked with the dative/genitive case, which is morphologically based on the Slavic dative case.  As in other Slavic languages, ethical datives abound. %e.g., \textbf{dečómne} \textit{drago} \ldots `the children like to \dots'. 
+The strong and the weak forms of the personal pronoun may co-occur in a sentence (clitic doubling).
+
+Markers such as \textit{óti, da, če, ta} introduce subordinated clauses that function as verb dependents and markers such as \textit{akú, kugá, pak, za da, za to, óti} introduce clauses that function as adverbial modifiers.  There is a question particle \textit{li}, e.g., \textit{dojdéš li} `do you come?'.
+
+With respect to word order, Pomak is a primarily SVO language with rather flexible word order, given its highly inflectional nature. Adjectives typically come before the noun, although the reverse is also possible, especially for emphasis or in literary contexts. Possessives are actually datives of the unstressed (enclitic) personal pronoun. The rules governing the word order of clitics in a clause, as well as the word order within a clitic cluster, are similar to those of Bulgarian, Macedonian and Serbo-Croat:  a single clitic is always the second element of its clause; multiple clitics are arranged in the following order: auxiliary > clitic-in-dative-case > clitic-in-accusative-case but, if the auxiliary is 3rd person singular, the order changes into clitic-in-dative-case > clitic-in-accusative-case > auxiliary. Pomak is a pro-drop language, which means that pronominal subjects are normally used for clarity, emphasis, or literary purposes since verb endings normally provide information about the ``number" and ``person" of the syntactic subject. Given that infinitives are no longer in use in Pomak (except for the residual and reduplicative infinitives mentioned above), the so-called ``Balkan subjunctive" (\textit{da} particle + finite verb in the case of Pomak) has replaced the old Slavonic infinitive (much like Modern Greek, Albanian, Romanian, Bulgarian, Macedonian and, to a lesser extent, Serbian and Bosnian).
+
+
+%\ea \label{ex:clitics}
+%\gll \textit{tébe} \textit{ti} \textit{ je} \textit{ da} \textit{rečéš}\\
+%you to-you is to speak \\
+%\glt `it is up to you to speak'
+%\z
+
+%A more detailed approach to Pomak syntax can be found in ANONYNISED PAPER (2023).
+% As regards collocational formations, pairs of identical words are used for emphatic purposes (\ref{ex:soft}); in addition, certain MWEs  behave like function words or short adverbials (\ref{ex:once}).
+ 
+ %\ea 
+ %\begin{xlist}
+% \ex \label{ex:soft}
+%\gll \textit{adí} \textit{sítan} \textit{sítan} \textit{dožd} \textit{let{\'{\ae}}šo}\\
+ %a soft  soft  rain {was raining} \\
+%\glt `a very soft rain was falling'
+%\ex \label{ex:once}
+%\gll  \textit{bir vakýt bir zamán  im{\'{\ae}}l je adín čül{\'{\ae}}k}\\
+%one time one era has been a man\\
+%\glt `once upon a time there was a man' 
+%\end{xlist}
+%\z
+
+
+
+\section{Material collection}
+\label{sec:oralmaterial}
+
+Pomak VMWEs were collected mainly through interaction with native speakers of Pomak in the framework of Philotis. The collection of VMWEs was accomplished by Nicolaos Kokkas, one of the authors, who is fluent in Pomak.   The native speakers who contributed to this study represented the variants of Pomak spoken in the following villages in the region of Xanthi:   Bára (Greek name Στήριγμα `Stírigma'), Bašájkovo (Greek name Μάνταινα `Mándena', Demirǧík (Greek name Δημάριο `Dimário'), Púlevo  (Greek name Προσήλιο `Prosílio').
+
+Targeted interaction with native speakers involved  (recorded) interviews and collection of written material. The speakers were two men and two women of secondary and tertiary education level, whose ages ranged between 20 and 50 years. During the interviews specific VMWEs were discussed. To collect written material, during the period September-December 2022,  each week the speakers received a short list of VMWEs which they discussed in their community and enriched with semantically related VMWEs, namely synonyms and antonyms\footnote{In IDION, the term \textit{opposites} is preferred rather than the term \textit{antonyms} for reasons explained in \sectref{sec:dessynonymy}} (if they could identify any) and usage examples. Written material was collected in the form shown in \tablename~\ref{tab:form}  (〈\,〉 indicates translation into the respective language, e.g. 〈Greek〉: translation into Greek,  [Pomak]  any original text in Pomak and (Gloss) the gloss of the Pomak VMWE in Modern Greek or English). 
+
+\begin{table}
+\begin{tabular}{lllll}
+\lsptoprule
+VMWE       & [Pomak] & 〈Greek〉 & 〈English〉  \\ 
+Definition & [Pomak] &        & (Gloss)  \\
+Synonyms   & [Pomak] & 〈Greek〉 &  \\
+Opposites  & [Pomak] &        &  \\ 
+Examples   & [Pomak] & 〈Greek〉 & 〈English〉 \\ 
+\midrule
+ID: & Interviewed    &        & Date:  \\
+    & speaker(s):    &        &   \\
+\lspbottomrule
+\end{tabular}
+\caption{Form used to collect evidence about Pomak VMWEs.\label{tab:form}}
+\end{table}
+
+The forms were further filled with material from the Pomak corpus that was searched for in-context usages of the VMWEs in  a  variety of texts (however, little material was collected in this way).   Recordings of Pomak contemporary speech obtained in 2022 provided more VMWE instances of usage.
+The authors of this chapter have encoded the collected material.
+
+%as follows: Ana  Chiril, who is a bilingual  Greek-Russian speaker,  was mainly responsible for the encoding of the material. To this end, she closely cooperated on language issues with Nicolaos Kokkas and Panagiotis G. Krimpas who both are fluent speakers of Pomak and other Slavic languages.   Stella Markantonatou supervised the material collection and documentation work. 165 VMWEs were documented,  about 60 of which with usage examples.
+ 
+\section{A closer look into Pomak VMWEs}
+\label{sec:lvcsgreek}
+
+In this section, we will take a closer look at the structure of the collected Pomak VMWEs. 
+
+In this article, we will make frequent use of the term \textit{lexicalised components of a MWE} which was introduced in \citet[94]{SavaryEtAl:18}. These are the components with either fixed form or fixed lemma. Apart from the lexicalised components, VMWEs have free components that set them apart from proverbs; still, these free components are subject to strong semantic and morphosyntactic constraints.   Throughout this article, the lexicalised components of the VMWEs that are used as examples are typed in bold. The slots in the VMWE that should be filled with free arguments are indicated by means of pronouns in regular script.
+
+Based on the collected data, a set of observations have been made; these observations are not available in the existing literature on Pomak and/or on Pomak idiomaticity:
+\begin{itemize}
+    \item Pomak uses LVC constructions. 
+    \item The set of light verbs identified in the Pomak data is very similar to those of other European languages (see \sectref{sec:lvcs}).
+    \item The pattern \textsc{verb+noun} is very frequent in LVCs and in idioms (\ref{ex:idiom-lvcs}).
+    \item Pomak VMWEs demonstrate verb alternation phenomena (see \sectref{sec:synonymy}).
+    \item Several Pomak idioms have literal equivalents in Modern Greek. This observation could possibly contribute to a wider study of idiomaticity in the Balkan languages. 
+\end{itemize}
+
+The syntactic patterns of the lexicalised components of the collected VMWEs are listed below as PoS sequences.  When a literally equivalent Greek  VMWE exists, this is introduced with the prefix “GE” (Greek Equivalent) next to the English translation of the Pomak VMWE.  Of the syntactic patterns (\ref{ex:idiom-lvcs}--\ref{ex:glare}), (\ref{ex:idiom-lvcs}) has been attested in both idioms and LVCs and the other patterns in idioms only. It should be noted that all these patterns are in use in non-idiomatic Pomak. Throughout this text, the infinitive is not used in the English glosses of verbs because both Pomak and Modern Greek use the verb's  \textsc{1sg.pres.ind.} form as its lemma form.\pagebreak
+
+\ea
+\label{ex:idiom-lvcs}
+ \langinfo{\textsc{verb} + \textsc{noun}}{LVCs}{certain idioms}\\ 
+\ex
+\label{ex:copula}
+ \textsc{verb} + \textsc{adjective} \\
+\gll \textbf{{stánavom}} \textbf{{fukará}}\\
+{become}.\textsc{1sg.verb} poor.\textsc{adj.sg.nom} \\
+\glt `Ι become poor' Verb: \textit{fukarjásavom} `Ι become poor'
+\ex
+\textsc{verb} + \textsc{adposition} + \textsc{noun}\\
+\gll \textbf{{astánavοm}} \textbf{{na}} \textbf{{mǽsto}}\\
+{remain}.\textsc{1sg.verb} at.\textsc{adp}  place.\textsc{noun.sg.acc}\\
+\glt `I die instantaneously'
+\ex
+\textsc{verb} + \textsc{adposition} + \textsc{adjective} + \textsc{noun}\\
+\gll \textbf{{astánavom}} \textbf{{sas}} \textbf{{atvórena}} \textbf{{ustá}} \\
+{remain}.\textsc{1sg.verb} with.\textsc{adp}  open.\textsc{adj.sg.fem.acc} mouth.\textsc{noun.sg.fem.acc}\\
+\glt `I remain speechless' GE: \textit{μένω με το στόμα ανοιχτό}
+\ex
+\textsc{verb} + \textsc{noun} + \textsc{adposition} + \textsc{noun}\\
+\gll \textbf{{atvárem}} \textbf{{belǽ}} \textbf{{na}} \textbf{{glavóso}}\\
+{open}.\textsc{1sg.verb} trouble.\textsc{noun.acc} on.\textsc{adp}  head.\textsc{noun.sg.acc}\\
+\glt `I cause problems to myself' GE: \textit{βάζω μπελά στο κεφάλι μου}
+\ex
+\textsc{verb}  + \textsc{adjective} + \textsc{adposition} + \textsc{noun}\\
+\gll \textbf{{právem}} bannóga \textbf{{čórna}} \textbf{{ad}} \textbf{{sópa}}\\
+{do}.\textsc{1sg.verb} somebody black.\textsc{adj.acc} from.\textsc{adp} beating.\textsc{noun.sg.acc}\\
+\glt `I beat someone hard' GE: \textit{κάνω μαύρο στο ξύλο κάποιον}
+\ex
+\textsc{verb}  + \textsc{adposition} + \textsc{noun}\\
+\gll \textbf{{klávom}}  nǽko \textbf{{faf}} \textbf{{óči}} \\
+{put}.\textsc{1sg.verb} something in.\textsc{adp} eye.\textsc{noun.def.pl.acc}\\
+\glt I crave for something
+%klávam go pat sarcéso (“put it under my heart”, be disappointed, be devastated)
+%\ex
+%\textsc{verb} +  \textsc{adjective} + \textsc{adposition} + \textsc{noun}\\\
+%\gll \textbf{{páda}}  mi \textbf{{húbgo}} \textbf{{na}} %\textbf{{sarcéso}} \\
+%{fall}.\textsc{3sg.verb} I.\textsc{pron.dat} good.\textsc{adj} %on.\textsc{adp} heart-the.\textsc{noun.sg.acc}\\
+%\glt `I am glad about it'
+%\ex 
+%\textsc{verb} +  \textsc{noun} (fixed subject VMWE)\\
+%%\gll \textbf{{sečé}}  mi \textbf{{akýlos}}\\
+%cut.\textsc{3sg.verb} I.\textsc{det.gen} brain.\textsc{noun.def.sg.nom}\\
+%\glt `I am intelligent'
+\ex
+\label{ex:glare}
+\textsc{verb} + \textsc{adverb} \\
+\gll \textbf{{glǿdom}} \textbf{{kríve}}  bannóga\\
+{look}.\textsc{1sg.verb} {away}.\textsc{adv}  somebody\\
+\glt `I glare at somebody'
+%\glt `I control him' GE: \textit{τον έχω στο τσεπάκι μου}
+%Fátil so je čulǽkon afčárin itám za da si izkáravot hlǽbane. 
+%(The man started working as a shepherd there in order to get bread= to earn a living)
+\z
+
+Word order permutations can be observed in the collected material. Here one sees, e.g., that non-lexicalised variable indirect objects may come either after all the lexicalised parts of the VMWE, or immediately after the verb of the VMWE.
+
+ \ea \label{ex:lvcwordorder}
+ \begin{xlist}
+\ex 
+\gll \textbf{{dávom}} \textbf{{kolájene}} bannómu OR \textbf{{dávom}} bannómu \textbf{{kolájene }}\\
+{give}.\textsc{1sg}  eases somebody.\textsc{gen}\\
+\glt `I greet somebody'
+\ex
+\gll \textbf{{dávom}} \textbf{{habér}}  bannómu OR \textbf{{dávom}} bannómu \textbf{{habér}}\\
+{give}.\textsc{1sg} news.\textsc{noun} somebody.\textsc{gen}\\
+\glt `I inform somebody' 
+\end{xlist}
+\z
+
+
+
+\subsection{Pomak LVCs in the collected material }
+\label{sec:lvcs}
+
+LVCs were first introduced by \citet{jespersen} and since then they have attracted a lot of attention (e.g., \cite{kimbaldwin,laport}). LVCs consist of a verb and a nominal complement, possibly introduced by a preposition.  \citet{SavaryEtAl:18} list a set of diagnostics for setting LVCs apart from idioms with a \textsc{verb+(preposition)+noun} syntactic structure: the noun has one of its original senses and denotes an event or a state; the verb only contributes morphological features, such as tense, mood, person and number; the noun can head an NP containing all the syntactic arguments of the verb and denoting the same event or state as the LVC; and, the overall construction is subject to semantic and syntactic uniqueness constraints.  
+
+
+Here, we identify as LVCs those \textsc{verb+noun} formations that can be replaced by (are synonymous with)  verbs that are morphologically related to their noun (\ref{ex:lvcintext}); such structures seem to satisfy the LVC diagnostics listed above. Among the Pomak verbs used as light verbs are \textit{dávom} `Ι give', \textit{právem} `Ι do', \textit{stánavom} `Ι become', \textit{stórevom} `Ι make', \textit{zímom} `Ι take'. More examples of Pomak LVCs are listed in Appendix A. 
+
+
+ \ea \label{ex:lvcintext}
+% \langinfo{Pomak}{Slavic}{\citet{adamou;Constantinides}}\\
+ \begin{xlist}
+\ex 
+\gll  \textbf{{dávom}} \textbf{{izét}} \\
+{give}.\textsc{1sg.verb} pain.\textsc{noun.sg.acc}\\
+\glt `Ι torture'  Verb: \textit{izettóvom} `Ι torture'
+%\ex
+%\gll fátom nazára \\
+%catch {evil eye} \\
+%\glt `be jinxed'. Verb: \textit{nazarjásavom} `be affected by evil eye'
+%\ex   
+%\gll fátom vǽra \\
+%catch faith\\
+%\glt `accept, believe'. Verb: \textit{vǽravom} `believe'
+%\ex 
+%\\gll stánavom budalá \\
+%\become mad \\
+%\\glt `go crazy'. Verb: \textit{pabudalǽvom} `go crazy'
+%\\ex 
+%\\gll stánavom dløk \\
+%\become tall \\
+%\glt `grow tall'. Verb: \textit{izdlǿgnavom} `grow tall'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{fukará}}\\
+{become}.\textsc{1sg.verb} poor.\textsc{adj.sg.nom} \\
+\glt `Ι become poor'. Verb: \textit{fukarjásavom} `Ι become poor'
+%\ex 
+%\gll stánavom gulǽm \\
+%become big \\
+%\glt `grow big'. Verb: \textit{nagulæmávom} `grow big'
+%\ex 
+%\gll stánavom hazýr \\
+%become ready\\
+%\glt `get ready. Verb: \textit{hazyrladísavom so} `get ready'
+%\ex 
+%\gll stánavom star\\
+%become old \\
+%\glt `grow old'. Verb: \textit{sastarǽvom, stárem} `grow old'
+%\ex 
+%\gll stánavom zengínin \\
+%become rich \\
+%\glt `become rich'. Verb: \textit{zenginjásavom} `become rich'
+\ex 
+\gll \textbf{{stórevom}} \textbf{{izméte}}\\
+{do}.\textsc{1sg.verb} service.\textsc{noun.pl.acc}\\
+\glt `Ι do the housework'. Verb: \textit{izmetóvom} `Ι serve'
+%\ex 
+%\gll tavárem so grǽha \\ 
+%{get loaded} with  sin \\
+%\glt `commit a sin'. Verb: \textit{græhóvom} `commit a sin'
+\ex 
+\gll \textbf{{zímom}} \textbf{{emín}} \\
+{take}.\textsc{1sg.verb} oath.\textsc{noun.sg.acc} \\
+\glt `Ι take an oath'. Verb \textit{eminledísavom} `Ι take oath, Ι vow'
+\end{xlist}
+\z
+
+
+The Pomak corpus has provided some usage examples of LVCs (\ref{ex:corpusex}):
+
+\ea \label{ex:corpusex}
+%\langinfo{Pomak}{Slavic}{\citet{adamou;Constantinides}}\\
+\begin{xlist}
+\ex \label{ex:rezili}
+\gll Nimó ma \textbf{{právi}} \textbf{{rezíl}}. \\
+{do-not}.\textsc{2sg.verb} me do infamous.\textsc{adj} \\
+\glt `Do not humiliate me.'
+\ex \label{ex:karare}
+\gll Čulǽkon \textbf{{zíma}} \textbf{{karáre}} annók déne da íde da nájde Alláha.\\
+man.the  take.\textsc{3sg.verb} decision.\textsc{noun.pl.acc} one day that go.\textsc{3sg.verb}  that find.\textsc{3sg.verb}  Allah\\
+\glt `One day, the man makes the decision to go and find Allah.'
+%\ex \label{ex:harm}
+%\gll Faf sélono adín golǽm doš na móža da ti stóri kólkono zaráre še ti stóri faf kasabóno \\
+%in  village a big rain cannot do to you so much harm as you do in  city\\
+%\glt `In the village a strong rain cannot harm you as it would in the city.'
+\end{xlist}
+\z
+
+
+
+
+\subsection{Idioms occuring in both Pomak and Μodern Greek}
+\label{sec:idioms}
+
+In our collection of 165 Pomak VMWEs, we traced 55 VMWEs that have literal equivalents in Modern Greek. We consider two VMWEs as \textit{literally equivalent}  if they consist of translationally equivalent lexicalised parts for the same non-compositional meaning.   These data may present an interesting aspect of language contact phenomena between   Greek and   Pomak  or, perhaps, an instance of wider linguistic interactions in the Balkans or other parts of Europe \citep{Piirainen_2005, krimpas2022}.   More VMWEs of this type are listed in Appendix B. Some pairs of equivalent Pomak and Modern Greek VMWEs are exemplified in (\ref{ex:pomakgreek}).\largerpage
+
+\ea
+%\langinfo{Pomak}{Slavic}{\citet{adamou;Constantinides}}\\
+\begin{xlist}\label{ex:pomakgreek}
+\ex \label{ex:eq1}
+\begin{xlist}
+\ex
+\gll \textbf{{ablízavom}} \textbf{{si}} \textbf{{pórstovene}} \\
+{lick}.\textsc{1sg.verb}  I.\textsc{pron} finger.\textsc{noun.def.pl}\\
+\glt `I find the food delicious' 
+\ex 
+GE: γλείφω τα δάχτυλά μου\\
+\gll  \textbf{{glifo}} \textbf{{ta}} \textbf{{dachtila}} \textbf{{mou}}\\
+ {lick}.\textsc{1sg.verb}  the.\textsc{art.pl.acc} finger.\textsc{noun.pl.acc} my\\
+\glt `I find the food delicious' 
+\end{xlist}
+\ex  \label{ex:eq2}
+\begin{xlist}
+\ex
+\gll \textbf{{čéftom}} \textbf{{balíkoso}}\\
+{chisel}.\textsc{1sg.verb} wound.\textsc{noun.def.pl.acc}\\
+\glt `I open old wounds' 
+\ex 
+GE: ξύνω πληγές\\
+\gll \textbf{{ksino}} \textbf{{pliges}}\\
+{chisel}.\textsc{1sg.verb} wound.\textsc{noun.pl.acc}\\
+\glt `I open old wounds' 
+\end{xlist}
+\ex  \label{ex:eq3}
+\begin{xlist}
+\ex
+\gll \textbf{{klávom}} \textbf{{dvéne}} \textbf{{nógy}} \textbf{{na}} \textbf{{annó}} \textbf{{amenýe}}\\
+{put}.\textsc{1sg.verb}  two.\textsc{num.def} foot.\textsc{noun.dual.acc} on.\textsc{adp} one.\textsc{num} shoe.\textsc{noun.sg.acc}\\
+\glt `I try to control somebody's life' 
+\ex 
+GE: βάζω τα δυο πόδια κάποιου σε ένα παπούτσι\\
+\gll  \textbf{{vazo}} \textbf{{ta}} \textbf{{dio}} \textbf{{podia}} kapiou \textbf{{se}} \textbf{{ena}} \textbf{{papoutsi}}\\
+ {put}.\textsc{1sg.verb} the.\textsc{art.pl.acc} two.\textsc{num} feet.\textsc{noun.pl.acc} someone.\textsc{gen} in.\textsc{adp} one.\textsc{num} shoe.\textsc{noun.sg.acc}\\
+\glt `I try to control somebody's life' 
+\end{xlist}
+\ex \label{ex:eq4}
+\begin{xlist}
+\ex
+\gll \textbf{{sečé}} \textbf{{mi}} \textbf{{akýlos}}\\
+cut.\textsc{3sg.verb} I.\textsc{det.gen} brain.\textsc{noun.def.sg.nom}\\
+\glt `I am intelligent'
+\ex 
+GE: κόβει το μυαλό μου\\
+\gll \textbf{\em{kovi}} \textbf{\em{to}} \textbf{\em{mialo}} \textbf{\em{mou}}\\
+ cut.\textsc{3sg.verb} the.\textsc{art.sg.nom} brain.\textsc{noun.sg.nom} my\\
+\glt `I am intelligent'
+\end{xlist}
+\end{xlist}
+\z
+
+
+
+
+
+\section{Issues in VMWE documentation: The IDION approach}
+\label{sec:idion}
+
+
+Modern MWE databases are expected to provide information that can be used both by people who study or use a language and in NLP (\cite{duelme, Gyri2016}).  \citet{Gantar2018} compare seven dictionaries and NLP databases and list the  MWE properties they document, namely: (i) variants (ii) definition (iii) morphology of MWE components (iv) contiguity of MWE components (v) phrase structure (vi)  usage example. In what follows, we discuss these properties and how they are treated in IDION. Furthermore,  we extend our discussion to additional information about VMWEs that is encoded in IDION and includes a variety of semantic properties and the full morphosyntactic description of VMWE lemmas and usage examples according to the UD framework.
+
+
+IDION is a web environment for the rich documentation of MWEs.  IDION allows for new editions, accessible from the same or a different site. So far, two editions have been created, one for  Modern Greek VMWEs  \citep{markantonatou-etal-2019-idion} and one for Pomak  VMWEs. The contents are available under a CC-BY-NC license.
+
+\subsection{Lemma form}
+\label{sec:lemmaform}
+
+In IDION, a \textit{lemma form} of a VMWE contains:
+\begin{itemize}
+\item the components with a fixed form (fixed lexicalised components);
+\item the components whose lemma is fixed but whose form inflects; these are included  in their lemma form or the form that best approximates the lemma convention (non-fixed lexicalised components), e.g., if the (head) verb of the VMWE appears in the second and third persons of all numbers, in the lemma form it is in the second person singular;
+\item the variables, such as free NPs functioning as subjects, direct/indirect objects or ethical genitives or datives of the MWE and free phrasal complements.
+\end{itemize}
+
+In addition, the lemma form takes into account the possibly fixed order of the MWE components; otherwise, it keeps the lexicalised components close to the verb. Such a typical order is the following: (lexicalised or free) subject, lexicalised verb, other lexicalised components (if any), (lexicalised or free) object.  Attested usage instances of the VMWE with a different word order are separately listed in the \textsc{CORPUS} tab of the IDION-Pomak database (see \sectref{sec:usagesearch}) as manifestations of the syntactic flexibility of the VMWE.
+
+Below, in order to better explain IDION's features we may resort to examples from Modern Greek since Pomak could provide only limited material. 
+
+\subsection{Variants}
+\label{sec:variants}
+
+Variants have to do with the lemma form of the MWEs.  The lemma form is one of the two features of a MWE that have to be considered in order to create an entry in the database; meaning is the second feature.   It turns out that the identity of the VMWE is established as a combination of a meaning with a non-empty set of lemma forms,  the so-called variants \citep{chechdatabase}. The issue of variants occurs because VMWEs are mutable entities of spoken, colloquial language. In other words, it is not the case that each VMWE lemma form corresponds to a different meaning and vice versa. For instance, all the lemma forms of the Modern Greek VMWE in (\ref{ex:noose}) share the same meaning. These lemma forms are identical as regards the syntactic dependencies among the lexicalised parts that belong to content word categories, namely nouns, adjectives and verbs. In the same spirit, optional or mutually exclusive lexicalised non-content word components of the MWE may define new variants but not a new VMWE. In (\ref{ex:noose})  four different lemma forms of the same VMWE result from the optionality of the  article \textit{τη} and the exclusive disjunction between  {\emγύρω από το} and  \textit{στο}. 
+
+ It should be clarified that the syntactically flexible usages of VMWEs (see \sectref{sec:desflexibility}) are not treated as VMWE variants in IDION. 
+ 
+\ea
+\label{ex:noose}
+\begin{xlist}
+\ex
+GE: βάζω τη θηλειά γύρω από το λαιμό κάποιου\\
+\gll \textbf{{vazo}} \textbf{{ti}} \textbf{{thilia}} \textbf{{giro}} \textbf{{apo}} \textbf{{to}}  \textbf{{lemo}} kapiou\\
+put.\textsc{1sg} the noose around from the neck somebody.\textsc{gen}\\
+\ex
+GE: βάζω  θηλειά γύρω από το λαιμό κάποιου\\
+\gll \textbf{{vazo}}  \textbf{{thilia}} \textbf{{giro}} \textbf{{apo}} \textbf{{to}}  \textbf{{lemo}} kapiou\\
+put.\textsc{1sg}  noose around from the  neck somebody.\textsc{gen}\\
+\ex
+GE: βάζω τη θηλειά στο λαιμό κάποιου\\
+\gll \textbf{{vazo}} \textbf{{ti}} \textbf{{thilia}}  \textbf{{sto}}  \textbf{{lemo}} kapiou\\
+put.\textsc{1sg} the noose to.the neck somebody.\textsc{gen}\\
+\ex
+GE: βάζω  θηλειά στο λαιμό κάποιου\\
+\gll \textbf{{vazo}}  \textbf{{thilia}}  \textbf{{sto}}  \textbf{{lemo}} kapiou\\
+put.\textsc{1sg} noose  to.the neck somebody.\textsc{gen}\\
+\glt ‘I force someone to be involved in an unpleasant situation'
+\end{xlist}
+\z
+
+A lexicalised content word component of the VMWE may appear in both the singular and the plural with no consequences for the idiomatic meaning. This situation is not exactly rare but it is unpredictable and part of the idiomatic character of a VMWE. Variation in number may induce changes to other lexicalised components of the MWE, e.g., the singular and plural lexicalised subjects in (\ref{ex:myalo}) and (\ref{ex:myala}) respectively induce agreement phenomena on the (lexicalised) verbs of the respective variants of the same  VMWE. 
+
+\ea
+\begin{xlist}
+\ex
+\label{ex:myalo}
+GE: πήρε αέρα το μυαλό κάποιου\\
+\gll \textbf{{pire}} \textbf{{aera}} \textbf{{to}} \textbf{{mialo}} kapiou \\
+take.\textsc{3sg.past} air the.\textsc{sg.nom} brain.\textsc{sg.nom} somebody.\textsc{gen} \\
+\glt `to get above oneself'
+\ex
+\label{ex:myala}
+GE: πήραν αέρα τα μυαλά κάποιου\\
+\gll \textbf{{piran}} \textbf{{aera}} \textbf{{ta}} \textbf{{miala}} kapiou\\
+take.\textsc{3pl.past} air the.\textsc{pl.nom} brain.\textsc{pl.nom} somebody.\textsc{gen}\\
+\glt `to get above oneself'
+\end{xlist}
+\z
+
+
+(\ref{ex:noosedative}) shows the VMWE in (\ref{ex:noose}) with an ethical  genitive\footnote{Modern Greek: ethical genitive; Pomak: ethical dative.} rather than a possessive one \citep{manfredstella}. The ethical genitive alternation in (\ref{ex:noosedative}) has to do with the morphosyntactic form of a variable and does not affect the meaning of the expression. Given this fact and the wide use of VMWEs with ethical genitives, in IDION lemma forms with an ethical genitive are listed as variants of the lemma forms exemplifying the other member of the alternation pair; the latter contains either an inalienable possession structure or a suitable prepositional phrase.
+
+
+\ea
+\label{ex:noosedative}
+GE: του βάζω (τη) θηλειά [γύρω από το] / [στο] λαιμό\\
+\gll tou \textbf{{vazo}} (\textbf{{ti}}) \textbf{{thilia}} [\textbf{{giro}} \textbf{{apo}} \textbf{{to}}] / [\textbf{{sto}}]  \textbf{{lemo}} \\
+I.\textsc{pron.gen} put.\textsc{1sg} (the) snoose [around from the] / [to.the] neck \\
+\glt ‘I force someone to be involved in an unpleasant situation'
+\z
+
+
+Variants are considered a challenging feature of MWEs (\cite{chechdatabase, duelme, villavicencio-etal-2004-multilingual}, \citetv{chapters/01}) because criteria such as the ones presented above are required to decide which forms will be listed as variants under the same MWE entry and which ones will not. No general agreement on this issue has been achieved as yet. For instance, VMWEs are often members of sets of expressions that stand in various lexical and semantic relations as discussed in \sectref{sec:dessynonymy}. In IDION, variants are members of a set of lemma forms of one VMWE. VMWEs that differ in lexicalised content words and/or semantically define separate entries in the database. IDION allows for the encoding of sets of lemma forms because it considers these variations important for the human user and for NLP. 
+
+
+ In developing IDION, once a first decision about a meaning and form combination is made,  encoders collect  as many variants and syntactically flexible usage instances as possible from corpora and/or the web. This procedure may change the original decision about the identity of the VMWE. For instance, it may arise that there are more meanings out there corresponding to the same set of forms than originally expected, or that there are forms that cannot be considered variants of the documented VMWE, for instance, because their syntactic structure cannot be reduced to the structure of the documented one.  Therefore, at the heart of IDION stands the collection of usage instances of the VMWE that determines the amount and the types of information on VMWEs to be documented in IDION. It should be stressed that IDION relies on actual usage examples, preferably collected from corpora and the web. There is room for encoding the intuitions of native speakers but these examples are kept to a minimum and are marked as such.  Eventually, a non-empty set of  variants is collected. The longest one is chosen as the ``preferred variant" and represents the VMWE.  
+
+No contracted representations are used for the lemma forms, such as representations based on regular expressions; for a comprehensive discussion on VMWE representations see \citet{lichteagata}.  
+Since we have drawn on limited lexicographic and financial resources, we preferred to invest in the collection and study of usage examples. Furthermore, given the current NLP technology,   morphosyntactic representations of both the lemma form of the VMWE and its usage examples can be obtained, edited, and searched for structural patterns with open-source tools, thus facilitating (steps of the) encoding without any additional machinery. In addition, usage examples constitute a valuable reusable resource for model development and that was a strong motivation because IDION is designed to support NLP. Finally, human users profit from usage examples because they illustrate usage particularities that can hardly be included in the definition of the meaning of the VMWE.
+
+
+\subsection{Meaning, glossing, translations}
+\label{sec:desmeaning}
+
+In IDION, the definition of the VMWE  is a short text describing the meaning of the MWE.   Definitions are in the language of the VMWE and contain compositional expressions only. Because the type of arguments a VMWE supports (the variables) is an important contribution to its meaning, in the definition pronouns like `someone' and `something' stand for nominal complements denoting humans and non-humans, if such constraints are imposed by the VMWE.
+
+The representative lemma form  is glossed and translated into a language other than that of the VMWE. Glosses  are simple with no morphological and syntactic annotation since this information is given via the UD analysis of a lemma form, which is also made available in IDION. Glosses  are addressed to the human user who can complement them with the UD analysis of the lemma form. On the translation level, MWEs with an equivalent meaning are preferred when they exist in the target language.
+
+\subsection{About morphology and syntax}
+\label{sec:morphosyntax}
+
+The morphological and syntactic analyses of MWEs are necessary both for the precise definition of the  MWE form and for supporting NLP. In rule-based NLP, an important task is the development of computational lexica of MWEs enriched with the full inflectional paradigms of the entries, e.g.,  \citet{agatamultiflex} for compounds in several languages and \citet{shuly2013} for Hebrew. This requires a morphological and a syntactic description of both the language system to which the MWE belongs and the particularities of each MWE.  
+
+
+The morphological and syntactic representation of the MWEs must be compatible with the formal language and the framework used by the NLP tool that they will support; this raises reusability concerns. For instance,  databases aimed at supporting phrase structure-based NLP  \citep{duelme,chechdatabase}  employ encoding schemes that allow for non-terminal nodes. To be reused in, for instance, the UD framework,  which is compatible with several popular state-of-the-art non-rule-based NLP tools and is adopted in several state-of-the-art MWE databases including IDION (\citetv{chapters/01}, \citetv{chapters/03}, \citetv{chapters/04}), these encodings have to be adapted accordingly. This is because  UD uses no non-terminal nodes, has its own metalanguage for morphosyntactic annotation and the analysis is encoded in CoNLL-U.\footnote{CoNLL-U is the encoding scheme adopted by UD and the tools that process annotated corpora with the UD annotation scheme: {\url{https://universaldependencies.org/v2/conll-u.html}}} On the other hand, state-of-the-art NLP tools learn from data, so they can be possibly trained on the (adapted) inflectional paradigms of VMWEs or, alternatively, on appropriately annotated corpora of diverse and syntactically flexible usages of MWEs \citep{savary-etal-2019-without}.  
+
+However, this need for many flexible usage instances proves to be hard for less-resourced languages, let alone for endangered ones. It is hard to construct corpora of spoken languages for which even a consensus on their alphabet and orthography has not yet been reached;  Pomak is such an endangered language \citep{karahoga-morphologically}. Also, less-resourced languages with only a few corpora representing their spoken version can hardly provide syntactically flexible usages of MWEs. For instance, in the case of Modern Greek, which is a medium-resourced language according to the criteria proposed by  \citet{joshi-etal-2020-state}, only the web (and not the published corpora) offers a reasonable amount of representative usage instances of most of the VMWEs, let alone their syntactically flexible ones. 
+
+\subsection{Syntactic flexibility}
+\label{sec:desflexibility}
+
+The syntactic flexibility of the VMWE is documented separately with six diagnostics. Each diagnostic is exemplified with usages from the corpus. As a result, all the collected usage instances are marked for at least one syntactic phenomenon.  The six diagnostics are  briefly explained below:
+\begin{itemize}
+\item Subject-head verb flexibility: Can the VMWE accept different subjects? Can it appear in all persons/numbers/tenses/moods?
+\item Can word order variation phenomena be observed with this VMWE?
+\item Interpolation: Can adverbs, adjectives or even phrases occur in between the lexicalised components of the VMWE?
+\item Cliticisation of lexicalised nominal content word components.
+\item Passive voice: does the VMWE have both an active and a passive form?
+\item Ethical genitive (for Pomak, dative) alternation (see \sectref{sec:variants}).
+\end{itemize}
+
+It has already been pointed out in \sectref{sec:variants} that flexible usages of the VMWE are not considered variants of the VMWE apart from the usages containing ethical genitives/datives.
+
+\subsection{Lexical (semantic) relations among VMWEs}
+\label{sec:dessynonymy}
+
+Lexical semantic relations have found their way into state-of-the-art databases for MWEs (\citetv{chapters/03},  \citetv{chapters/05}). In \textcitetv{chapters/01}, the notion of ``super lemma'' approximates that of (several) lexical semantic relations from a different point of view. IDION documents a set of lexical (semantic) relations among VMWEs. In order for a relation to be defined, it has to be attested with a usage example. Here, we will discuss the following pairs: synonyms, opposites, Has\_causative (inverse: Has\_inchoative), Verb alternation that have been attested in our collection of Pomak VMWEs. 
+
+A comment is due on synonymy. Synonymy in IDION disregards stylistic differences such as +/−colloquial, +/−offensive and rather relies on a notion of \textit{close semantic proximity} \citep[39]{hullen}.  It is well known that synonymy cannot be considered the linguistic equality relation because, in this way, synonyms would be the words or phrases capable of substituting each other in any context and such words or phrases hardly exist in any language. On the other hand, our everyday linguistic practice seems to consider synonymy a fact, e.g., when we explain the meaning of a word or a phrase using the language to which they belong  \citep[38]{hullen}. 
+%It seems that humans can function well with a notion of close \textit{semantic proximity} and this relation can order linguistic entities in distinguishable domains \citep[39]{hullen}.
+%Encoders define only pairs of synonymous VMWEs. Sets of synonymous expressions are dynamically generated by IDION at request. IDION  collects the pairs of synonymous VMWEs  with an implementation of the transitive property of synonymy; the transitive property states that for all values of \textit{a}, \textit{b}, and \textit{c}, if \textit{a R b}, and \textit{b R c}, then \textit{a R c} where \textit{R} is a relation. The  implementation infers that two expressions are synonymous even if their documentation does not contain this statement. 
+%The use of transitivity has two important merits: 
+%\begin{itemize}
+%\item it generates sets of synonymous VMWEs. 
+%\item if facilitates encoding of synonymy when there is no background lexicographic resource.
+%\end{itemize}
+
+%A comment is due on the use of transitivity in the treatment of synonymy. It is well-known that synonymy cannot be considered \textit{the linguistic equality relation} because, in this way, synonymous would be the words or phrases capable of substituting each other in any context and such words or phrases hardly exist in any language. On the other hand, our everyday linguistic practice seems to consider synonymy a fact, e.g., when we explain the meaning of a word or a phrase using the language to which they belong  \citep[38]{hullen}.
+%It seems that humans can function well with a notion of close \textit{semantic proximity} and this relation can order linguistic entities in distinguishable domains \citep[39]{hullen}. Transitivity is among the properties of the \textit{semantic proximity relation} that helps  defining such domains. This approach requires constant maintenance of the documentation by (near-)native speakers because  it is easy to define a pair leading to the concatenation of two different sets of synonyms. For instance,  several Modern Greek VMWEs describing extreme surprise also have the meaning `I die'. Since a VMWE entry in IDION is the unique combination of a meaning with a set of forms, such VMWEs define different VMWE entries despite their identical forms. Special care is required to avoid the concatenation of the two sets of VMWEs, namely the ones that mean `I am surprised extremely' and the ones that mean `I die'. 
+
+VMWEs are also documented for opposites, that is VMWEs describing situations that cannot hold simultaneously for the same entities, e.g., one cannot at the same time be denoted by the subject of the (EN) VMWE \textit{to kick the bucket} and the VMWE \textit{to be alive and kicking}. Opposition in language is a multi-dimensional and much discussed phenomenon and a rich terminology has been devised for its description \citep[270--287]{lyons}. In IDION, we have chosen the term \textit{opposites} because it seems to denote the general idea described above. We have not used the term \textit{antonym} because it has been devised to describe a relation among gradable words \citep{lyons}. 
+
+\subsection{Other relations among VMWEs}
+\label{sec:causative}
+
+We now turn to the causative/inchoative alternation and the relation among VMWEs which in IDION is called \textit{verb alternation relation}. Strictly speaking, the causative/inchoative and verb alternation relations are defined over verbs;  VMWEs, on the other hand, are structures headed by verbs. We use these terms to describe relations among VMWEs with verb heads standing in the respective relations. 
+
+The causative/inchoative alternation has been discussed extensively in the literature. \citet[90]{haspelmath} describes the phenomenon that is defined over pairs of verbs as follows: \begin{quote}
+\ldots it is a pair of verbs that express basically the same situations (generally a change of state, more rarely a going-on) and differ only in that the causative verb meaning includes an agent participant who causes the situation, whe-reas the inchoative verb meaning excludes a causing agent and presents the situation as occurring spontaneously. \end{quote} 
+
+He further distinguishes various morphological types of alternation, one of which is the \textit{labile} type, where the same verb is used both in the inchoative and the causative sense.
+
+
+In the literature, the term \textit{verb alternation} has been used as a cover term for a large set of phenomena, whereby a verb supports different subcategorisation frames with relatively minor and systematic differences in meaning, such as the \textit{spray-load} alternation and the passive voice. In IDION, a  restricted use of the term \textit{verb alternation} is made: practically, it is used for those verb alternations that have not been assigned their own label in the database, for instance, passivisation and causative/inchoative alternation have their own labels and the relevant VMWE pairs are not assigned the “verb alternation” label.
+
+
+
+\subsubsection{UD representation}
+\label{sec:desud}
+
+In IDION, UD representations are provided for the variants and the corpus examples and  offer full morphosyntactic analysis.   At the moment, IDION adopts the standard UD approach according to which  VMWEs are analysed in the same way as compositional structures \citep[281]{UD}. These UD representations are very useful to state-of-the-art NLP as training or fine-tuning material \citep{savary-etal-2019-without}. 
+
+
+\section{Pomak-IDION: The Pomak edition of IDION}
+\label{sec:idionpomak}
+
+Ιn \sectref{sec:idion} we explained the main ideas regarding the documentation of VMWEs in IDION. In  \sectref{sec:02-intro} we mentioned that IDION has two interfaces: one for encoders and one for external users.  This section presents the information on Pomak VMWEs that can be retrieved from IDION.\footnote{It should be noted that only part of the encoding and search capabilities of IDION have been used in Pomak-IDION, since the required data, such as utterances demonstrating the syntactic flexibility of VMWEs cannot be easily obtained in the case of an under-resourced language (see discussion in \sectref{sec:morphosyntax}).} At the same time, it presents the interface for external users. A description of the interface for encoders can be found in \citet{markantonatou-etal-2019-idion}. 
+
+
+The properties documented in Pomak-IDION enable the searches described in this section and are summarised in \tablename~\ref{tab:tablepomak}.
+Searching facilities were designed to conform to  (i)  the ``what you see is what you get", or WYSIWYG concept,\footnote{\url{https://www.merriam-webster.com/dictionary/WYSIWYG}} and (ii) the ten heuristic criteria that describe a user-friendly interface for simplicity of use and navigation \citep{nielsen}.
+
+
+
+\begin{table}[hbt!]
+\centering
+\begin{tabular}{lll}
+\lsptoprule 
+1 & Lemma form, definition & Pomak \\
+ & orthographic variations &   \\
+2 & Translations &  English, Modern Greek  \\
+3 & Codification for NLP &  UD analysis (lemma form,  variants)\\
+4 & Corpus & Usage examples by native speakers  \\
+5 & Synonyms & Pomak VMWEs \\
+6 & Opposites & Pomak VMWEs \\
+\lspbottomrule
+\end{tabular}
+\caption{VMWE properties encoded in Pomak-IDION}
+\label{tab:tablepomak}
+\end{table}
+
+
+
+
+\subsection{Fuzzy matching for VMWE retrieval}
+\label{sec:fuzzy}
+
+
+The Pomak VMWEs shown in (\ref{ex:casestudy}) will serve as a working example. 
+
+
+\ea
+\label{ex:casestudy}
+\begin{xlist}
+\ex 
+\label{ex:casecausative}
+\gll nǽko mi \textbf{alǿknava}   \textbf{dušó-no}\\
+something me.\textsc{dat} unburden.\textsc{3sg}   soul-the.\textsc{acc} \\
+\glt `something makes me feel relieved of anxiety'
+\ex
+\label{ex:casesinchoative}
+\gll  \textbf{alǿknava} mi \textbf{dušá-sa }\\
+unburden.\textsc{3sg} me.\textsc{dat}  soul-the.\textsc{acc} \\
+\glt `I feel relieved of anxiety'
+\ex
+\label{ex:caseverbalter}
+\gll  \textbf{alǿknava}  mi \textbf{na} \textbf{dušó-no}\\
+unburden.\textsc{3sg} me.\textsc{dat} to soul-the.\textsc{acc} \\
+\glt `I feel relieved of anxiety'
+\end{xlist}
+\z
+
+ A VMWE can be retrieved with segments of its lemma form (\figref{fig:chapterhandle:search}); this is a fuzzy matching facility that returns a, possibly empty, list of VMWEs in lemma form, each one with its definition in Pomak (\figref{fig:chapterhandle:fuzzymatching}). Fuzzy matching is applied to all the variants of a VMWE; the reader may recall that the variants are listed in their lemma form and that the longest variant is used as the preferred one (see \sectref{sec:lemmaform}).   However, few VMWEs come with variants in the Pomak edition of IDION  given the way data was collected. Translations of the VMWE into other languages are accessible through the screen with the (fuzzy matching) search results.
+ 
+\vfill
+\begin{figure}[h]
+\includegraphics[width=.5\textwidth]{figures/02/search.png}
+\caption{Search with fuzzy matching in IDION-Pomak.}
+\label{fig:chapterhandle:search}
+\end{figure}
+\vfill
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{figures/02/fuzzymatching.png}
+\caption{Searched with the string \textit{alǿk} (\figref{fig:chapterhandle:search}), IDION-Pomak returns 3 VMWEs.}
+\label{fig:chapterhandle:fuzzymatching}
+\end{figure}
+\vfill\pagebreak
+
+When a VMWE is selected,  a set of tabs pops up at the lower part of the screen. The first tab on the left provides access to the orthographic variants of the lemma form  (if any exist). The second tab shows the gloss of the VMWE (\figref{fig:chapterhandle:gloss}). More tabs are available and described in \sectref{sec:usagesearch}–\sectref{sec:synonymy}.
+
+
+\begin{figure}
+\includegraphics[width=.33\textwidth]{figures/02/gloss.png}
+\caption{Gloss of (\ref{ex:caseverbalter})}. 
+\label{fig:chapterhandle:gloss}
+\end{figure}
+
+\subsection{Usage examples}
+\label{sec:usagesearch}
+
+The Corpus tab provides access to usage examples of the VMWE (\figref{fig:chapterhandle:corpus}). For each usage example, a set of translations and the source of the example are available. The Source tab provides the name of the village of the speaker who contributed the respective usage example; for instance,  in \figref{fig:chapterhandle:corpus} both usage examples have as their source the village of Mándena. Book references and URLs are normally used as sources of examples. However, the vast majority of Pomak usage examples of VMWEs were collected by means of interviews with native speakers (\sectref{sec:oralmaterial}).
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/02/corpus.png}
+\caption{Usage examples of (\ref{ex:casesinchoative}).}
+\label{fig:chapterhandle:corpus}
+\end{figure}
+
+
+\subsection{UD analysis of the lemma form}
+\label{sec:udsearch}
+
+The  UD-analysis tab gives the graphical format (\figref{fig:chapterhandle:conllu}) and the CoNLL-U format of the analysis of the variants of the lemma form according to the UD formalism; the CoNLL-U version of the UD analysis can be viewed and downloaded through the dedicated button. The UD analysis, together with the gloss of the lemma form  (\figref{fig:chapterhandle:gloss}), offer detailed structural information about the VMWE.   The analysis draws on the approach to Pomak morphology and syntax that has been applied on the UD Pomak treebank;  this approach is outlined coarsely in \sectref{sec:script}, \sectref{sec:morphology} and \sectref{sec:syntax}. 
+
+
+\begin{figure}
+\includegraphics[width=.66\textwidth]{figures/02/udanalysisvar.png}
+\caption{Graphical format of the UD analysis of (\ref{ex:caseverbalter})}
+\label{fig:chapterhandle:conllu}
+\end{figure}
+
+%\begin{figure}[hbt!]
+%\includegraphics[height=.08\textheight]{figures/conllu2.png}
+%\caption{Part of the CoNLL-U format of the UD analysis of (\ref{ex:caseverbalter})}
+%\label{fig:chapterhandle:connlu}
+%\end{figure}
+
+\subsection{Lexical (semantic) relations: Other relations}
+\label{sec:synonymy}
+
+In \figref{fig:chapterhandle:synonyms} the synonyms and opposites of (\ref{ex:caseverbalter}) are given. In addition, there is a VMWE standing in the verb alternation relation with  (\ref{ex:caseverbalter}).
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/02/synonymsopposites.png}
+\caption{Synonyms of (\ref{ex:caseverbalter}).}
+\label{fig:chapterhandle:synonyms}
+\end{figure}
+
+Our data show that Pomak exemplifies the labile type of the causative/in-choative alternation (\sectref{sec:dessynonymy}). The labels Has\_causative and Has\_inchoative are used to annotate pairs of VMWEs that stand in this relation. In \figref{fig:chapterhandle:inchoatives}, the causative VMWE  (\ref{ex:casecausative}) has the inchoative counterpart  (\ref{ex:casesinchoative}). To our knowledge, this is the first time that verb alternation phenomena have been discussed for Pomak. 
+
+\begin{figure}
+\includegraphics[width=\textwidth]{figures/02/inchoatives.png}
+\caption{The Has\_inchoative relation defined on  (\ref{ex:casecausative}).}
+\label{fig:chapterhandle:inchoatives}
+\end{figure}
+
+
+
+\section{The future}
+
+Pomak-IDION is a unique resource of an endangered living language.  It belongs to the set of  Pomak resources developed in the framework of the project Philotis. 
+
+Pomak-IDION offers material and motivation for a future thorough study of Pomak VMWEs, e.g.,  studies on the role of the triple enclitic deictic article in idioms,  the syntactic flexibility properties of VMWEs, verb alternation phenomena, language contact phenomena observed with LVCs and idioms and studies on the semantics of idiomatic Pomak.
+
+Enriching IDION, and Pomak-IDION, with the inflectional paradigms of the VMWEs is among our future plans. This presupposes the encoding of the idiosyncratic constraints that hold for a number of VMWEs, other than constraints on the lexicalised parts: for instance, a VMWE may never appear in the future tense or the 1st person but may fully inflect for all the other tenses and persons. Such constraints are not expressed by the UD representation of the lemma form and are only partially covered by the corpus material; at the moment, encoders keep notes in IDION describing these properties of the VMWEs.   
+
+The development of the Pomak edition of IDION has shown that it can accommodate detailed information on VMWEs of different languages. In the future,  cross-edition relations between VMWEs may be added to IDION. So far, each edition has been independent of the others; as a result,  switching between the respective editions is required in order to see two equivalent expressions in two different editions. The implementation of cross-edition relations is an interesting documentation capability that will facilitate comparative studies on idiomaticity and other linguistic activities such as teaching and translation.
+
+
+\section*{Abbreviations}
+\begin{tabular}{@{}ll@{}}
+GE              &   Modern Greek equivalent    \\ 
+LVC             &   Light verb construction    \\ 
+NLP             &   Natural Language Processing\\ 
+K\&K alphabet   &   Alphabet by R. Karahoǧa and P. G. Krimpas\\ 
+PoS             &   Part of speech             \\ 
+UD              &   Universal Dependencies     \\ 
+VMWE            &   verbal multiword expression\\ 
+\end{tabular}
+
+\section*{Acknowledgements}
+
+We acknowledge full support of this work by the project “PHILOTIS: State-of-the-art technologies for the recording, analysis and documentation of living languages” (MIS 5047429), which is implemented under the “Action for the Support of Regional Excellence”, funded by the Operational Programme “Competitiveness, Entrepreneurship and Innovation” (NSRF 2014--2020) and co-financed by Greece and the European Union (European Regional Development Fund).
+
+
+\appendixsection{Pomak LVCs}
+
+ \ea \label{ex:lvc1}
+ %\langinfo{Pomak}{Slavic}{\citet{adamou;Constantinides}}\\
+ \begin{xlist}
+%\ex 
+%\gll  dávom izét \\
+%give pain\\
+%\glt `torture'.  Verb: \textit{izettóvom} `torture'
+\ex
+\gll \textbf{{fátom}} \textbf{{nazára}} \\
+{catch}.\textsc{verb.1sg}  {evil eye}.\textsc{noun} \\
+\glt `I am jinxed'. Verb: \textit{nazarjásavom} `I am affected by evil eye'
+%\ex   
+%\gll fátom vǽra \\
+%catch faith\\
+%\glt `accept, believe'. Verb: \textit{vǽravom} `believe'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{budalá}} \\
+{become}.\textsc{verb.1sg}  mad.\textsc{adj} \\
+\glt `I go crazy'. Verb: \textit{pabudalǽvom} `I go crazy'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{dløg}} \\
+{become}.\textsc{verb.1sg} tall.\textsc{adj} \\
+\glt `I grow tall'. Verb: \textit{izdlǿgnavom} `I grow tall'
+%\ex 
+%\gll stánavom fukará\\
+%become poor \\
+%\glt `become poor'. Verb: \textit{fukarjásavom} `become poor'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{gulǽm}} \\
+{become}.\textsc{verb.1sg}  big.\textsc{adj} \\
+\glt `I grow big'. Verb: \textit{nagulæmávom} `I grow big'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{hazýr}} \\
+{become}.\textsc{verb.1sg} ready.\textsc{adj}\\
+\glt `I get ready. Verb: \textit{hazyrladísavom so} `I get ready'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{star}}\\
+{become}.\textsc{verb.1sg}  old.\textsc{adj} \\
+\glt `I grow old'. Verb: \textit{sastarǽvom, stárem} `I grow old'
+\ex 
+\gll \textbf{{stánavom}} \textbf{{zengínin}} \\
+{become}.\textsc{verb.1sg}  rich.\textsc{adj} \\
+\glt `I become rich'. Verb: \textit{zenginjásavom} `I become rich'
+%\ex 
+%\\gll stórevom izméte\\
+%\do service\\
+%\\glt `do the housework'. verb: \textit{izmetóvom} `serve'
+\ex 
+\gll \textbf{{tavárem}} \textbf{{so}} \textbf{{grǽha}} \\ 
+{load }.\textsc{verb.1sg}  myself.\textsc{pron}  sin.\textsc{noun} \\
+\glt `I commit a sin'. Verb: \textit{græhóvom} `I commit a sin'
+%\\ex 
+%\\gll zímom emín \\
+%\take oath \\
+%\\glt 'take an oath'. Verb \textit{eminledísavom} `take oath, vow'
+\end{xlist}
+\z
+
+
+\appendixsection{Pomak idioms}
+
+ \ea \label{ex:lvc2}
+ %\langinfo{Pomak}{Slavic}{\citet{adamou;Constantinides}}\\
+ \begin{xlist}
+ \ex
+\gll  \textbf{{adbávem}} \textbf{{hatýrane}} \\
+{destroy}.\textsc{verb.1sg}   favour.\textsc{noun}\\
+\glt `I refuse to satisfy somebody's wishes' GE: \textit{χαλάω χατίρι}
+\ex
+\gll \textbf{{atkáčem}}  \textbf{{jazýkate}}  \\
+{sever}.\textsc{verb.1sg}  {tongue.the}.\textsc{noun}\\
+\glt `I make someone stop talking' GE:  \textit{κόβω τη γλώσσα κάποιου}
+\ex
+\gll \textbf{{atvárem}}  \textbf{{ačíse}}  \\
+{open}.\textsc{verb.1sg}   {eyes.the}.\textsc{noun}\\
+\glt `I realize what is going on' GE: \textit{ανοίγω τα μάτια μου}
+\ex
+\gll \textbf{{fáta}}  gi \textbf{{sas}} \textbf{{annóš}} \\
+    catch.\textsc{verb.3sg} them.\textsc{pron} with.\textsc{adp} once.\textsc{adv}\\
+\glt `he is bright' GE:  \textit{ τα πιάνει με την μία}
+\ex
+\gll \textbf{{fórnem}} nǽko \textbf{{na}} \textbf{{pótene}}\\
+{throw}.\textsc{verb.1sg} somebody in.\textsc{adp} street.the.\textsc{noun}\\
+    \glt `I kick out someone' GE:  \textit{ πετάω κάποιον στον δρόμο}
+\ex
+\gll \textbf{{glǿdom}} \textbf{{tavánase}}\\
+{look}.\textsc{verb.1sg} {ceiling.the}.\textsc{noun}\\
+\glt `I am  absent minded' GE:  \textit{  κοιτάω το ταβάνι}
+%\ex 
+%\gll \textit{hič} \textit{ mi} \textit{ so} \textit{ na} \textit{ adbáve}\\
+%nothing {to/of.me} itself not harms\\
+%    \glt `It does not bother me at all' GE: \textit{ καθόλου δε με χαλάει}
+\ex 
+\gll \textbf{{hránem }} \textbf{{zmíje}} \textbf{{faf}} \textbf{{skútase}}\\ 
+{feed}.\textsc{verb.1sg} snake.\textsc{noun} in.\textsc{adp}  bosom.the.\textsc{noun}\\
+\glt `I befriend somebody who proves to be deceitful' GE:  \textit{τρέφω φίδι στον κόρφο μου}
+%\ex 
+%\textbf{{iskáravom  }} \textit{si} \textbf{{hlǽbase}}\\
+%{I-get}  bread-the\\
+%\glt `I  make a living' GE:  \textit{βγάζω το ψωμί μου}
+\ex
+\gll \textbf{{izzéde}} mi \textbf{{dušóso}}\\
+{eat off}.\textsc{verb.3sg.pst} to/of-me.\textsc{pron} soul.\textsc{noun}\\
+\glt `it has distressed me' GE:  \textit{μου έφαγε την ψυχή}
+\ex
+\gll \textbf{{je}}  mi \textbf{{so}} \textbf{{katá}} \textbf{{vólek}}\\
+{be}.\textsc{aux.1sg} to/of-me.\textsc{pron}  \textsc{refl} like.\textsc{adv}  wolf.\textsc{noun}\\
+\glt `I am starving' GE:  \textit{ πεινάω σα λύκος}
+%\ex
+%\gll \textit{jedé} \textit{ mi} \textit{ kahór}\\
+%ate to/of.me soul-the \\
+ %   \glt `I am wasting away' GE:  \textit{ με τρώει η στενοχώρια}
+
+%32.	na jübéso go dóržom (“keep somebody in my pocket”, control somebody), Greek equivalent: τον έχω στο τσεπάκι μου.
+\ex 
+\gll \textbf{{na}} \textbf{{móžom}} \textbf{{da}} \textbf{{zgýbem}} \textbf{{nagýse}} \\
+not.\textsc{part} can.\textsc{verb.1sg} that.\textsc{adp} move.\textsc{1sg}  leg.\textsc{noun.pl}\\
+\glt `I am exhausted, I am burnt out' GE: \textit{δεν μπορώ να κουνήσω τα πόδια μου} 
+\ex
+\gll \textbf{{na}} \textbf{{pamína}} \textbf{{ad}} \textbf{{móse}} \textbf{{róky}}\\
+not.\textsc{part} go.\textsc{3sg.verb} through.\textsc{adp} my.the.\textsc{sing.fem.acc} hand.\textsc{noun.pl}\\
+\glt `it does not depend on me' GE: \textit{δεν περνάει από το χέρι μου}
+\ex
+\gll \textbf{{na}} {\textbf{sésta }} {\textbf{so}} \textbf{{ad}} \textbf{{láfa}} \\ 
+not.\textsc{part} understand.\textsc{3sg.verb} \textsc{refl} from.\textsc{adp} word.\textsc{noun.pl}\\ 
+\glt `he is indifferent' GE: \textit{δεν καταλαβαίνει από λόγια}
+\ex 
+\gll \textbf{{na}} \textbf{{zaznáje}} mu \textbf{\em{so}} \textbf{{ušána}} \\
+not.\textsc{part}  sweat.\textsc{3sg.verb} to-me.\textsc{pron} \textsc{refl} ear.\textsc{noun}\\
+\glt `I don't give a damn' GE: \textit{δεν ιδρώνει το αυτί μου}
+%37.	nahódem krájene (“find the edge”, I find the solution to a problem), Greek equivalent: βρίσκω την άκρη.
+%38.	ne uvǽdom ačíse ad bannóga (“I do not remove my eyes from somebody”, I stare at somebody), Greek equivalent: δεν παίρνω τα μάτια μου από κάποιον.
+%39.	ótvarem bannómu ačíte (“open somebody' s eyes”, make somebody understand), Greek equivalent: ανοίγω τα μάτια κάποιου.
+\ex 
+\gll \textbf{{pádom}} \textbf{{na}} \textbf{{mǿko}} \\
+fall.\textsc{verb.1sg}  on.\textsc{adp}  {soft place}.\textsc{noun}\\
+\glt `I escape unpunished' GE: \textit{πέφτω στα μαλακά}
+%41.	pánnat som (“I am fallen”, I am tired), Greek equivalent: Νιώθω πεσμένος.
+\ex
+\gll 	\textbf{{píjem}} bannómu \textbf{{karvtóno}} \\
+drink.\textsc{verb.1sg}  somebody's.\textsc{pron} blood.\textsc{noun}\\
+\glt `I  drain somebody's blood' GE: \textit{πίνω το αίμα κάποιου}
+%43.	plýem faf parý (“swim within money”, be very rich), Greek equivalent: κολυμπάω στα λεφτά.
+%44.	preséka mi ištǽhos (“my appetite was cut”, I am no more hungry), Greek equivalent: μου κόπηκε η όρεξη.
+\ex
+\gll \textbf{{púkom}} \textbf{{ad}} \textbf{{játo}}\\
+break.\textsc{verb.1sg}  from.\textsc{adp} food.\textsc{noun}\\
+\glt `I eat excessively' GE: \textit{σκάω από το φαγητό}
+\ex
+\gll \textbf{{rábatem}} \textbf{{katá}} \textbf{{kúče}} \\
+work.\textsc{verb.1sg}  like.\textsc{adv}  dog.\textsc{noun}\\
+\glt `I work hard' GE: \textit{δουλεύω σαν σκύλος}
+%47.	sabáre so dünjása (“the world is wasted”, there is extreme turmoil), Greek equivalent: χαλάει ο κόσμος.
+%%49.	sečé mu glavána (“my head cuts”, I am very clever), Greek equivalent: κόβει το κεφάλι μου.
+%50.	sédom cǽla déne (“sit all day”, be lazy), Greek equivalent: κάθομαι όλη μέρα.
+\ex
+\gll \textbf{{sédom}} \textbf{{sas}} \textbf{{svǿzany}} \textbf{{róky}} \\
+sit.\textsc{verb.1sg}  with.\textsc{adp} crossed.\textsc{adj} arms.\textsc{noun} \\
+\glt `I do nothing, remain inactive' GE: \textit{ κάθομαι με δεμένα χέρια}
+%53.	umírom ódglade (“die from hunger”, starve), Greek equivalent: πεθαίνω από την πείνα.
+%54.	vdígom rakýse (“raise my hands”, stop trying, give up), Greek equivalent: σηκώνω τα χέρια.
+\ex 
+\gll \textbf{{vídem}} \textbf{{bǽla}} \textbf{{déne}} \\
+see.\textsc{verb.1sg}   white.\textsc{adj} day.\textsc{noun}\\
+\glt `I get a break, I get ahead in life' GE: \textit{ βλέπω άσπρη μέρα}
+\ex 
+\gll \textbf{{zímom}} \textbf{{go}} \textbf{{ad}} \textbf{{ustána}} \textbf{{mu}}\\
+get.\textsc{verb.1sg}  it.\textsc{pron} from.\textsc{adp}  mouth.\textsc{noun} his.\textsc{pron}\\
+\glt `I take the words out of somebody' s mouth' GE: \textit{το παίρνω από το στόμα του} 
+%8.	dakáravom bannóga na práva póte (bring somebody to the right way), Greek equivalent: φέρνω κάποιον στον ίσιο δρόμο.
+%9.	faf ustása mi je (“it is in my mouth”, I am about to say something), Greek equivalent: το έχω στην άκρη της γλώσσας μου.
+\ex 
+\gll \textbf{{katá}} \textbf{{vadíca}} go \textbf{{naúčem}} \\
+like.\textsc{adv} water.\textsc{noun} it.\textsc{pron} learn.\textsc{verb.1sg}   \\
+\glt `I learn something perfectly' G E: \textit{ μαθαίνω νεράκι κάτι}
+%23.	klávom bannóga na zahméte (“put somebody to strain”, tire somebody, wear somebody down), Greek equivalent: βάζω σε κόπο κάποιον.
+
+%25.	klávom nǽko faf óci (“put something in the eyes”, covet), Greek equivalent: βάζω κάτι στο μάτι.
+\ex 
+\gll \textbf{{korv}} \textbf{{plǘjem}} OR \textbf{{kyrv}} \textbf{{hráčem}} \\
+blood.\textsc{noun} spit.\textsc{verb.1sg} OR  blood.\textsc{noun} spit.\textsc{verb.1sg} \\
+\glt `I  work hard to succeed' GE: \textit{φτύνω αίμα}
+%27.	krílem ad drágo (“fly from joy”, be very happy), Greek equivalent: πετάω από τη χαρά μου.
+\ex 
+\gll \textbf{{mǽhnavot so}} \textbf{{káto}} \textbf{{dve}} \textbf{{kápky}} \textbf{{vódo}} \\ {look alike}.\textsc{3pl.verb} like.\textsc{adp} two.\textsc{num} drop.\textsc{noun.pl}  water.\textsc{noun}\\
+\glt `they are like peas in a pod' GE: \textit{ μοιάζουν σα δυο σταγόνες νερό}
+%\ex 
+%\gll móne mi lafós brají \\
+%my speech counts\\
+%\glt `I am reliable' Greek equivalent: ο λόγος μου μετράει.
+%12.	glǿdom bannóga práve na ustáta (“look at somebody straight in the mouth”, concentrate on what somebody is saying), Greek equivalent: κοιτώ κάποιον στο στόμα, κρέμομαι από τα χείλη του.
+%30.	na dahóde mi na ustása (“It is  not coming in my mouth”, I can hardly say it), Greek equivalent: Δεν μου έρχεται στο στόμα.
+%31.	na daržót mo nagýse (my legs cannot hold me”, I can hardly stand up), Greek equivalent: Δεν με κρατούν τα πόδια μου.
+\end{xlist}
+\z 
+%52.	síčkoso varví kríve (“everything goes crooked”, everything goes wrong), Greek equivalent: όλα πάνε στραβά.
+%16.	iskáravom si hlǽbase  (“get my bread”, earn my daily bread, make a living), Greek equivalent: βγάζω το ψωμί μου. 
+
+
+%4.	astájem nadzát parátikyte déne (“leave bad days behind”, forget the problems of the past), Greek equivalent: αφήνω πίσω τα παλιά.
+
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}

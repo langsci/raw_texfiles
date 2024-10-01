@@ -1,0 +1,558 @@
+\appendixsection{OntoLex-FrAC collocation scores}
+\label{sec:scores}
+% CC: full scores not recovered yet
+% CC: at the moment, this is a single section, depending on extent of possible cuts, it may become a subsection of the preceding section
+
+% KG - rephrase from GlobaLex
+A number of popular collocation scores have been defined as sub-properties of \onto{frac:cscore}
+within the \textbf{OntoLex-FrAC} module, offering clear and established semantics per case. Nonetheless, 
+if the users need to use different scores that are not already provided, they are encouraged to 
+define their own sub-properties, while if they use only one kind of score by a source, they can 
+simple use \onto{rdf:value} along with a \onto{dct:description} to explain the metric. Below, we
+introduce the existing \onto{frac:cscore} sub-properties along with their mathematical 
+definition. The notations used for the following definitions are:
+\begin{itemize}
+    \item $x$, $y$ - the (head) of the word and its collocate
+    \item $p(x)$ , $p(y)$ the probabilities of word $x$ and $y$
+    \item $p(\neg x) = 1 - p(x)$
+    \item $p(x,y)$ the probability of the co-occurrence of $x$ and $y$
+    \item $p(x|y)$ the conditional probability of $x$ given $y$
+    \item $N$ is the sample size
+\end{itemize}
+
+%\ciprian{I decided to use the definition given by Evert for N~\citep{Evert2005}}
+%\katerina{I agree about N}
+
+%\christian{renamed rel\_freq to relfreq because some metrics use camelCase, but othes underscore, needs to be consolidated}
+
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:relFreq}]
+Relative frequency measures the extent a specific word $y$ occurs together in 
+the collocation of the head word $x$:
+\[\text{\onto{relFreq}}_x = \frac{p(x,y)}{p(x)}\] %= \frac{f_{xy}}{f_{x}}$ 
+Note that this metric requires \onto{frac:head} to distinguish between the collocation's 
+composing words.
+% $R_{x} = \frac{p(x,y)}{p(x)}$ %= \frac{f_{xy}}{f_{x}}$
+% , while for $y$ is $R_{y} = \frac{p(x,y)}{p(y)}$ %= \frac{f_{xy}}{f_{y}}$.
+\end{definition}
+
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+%\ciprian{
+%notes:\\
+%1) For the following metrics $\text{PMI}(x,y)$, $\text{PMI}^{2}$, $\text{PMI}^{3}$ I used cited in \cite{Role2011}. \\
+%2) in \cite{Evert2005} and \cite{Role2011} for all metrics the author(s) use $\log$ not $\log_{2}$, only %in  \cite{Rychly2008} $\log_{2}$ is used \\
+%3) The author of \cite{Rychly2008} says the ${\text{MI}.log-f}$ metric is defined in \cite{Kilgarriff2004}, I did not found it in \cite{Kilgarriff2004} or in \cite{Kilgarriff2014}. The only mention I found about the metric is in this technical report \cite{SketchStats2015} with no author \\
+%4) for $\text{PMI}^{2}$ and $\text{PMI}^{3}$ formulas, when substituting the probabilities with frequencies, I obtain different formulas than the ones presented in \cite{Rychly2008}. I took the probabilities formula from~\cite{Role2011} and they are correct.
+%}
+%\katerina{ \\
+%1) Although~\cite{Rychly2008} use $\log_{2}$, the reference it points for the definition of the metrics \cite{Evert2005} probably use $\log$ in the metrics and they declare in p199 "Note that unlike the original version of Church \& Hanks (1990), the UCS implementation computes a base 10 logarithm.". On the other hand, \cite{SketchStats2015} also  declare Pairwise Mutual information
+%in log with base 2. I think that might depend on each particular implementation. Which could be problematic, no?
+
+%2) For the $\text{PMI}^{k} \forall k \in [2, 3]$ we have two different definitions, one from \cite{Role2011} and one from \cite{Evert2005} and \cite{SketchStats2015}. 
+%The one from \cite{Role2011} are in accordance with the generalized $\text{PMI}^{k}$, while the other is not. 
+%}
+
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:pmi}] 
+Pointwise Mutual Information (PMI) indicates the degree to which two words in a collocation appear 
+together more than expected under independence. The assumption is that if the words occur more 
+frequently than by chance, then there must be some kind of semantic relationship between 
+them~\citep{Role2011}. PMI is defined as the log of the ratio of the observed co-occurrence frequency 
+to the frequency expected under independence: 
+\[\text{PMI}(x,y) = \log \frac{ p(x,y) }{p(x) p(y)}\]
+%=\log\frac{N f_{xy}}{f_{x}f_{y}}$
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+%\ciprian{PMI is different from MI. Pointwise mutual information (PMI). or point mutual information, is a %measure of association. In contrast to mutual information (MI) which builds upon PMI, it refers to single events, whereas MI refers to the average of all possible events.}
+%\katerina{I agree PMI is based on MI, but they are not the same.}
+\end{definition}
+
+% KG - rephrase from GlobaLex
+\noindent
+Apart from Pointwise Mutual Information well established variants of PMI are also provided 
+with OntoLex-FrAC.
+
+
+% KG update to be in accordance with naming in globalex - unused in GlobaLex
+\begin{definition}[\onto{frac:pmi2}]\sloppy
+$\text{PMI}^{2}$ is a heuristic variant of the PMI measure that aims to increase the influence 
+of the co-occurrence frequency in the numerator and to avoid the characteristic overestimation
+effect for low-frequency pairs~\citep{Role2011}:
+\[\text{PMI}^{2}(x,y) = \log\frac{p(x,y)^{2}}{ p(x) p(y)}\] % = \log\frac{f^{2}_{xy}}{f_{x}f_{y}}$
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+%\ciprian{obtained by substituting the probabilities with frequencies, also inline with the definition of $\text{PMI}^{k}(x,y)$}
+%$\text{PMI}^{2}(x,y) = \log\frac{N f^{2}_{xy}}{f_{x}f_{y}}$
+%\ciprian{as presented in~\cite{Rychly2008} -  I think this formula is wrong given the formula for $\text{PMI}^{k}(x,y)$}
+%\katerina{I agree that this formula is not compatible with the generalized formula and
+%if we substitute the probabilities with frequencies does not ends up with this option
+%}
+\end{definition}
+    
+\begin{definition}[\onto{frac:pmi3}]
+$\text{PMI}^{3}$ uses a higher exponent in the numerator to boost the association 
+scores of high-frequency pairs even further represent a purely heuristic approach~\citep{Role2011}:
+\[\text{PMI}^{3}(x,y) = \log \frac{p(x,y) ^{3}}{p(x) p(y)}\] %= \log\frac{f^{3}_{xy}}{N f_{x}f_{y}}$
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+%\ciprian{obtained by substituting the probabilities with frequencies, also inline with the definition of %$\text{PMI}^{k}(x,y)$}
+%  
+%$\text{PMI}^{3}(x,y) = \log\frac{N f^{3}_{xy}}{f_{x}f_{y}}$  
+%\ciprian{as presented in~\cite{Rychly2008} -  I think this formula is wrong given the formula for $\text{PMI}^{k}(x,y)$}
+%\katerina{I agree that this formula is not compatible with the generalized formula and
+%if we substitute the probabilities with frequencies does not end up with this option
+%}
+\end{definition}
+
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+%\katerina{Added the properties' names as suggested in the abstract old text file. For consistency reasons
+%I would suggestion to rename to \onto{frac:pmi2} and \onto{frac:pmi3}, respectively }
+%\ciprian{Agree with renaming as MI is not the same as PMI}
+
+\largerpage
+\begin{definition}[\onto{frac:generalizedPmi}]
+The generalized $\text{PMI}^k$ is also a heuristic approach that tries to correct the bias of PMI 
+towards low-frequency pairs for a given integer $k \ge 1$ and its definition is given by the 
+formula~\citep{Role2011}:
+\[\text{PMI}^{k}(x,y) = \log\frac{p(x,y)^{k}}{p(x)p(y)}\]
+                        % = \text{PMI}(x, y)  + (k-1)\log p(x,y) 
+                        %  = \log \frac{N f_{xy}}{f_{x} f_{y} } + (k - 1 ) \log \frac{f_{xy}}{N}    
+                        %  = \log \frac{ f_{xy}^{k}}{ N^{k-2} f_{x} f_{y}}
+
+
+% \katerina{Added also the generalization relative to the absolute frequency/occurencies}
+%\katerina{Missing name in abstract old text file, not defined in github as well. Suggestion \onto{frac:generalized\_pmi}}
+\end{definition}
+%\katerina{I think that generalized PMI as it depends on the $k$ definition for correct comparisons
+%or use, maybe we could dismiss it? Or somehow point that it cannot be used as is?}
+%\ciprian{Done.}
+
+\noindent The parameter $k$ is used to assign more weight to the joint probability $p(x,y)$ since the product of two marginal probabilities, i.e., $p(x)$ and $p(y)$, in the denominator favors pairs with low-frequency words~\citep{Role2011}.
+
+\begin{definition}[\onto{frac:npmi}]\sloppy
+The Normalized Pointwise Mutual Information ($\text{NPMI}$) normalizes the $\text{PMI}$ score in
+the range $[-1,+1]$, where $-1$ means that the words never occur together, $0$ means that the words
+are independent, and $+1$ means that there is a complete co-occurrence~\citep{Role2011}:
+\[\text{NPMI}(x,y)=\frac{\text{PMI}(x,y)}{-\log p(x,y)}\]
+%\katerina{Missing name in abstract old text file. Suggestion \onto{frac:npmi}}
+\end{definition}
+    
+\begin{definition}[\onto{frac:pmiLogFreq}]
+The PMI log Freq (also know as Salience) is defined as:\footnote{\url{https://www.sketchengine.eu/wp-content/uploads/ske-statistics.pdf}}
+% $ \text{PMI} \times \text{log}f(x,y) = \log\frac{N f_{xy}}{f_{x}f_{y}} \times \log f_{xy}$~\cite{Rychly2008}
+%$ \text{PMI} \times \text{log}f(x,y) = \text{PMI}(x,y) \cdot \log (N p(x,y))$~\citep{Rychly2008} \\
+\[\text{PMI-logFreq}(x,y) = \text{PMI}(x,y) \cdot \log (N p(x,y) + 1)\]
+\end{definition}
+
+% \ciprian{
+% Is this standardized?
+% I found another formula in~\citep{SketchStats2015} (where it is also called salience), but I did not find a definition. 
+% There is a link to this article~\citep{Kilgarriff2004} in~\citep{SketchStats2015}. 
+% Katerina, can you please check if you find a definition.
+% Thank you!
+% }
+% \katerina{I don't know whether this is a common metric. To be honest, I couldn't find it anywhere apart from
+% \cite{Rychly2008}, which point to \cite{Evert2005} where I couldn't locate it. 
+% Independent of that, I think that if we replace everything with probabilities instead of frequencies it should be
+% $ \text{PMI} \times \text{log}f(x,y) = \log\frac{p_{xy}}{p_{x}p_{y}} \cdot \log (N p(x,y))$ \cite{Rychly2008}
+% }
+% \christian{by all practical means, being used in SketchEngine makes it established}
+% \katerina{Kept the definition for the ~\citep{SketchStats2015} as it seems more authoritative}
+% \ciprian{Agree}
+%\katerina{Maybe for consistency reasons of normalization of naming, instead of \onto{frac:pmi\_logfreq}
+%should we use \onto{frac:pmiLogFreq} or something camel case? It is the first time we introduce this sub-property}
+%ciprian{\onto{frac:pmi\_logfreq} this is how the metrics are currently defined in OntoLex-FRaC, there is no name standardization yet :D}
+
+
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:dice}]
+Dice coefficient is a metric used to evaluate the collocation of two words $x$ and $y$ 
+and it ranges between 0.0 and 1.0, where 1.0 indicates complete co-occurrence~\citep{Manning1999}:
+\[\text{Dice}(x,y) = \frac{2 p(x,y)}{p(x) + p(y)}\] %$= \frac{2 f_{xy}}{f_{x} + f_{y}}$    
+\end{definition}
+
+
+    
+%% unused in GlobaLex; CC: decide whether established enough
+%\ciprian{Standardize naming: maybe remain \onto{frac:logDice} as \onto{frac:dice\_log} or \onto{frac:log\_dice}}
+\begin{definition}[\onto{frac:logDice}]
+The LogDice is an association measure based on Dice, trying to address the problem is
+that the values of the Dice score are usually very small numbers~\citep{Rychly2008}:\footnote{\url{https://www.sketchengine.eu/wp-content/uploads/ske-statistics.pdf}}
+
+% $\text{LogDice}(x,y) = 14 + \log_{2}\frac{2 f_{xy}}{f_{x} + f_{y}}$~\cite{Rychly2008, SketchStats2015}
+\[\text{LogDice}(x,y) = 14 + \log_{2} \text{Dice}(x,y)=  14 + \log_{2}\frac{2 p(x,y)}{p(x) + p(y)}\]
+\end{definition}
+% \ciprian{Is this standardized? Does it have a meaning? If not, I would advice to remove it}
+
+% KG - rephrase from GlobaLex
+%\ciprian{Standardize naming: maybe remain \onto{frac:minSensitivity} as \onto{frac:min\_sensitivity}}
+\begin{definition}[\onto{frac:minSensitivity}] 
+Minimum sensitivity is a measure of dependen-ce between word $x$ and word $y$ and it is computed as 
+the minimum of the relative sensitivity of each word~\citep{pedersen1998dependent}:
+% a simple metric that is free from the
+% underlying distributional assumptions commonly made by significance tests
+\[\text{minSensitivity}(x,y)=\min\left(\frac{p(x,y)}{p(y)}, \frac{p(x, y)}{p(x)}\right)\]
+\end{definition}
+
+\noindent In addition to collocation scores, statistical independence tests are employed as scores. To this end OntoLex-FrAC defines additional sub-properties.
+
+
+    % GlobaLex
+    % CT: we define these metrics. No need for this phrase
+    % In addition to collocation scores, statistical independence tests are employed as 
+    % collocation scores, including 
+    % \onto{frac:tScore} (Student's $t$ test), 
+    % \onto{frac:chi2} (Pearson's $\chi^{2}$),
+    % \onto{frac:likelihood\_ratio} (Log Likelihood Ratio test)
+    % \cite{Manning1999}.
+
+
+
+% unused
+%\ciprian{Standardize naming: maybe remain \onto{frac:tScore} as \onto{frac:tscore} or \onto{frac:t\_score}}
+\begin{definition}[\onto{frac:tscore}]
+The Student's $t$ test (T-score) finds words whose co-occur-rence patterns best distinguish %between 
+two words~\citep{Manning1999}:
+%$T(x,y) = \frac{ f_{xy} - \frac{ f_{x} f_{y} }{ N } }{\sqrt{f_{xy}}}$
+\[T(x,y) = \frac{ p(x,y) - p(x)p(y) }{\sqrt{\frac{ p(x, y) }{ N }}}\]
+\end{definition}
+
+
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+%\katerina{How the probability can be equal to the number of occurrences $O_{11} = p(x,y) = f_{xy}$ if
+%we previously have define the probability as $p(x,y) = \frac{f_{xy}}{N}$ ?? }
+%\ciprian{Yes, you are right. We need either to multiply the probability by $N$, or to divide the frequencies by $N$ when computing $O_{ij}$. I chose the latter.}
+%\katerina{I would prefer to introduce the notation of $O_{ij}$ by declaring the 2-by-2 table that show the dependence of occurrences of $x$ and $y$, as $O$ stands for occurrence, like this:
+%\begin{tabular}{|c|c|c|} 
+%    & $x$ & $\neg x$  \\ 
+%$y$ & $f_{xy}$ & $f_{y} - f_{xy}$\\
+%$\neg y$ & $f_{x} - f_{xy}$ & $N - f_{x} - f_{y} + f_{xy}$\\
+%\end{tabular}%
+%
+%}
+%\ciprian{$O$ does not stand for occurrence, but for observed value.}
+%\ciprian{Added the matrix when defining the metric.}
+
+% unused    
+\begin{definition}[\onto{frac:chi2}]
+Pearson's $\chi^{2}$ test is an alternative to the Student's $t$ test that does not work under
+the assumption of that the probabilities of words follow the normal distribution~\citep{Manning1999}: 
+\[
+\chi^{2}(x,y) = \frac{ N ( O_{11} O_{22} - O_{12} O_{21} )^{2} }{ ( O_{11} + O_{12} ) (O_{11} + O_{21}) ( O_{12} + O_{22} ) ( O_{21} + O_{22} ) }
+\]
+The observed values $O_{ij}$ are determined using the contingency table of observed frequencies for two words x and y: 
+\[
+\begin{matrix}
+\begin{array}{|l|l|l|}
+\hline
+           &  y                           &  \neg y \\ \hline
+x      & O_{11} = p(x, y)         & O_{12} = p(x, \neg y) \\\hline
+\neg y & O_{21} = p(\neg x, y)    & O_{22} = p(\neg x, \neg y)\\\hline
+\end{array}
+\end{matrix}
+\]
+\end{definition}
+
+
+% KG - Comment out discussion on issues that had been resolved from globalex paper 
+% unused
+%\ciprian{Missed this metric. Katerina, can you add it please?}
+%\katerina{Done, please someone cross check it}
+%\ciprian{It looks ok}
+
+%\katerina{Similar, rename to \onto{frac:likelihoodRation?}}
+\begin{definition}[\onto{frac:likelihoodRatio}]
+The Log Likelihood Ratio test examines the following two alternative hypothesis for the collocation 
+of $x$ and $y$: $H_1\colon p(x|y) = p(x|\neg y) = p(x)$ and $H_2\colon p(x|y) \neq p(x|\neg y)$, where $H_1$ 
+is a formalization of independence, while $H_2$ is a formalization of dependence. Given that, 
+the Log Likelihood Ratio test is defined as $\log \lambda = \log (L(H_1)/L(H_2))$, where $L$
+is the likelihood of each hypothesis~\citep{Manning1999}. If the ratio is greater that 1, we should 
+prefer $H_1$, otherwise we should prefer $H_2$. Given that, the Log Likelihood Ratio test has the
+advantage it is easier to interpret compared to Pearson's $\chi^{2}$ test and Student's $t$ test.
+\end{definition}
+
+% KG - rephrase from GlobaLex
+\noindent Furthermore, popular metrics from association rule mining domain are defined as 
+\onto{frac:cscore} subproperties: Within the domain of computational lexicography and corpus
+linguistics, an association rule $x \rightarrow y$ corresponds to a collocation in that 
+the existence of word $x$ implies the existence of word $y$.
+
+
+% \ciprian{We should use probabilities in text as we use probabilities in the formulas}
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:support}]
+Support measures the probability of a rule to appear in the dataset \citep{Wiley2014}:
+\[\text{\onto{support}}(x \rightarrow y) = p(x,y)\]
+%= \frac{f_{xy}}{N}$
+\end{definition}
+
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:confidence}] %Confidence]
+Confidence measures the  probability of a rule to be true~\citep{Wiley2014}:
+\[\text{\onto{confidence}}(x \rightarrow y) = \frac{p(x,y)}{p(x)}\]
+%= \frac{f_{xy}}{f_{x}}$
+\end{definition}
+
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:lift}]
+Lift (also known as the interest of a rule) indicates the degree of how often $x$ and $y$ occur together 
+more than expected if they were statistically independent~\citep{Wiley2014}:
+\[\text{\onto{lift}}(x \rightarrow y) = \frac{p(x,y)}{ p(x) p(y)}\]
+%=  \frac{f_{xy}}{f_{x} f_{y}}$
+\end{definition}
+
+% KG - rephrase from GlobaLex
+\begin{definition}[\onto{frac:conviction}]
+The conviction of a rule is the ratio of the expected probability that $x$ occurs without $y$ if $x$ and $y$ are independent, divided by the observed probability of incorrect predictions~\citep{Brin97}:
+\[\text{conviction}(x \rightarrow y) = \frac{p(x) p(\neg y)}{p(x, \neg y)}\]
+% = \frac{(1 - f_{y})f_{x}}{f_{x} - f_{xy} }$
+\end{definition}
+
+% % SPACE
+% % unused
+% Finally, note that as OntoLex does not provide a generic inventory for grammatical relations, 
+% scores defined for grammatical relations are omitted\footnote{For more details, see~\url{cf.~https://www.sketchengine.eu/wp-content/uploads/ske-statistics.pdf}}.
+% However, these may be defined by the user.
+
+    % GlobaLex 
+    % \ciprian{This itemlist can be removed. I added the notations at the beginning of the section}
+    % \katerina{perfect!}
+    % Where:
+    % \begin{itemize}
+    %     \dropped{
+    %     \item $N$ the total number of tokens in the corpus documented in \onto{dct:description}
+    %     %% CC: for final
+    %         \ciprian{For $N$, I think it is better to use "tokens" instead of "words" as "token" can mean either a "word", a "bigram", or both.\\
+    %         Full explanation:\\
+    %         When I say $N$ is the number of tokens I want to encapsulate saying both "the number of words" and "the number of word pairs", because:\\
+    %         (1) when computing things for a single word (i.e., $f_x$, $p(x)$, etc.) then $N$ is the total number of words \\
+    %         (2) when computing things for pairs of words (i.e., $f_{xy}$, $p(x,y)$, etc.) then $N$ is the total number of pairs.\\
+    %         So we have 2 types of $N$ (they are different numerical) which, to the best of my knowledge, are not really discussed in the literature.
+    %         I do not know which is the best way to address this issue. I saw that in some articles, the authors says $N$ is the size of the "corpus", but if we use this definition we also need to define "corpus" (what is a corpus? the number of documents? the number of words? the number of tokens? the number of pairs?)\\
+    %         \textbf{Any suggestions?}
+    %         }
+    %         \katerina{No objection, maybe Besim as computer linguistics have a stronger option. No matter what we decide, I would suggest propagate the same term in probabilites definition below. UPDATE: Ignore my suggestion to propagate the terms. I have misunderstood N definition... }
+    %     }
+    %     \item $x$, $y$ - the (head) of the word and its collocate
+    %     % \item $f_{x}$ the number of occurrences of word $x$
+    %     % \item $f_{y}$ the number of occurrences of word $y$
+    %     % \item $f_{xy}$ the number of co-occurrences of the words $x$ and $y$
+    %     % \item $p(x) = \frac{f_{x}}{N}$ the probability of word $x$
+    %     \item $p(x)$ , $p(y)$ the probabilities of word $x$ and $y$
+    %     \item $p(\neg x) = 1 - p(x)$
+    %     % \item $p(y) = \frac{f_{y}}{N}$ the probability of word $y$
+    %     %\item $p(y)$ the probability of word $y$ 
+    %     % \item $p(x,y) = \frac{f_{xy}}{N}$ the probability of the co-occurrence of $x$ and $y$
+    %     \item $p(x,y)$ the probability of the co-occurrence of $x$ and $y$
+    %     % \item $O_{11} = p(x,y) = \frac{f_{xy}}{N}$
+    %     % \item $O_{12} = p(\neg x, y) = \frac{f_{y} - f_{xy}}{N}$
+    %     % \item $O_{21} = p(x, \neg y) = \frac{f_{x} - f_{xy}}{N}$
+    %     % \item $O_{22} = p(\neg x, \neg y))= \frac{N - f_{x} - f_{y} + f_{xy}}{N}$
+    %     \dropped{ % CC: currently not used
+    %         \item $O_{11} = p(x,y)$ the probability of the co-occurrence of $x$ and $y$
+    %         \item $O_{12} = p(\neg x, y)$ the probability of the collocations that contain $y$ but not $x$ 
+    %         \item $O_{21} = p(x, \neg y)$ the probability of the collocations that contain $x$ but not $y$
+    %         \item $O_{22} = p(\neg x, \neg y))$  the probability of the collocations that do not contain $y$ and $x$
+    %     }
+    % \end{itemize}
+    %In addition to these common collocation scores, users can define their own metrics. If only one metric is %used in a resource (and documented by \onto{dct:description}), users can also resort to \onto{rdf:value}.
+    % KG: ducplicate, it exists in the first paragraph of the section
+
+
+
+\appendixsection{Sample queries}\label{app-queries}
+
+As an addendum to \sectref{sec-querying}, we model
+    % GlobaLex
+    all collocations for a given lexical entry:
+
+    % GlobaLex
+    {\listingsize
+\begin{verbatim}
+    SELECT DISTINCT ?form ?pos ?collocation
+    WHERE {
+      ?collocation a frac:Collocation ; ?prop ?observable .
+      FILTER(?prop=rdfs:member  || regex(str(?prop),".*#_[0-9]+$"))
+      ?entry (ontolex:sense|ontolex:lexicalForm)? ?observable .
+      ?entry ontolex:canonicalForm/ontolex:writtenRep ?form .
+      OPTIONAL { ?entry lexinfo:partOfSpeech ?pos } 
+    } ORDER BY ?form ?pos ?collocation
+\end{verbatim}
+}
+
+% \noindent
+%     % GlobaLex
+%     This query exploits SPARQL property paths to return collocates of any kind of observables, so the \onto{?observable} could be identical to (lexical) \onto{?entry} (no \onto{ontolex:sense} or \onto{ontolex:lexicalForm} relation; it could be the \onto{ontolex: sense} or it could be a \onto{ontolex: lexicalForm}.
+
+%     % GlobaLex
+% {\listingsize 
+% \begin{verbatim}
+%                    | form      | pos            | collocation        | 
+%                    ===================================================
+%                    | "apply"   | lexinfo:verb   | :apply-equally     |
+%                    | "equally" | lexinfo:adverb | :apply-equally     |
+% \end{verbatim}
+% }
+
+\noindent
+The second query generates string representations for collocations.
+This is a bit less straightforward with OntoLex data because string labels are provided for individual words, not necessarily for multiword expressions as a whole -- unless an explicit \onto{ontolex:Form} is provided:
+
+    % GlobaLex
+{\listingsize
+\begin{verbatim}
+SELECT DISTINCT ?collocation ?string
+WHERE {
+  { SELECT ?collocation (GROUP_CONCAT(?wrep; separator=" ") AS ?string)
+    WHERE {
+      { SELECT ?collocation ?member ?wrep ?order 
+        WHERE {
+          ?collocation a frac:Collocation ; ?prop ?member .
+          FILTER(?prop=rdfs:member || regex(str(?prop),".*#_[0-9]+$"))
+          ?member 
+            ((^ontolex:sense)?/ontolex:canonicalForm)?/ontolex:writtenRep 
+              ?wrep.
+          OPTIONAL {
+            ?collocation ?nrel ?member .
+            FILTER(regex(str(?nrel),".*#_[0-9]+$"))
+            BIND(replace(str(?nrel),".*#_([0-9]+)$", "$1") AS ?order) }
+       } GROUP BY ?collocation ?member ?wrep ?order
+         ORDER BY ?collocation ?order ?member
+    } } GROUP BY ?collocation
+  } }
+\end{verbatim}
+}
+
+    % GlobaLex
+\noindent
+    The challenge in this query is that the ordering information retrieved above is to be used in an aggregation 
+(in embedded \code{SELECT} statements):
+    %by means of \code{GROUP\_CONCAT}:
+
+    % GlobaLex
+{\listingsize
+\begin{verbatim}
+                   | collocation      | string          |
+                   ======================================
+                   | :apply-equally   | "apply equally" |
+\end{verbatim}
+}
+
+%   % unused
+% \begin{scriptsize}  
+% \begin{verbatim}
+% -------------------------------------------------
+% | collocation        | member           | order |
+% =================================================
+% | :analyse-in-depth  | :analyse-verb    | "1"   |
+% | :analyse-in-depth  | :in-depth-adv    | "2"   |
+% | :analyse-in-detail | :analyse-verb    | "1"   |
+% | :analyse-in-detail | :in-detail-adv   | "2"   |
+% | :analyze-carefully | :analyse-verb    | "1"   |
+% | :analyze-carefully | :carefully-adv   | "2"   |
+% | :apply-equally     | :apply-v-sense1  | "1"   |
+% | :apply-equally     | :equally-adv     | "2"   |
+% | :apply-to          | :apply-v-sense1  | "1"   |
+% | :apply-to          | :to-prep         | "2"   |
+% | :the-same-applies  | :the             | "1"   |
+% | :the-same-applies  | :same            | "2"   |
+% | :the-same-applies  | :apply-v-applies | "3"   |
+% | :the-same-applies  | :apply-v-sense1  | "3"   |
+% -------------------------------------------------
+% \end{verbatim}
+% \end{scriptsize}
+
+% % unused, OZDIC
+% \christian{unused, from OZDIC}
+% all collocations for a given lexical
+% entry, retrieve string representation of all members:
+
+% \begin{verbatim}
+% SELECT DISTINCT ?canonicalForm ?pos 
+%                 ?collocation ?isHead
+% WHERE {
+%   ?collocation a frac:Collocation.
+%   ?collocation ?prop ?observable.
+%   FILTER(?prop=rdfs:member  || 
+%       regex(str(?prop),".*#_[0-9]+$"))
+%   ?entry 
+%     (ontolex:sense|ontolex:lexicalForm)? ?observable.
+%   ?entry ontolex:canonicalForm/
+%     ontolex:writtenRep ?canonicalForm.
+%   OPTIONAL {
+%     ?collocation frac:head ?observable.
+%     BIND("true" as ?isHead)
+%   }
+%   OPTIONAL {
+%     ?entry lexinfo:partOfSpeech ?pos
+%   }
+% } ORDER BY ?canonicalForm ?pos 
+%           ?collocation ?isHead
+% \end{verbatim}
+
+% --------------------------------------------------------------------
+% | canonicalForm | pos                 | collocation       | isHead |
+% ====================================================================
+% | "apply"       |                     | :apply-equally    | "true" |
+% | "apply"       |                     | :apply-to         | "true" |
+% | "apply"       |                     | :the-same-applies |        |
+% | "apply"       |                     | :the-same-applies | "true" |
+% | "equally"     | lexinfo:adverb      | :apply-equally    |        |
+% | "same"        |                     | :the-same-applies |        |
+% | "the"         |                     | :the-same-applies |        |
+% | "to"          | lexinfo:preposition | :apply-to         |        |
+% --------------------------------------------------------------------
+
+
+% Note that \emph{apply} occurs multiple times if both form and sense are
+% specified. Also note that we forgot the pos in the head words ;)
+
+% generation: retrieve string representation of all
+% members
+% \begin{tiny}
+% \begin{verbatim}
+% SELECT DISTINCT ?collocation ?string
+% WHERE {
+%   { SELECT ?collocation 
+%     (GROUP_CONCAT(?wrep; separator=" ") 
+%      AS ?string)
+%     WHERE {
+%       { SELECT ?collocation ?member 
+%               ?wrep ?order
+%         WHERE {
+%           ?collocation a frac:Collocation; 
+%                       ?prop ?member.
+%           FILTER(?prop=rdfs:member || 
+%               regex(str(?prop),".*#_[0-9]+$"))
+%           ?member ((^ontolex:sense)?/
+%              ontolex:canonicalForm)?/
+%              ontolex:writtenRep ?wrep.
+%           OPTIONAL {
+%             ?collocation ?nrel ?member.
+%             FILTER(regex(str(?nrel),".*#_[0-9]+$"))
+%             BIND(replace(str(?nrel),".*#_([0-9]+)$","$1") 
+%             AS ?order)
+%           }
+%         } GROUP BY ?collocation ?member 
+%                   ?wrep ?order
+%           ORDER BY ?collocation ?order 
+%                   ?member
+%       }
+%     } GROUP BY ?collocation
+%   }
+% }
+% \end{verbatim}
+% \end{tiny}
+
+% \begin{tiny}
+% \begin{verbatim}
+% ------------------------------------------------
+% | collocation       | string                   |
+% ================================================
+% | :apply-equally    | "apply equally"          |
+% | :the-same-applies | "the same applies apply" |
+% | :apply-to         | "apply to"               |
+% ------------------------------------------------
+% \end{verbatim}
+% \end{tiny}
+
+% Note that there are two filler elements for position 3 in
+% \texttt{:the-same-applies}, hence both the canonical form and the
+% contextualized form

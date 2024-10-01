@@ -1,0 +1,108 @@
+\usepackage{tabularx,
+            multicol,
+            multirow}
+\usepackage{url}
+\urlstyle{same}
+ 
+\usepackage{langsci-optional}
+\usepackage{langsci-lgr}
+\usepackage{langsci-gb4e}
+    \let\eachwordone=\itshape % italic data line (default is \rm)
+
+\usepackage{amssymb,amsfonts,amssymb}
+\usepackage{appendix}
+
+\usepackage[linguistics,edges]{forest}
+\usetikzlibrary{matrix}
+\usepackage{hhline}
+
+% leipzig glosses
+\usepackage[counter=chapter,xindy,section=section,nolong,nosuper]{leipzig}
+\usepackage{glossary-mcols}
+\usepackage{glossaries}
+\GlsSetXdyMinRangeLength{0}
+\makeglossaries
+\makeatletter
+\newglossarystyle{audersetglosses}% Following a solution by Nicola Talbot (https://tex.stackexchange.com/a/325566)
+{%
+    \setglossarystyle{mcolalttree}
+    % remove empty line
+    % from https://tex.stackexchange.com/questions/385883/delete-empty-line-in-glossaries
+    \renewenvironment{theglossary}%
+	    {%
+	        \begin{multicols}{2}%
+	            \raggedright%
+	            \def\@gls@prevlevel{-1}%
+	    }%
+	    {\par\end{multicols}}%
+	\renewcommand*{\glstreenamefmt}[1]{##1}%
+	\renewcommand*{\glossaryentrynumbers}[1]{\striprelax##1\endstriprelax}%
+	\renewcommand*{\glsXchapterXglsnumberformat}[2]{##2}%
+	\renewcommand*{\delimR}{,}%
+	% Include conditional, following a recipe by Nicola Talbot.
+	\renewcommand{\glossentry}[2]{%
+		\edef\doifinlocation{\noexpand\ifinlocation{\thechapter}{##2}}%
+		\doifinlocation
+		{% Copied from the mcols-alttree style
+			\ifnum\@gls@prevlevel=0\relax
+		    \else
+		       \settowidth{\glstreeindent}{\glstreenamefmt{\@glswidestname\space}}%
+		    \fi
+		    \hangindent\glstreeindent
+		    \parindent\glstreeindent
+		    \makebox[0pt][r]{\glstreenamebox{\glstreeindent}{%
+		       \glsentryitem{##1}\glstreenamefmt{\glstarget{##1}{\glossentryname{##1}}}}}%
+		    \ifglshassymbol{##1}{(\glossentrysymbol{##1})\space}{}%
+		    \glossentrydesc{##1}\glspostdescription\\
+		    \def\@gls@prevlevel{0}%
+		}%
+	}%
+}
+\makeatother
+\newcommand{\ifinlocation}[3]{%
+	\DTLifinlist{#1}{#2}{#3}{}%
+}
+\def\striprelax\relax#1\endstriprelax{#1}
+\setglossarypreamble
+	{%
+		\vspace*{-\baselineskip}%
+		\glsfindwidesttoplevelname[\currentglossary]%
+	}
+\setglossarystyle{audersetglosses}
+\addto\captionsenglish{\renewcommand*{\glossaryname}{Abbreviations}}
+
+%\usepackage{lilyglyphs}
+\usepackage{longtable}
+
+% for arrow
+\usepackage{marvosym}
+\usepackage{qtree}
+
+\usepackage{supertabular}
+% \usepackage{tipa} % Please don't use TIPA input. Please only use Unicode!
+
+% coloring
+\usepackage{xcolor, colortbl}
+\usepackage{soul}
+\usepackage{langsci-branding}
+
+
+\forestset{
+  nice nodes/.style={
+  for tree={
+  inner sep=1pt, s sep=12pt,
+  fit=band,
+},
+},
+% begin fairly nice empty nodes
+fairly nice empty nodes/.style={
+            delay={where content={}{shape=coordinate,for parent={
+                  for children={anchor=north}}}{}}
+}
+}
+
+
+\usepackage{subfigure}
+
+
+\usetikzlibrary{tikzmark}

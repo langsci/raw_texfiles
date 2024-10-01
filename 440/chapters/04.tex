@@ -1,0 +1,1091 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.10998637}
+
+\title[Representation of multiword expressions in Bulgarian]{Representation of multiword expressions in the Bulgarian integrated lexicon for language technology}
+\author{
+Petya Osenova\orcid{0000-0002-4484-5027}\affiliation{Institute of Information and Communication Technologies, Bulgarian Academy of Sciences} and 
+Kiril Simov\orcid{0000-0003-3555-0179}\affiliation{Institute of Information and Communication Technologies, Bulgarian Academy of Sciences}
+}
+
+
+\abstract{The chapter introduces a representation model of multiword expressions from the perspective of integrated lexicons for Bulgarian. The lexicons considered are an inflectional one, a valency one, and a wordnet. We created a joint representation entry that incorporates morphology, valency potential and lexical semantics through synonym sets. The selected mechanism for displaying all the information is catena-based since the catena allows for better modeling of idiosyncratic elements and is tree-based. Also, a general typology of multiword expressions is proposed that focuses on fixedness and (dis)continuity. We believe that providing a unified representation of multiword expressions and common lexica would improve the performance of the various natural language processing applications.}
+
+
+%\IfFileExists{../localcommands.tex}{
+%   \addbibresource{../localbibliography.bib}
+%   \input{../localpackages}
+%   \input{../localcommands}
+%   \input{../localhyphenation}
+%   \boolfalse{bookcompile}
+%  \togglepaper[23]%%chapternumber
+%}{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction} 
+This paper is based on our previous investigations on multiword expressions (MWEs) for Bulgarian \citep{simov-osenova-2015-catena, laskova-etal-2019-modeling}. 
+This previous research was motivated by the investigation of the most adequate representations of MWEs in treebanks, in syntax-aware lexicons like the valency ones and in lexical bases like wordnets. 
+
+Having already developed a number of language resources for Bulgarian, our current goal is to integrate them in such a way that they would allow a joint approach to several NLP (natural language processing) tasks, including end-to-end training of neural network models.
+
+In order to achieve this goal, we have already integrated the Bulgarian treebank (BTB) with sense annotations from the Bulgarian wordnet (BTB-WN), Bulgarian DBpedia, Bulgarian Wikipedia, Bulgarian Valency Lexicon, and a newly created small FrameNet-oriented lexicon for event annotation in the area of Digital Humanities. With respect to the integrated lexical and text resources, one of the problems is the  common representation of the lemmas in the various types of lexicons, especially the representation of MWEs. Thus, one of the important requirements is that lemmas have a common representation in both -- the annotated corpora and the integrated lexical resources. However, other issues appear here: what the lemma of a MWE is; how to present the syntactic potential in a lexical database including the points of flexibility and external participants; and how to map the lexical representation to the one in a corpus.
+
+In this paper, we focus on the representation of MWEs in the framework of integrated lexical resources. In relation to that our contributions are as follows:
+
+\begin{enumerate}
+    \item introducing the structure of the MWE lexical entry;
+    \item tuning the catena-based formalization to the complex structure of integrated linguistic information;
+    \item modeling the complexity of the entry with respect to discontinuity and fixedness.
+\end{enumerate}
+
+The paper is organized as follows: in \sectref{RelatedWorkOS} related work is discussed. \sectref{BackgroundOS} introduces the background of our model. \sectref{FDCatenaOS} introduces the formal definition of catena. \sectref{ModelLexEnOS} presents a model of the lexical entry. \sectref{AnalysesOfMWETypesOS} suggests analyses of the specific MWE types. \sectref{ConclusionsAndFWOS} concludes the paper.
+
+\section{Related work}\label{RelatedWorkOS}\largerpage
+
+The representation of MWEs in lexicons with a view to their adequate annotation in corpora has been a hot topic for quite some time. For example, \citet{timm_lichte_2019_2579033} discuss various approaches to lexical encoding of MWEs with respect to the NLP tasks. The authors favor flexible formats like PATR\-II and XMG over the fixed encoding formats of a Dutch Electronic Lexicon of Multiword Expressions 
+%%DuELME
+\citep{Grégoire2010}, and a Polish Valency Lexicon \citep{przepiorkowski-etal-2014-walenty}. Our current approach is somewhere between the fixed and flexible encodings. On the one hand, it uses property name sets where the main morphosyntactic, syntactic, and semantic characteristics of the MWE are given. At the same time, the notion of catena is used, which introduces a graph representation and thus falls into the tree-based approaches to MWEs. In this way, the catena ensures the flexibility of the encoding with respect to potential discontinuity or other specifics. Our approach is head-based rather than construction-based.
+
+\citet{helge_dyvik_2019_2579037} present the encoding of MWEs in the resource grammar NorGram which is based on the Lexical-Functional Grammar (LFG) framework. There the fixed MWEs are treated as words. For the flexible MWEs another approach is taken -- namely, following the grammar apparatus of LFG, the components are presented through selection frames with a subcategorization in case of verbs and complements, and with equations for the other lexically restricted dependants -- all these with their specifics. In this paper, the approach is lexico-syntactic since the representation of the MWEs combines both -- the morphosyntactic and lexical specifics. Thus, through the theory mechanisms, the balance between grammar and lexicon is pertained. Our approach aims to ensure exactly such a dynamic relation between a lexicon and a grammar without the availability of a well-developed computational grammar.
+
+\citet{MultiWordExpressionsandMorphology} introduces three criteria for classifying MWEs: “(i) formal properties (degree of internal cohesion or fixity), (ii) idiomatic status [...], and (iii) function, or a combination of these”. In our proposed approach we focus mainly on (i) under which we also include (ii). Then we are more interested in the challenges when modeling word order than in the function of the MWE per se (see \sectref{ModelLexEnOS}).\largerpage
+
+There are attempts for MWE representation in dictionaries and data\-bases for both -- humans and machines, i.e. reflecting multipurpose and multilevel aspects. For example, \citet{vondricka:2019} uses slots for the syntagmatic information and fillers for the paradigmatic one in the entry. The author relies on the tree representation in dependency and constituency formats with the accompanying challenges. The problems come from the notion of the word and ways of spelling as well as from the not straightforward modeling of the internal elements in a MWE. In \textcitetv{chapters/01} the linking is described of the lexical entries in a MWE lexicon for Czech with their natural occurrences in a corpus. The relation between the lexicon and the corpus has been ensured in both directions. We aim at such an integrated resource and workflow. However, at the moment we provide a link of a MWE to its corpus occurrence only through the headwords of MWEs. 
+
+In \citet{lion-bouton-etal-2023-mwe} the authors propose an approach according to which the MWE identification tools consult lexicons. For this purpose, a survey has been performed on quantitative evaluation of some MWE
+lexicon formalisms based on the notion of observational
+adequacy. The suggested approach based on a generalisation of the concept of a Coarse Syntactic Structure proves to be competitive with lexicons based on a sequential representation of MWEs. Our approach is also graph/tree-based but we aim to accommodate as much information as possible in the same representation -- lexical from wordnets, valency from valency dictionaries, knowledge-based from Wikipedia, etc.
+
+\citet{zampieri-etal-2019-impact} show the impact of the MWE representation in the input pre-processed data as well as in two types of word embeddings (word2vec and FastText) for the task of MWE identification. They conclude that the lemma plays a positive role for all considered languages -- Basque, French, and Polish. For us the most interesting part in relation to our work is the fact that the richer the information for a morphologically rich language, the better the results. We also try to represent as much integrated information about a MWE as possible.   
+
+\citet{schneider-etal-2014-comprehensive} report on the annotation of MWEs in a social web corpus. They use an annotation scheme that respects the following aspects: heterogeneity (where the annotated MWEs are not restricted by
+syntactic construction); shallow but gappy grouping (MWEs viewed as simple groupings of tokens, which need not be contiguous in the sentence); and expression strength (where the most idiomatic MWEs are distinguished from and can belong to weaker collocations). For our work the most important focus (along the others) is the modeling of gapping, i.e. discontinuity. Authors indicate that 15\% of MWEs contain at least one gap. We have to take into account that this fact is given for English as a language with a rather fixed word order. In languages like Bulgarian that have a relatively free word order, discontinuity is expected to be much higher. For that reason we are trying to find a way to model the predicted points of discontinuity within the lexical entry.
+
+In \textcitetv{chapters/03} an elaborate bilingual model of MWEs representation is described for Bulgarian and Romanian in a uniform way. Wordnets for the two languages have been used for linking the bilingual lexicons. The focus is put on the verbal MWEs where the relations from the Universal Dependencies (UD) have been used. We also use a wordnet for Bulgarian (BTB-WN) as a linking module and UD as modeling relations within MWEs.
+
+In the PARSEME initiative verbal MWE (VMWE) annotations, both continuous and discontinuous groups are considered \citep{savary:hal-01917174}. The annotation strategy includes the lexicalized elements, not their variations. It views the representation as a syntactic tree. However, the scheme describes also the properties for each type and provides specialized guides for each participating language, including Bulgarian. In addition to the two universal VMWE categories (light verb constructions with two subtypes and verbal idioms), our language has inherently reflexive verbs (IRV) but not verb-particle constructions (VPC). Since our task here is to show how we represent all the main types of MWEs, we focus on the variety and complexity of their modeling. 
+
+\section{Background}
+\label{BackgroundOS}
+
+Our work on MWEs up to now has been centred around the notion of catena. Catena (chain) was initially introduced in \citet{OGrady} as a mechanism for representing the syntactic structure of idioms. He showed that for this task a definition of syntactic patterns was needed that does not coincide with constituents. He defined the catena in the following way: ``The words A, B, and C (order irrelevant) form a chain if and only if A immediately dominates B and C, or if and only if A immediately dominates B and B immediately dominates C''. Some examples of catena from a dependency syntactic tree are presented in \figref{fig:CatenaExamples}.
+In our work here we convert MWEs into a representation previously defined in \citet{SimovOsenova2014} and in \citet{simov-osenova-2015-catenaKorea} in which the catena is depicted as a dependency tree fragment with appropriate grammatical and semantic information. The variations of the MWEs are represented through underspecification of the corresponding features, including valency frames and non-canonical basic form. 
+
+The lexical entry uses the following format: a lexicon catena (LC), semantics (SM) and valency (Frame). The lexicon catena for the MWEs is stored in its basic form. The realisation of the catena in a sentence has to obey the rules of the grammar. In this way the possible word order is managed. The semantics of a lexical entry specifies the list of elementary predicates contributed by the lexical item. When the MWE allows for some modification (including adjunction) of its elements, i.e. modifiers of a noun, the lexical entry in the lexicon needs to specify the role of these modifiers. Some first ideas in these lines are represented in the above cited works and also in \citet{laskova-etal-2019-modeling}.
+
+We aim at an integrated and relatively flexible representation of MWE types in lexicons and their projections in corpora. We are aware that this task is not trivial and will take time. Our proposal builds on our previous modelling. Here we discuss an extended lexical entry model in order to incorporate as much linguistic information as possible. In our previous publications we already assumed that each lemma in the lexicon is represented as a catena (even when it is not a MWE). This assumption allows us to represent information in relation to analytical verb forms, to the order of the component words in the MWEs, to their morphosyntactic variations, to their syntactic and semantic behaviour, to the etymological information in cases when peculiarities of MWEs have diachronic origin. For example, in the Bulgarian expression 
+(bg) {добър вечер \ile{dobar vecher}} (lit. `good-\textsc{sg.m} evening-\textsc{sg.f}') {`good evening'},
+`good' is masculine and `evening' is feminine. The surface agreement is violated because the noun `evening' changed its gender in contemporary language to feminine. 
+
+The model of the Valency lexicon follows our insights from the catena representation of MWEs. Such an approach allows us to introduce the integration of the necessary world knowledge to the frame elements, especially the interaction among the types of participants within a given event. Needless to say, this kind of information is not always fully compositional and the boundaries between compositional and non-compositional are not always clear. Thus, we think that the same lexicon model can be applied to the continuum from compositionality to non-compositionality in a valency-aware dictionary. We imagine that this effort will not be deterministic but incremental, since MWEs show idiosyncrasies all the time across genres, alternations, figurative meanings, etc. 
+
+Our main contribution in this paper is the structure of the lexical entry in an integrated lexicon by means of the catena notion. In the integrated resource we have included the following distinct lexicons:
+
+\begin{description}\sloppy
+    \item[Inflectional lexicon of Bulgarian (ILB):] Each lemma is connected to its inflectional paradigm;
+    \item[BTB Bulgarian WordNet (BTB-WN):] A Bulgarian WordNet which arran\-ges synonym sets around identical meanings. The lexical entry in BTB-WN is called \OsenovaNewTerm{synset} (\textit{Synonym Set});
+    \item[Bulgarian Valency Lexicon (BVL):] Complex representation of the core participants of a given event (in general sense) represented by a verb in its meaning.
+\end{description}
+
+The main decision we took was about the mechanism for integrating lexical entries from these three lexicons: ILB, BVL and BTB-WN. First, the initial representation of the original lexical entries is introduced. Note that we omit details that are not important for this paper. Such details, for example, include the interaction between the lexical and semantic relations in the BTB-WN.
+
+The lexical entry of {ILB} includes the following main elements: \emph{Lemma}, \emph{Part of speech}, and \emph{Paradigm}. The lemma is the abstract representation of the lexical entry. Each part of speech is one of the ten common parts of speech in Bulgarian (noun, adjective, numeral, adverb, pronoun, verb, preposition, conjunction, particle, interjection). For a detailed description of Bulgarian see \citet{Osenova2011}. The paradigm is a list of all the synthetic word forms related to the lemma. Bulgarian is an analytical and inflectional language. It has a rich inflectional morphology, but listing all the members of the synthetic part of the verb paradigm is still feasible, because the largest paradigm contains only 52 word forms. Each word form corresponds to a given set of grammatical features. Some word forms are analytical like part of the Bulgarian tenses. For example, the verb 
+(bg) {чета \ile{cheta}}
+(lit. read-\textsc{1sg.prs}) {`I read'}
+forms a future tense, second person, singular as follows: 
+(bg) {ще четеш \ile{shte chetesh}}
+(lit. read-\textsc{2sg.fut}) {`you will read'}.
+Such analytical word forms are formed by patterns (rules) which we consider as a part of the lexicon. They are represented using the same mechanism as the rest of the lexicon. 
+
+The Lexical entry of {BTB-WN} includes the following main elements: \emph{Definition}, \emph{Set of synonyms}, \emph{Examples}. Each definition in BTB-WN provides a description of the meaning in Bulgarian. The set of synonyms is represented via a set of lemmas sharing the meaning of the synset. Each lemma is connected to a paradigm and a part of speech. Each example consists of one or more sentences in which the corresponding meaning is exemplified. Each example in a synset is also linked to its lemma. We usually include only one sentence, but if one sentence is not enough to disambiguate between the different meanings of the lemma, then more sentences are included. Also, the example is linked to the source from where it is taken. In this way, if necessary, we could extract more data. The current version of BTB-WN contains 53217 lemmas of which 7868 are MWEs (14.78\%).
+
+The lexical entry of {BVL} includes the following main elements: \emph{Lemma}, \emph{Definition}, \emph{Valency frame}, and \emph{Examples}. The lemma is the verb lemma for the lexical entry. Each definition represents a meaning of the lemma. The definition is the same as in the wordnet. The valency frame introduces a generalised representation of the core participants of the event denoted by the meaning and the syntactic behaviour of the lemma as well as by the core participants. The current version of BVL contains 6869 lemmas 1674 of which are MWEs (24.37\%).
+
+In order to integrate the lexical entries of the three lexicons we followed the following procedure:
+\begin{itemize}
+    \item {\itshape Achieving a uniform representation of lemmas.} Since the three lexicons were constructed in different periods and on the basis of different machine readable sources, the lemmas of the same word could have had different representations. This holds especially for the ILB -- the lexicon whose first version was created earlier.
+    \item {\itshape Mapping of the meanings.} We have ensured that the meaning in BTB-WN and BVL are the same for the respective verbs. In this way, the verb lemmas and meanings in BTB-WN and BVL have been unified.
+    \item {\itshape Modification of the paradigm.} Since the paradigm sometimes depends on the meaning of the lemma, the paradigm inherited from ILB had to be modified in a number of cases. For example, some nouns in some meanings are only pluralia tantum.
+\end{itemize}
+
+Thus, the lexical entry of the integrated lexicon consists of two elements: ({Definition} and {Set of synonyms}). The information about the paradigm, valency frames and examples is represented within the entry of each lemma. The record for each lemma contains also a link to its paradigm; one or more valency frames; a set of examples; and other lemma dependant classifications.
+
+Each lemma is converted into its syntactic representation as a catena (see next section). When the lemma is a single word, the conversion to a catena is trivial. At the same time, the complexity of MWEs requires more attention to the construction of the appropriate representation. For more details see next sections.
+In addition to the synthetic forms, the verb paradigm contains also the analytical ones. We consider them as a special class of MWEs. The patterns for the analytical forms are represented as an addition to the main lexicon. In the lexical entry only a link to the corresponding set of patterns is given. 
+
+
+\section{Formal definition of catena}\label{FDCatenaOS}\largerpage
+
+In this section we define the formal presentation of the catena as it is used in syntax and in the lexicon. Here we follow the definition of catena provided by \citet{OGrady} and \citet{gross-2010-chains}: a \OsenovaNewTerm{catena} is a word or a combination of words directly connected in the dominance dimension. In reality, this definition of catena for dependency trees is equivalent to a subtree definition. \figref{fig:CatenaExamples} depicts a complete dependency tree and some of its catenae. Notice that the complete tree is also a catena itself. With ``root$_C$'' we mark the root of the catena. It might be the same as the root of the complete tree, but also different as in the cases of ``John'' and ``apple''. Following \citet{Osborne-et.-al-2012} we prefer to use the notion of catena to that of dependency subtree or treelet. We aim to utilize the notion of catena for several purposes: representation of words and MWEs in the lexicon, their realization in the actual trees that present the sentence analysis, as well as for the representation of the derivational structure of compounds in the lexicon.
+
+
+\begin{figure}
+  \centering
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=1em]
+    John \& bought \& and \& ate \& an \& apple \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root}}
+      \depedge[thick]{2}{1}{{\normalsize subj}}
+      \depedge[thick, label style={below}]{2}{3}{{\normalsize cc}}
+      \depedge[thick]{2}{4}{{\normalsize conj}}
+      \depedge[thick]{2}{6}{{\normalsize iobj}}
+      \depedge[thick]{6}{5}{{\normalsize det}}
+   \end{dependency}
+
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=0.5em]
+         John \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root$_C$}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=0.5em]
+         John \& bought \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{1}{{\normalsize subj}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=0.5em]
+         bought \& and \& ate \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root$_C$}}
+      \depedge[thick, label style={below}]{1}{2}{{\normalsize cc}}
+      \depedge[thick]{1}{3}{{\normalsize conj}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=0.5em]
+         an \& apple\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{1}{{\normalsize det}}
+   \end{dependency}
+
+ 
+  \caption{A complete dependency tree and some of its catenae. The complete list of catenae of the complete tree is too large to be presented here.}
+  \label{fig:CatenaExamples}
+\end{figure}
+
+
+In order to model the variety of phenomena and characteristics encoded in a dependency grammar we extend the catena with partial arc and node labels. We follow the approach taken in CoNLL shared tasks on dependency parsing \citep{buchholz-marsi-2006-conllx} representing for each node its word form, lemma, part of speech, extended part of speech, grammatical features (and later -- semantics). This provides a flexible mechanism for expressing the combinatorial potential of lexical items. 
+In the following definition all grammatical features are represented as part-of-speech (POS) tags.{\interfootnotelinepenalty=10000\footnote{In fact, our tagset encodes all the morphosyntactic tags related to each part-of-speech, but here we use the notion of POS tag as a more common term. The tagset is described here: \url{http://bultreebank.org/wp-content/uploads/2017/04/BTB-TR03.pdf}.}}
+
+Let us have the sets: $\text{LA}$ -- a set of POS tags,\footnote{In the formal definitions here we use tags as entities, but in practice they are sets of grammatical features like values for gender, number, etc.} $\text{LE}$  -- a set of lemmas,  $\text{WF}$  -- a set of word forms, and a set of dependency tags $D$ ($root \in D$).
+Let us have a sentence $x = w_1, ..., w_n$. A \OsenovaNewTerm{tagged dependency tree} is a directed tree $T = (V,A, \pi, \lambda, \omega, \delta)$ where:\largerpage
+
+\begin{enumerate}
+\item $V=\{0,1,...,n\}$ is an ordered set of nodes that corresponds to an enumeration of the words in the sentence (the root of the tree has an index 0);
+
+\item $A \subseteq V \times V$ is a set of arcs. For each node $i$, $1 \leq i \leq n$, there is exactly one arc in A: $\langle i, j \rangle \in A$, $0 \leq j \leq n$, $i \neq j$. There is exactly one arc $\langle i, 0 \rangle \in A$;
+
+\item $\pi : V - \{ 0 \} \rightarrow \text{LA}$ is a total labelling function from nodes to POS tags.\footnote{In case we are interested in part of the grammatical features encoded in a POS tag we could consider $\pi$ as a set of different mappings for the different grammatical features. It is easy to extend the definition in this respect, but we do not do this here.} $\pi$ is not defined for the root;
+
+\item $\lambda : V - \{ 0 \} \rightarrow \text{LE}$ is a total labelling function from nodes to lemmas. $\lambda$ is not defined for the root;
+
+\item $\omega : V - \{ 0 \} \rightarrow \text{WF}$ is a total labelling function from nodes to word forms. $\omega$ is not defined for the root;
+
+\item $\delta : A \rightarrow D$ is a total labelling function for arcs corresponding to the dependency label. Only the arc $\langle i, 0 \rangle$ is mapped to the label $root$;
+
+\item $0$ is the root of the tree.
+
+\end{enumerate}
+
+We will hereafter refer to this structure as a parse tree for the sentence  $x$. Node 0 does not correspond to a word form in the sentence, but plays the role of a root of the tree.
+
+Let $T = (V,A,\pi, \lambda, \omega, \delta)$ be a tagged dependency tree. A directed tree $G = (V_G,A_G,\pi_G,\lambda_G, \omega_G, \delta_G)$ is called \OsenovaNewTerm{dependency catena of $T$} if and only if there exists a mapping $\psi : V_G \rightarrow V$\footnote{This mapping allows for embedding of $G$ in different tagged dependency trees and thus different word order realizations of the catena nodes (corresponding to word forms in $T$). The mapping $\psi$ is specific for $G$ and $T$. It allows also the image of $G$ in $T$ not to be a subtree of $T$, but several subtrees of $T$. A special case is discussed below -- partition and extension operations.} such that:
+\begin{enumerate}
+
+\item $A_G \subseteq A$, the set of arcs of $G$;
+
+\item $\pi_G \subseteq \pi$ is a partial labelling function from nodes of $G$ to POS tags;
+
+\item $\lambda_G \subseteq \lambda$ is a partial labelling function from nodes of $G$ to lemmas;
+
+\item $\omega_G \subseteq \omega$ is a partial labelling function from nodes of $G$ to word forms;
+
+
+\item $\delta_G \subseteq \delta$ is a partial labelling function for arcs of $G$ to dependency labels.
+
+\end{enumerate}
+
+A directed tree $G = (V_G,A_G,\pi_G,\lambda_G, \omega_G, \delta_G)$ is a \OsenovaNewTerm{dependency catena} if and only if there exists a dependency tree $T$ such that $G$ is a dependency catena of $T$. We mark the root catena with $root_C$ arc in graphical representation.
+
+
+The partial functions for assigning POS tags, dependency labels, word forms and lemmas allow us to construct arbitrary abstractions over the structure of a catena. Thus, the catena could be underspecified for some of the node labels, like grammatical features, lemmas and also some dependency labels. In this way the catena could be a dependency catena of dependency trees which differ with respect to labels of different kinds. Thus, catenae are a good choice for encoding variability of lexical representation of MWEs.
+
+Thus mapping $\psi$ parameterizes the catena with respect to different dependency trees. Using the mapping, there is a possibility to realize different word orders of the catena nodes, for instance. The omission of node 0 from the range of the mapping $\psi$ excludes the external root of the tagged dependency tree from each catena. The catena could be a word or an arbitrary subtree.
+
+We call the mapping of a catena into a given dependency tree the \OsenovaNewTerm{realization of the catena in the tree}. We consider the realization of the catena as a fully specified subtree including all node and arc labels. For example, the catena for ``to spill the beans'' will allow for any realization of the verb form like in: ``they spilled the beans'' and ``he spills the beans''. Thus, the catena in the lexicon will be underspecified with respect to the grammatical features and word forms for the verb.
+
+
+
+\begin{figure}[p]
+Lexicon catena:
+
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpit \& Psxto \& Ncnpd \\
+      -- \&  |[cooltext=blue]| си \&  |[cooltext=blue]| очите \\
+  |[cooltext=red]| затварям \&  |[cooltext=red]| си \&  |[cooltext=red]| око \\
+  |[cooltext=green]| shut \&  |[cooltext=green]| one's \&  |[cooltext=green]| eyes \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root$_C$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize clitic}}
+      \depedge[edge style={wasp}, label style={wasp}]{1}{3}{{\normalsize dobj}}
+   \end{dependency}
+  \end{center}  
+
+Realization 1: 
+(bg) {Очите си затваряха пред фактите \ile{Ochite si zatvaryaha pred faktite}}
+(lit. eyes-DEF REFL shut-3PL.PST.PROG at facts-DEF) {`They ignored the facts'}:
+
+
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Ncnpd \& Psxto \& Vpitf-m3p \& R \& Ncmpd \\
+  |[cooltext=blue]|      Очите \& |[cooltext=blue]|  си \&  затваряха \& пред \& фактите \\
+  |[cooltext=red]|      око \&  |[cooltext=red]|  си \&  |[cooltext=red]|  затварям \& пред \& факт \\
+  |[cooltext=green]| eyes \&  |[cooltext=green]| their \&  |[cooltext=green]| shut \&  |[cooltext=magenta]| at \&  |[cooltext=magenta]| facts\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{3}{{\normalsize root}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{3}{2}{{\normalsize clitic}}
+      \depedge[edge style={wasp}, label style={wasp}]{3}{1}{{\normalsize dobj}}
+      \depedge[thick]{3}{4}{{\normalsize iobj}}
+      \depedge[thick]{4}{5}{{\normalsize pobj}}
+   \end{dependency}
+  \end{center}  
+
+%\quad%
+
+Realization 2: (bg) {Иван си затваряше очите \ile{Ivan si zatvaryashe ochite}}
+(lit. Ivan-\textsc{sg refl} shut-\textsc{3sg.pst.prog} eyes-\textsc{def}) {`Ivan ignored the facts'}:
+
+
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Npmsi \& Psxto \& Vpitf-m3s \& Ncnpd \\
+      Иван \& |[cooltext=blue]| си \& затваряше \& |[cooltext=blue]| очите \\
+      Иван \& |[cooltext=red]|си \& |[cooltext=red]| затварям \& |[cooltext=red]| око \\
+  |[cooltext=magenta]| Ivan \&  |[cooltext=green]| his \&  |[cooltext=green]| shut \& |[cooltext=green]| eyes  \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{3}{{\normalsize root}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{3}{2}{{\normalsize clitic}}
+      \depedge[thick]{3}{1}{{\normalsize subj}}
+      \depedge[edge style={wasp}, label style={wasp}]{3}{4}{{\normalsize dobj}}
+\end{dependency}
+
+  
+  \caption{Two realizations of the lexicon catena for the idiom 
+(bg) {затварям си очите \ile{zatvaryam si ochite}}
+(lit. shut-\textsc{1sg.prs refl} eyes-\textsc{def}) {`I ignore the facts'}.}
+  \label{fig:CatenaRealization}
+  \end{center}  
+
+\end{figure}
+
+This underspecified catena will be called a \OsenovaNewTerm{lexicon catena} (LC), because it will be stored in the lexical entries. \figref{fig:CatenaRealization} depicts two realizations (with different word orders) of the catena for the idiom  
+(bg) {затварям си очите \ile{zatvaryam si ochite}}
+(lit. shut-\textsc{1sg.prs refl} eyes-\textsc{def}) {`I ignore the facts'}. 
+The upper part of the image represents the lexicon catena for the idiom. It determines the fixed elements of the catena: the arcs, their labels, the nodes and their labels: extended part of speech (first row), word forms (second row), lemmas (third row), and gloss in English (fourth row).\footnote{In the next examples we present only the important information, thus, some of these rows will be missing. In other cases new rows will be used to represent additional information.} The dash (--) in the word form row means that the word form is not defined for the verbal node. In this way the word form could be different in the different realization of the catena. Also, the POS tag in the catena is underspecified with respect to features of the different word forms. In the two realizations, the verbal forms received their specific tags. Also, fixed elements of the catena are represented as in the image of the catena. The word order in the two realizations is different. Thus, catenae with different underspecified elements define different levels of freedom in the realization of the MWEs.
+
+
+Let $G_1$ and $G_2$ be two catenae. A \OsenovaNewTerm{composition} of $G_1$ and $G_2$ is a catena $G_c$, such that
+
+\begin{enumerate}
+    \item the catenae $G_1$ and $G_2$ are realized in catena $G_c$,
+    \item each node in catena $G_c$ is an image of a node from $G_1$ or $G_2$, or both,
+    \item the root of catena $G_c$ is an image of the root of catena $G_1$,
+    \item if a node $i$ in catena $G_c$ is an image of node $i_1$ in catena $G_1$ and $i_2$ in  $G_2$, then all the information assigned to these nodes is compatible and fully represented in the node $i$,
+    \item if an arc $\langle i,j\rangle$ in catena $G_c$ is an image of arc $\langle i_1,j_1\rangle$ in catena $G_1$ and $\langle i_2,j_2\rangle$ in  $G_2$, then the label of $\langle i,j\rangle$ if it exists, has to be compatible with the labels of the arc $\langle i_1,j_1\rangle$ in $G_1$ and $\langle i_2,j_2\rangle$ in $G_2$. 
+\end{enumerate}
+
+The lemma information for two nodes $i_1$ in $G_1$ and $i_2$ in $G_2$ is compatible if at least one of the nodes does not have an assigned lemma, or if both nodes have the same assigned lemma. It is similar for word forms. For POS tags the compatibility is defined as a tag representation that contains the information of tags defined for both nodes. For example, if we have partial POS tag specifications `Vpit' and `Vp--m2s', the compatible specification is `Vpit--m2s'.
+The arc labels are compatible if and only if they are the same, or at least one of them is not defined. If for both arcs the labels are not defined, then the label for the image arc is also not defined.
+Similar definitions could be stated for any other information added to the nodes and arcs such as semantic information, etc.
+
+Using the composition operation we could realize the selectional restrictions of a given lexical unit with respect to a catena in a sentence.
+
+For example, let us assume that the verb `to read' requires the subject to be a human and the object to be an information object. In \figref{fig:Compisition} we present how the catena for `I read' is combined with the catena `a book' in order to form the catena `I read a book'. The figure represents only the level of word forms and a level of semantics (specified only for the node on which the composition is performed). The catena for `I read ...' specifies that the unknown direct object has the semantics of an \textit{Information Object (InfObj)}. The catena for `a book' represents the fact that the book is an Information Object. Thus the two catenae could be composed on the two nodes marked as InfObj. The result is represented at the bottom of \figref{fig:Compisition}.\footnote{In this representation many details like lemmas and grammatical features are not presented because they are not important for the example.}
+
+\vfill
+\begin{figure}[H]
+  \centering
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+         I \& read \& -\\
+   \& \& |[cooltext=yellow]| InfObj \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{1}{{\normalsize subj}}
+      \depedge[thick]{2}{3}{{\normalsize dobj}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+         a \& book\\
+   \& |[cooltext=yellow]| InfObj \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{1}{{\normalsize det}}
+   \end{dependency}
+
+
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=1em]
+         I \& read \& a \& book\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root}}
+      \depedge[thick]{2}{1}{{\normalsize subj}}
+      \depedge[thick]{4}{3}{{\normalsize det}}
+      \depedge[thick]{2}{4}{{\normalsize dobj}}
+   \end{dependency}
+
+  
+  \caption{Composition of catenae.}
+  \label{fig:Compisition}
+\end{figure}
+\vfill\pagebreak
+
+Some MWEs require more complex operations over catenae. Such a class of MWEs are idioms with a lexicalized subject, such as ``the devil is in the details''; the realizations of catenae from the lexicon into dependency trees are often accompanied by intervening material  --  see the discussion in \citet{Osborne-et.-al-2012}. For example, the above-mentioned idiom allows realizations such as: ``the devil will be in the details'', ``the devil seems to be in the details'', etc. Thus we need to modify the internal structure of the lexicon catena.
+
+Our insight, supported by the examples, is that the intervening material forms a catena of a certain type. Such a type of catena will be called an \OsenovaNewTerm{auxiliary catena}\footnote{Under auxiliary catena we assume a catena that is part of the verbal complex (i.e. an analytical tense of a verb, where elements such as clitics can be inserted between components) and contains nodes for the auxiliary verbs. In the grammars for the different languages different kinds of catena could be defined on the basis of their role in the grammar. In this respect, the definition of extension here is restricted to the verbal complex, but could be easily adapted for other cases when necessary.} in this paper, although it could be of different kinds (auxiliary, modal, control, etc.), depending on the verb forms. In order to implement this idea we need some additional notions.
+
+Let $G = (V_G,A_G,\pi_G,\lambda_G, \omega_G, \delta_G)$ be a catena and $k \in V_G$ and $m$ is integer and $m > 1$, then $G_1, G_2, ..., G_l$ is a partition of $G$ on node $k$ if and only if:
+\begin{enumerate}
+
+\item each $G_i$ for for $1 \leq i \leq  m$ is a catena which is a subtree of $G$;
+
+\item one or more subcatenae $G_i$ for each $1 \leq i \leq  m$ have $k$ as a root node;
+
+\item the only common node for all subcatenae $G_i$ is k;
+
+\item the mappings ${\pi_G}_i, {\lambda_G}_i, {\omega_G}_i, {\delta_G}_i$ are the same as for the whole catena $G$, except for the node $k$ where the mappings ${\pi_G}_i, {\lambda_G}_i, {\omega_G}_i$ could be partial with respect to the original mappings.
+
+
+\end{enumerate}
+
+An example of the operation \textbf{partition} of \textit{the devil is in the details} is given in \figref{fig:Partition}.
+
+After the partition of the catena, we need a mechanism to connect the different catenae of the partition with the auxiliary catena.
+
+
+Let $G$ be a catena and for $n \in V_G, G_1, G_2, ..., G_n$ be a partition of $G$ and $G_a$ be an auxiliary catena. An \OsenovaNewTerm{extension} of $G$ on partition $G_1, G_2, ..., G_n$ with catena $G_a$ is a catena $G_e$ such that each catena $G_1, G_2, ..., G_n$ and the auxiliary catena $G_a$ are realized in $G_e$ in such a way that the node $n_i$ in $G_i$ (corresponding to the original node n) is mapped to a node in $G_e$ to which a node of $G_a$ is mapped. Each node in $G_e$ is an image of a node from $G_1, G_2, ..., G_n$ or $G_a$.\largerpage[1.5]
+
+An example of the operation \textbf{extension} is presented in \figref{fig:Extension}.{\interfootnotelinepenalty=10000\footnote{Note that there are alternative analyses in which the auxiliary verb is not a head of the sentence, but a dependent of the copula.}}\pagebreak
+
+\begin{figure}[p]
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+         D \& N \& V \& R \& D \& N\\
+         The \& devil \& |[cooltext=blue]|  is \& in \& the \& details\\
+         the \& devil \& |[cooltext=red]|  be \& in \& the \& detail\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{3}{{\normalsize root}}
+      \depedge[thick]{2}{1}{{\normalsize det}}
+      \depedge[thick]{3}{2}{{\normalsize subj}}
+      \depedge[thick]{3}{4}{{\normalsize comp}}
+      \depedge[thick]{6}{5}{{\normalsize det}}
+      \depedge[thick]{4}{6}{{\normalsize pobj}}
+   \end{dependency}
+
+
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+         D \& N \& --  \\
+         The \& devil \& |[cooltext=blue]|  - \\
+         the \& devil \& |[cooltext=red]|  - \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{3}{{\normalsize root}}
+      \depedge[thick]{2}{1}{{\normalsize det}}
+      \depedge[thick]{3}{2}{{\normalsize subj}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \begin{deptext}[column sep=-1em]
+   \& \\
+   \end{deptext}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+          V \& R \& D \& N\\
+        |[cooltext=blue]|   - \& in \& the \& details\\
+        |[cooltext=red]|  be \& in \& the \& detail\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root}}
+      \depedge[thick]{1}{2}{{\normalsize comp}}
+      \depedge[thick]{4}{3}{{\normalsize det}}
+      \depedge[thick]{2}{4}{{\normalsize pobj}}
+   \end{dependency}
+
+  \caption{Partition of the catena for ``the devil is in the details''.}
+  \label{fig:Partition}
+\end{figure}
+
+\begin{figure}[p]
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+         D \& N \& --  \\
+         The \& devil \& |[cooltext=blue]| - \\
+         the \& devil \& |[cooltext=red]| - \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{3}{{\normalsize root}}
+      \depedge[thick]{2}{1}{{\normalsize det}}
+      \depedge[thick]{3}{2}{{\normalsize subj}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+         Aux \& V  \\
+         |[cooltext=blue]| will \& |[cooltext=blue]| - \\
+         |[cooltext=red]| will \& |[cooltext=red]| - \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root}}
+      \depedge[thick, edge style={wasp}, label style={wasp}]{1}{2}{{\normalsize comp}}
+   \end{dependency}
+\quad%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+          V \& R \& D \& N\\
+        |[cooltext=blue]| - \& in \& the \& details\\
+        |[cooltext=red]| be \& in \& the \& detail\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root}}
+      \depedge[thick]{1}{2}{{\normalsize comp}}
+      \depedge[thick]{4}{3}{{\normalsize det}}
+      \depedge[thick]{2}{4}{{\normalsize pobj}}
+   \end{dependency}
+
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=2em]
+         D \& N \& Aux \& V \& R \& D \& N\\
+         The \& devil \& |[cooltext=blue]| will \& |[cooltext=blue]| be \& in \& the \& details\\
+         the \& devil \& |[cooltext=red]| will \& |[cooltext=red]| be \& in \& the \& detail\\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{3}{{\normalsize root}}
+      \depedge[thick]{2}{1}{{\normalsize det}}
+      \depedge[thick]{3}{2}{{\normalsize subj}}
+      \depedge[thick, edge style={wasp}, label style={wasp}]{3}{4}{{\normalsize comp}}
+      \depedge[thick]{4}{5}{{\normalsize comp}}
+      \depedge[thick]{7}{6}{{\normalsize det}}
+      \depedge[thick]{5}{7}{{\normalsize pobj}}
+   \end{dependency}
+
+  
+  \caption{Extension.}
+  \label{fig:Extension}
+\end{figure}
+\clearpage
+
+
+Two catenae  $G_1$ and $G_2$ could have the same set of realizations. In this case, we will say that $G_1$ and $G_2$ are \OsenovaNewTerm{equivalent}. Representing the nodes via paths in the dependency tree from root to the corresponding node and imposing a linear order over this representation of nodes facilitates the selection of a unique representative of each equivalent class of catenae. Thus, in the rest of the paper we assume that each catena is representative of its class of equivalence. This representation of a catena will be called \OsenovaNewTerm{canonical form}.
+
+
+
+\section{A model of a lexical entry}
+\label{ModelLexEnOS}
+
+
+In this section we use the notion of catena already introduced in Section~\ref{FDCatenaOS}, to define in greater detail the structure of a lexical entry as presented above. Through the operations of \textit{composition}, \textit{partition} and \textit{extension} it becomes possible to compose the different parts of this structure and thus manage the actual realization of the lexical items in text. In this paper we represent the syntactic information in terms of the dependency grammar, but it can be done in a similar way within phrase-based grammars.
+
+
+For each node in a catena or a dependency tree we present the following information: {POS}, {Grammatical Features}, {Word Form}, {Lemma}, {Node identifier} (the position of a word form in a catena or a sentence). Each piece of information is depicted in the node representation at a different row.
+
+
+\begin{figure}
+\small
+
+\centering
+\begin{tabular}{|l|}
+\hline
+{\normalfont \bfseries Synset:}  \textit{Example entry} \;\; Synset ID: \textit{SynsetID}  \\ \hline
+{\normalfont \bfseries Definition:} \textit{Text of the definition}   \\ \hline
+{\normalfont \bfseries Lemma list:}
+\begin{tabular}{|l|}
+\\ % \hline
+
+\ \begin{tabular}{|l|l|}
+\hline
+{\normalfont \bfseries LemmaID:}  &   \textit{Lemma-ID1} \\ \hline
+
+{\normalfont \bfseries Basic Form:}  &   \textit{BasicForm-Lemma-ID1} \\ \hline
+{\normalfont \bfseries Paradigm:}  & 
+\ \begin{tabular}{l}
+WordForm$_{11}$ : GrammaticalTag$_{11}$ \\ 
+WordForm$_{12}$ : GrammaticalTag$_{12}$ \\ 
+\ldots \\
+WordForm$_{1n}$ : GrammaticalTag$_{1n}$ \\
+\end{tabular}
+
+\\ \hline
+{\normalfont \bfseries Valency Frame:}  &  \textit{Valency Frame Description} \\ \hline
+{\normalfont \bfseries Examples:}   &  \textit{List of examples for this lemma} \\ \hline
+{\normalfont \bfseries Analytical Class:}   &  \textit{Pattern Class} \\ \hline
+
+\end{tabular}
+
+\\ 
+\\
+\ \ \ldots %, {\em Other lemmas in the synset}
+\\
+\\
+
+\ \begin{tabular}{|l|l|}
+\hline
+{\normalfont \bfseries LemmaID:}  &   \textit{Lemma-IDK} \\ \hline
+
+{\normalfont \bfseries Basic Form:}  &  \textit{BasicForm-Lemma-IDK} \\ \hline
+{\normalfont \bfseries Paradigm:}  & 
+\ \begin{tabular}{l}
+WordForm$_{K1}$ : GrammaticalTag$_{K1}$ \\ 
+WordForm$_{K2}$ : GrammaticalTag$_{K2}$ \\ 
+\ldots \\
+WordForm$_{Kn}$ : GrammaticalTag$_{Kn}$ \\
+\end{tabular}
+
+\\ \hline
+{\normalfont \bfseries Valency Frame:}  & \textit{Valency Frame Description} \\ \hline
+{\normalfont \bfseries Examples:}   &  \textit{List of examples for this lemma} \\ \hline
+{\normalfont \bfseries Analytical Class:}   & \textit{Pattern Class} \\ \hline
+
+\end{tabular}
+
+\\ 
+\\
+
+\end{tabular}
+\\ \hline
+
+\end{tabular}
+
+  \caption{Lexical entry model.}
+  \label{fig:LexEntryM}
+\end{figure}
+
+
+In \figref{fig:LexEntryM}\largerpage{} a model of the lexical entry is presented. Each lexical entry for a synset includes (minimally): \emph{Synset} which defines the synset information and \emph{SynsetID} which identifies the synset in a unique way; \emph{Definition} which expresses the content of the meaning of the synset; \emph{Lemma list} which contains the representation of each lemma that shares the meaning of the synset. Each lemma is represented by the following elements: \emph{LemmaID} which introduces the lemma in a unique way in the whole lexicon; \emph{Basic Form} is a selected word form from the paradigm of the lemma; \emph{Paradigm} is a list of pairs consisting of a word form, represented as a catena, and a tag, encoding the grammatical features of the word form. Each word form is a catena; \emph{Valency Frame} represents the selectional restrictions of the lemma. The valency frame is represented as a catena. \emph{Examples} is a list of example sentences or short texts. The realization of a lemma in a text requires the selection of the appropriate word form from the paradigm, represented as a Word Form Catena (WFC), composed with the Valency Frame Catena (VFC).
+
+
+
+\begin{figure}
+\centering
+\begin{tabular}{|l|}
+\hline
+{\normalfont \bfseries Synset:}  \textit{бягам от отговорност} \;\; Synset ID: \textit{SID-003592} \\ \hline
+{\normalfont \bfseries Definition:} \textit{Отбягвам да поема отговорност} \   \\ \hline
+{\normalfont \bfseries Lemma list:}
+\begin{tabular}{|l|}
+\\ % \hline
+
+\ \begin{tabular}{|l|l|}
+\hline
+{\normalfont \bfseries LemmaID:}  &  \  {\em btbwn-041000447-v} \\ \hline
+
+{\normalfont \bfseries B. Form:}  &  \  {\em бягам} \\ \hline
+{\normalfont \bfseries Paradigm:}  & 
+\ \begin{tabular}{l}
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+  |[cooltext=magenta]| {\footnotesize Vpiif-r1s} \\
+         Vpiif-r1s \\
+      |[cooltext=blue]| бягам \\
+  |[cooltext=red]| бягам \\
+  |[cooltext=green]| run-I \\
+  CNo1 \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root$_C$}}
+      
+   \end{dependency}, 
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+ |[cooltext=magenta]| {\footnotesize Vpiif-r2s} \\
+         Vpiif-r2s \\
+      |[cooltext=blue]| бягаш \\
+  |[cooltext=red]| бягам \\
+  |[cooltext=green]| run-you \\
+  CNo1 \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root$_C$}}
+      
+   \end{dependency}, \ldots,
+   \\ 
+\end{tabular}
+
+\\ \hline
+{\normalfont \bfseries V. Frame:}  & \begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+  |[cooltext=magenta]|{\footnotesize Vpi} \& |[cooltext=magenta]| {\footnotesize R} \& |[cooltext=magenta]|{\footnotesize N} \\
+         Vpii \& R \& N \\
+%         -- \& -- \& -- \\
+      |[cooltext=blue]| -- \& |[cooltext=blue]| от \& |[cooltext=blue]| -- \\
+  |[cooltext=red]| бягам \& |[cooltext=red]| от \& |[cooltext=red]| -- \\
+  |[cooltext=green]| run-I \& |[cooltext=green]| from \& |[cooltext=green]| --   \\
+         CNo1 \& No1 \& No2 \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root$_C$}}
+      \depedge[thick]{1}{2}{{\normalsize iobj}}
+      \depedge[thick]{2}{3}{{\normalsize pobj}}
+   \end{dependency} \\ \hline
+{\normalfont \bfseries Examples:}   & \  {\em List of examples for this lemma} \\ \hline
+{\normalfont \bfseries Analytical Class:}   & \  {\em PatternClassVp} \\ \hline
+
+\end{tabular}
+\\ 
+\\
+
+\end{tabular}
+\\ \hline
+
+\end{tabular}
+
+ \caption{Lexical entry for the verb
+(bg) {бягам} (от отговорност) \ile{byagam (ot otgovornost)}
+(lit. run-\textsc{1sg.prs} (from responsibility-\textsc{sg.f})) {`to run away from one's responsibility'}.}
+
+    \label{fig:LexEntryExample}
+\end{figure}
+
+In \figref{fig:LexEntryExample} we give an example lexical entry for the verb 
+(bg) {бягам \ile{byagam}}
+(lit. run-\textsc{1sg.prs}) {`to run'}. The most important information is presented in the following sections: \emph{Paradigm}, where we could see two catenae for {\em present tense, first person, singular}, and  {\em present tense, second person, singular}, and in \emph{Valency frame} (V. Frame) where a catena for the valency restrictions is given.
+
+The information related to the nodes in the catena is represented on different layers as follows: the bottom row contains the names of the corresponding nodes: CNo1, CNo2, etc. (in many examples in the paper this information is not presented, because it is redundant to a certain extent); the next row up contains the translation of the word form in English; the next two rows up are for the lemma of the node and for the word form. If the word form row contains ``--'' then the node is underspecified for a word form and it is determined by another catena during the composition operation. The last two rows up represent the grammatical features for the corresponding word forms. The first row contains information for each word form in its own lexical entry. The second row (the top one) contains grammatical information for the node when it is realized in the complete word form. When the word form is a single word, then the value in the two rows coincides. The difference could appear when in MWEs (including analytical forms) some of the grammatical features are modified. In the example above, the word form for future tense is composed of the auxiliary particle 
+(bg) {ще \ile{ste}}
+(lit. will-\textsc{fut}) {`will'}
+and the verb form for {\em present tense, second person, singular}. The whole word form is in future tense. In the example, the morphosyntactic tag Vpiif-r2s (tag for present tense) becomes Vpiif-f2s (tag for future tense in an analytical verb form). In the text realization we perform composition of one catena from the paradigm and the catena from the valency frame. Thus, the result from this operation between the analytical word given above and the valency catena results in the following catena -- see \figref{fig:LexEntryComp}.
+
+\begin{figure}
+\centering
+\ \begin{tabular}{|l|}
+\hline
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+  |[cooltext=magenta]| {\footnotesize Tx} \& |[cooltext=magenta]|{\footnotesize Vp--f-f--}  \\
+          Tx  \&   Vp--f-r-- \\
+      |[cooltext=blue]| ще \&       |[cooltext=blue]| -- \\
+  |[cooltext=red]| ще \& |[cooltext=red]| -- \\
+  |[cooltext=green]| will \& |[cooltext=green]| --   \\
+         CNo2 \& CNo1  \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{1}{{\normalsize aux}}
+
+   \end{dependency} \\ \hline
+
+
+\end{tabular}
+%%%%%
+\ \begin{tabular}{|l|}
+\hline
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=1em]
+  |[cooltext=magenta]| {\footnotesize Tx} \& |[cooltext=magenta]|{\footnotesize Vpiif-f2s} \& |[cooltext=magenta]| {\footnotesize R} \& |[cooltext=magenta]|{\footnotesize N} \\
+          Tx  \&   Vpiif-r2s \& R \& N \\
+      |[cooltext=blue]| ще \&       |[cooltext=blue]| бягаш \& |[cooltext=blue]| от \& |[cooltext=blue]| -- \\
+  |[cooltext=red]| ще \& |[cooltext=red]| бягам \& |[cooltext=red]| от \& |[cooltext=red]| -- \\
+  |[cooltext=green]| will \& |[cooltext=green]| run \& |[cooltext=green]| from \& |[cooltext=green]| --   \\
+         CNo2 \& CNo1 \& No1 \& No2 \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{3}{{\normalsize iobj}}
+      \depedge[thick]{3}{4}{{\normalsize pobj}}
+            \deproot[thick, edge unit distance=2ex]{2}{{\normalsize root$_C$}}
+      \depedge[thick]{2}{1}{{\normalsize aux}}
+
+   \end{dependency} \\ \hline
+
+
+\end{tabular}
+
+
+ \caption{On the left, the auxiliary catena for future tense is given. As can be seen, the head node for the verb is unspecified for lemma and word form. It is also unspecified for the grammatical features of the main verb which has to be in present tense. The auxiliary and the main verb together build an analytical word form that is in future tense.
+ On the right side, the following information is given: the result from the composition of the auxiliary catena, the word form catena and the valency frame catena.
+ The resulting verb catena is for the string
+ (bg) {ще бягаш от отговорност \ile{ste byagash ot otgovornost}} (lit. will-\textsc{fut} run-\textsc{2sg.prs} (from responsibility-\textsc{sg.f})) {`you will run from responsibility'}.}
+
+    \label{fig:LexEntryComp}
+\end{figure}
+
+Coming back to modeling MWEs and their representation in the lexicon and their realization in the text, we model them in the lexicon as described above assigning an appropriate catena for the forms of the MWE in the paradigm and catena for the valency frame. The realization in the text is performed by the operations defined in the section above. We also represent the grammatical features over two layers: one for the components of the MWE as they appeared in the lexicon, and one for the realization in the text. In the next section we present a classification of the different types of MWEs included in the final integrated lexicon.
+
+\section{Analyses of MWE types}
+\label{AnalysesOfMWETypesOS}
+
+In our previous research we gave credit to the most frequent head-based types of MWEs (this means that the MWE is analysed according to its syntactic head~-- noun, verb, etc.) as presented in BTB-WN. The influence of BTB-WN mapping to the English wordnet also played a big role. When transferred from English, the resulted MWEs in Bulgarian might include free phrases, collocations, etc. to ensure the correct relation to the English notion.
+
+Here we would like to present our model with respect to the complexity of the MWE representation. We view complexity in the following way: a) from fixedness towards flexibility. Here several options are considered: morphological flexibility, syntactic flexibility, semantic flexibility, and combination of two or all of them; b) from continuity to discontinuity. We consider MWEs with at least two words. Please note that the named entities are not discussed. We assume that the more words constitute the MWE, the more complex this MWE is. Idiomaticity is hidden in fixedness. 
+Here are the types we consider: fixed, continuous; fixed, discontinuous; semi-fixed, continuous; semi-fixed, discontinuous; flexible, continuous; flexible, discontinuous.
+
+It can be seen that the fixed, continuous type is mainly nominal or prepositional while the fixed, discontinuous type is rare. The most frequent type is the semi-fixed one. In the continuous subtype noun phrases prevail while in the discontinuous one verbal MWEs are typical. We build on the representation described in \citet{simov-osenova-2015-catena, simov-osenova-2015-catenaKorea}. Let us consider them in order below. In the graphical representations below we present the main word forms in the paradigm, instead of complete lexical entries.
+
+
+\subsection{Fixed, continuous}
+
+
+Here three main structural variants are detected. They are all idiomatic.\largerpage
+
+\ea \label{Ex:ZhivotIZdrave} Noun Conj Noun: (bg) {живот и здраве \ile{zhivot i zdrave}} (lit. life-\textsc{sg.m} and health-\textsc{sg.n}) {`some day'} -- see \figref{fig:FixCont01}
+\ex \label{Ex:ZaVechniVremena} Prep NP:
+    \ea (bg) {за вечни времена \ile{za vechni vremena}} (lit. for eternal-PL times-PL) {`forever'}; 
+    \ex (bg) {между другото \ile{mezhdu drugoto}} (lit. between other-SG.DEF) {`by the way'}; 
+    \ex (bg) {на легло \ile{na leglo}} (lit. on bed-\textsc{sg.n}) {`ill'}
+    \z
+\ex \label{Ex:DobroUutro} Adjective Noun: 
+    (bg) {добро утро \ile{dobro utro}} (lit. good-\textsc{sg.n} morning-\textsc{sg.n}) {`good morning'}
+\z
+
+\begin{figure}[h]
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Nc \&  Cp \&  Nc \\
+      |[cooltext=blue]| живот \&  |[cooltext=blue]| и \&  |[cooltext=blue]| здраве  \\
+  |[cooltext=red]| живот \&  |[cooltext=red]| и \&  |[cooltext=red]| здраве  \\
+  |[cooltext=green]| life \&  |[cooltext=green]| and \&  |[cooltext=green]| health \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{3}{{\normalsize conj}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{3}{2}{{\normalsize cc}}
+   \end{dependency}
+
+  
+  \caption{Catena for fixed, continuous expressions: 
+ (bg) {живот и здраве \ile{zhivot i zdrave}} (lit. life-\textsc{sg.m} and health-\textsc{sg.n}) {`some day'}.}
+  \label{fig:FixCont01}
+  \end{center}  
+
+\end{figure}
+
+The new additions to the catena representation in comparison to our previous work are: the incorporation of the synonyms to the idioms as in examples~\ref{Ex:ZhivotIZdrave} and~\ref{Ex:ZaVechniVremena}, and the handling of pragmatic formulae in example~\ref{Ex:DobroUutro}.
+
+A challenge that appears in this group are the boundaries of the MWEs. For example, (bg) {на легло \ile{na leglo}} (lit. on bed-\textsc{sg.n}) {`ill'} might be extended also to the inclusion of a copula: 
+(bg) {на легло съм \ile{na leglo sam}} (lit. on bed-\textsc{sg.n} am-1SG) {`to be ill'}. The question is whether the copula element should be represented as a component of the MWE or not. According to our suggestion the catena (bg) {на легло \ile{na leglo}} (lit. on bed-\textsc{sg.n}) {`ill'} can combine with the catena of the auxiliary and form another catena.
+
+\subsection{Fixed, discontinuous}
+
+This class is a speaker strategy rather than a distinct type of its own. The strategy can contextualize a fixed MWE and thus add to it more elements. For example, the MWE 
+(bg) {без капка разум \ile{bez kapka razum}} (lit. without drop-\textsc{sg.f} sense-\textsc{sg.m}) {`without an iota of sense'}
+can be extended with a modifier to the noun `sense' such as 
+(bg) {без капка медицински разум \ile{bez kapka meditsinski razum}} (lit. without drop-\textsc{sg.f} medical-\textsc{sg.m} sense-\textsc{sg.m}) {`without an iota of medical sense'}
+in a specific context. These cases are rare and non-systematic.
+
+\subsection{Semi-fixed, continuous}
+
+This predominantly nominal group contains terms, idiomatic expressions as well as every-day-life expressions. However, its main specificity is the fact that they do exhibit morphosyntactic varieties such as changes in definiteness and number but on the head word only. The dependant remains unchanged.
+
+\begin{figure}
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Nc \&  Prep \&  Nc \\
+      |[cooltext=blue]| конец \&  |[cooltext=blue]| за \&  |[cooltext=blue]| зъби  \\
+  |[cooltext=red]| конец \&  |[cooltext=red]| за \&  |[cooltext=red]| зъби  \\
+  |[cooltext=green]| floss \&  |[cooltext=green]| for \&  |[cooltext=green]| teeth \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{3}{{\normalsize nmod}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{3}{2}{{\normalsize case}}
+   \end{dependency}
+
+  
+  \caption{Catena for semi-fixed, continuous expressions:
+  (bg) {конец за зъби \ile{konets za zabi}} (lit. floss-\textsc{sg.m} for teeth-PL) {`dental floss'}.}
+  \label{fig:SemiFixCont01}
+  \end{center}  
+
+\end{figure}
+
+\begin{enumerate}
+    \item Noun Noun: 
+    (bg) {муха цеце \ile{muha tsetse}} (lit. fly-\textsc{sg.f} tsetse) {`tsetse fly'};
+    (bg) {ангел хранител \ile{angel hranitel}} (lit. angel-\textsc{sg.m} gua\-rdian-\textsc{sg.m}) {`guardian angel'}
+    \item Noun prep Noun: (bg) {конец за зъби \ile{konets za zabi}} (lit. floss-\textsc{sg.m} for teeth-PL) {`dental floss'} -- see \figref{fig:SemiFixCont01};
+    (bg) {лак за нокти \ile{lak za nokti}} (lit. polish-\textsc{sg.m} for nails-PL) {`nail polish'}; 
+(bg) {яйце на очи \ile{yaytse na ochi}} (lit. egg-\textsc{sg.n} on eyes-PL) {`a fried egg'}
+\end{enumerate}
+
+
+\subsection{Semi-fixed, discontinuous}
+
+This group contains mainly verbal MWEs. These are: the quasi-reflexive verbs (the so-called middle verbs where the participating reflexive has no semantics but only a derivational function), and the light verb constructions.
+
+\begin{figure}
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpi \&  Nc \\
+      |[cooltext=blue]| правя \&  |[cooltext=blue]| компромис  \\
+  |[cooltext=red]| правя \&  |[cooltext=red]| компромис  \\
+  |[cooltext=green]| make-I \&  |[cooltext=green]| compromise \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize dobj}}
+   \end{dependency}
+%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpi \& Dm \&  Nc \\
+      |[cooltext=blue]| правя \&  |[cooltext=blue]| постоянно \&  |[cooltext=blue]| компромис  \\
+  |[cooltext=red]| правя \&  |[cooltext=red]| постоянно \&  |[cooltext=red]| компромис  \\
+  |[cooltext=green]| make-I \&  |[cooltext=green]| constantly \&  |[cooltext=green]| compromise \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize root}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize advmod}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{3}{{\normalsize dobj}}
+   \end{dependency}
+
+  
+  \caption{Catena for a light verb construction (semi-fixed, discontinuous expressions): 
+  (bg) {правя компромис \ile{pravya kompromis}} (lit. do-\textsc{1sg.prs} compromise-\textsc{sg.m}) {`to make a compromise'}. On the left side is the lexical catena. On the right side is a modification with an adverb, which is realized between the two parts of the MWE.}
+  \label{fig:SemiFixDisCont01}
+  \end{center}  
+
+\end{figure}
+
+
+\begin{figure}
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpi \&  Dm \\
+      |[cooltext=blue]| имам \&  |[cooltext=blue]| предвид  \\
+  |[cooltext=red]| имам \&  |[cooltext=red]| предвид  \\
+  |[cooltext=green]| have-I \&  |[cooltext=green]| given \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize obl}}
+   \end{dependency}
+%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpi \& Ppet \&  Dm \\
+      |[cooltext=blue]| имам \&  |[cooltext=blue]| го \&  |[cooltext=blue]| предвид  \\
+  |[cooltext=red]| имам \&  |[cooltext=red]| го \&  |[cooltext=red]| предвид  \\
+  |[cooltext=green]| have-I \&  |[cooltext=green]| it \&  |[cooltext=green]| given \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize dobj}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{3}{{\normalsize obl}}
+   \end{dependency}
+
+  
+  \caption{Catena for a light verb construction (semi-fixed, discontinuous expressions): 
+  (bg) {имам предвид \ile{imam predvid}} (lit. have-\textsc{1sg.prs} given) {`to have in mind'}. This is similar to the previous example, but the intervening material is a pronoun.}
+  \label{fig:FixDisCont01}
+  \end{center}  
+
+\end{figure}
+
+%\scalebox{.7}[1.0]{This text is narrowed.}
+
+\begin{enumerate}
+    \item Quasi-reflexive verbs: 
+    (bg) {адаптирам се \ile{adaptiram se}} (lit. adapt-\textsc{1sg.prs refl}) {`to adapt'};
+    (bg) {вкисвам се \ile{vkisvam se}} (lit. get-sour-\textsc{1sg.prs refl}) {`to feel bad'}
+    \item Light verb constructions: 
+    (bg) {правя компромис \ile{pravya kompromis}} (lit. do-\textsc{1sg.prs} compromise-\textsc{sg.m}) {`to make a compromise'} -- see \figref{fig:SemiFixDisCont01};
+    (bg) {правя почивка \ile{pravya pochivka}} (lit. do-\textsc{1sg.prs} rest-\textsc{sg.f}) {`to take a break'}; 
+    (bg) {давам обещание \ile{davam obeshtanie}} (lit. give-\textsc{1sg.prs} pro\-mise-\textsc{sg.n}) {`to make a promise'}; 
+    (bg) {вкарвам в употреба \ile{vkarvam v upotreba}} (lit. implement-\textsc{1sg.prs} in usage-\textsc{sg.f}) {`to put into use'}; 
+    (bg) {имам предвид \ile{imam predvid}} (lit. have-\textsc{1sg.prs} given) {`to have in mind'} -- see \figref{fig:FixDisCont01};
+    (bg) {давам под наем \ile{davam pod naem}} (lit. give-\textsc{1sg.prs} under rent-\textsc{sg.m}) {`to rent out'}
+\end{enumerate} 
+
+
+The two parts of the quasi-reflexive verbs can be discontinued by the auxiliary in some forms in the verb paradigm 
+((bg) {адаптирал съм се \ile{adaptiral sam se}} (lit. adapt-\textsc{ptcp.pst} am-\textsc{1sg.prs refl}) {`I have adapted'}). Most of the light verbs have single verbs as synonyms. For example, 
+(bg) {давам обещание \ile{davam obeshtanie}} (lit. give-\textsc{1sg.prs} promise-\textsc{sg.n}) {`to make a promise'} has a synonym 
+(bg) {обещавам \ile{obeshtavam}} (lit. promise-\textsc{1sg.prs}) {`to promise'}. They also can often be discontinued by a modifier on the noun element ((bg) {давам голямо обещание \ile{davam golyamo obeshtanie}} (lit. give-\textsc{1sg.prs} big-\textsc{sg.n} promise-\textsc{sg.n}) {`to make a big promise'}) or by another participant in the sentence (bg) {давам насила обещание \ile{davam nasila obeshtanie}} (lit. give-\textsc{1sg.prs} reluctantly promise-\textsc{sg.n}) {`to make a promise reluctantly'}). 
+The variant (bg) {давам под наем \ile{davam pod naem}} (lit. give-\textsc{1sg.prs} under rent-\textsc{sg.m}) {`to rent out'} allows for an object coming after the verb 
+(bg) {давам \ile{davam}} (lit. give-\textsc{1sg.prs}) {`to give'}: 
+(bg) {давам стаята под наем \ile{davam stayata pod naem}} (lit. give-\textsc{1sg.prs} room-\textsc{sg.f}.DEF under rent-\textsc{sg.m}) {`to rent out the room'}. 
+
+\subsection{Flexible, continuous}
+
+This group consists of just one nominal type which is “Adjective Noun”. Some of the MWEs are literal, and some are figurative. In the examples below the last one is figurative.
+
+\ea Adjective Noun
+    \ea (bg) {бежански лагер \ile{bezhanski lager}} (lit.  refugee-\textsc{sg.m} camp-\textsc{sg.m}) {`a refugee camp'} -- see \figref{fig:FlexibleCont01};
+    \ex (bg) {гол охлюв \ile{gol ohlyuv}} (lit. naked-\textsc{sg.m} snail-\textsc{sg.m}) {`a slug'};
+    \ex (bg) {домашна работа \ile{domashna rabota}} (lit. home-\textsc{sg.f} work-\textsc{sg.f}) {`homework'};
+    \ex (bg) {ахилесова пета \ile{ahilesova peta}} (lit. Achil\-les'-\textsc{sg.f} heel-\textsc{sg.f}) {`Achilles' heel'}
+   \z
+\z
+
+
+Here the MWEs are mostly terms or near-terms. Both elements form a concept, so they cannot be discontinued but they are flexible with respect to their morphosyntactic behaviour. They can be used with an article or in a plural form. The article occurs only once in a phrase but both elements in the MWE can inflect in number. Also, the idiomatic expressions like (bg) {ахилесова пета \ile{ahilesova peta}} (lit. Achil\-les'-\textsc{sg.f} heel-\textsc{sg.f}) {`Achilles' heel'} have synonyms, in this case -- weakness. 
+
+\begin{figure}
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Amsi \&   Nc \\
+      |[cooltext=blue]| бежански  \&  |[cooltext=blue]| лагер  \\
+  |[cooltext=red]| беженски \&  |[cooltext=red]| лагер  \\
+  |[cooltext=green]| refugee \&  |[cooltext=green]| camp \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{2}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize amod}}
+   \end{dependency}
+  
+  \caption{Catena for flexible, continuous expressions: (bg) {бежански лагер \ile{bezhanski lager}} (lit. refugee-\textsc{sg.m} camp-\textsc{sg.m}) {`a refugee camp'}.}
+  \label{fig:FlexibleCont01}
+  \end{center}  
+
+\end{figure}
+
+
+\subsection{Flexible, discontinuous}
+
+Here some verbal expressions are listed which are flexible with respect to morphosyntax. This means that the verb can inflect in all verb tenses and other verb forms.\largerpage
+
+\ea Verb NP
+    \ea (bg) {развързвам кесията \ile{razvarzvam kesiyata}} (lit. untie-\textsc{1sg.prs} pur\-se-\textsc{sg.f.det}) {`I pay generously'} -- see \figref{fig:FlexibleDisCont01}; 
+    \ex (bg) {играя открито \ile{igraya otkrito}} (lit. play-\textsc{1sg.prs} openly) {`I play fair'};
+    \ex (bg) {избирам страна \ile{izbiram strana}} (lit. choose-\textsc{1sg.prs} side-\textsc{sg.f}) {`to take side'}; 
+    \ex (bg) {тегля един бой \ile{teglya edin boy}} (lit. drag-\textsc{1sg.prs} one fight-\textsc{sg.m}) {`to draw a fight'}, etc.
+   \z
+\z
+
+The MWE can be used also without the reflexive particle. At the moment we view both possibilities as synonyms. These expressions also allow for some discontinuous material. For example, an adverbial of manner can come between the verb and the object in the first listed MWE above -- 
+(bg) {развързвам си сериозно кесията \ile{razvarzvam si seriozno kesiyata}} (lit. untie-\textsc{1sg.prs} REFL seriously purse-\textsc{sg.f.det}) {`I pay very generously'} -- the second tree in \figref{fig:FlexibleCont01}.
+
+\vfill
+\begin{figure}[H]
+  \begin{center}  
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpi \&  Nc \\
+      |[cooltext=blue]| развързвам \&  |[cooltext=blue]| кесията  \\
+  |[cooltext=red]| развързвам \&  |[cooltext=red]| кесията  \\
+  |[cooltext=green]| untie-I \&  |[cooltext=green]| purse-the \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize dobj}}
+   \end{dependency}
+%
+\begin{dependency}[theme = simple]
+   \tikzstyle{wasp}=[draw=red, text = red, thick, solid]
+   \tikzstyle{cooltext}=[draw=#1!60!black, thick, shade, top color=#1!60, bottom color=white, rounded corners = 2pt]
+   \begin{deptext}[column sep=0.5em]
+         Vpi \& Dm \&  Nc \\
+      |[cooltext=blue]| развързвам \&  |[cooltext=blue]| сериозно \&  |[cooltext=blue]| кесията  \\
+  |[cooltext=red]| развързвам \&  |[cooltext=red]| сериозно \&  |[cooltext=red]| кесията  \\
+  |[cooltext=green]| untie-I \&  |[cooltext=green]| seriously \&  |[cooltext=green]| purse-the \\
+   \end{deptext}
+      \deproot[thick, edge unit distance=2ex]{1}{{\normalsize $root_G$}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{2}{{\normalsize advmod}}
+      \depedge[edge style={wasp}, label style={wasp}, label style={below}]{1}{3}{{\normalsize dobj}}
+   \end{dependency}
+
+  
+  \caption{Catena for flexible discontinuous expressions: 
+  (bg) {развързвам кесията \ile{razvarzvam kesiyata}} (lit. untie-\textsc{1sg.prs} pur\-se\-\textsc{sg.f.det}) {`I pay generously'}.}
+  \label{fig:FlexibleDisCont01}
+  \end{center}  
+
+\end{figure}
+\vfill
+\pagebreak
+
+In this section various examples were outlined according to a proposed classification that respects the complexity of the MWEs. The catena illustrations follow the Universal Dependencies guide.\footnote{\url{https://universaldependencies.org/guidelines.html}} The fixed, discontinuous type turned out to be a strategy where the speaker can personalize fixedness and thus legitimate the addition of new elements in a specific context.
+
+\section{Conclusions and future work}
+\label{ConclusionsAndFWOS}
+
+The representation of MWEs in an integrated model has never been a trivial task. Our proposal is to use the catena notion since it allows for a graph-based realization where all the characteristics of interest can be added: the internal structure specifics as well as the external ones, if needed. In addition, the interaction among morphology, syntax (including valency potential and a vanilla mechanism\footnote{This means that our approach is very standard and basic, initially predicting the clear places of discontinuity on the encountered examples without ensuring that all cases are covered appropriately.} for word order) as well as semantics can be illustrated. We are aware of the fact that our model is similar in many aspects to the other tree-based approaches. At the same time, our representation model is put in the context of an integrated resource and we believe that here come the main novel directions in our work.
+
+It has become clear for quite some time that MWEs are a phenomenon that is not always trivial to define, classify, annotate, analyse and integrate. For that reason, we view our work as a bottom-top effort that would gradually cover specific lemmas, meanings and cases.\largerpage
+
+Our future work is envisaged in several directions: to fully implement the suggested mechanism, to evaluate it on downstream tasks, and also in the backward direction -- to identify the problematic places and repair them in the lexicon. Some already identified problematic places are the MWE boundaries and the degree of granularity in their representation.
+
+\section*{Abbreviations}
+
+\begin{multicols}{2}
+\begin{tabbing}
+MMMMI \= Bultreebank\kill
+BTB  \>  Bultreebank \\
+BTB-WN  \>  Bultreebank Wordnet \\
+BVL  \>  Bulgarian Valency Lexicon \\
+ID  \>  identifier \\
+ILB  \>  Inflectional lexicon of \\ \> Bulgarian \\
+IRV  \>  inherently reflexive verbs \\
+LC  \>  lexicon catena \\
+LFG  \>  Lexical-Functional Grammar \\
+MWE  \>  multiword expressions\\
+NLP  \>  Natural Language Processing \\
+POS  \>  part-of-speech \\
+SM  \>  semantics \\
+VMWE  \>  verbal multiword expressions \\
+VFC  \>  Valency Frame Catena \\
+VPC  \>  verb-particle constructions \\
+WFC  \>  Word Form Catena
+\end{tabbing}
+\end{multicols}
+
+
+\section*{Acknowledgements}\largerpage
+
+The reported work has been partially supported by CLaDA-BG, \textit{the Bulgarian National Interdisciplinary Research e-Infrastructure for Resources and Technologies in favor of the Bulgarian Language and Cultural Heritage, part of the EU infrastructures CLARIN and DARIAH}, funded by the Ministry of Education and Science of Bulgaria (support for the Bulgarian National Roadmap for Research Infrastructure). We would also like to thank the reviewers for their valuable and insightful comments. 
+
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}
