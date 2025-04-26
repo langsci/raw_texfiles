@@ -1,0 +1,183 @@
+\providecommand{\goodtilde}{\char`~\xspace}
+\providecommand{\gl}[1]{\MakeLowercase{\textsc{#1}}}
+\providecommand{\ort}[1]{$\langle$#1$\rangle$}
+
+\NewDocumentCommand \AbbreviationLine {+m O{\>} +m}{#3#2#1}
+
+\NewDocumentCommand \qu {s +m} {\IfBooleanTF{#1}{“#2”}{‘#2’}}
+% The starred variant, \qu*, produces double quotation marks. 
+% The normal variant, \qu, produces single quotation marks.
+
+% TikZ commands for custom pictures
+\newcommand{\topnode}[2][1]{\node[circle, minimum size=22](#1) at (1,1) {#2};}
+\newcommand{\topleftnode}[2][4]{\node[circle, minimum size=22](#1) at (0.7,1) {#2};}
+\newcommand{\toprightnode}[2][5]{\node[circle, minimum size=22](#1) at (1.3,1) {#2};}
+\newcommand{\leftnode}[2][2]{\node[circle, minimum size=22](#1) at (0,0) {#2};}
+\newcommand{\rightnode}[2][3]{\node[circle, minimum size=22](#1) at (2,0) {#2};}
+
+\newcommand{\convexpath}[2]{
+	[   
+	create hullnodes/.code={
+		\global\edef\namelist{#2}
+		\foreach [count=\counter] \nodename in \namelist {
+			\global\edef\numberofnodes{\counter}
+			\node at (\nodename) [draw=none,name=hullnode\counter] {};
+		}
+		\node at (hullnode\numberofnodes) [name=hullnode0,draw=none] {};
+		\pgfmathtruncatemacro\lastnumber{\numberofnodes+1}
+		\node at (hullnode1) [name=hullnode\lastnumber,draw=none] {};
+	},
+	create hullnodes
+	]
+	($(hullnode1)!#1!-90:(hullnode0)$)
+	\foreach [
+	evaluate=\currentnode as \previousnode using \currentnode-1,
+	evaluate=\currentnode as \nextnode using \currentnode+1
+	] \currentnode in {1,...,\numberofnodes} {
+		-- ($(hullnode\currentnode)!#1!-90:(hullnode\previousnode)$)
+		let \p1 = ($(hullnode\currentnode)!#1!-90:(hullnode\previousnode) - (hullnode\currentnode)$),
+		\n1 = {atan2(\y1,\x1)},
+		\p2 = ($(hullnode\currentnode)!#1!90:(hullnode\nextnode) - (hullnode\currentnode)$),
+		\n2 = {atan2(\y2,\x2)},
+		\n{delta} = {-Mod(\n1-\n2,360)}
+		in 
+		{arc [start angle=\n1, delta angle=\n{delta}, radius=#1]}
+	}
+	-- cycle
+}
+
+%\usepackage{expex-acro} %for glossing examples
+%\lingset{exnotype=chapter.arabic}
+%\usepackage{etoolbox}
+%\pretocmd{\chapter}{\zcnt=1}{}{}
+
+%
+%\DeclareAcronym{1}{short=1,long=first~person,short-format=\scshape}
+%\DeclareAcronym{2}{short=2,long=second~person,short-format=\scshape}
+%\DeclareAcronym{3}{short=3,long=third~person,short-format=\scshape}
+%\DeclareAcronym{a}{short=a,long=agent-like~argument~of~canonical~transitive~verb,short-format=\scshape}
+%\newGlossingAbbrev{accp}{finally}
+%\newGlossingAbbrev{alr}{present perfective (``already")}
+%\newGlossingAbbrev{add}{additive}
+%
+%\DeclareAcronym{abs}{short=abs,long=absolutive,short-format=\scshape}
+%\DeclareAcronym{adj}{short=adj,long=adjective,short-format=\scshape}
+%\DeclareAcronym{adv}{short=adv,long=adverb(ial),short-format=\scshape}
+%\DeclareAcronym{appl}{short=appl,long=applicative,short-format=\scshape}
+%\DeclareAcronym{art}{short=art,long=article,short-format=\scshape}
+%\newGlossingAbbrev{att}{attenuative}
+%\DeclareAcronym{ben}{short=ben,long=benefactive,short-format=\scshape}
+%\DeclareAcronym{caus}{short=caus,long=causative,short-format=\scshape}
+%\DeclareAcronym{clf}{short=clf,long=classifier,short-format=\scshape}
+%\newGlossingAbbrev{cnj}{conjunction}
+%\DeclareAcronym{com}{short=com,long=comitative,short-format=\scshape}
+%\DeclareAcronym{comp}{short=comp,long=complementizer,short-format=\scshape}
+%\newGlossingAbbrev{cpr}{comparative}
+%\DeclareAcronym{cond}{short=cond,long=conditional,short-format=\scshape}
+%\DeclareAcronym{def}{short=def,long=definite,short-format=\scshape}
+%\DeclareAcronym{dem}{short=dem,long=demonstrative,short-format=\scshape}
+%\DeclareAcronym{det}{short=det,long=determiner,short-format=\scshape}
+%\newGlossingAbbrev{disc}{discourse marker}
+%\newGlossingAbbrev{dir.cp}{towards speaker (``centripetal")}
+%\newGlossingAbbrev{dir.cf}{away from speaker (``centrifugal")}
+%\DeclareAcronym{dist}{short=dist,long=distal,short-format=\scshape}
+%\DeclareAcronym{du}{short=du,long=dual,short-format=\scshape}
+%\DeclareAcronym{dur}{short=dur,long=durative,short-format=\scshape}
+%
+%\DeclareAcronym{excl}{short=excl,long=exclusive,short-format=\scshape}
+%\DeclareAcronym{excm}{short=excm,long=exclamation,short-format=\scshape}
+%\newGlossingAbbrev{expl}{expletive}
+%\DeclareAcronym{erg}{short=erg,long=ergative,short-format=\scshape}
+%\DeclareAcronym{f}{short=f,long=feminine,short-format=\scshape}
+%\DeclareAcronym{foc}{short=foc,long=focus,short-format=\scshape}
+%\DeclareAcronym{fut}{short=fut,long=future,short-format=\scshape}
+%\DeclareAcronym{imp}{short=imp,long=imperative,short-format=\scshape}
+%\DeclareAcronym{incl}{short=incl,long=inclusive,short-format=\scshape}
+%\DeclareAcronym{indf}{short=indf,long=indefinite,short-format=\scshape}
+%\DeclareAcronym{ins}{short=ins,long=instrumental,short-format=\scshape}
+%\DeclareAcronym{ind}{short=ind,long=indirect,short-format=\scshape}
+%\DeclareAcronym{intr}{short=intr,long=intransitive,short-format=\scshape}
+%\DeclareAcronym{ipfv}{short=ipfv,long=imperfective,short-format=\scshape}
+%\DeclareAcronym{irr}{short=irr,long=irrealis,short-format=\scshape}
+%\DeclareAcronym{link}{short=link,long=linker,short-format=\scshape}
+%\DeclareAcronym{loc}{short=loc,long=locative,short-format=\scshape}
+%\DeclareAcronym{neg}{short=neg,long=negation,short-format=\scshape}
+%\DeclareAcronym{nmlz}{short=nmlz,long=nominalizer/nominalization,short-format=\scshape}
+%\DeclareAcronym{obj}{short=obj,long=object,short-format=\scshape}
+%
+%\newGlossingAbbrev{ord}{ordinal}
+%\DeclareAcronym{obl}{short=obl,long=oblique,short-format=\scshape}
+%\DeclareAcronym{p}{short=p,long=patient-like~argument~of~canonical~transitive~verb,short-format=\scshape}
+%\DeclareAcronym{pfv}{short=pfv,long=perfective,short-format=\scshape}
+%\DeclareAcronym{pl}{short=pl,long=plural,short-format=\scshape}
+%\DeclareAcronym{poss}{short=poss,long=possessive,short-format=\scshape}
+%\newGlossingAbbrev{psm}{possessum}
+%\newGlossingAbbrev{psr}{possessor}
+%\DeclareAcronym{pred}{short=pred,long=predicative,short-format=\scshape}
+%\DeclareAcronym{prf}{short=prf,long=perfect,short-format=\scshape}
+%\DeclareAcronym{prs}{short=prs,long=present,short-format=\scshape}
+%\DeclareAcronym{prog}{short=prog,long=progressive,short-format=\scshape}
+%\DeclareAcronym{proh}{short=proh,long=prohibitive,short-format=\scshape}
+%\DeclareAcronym{prox}{short=prox,long=proximal/proximate,short-format=\scshape}
+%\DeclareAcronym{pst}{short=pst,long=past,short-format=\scshape}
+%\DeclareAcronym{ptcp}{short=ptcp,long=participle,short-format=\scshape}
+%\DeclareAcronym{purp}{short=purp,long=purposive,short-format=\scshape}
+%\DeclareAcronym{q}{short=q,long=question~particle/marker,short-format=\scshape}
+%\DeclareAcronym{quot}{short=quot,long=quotative,short-format=\scshape}
+%\DeclareAcronym{recp}{short=recp,long=reciprocal,short-format=\scshape}
+%\newGlossingAbbrev{reccont}{have been doing for some time}
+%\DeclareAcronym{refl}{short=refl,long=reflexive,short-format=\scshape}
+%\DeclareAcronym{rel}{short=rel,long=relativizer,short-format=\scshape}
+%\DeclareAcronym{res}{short=res,long=resultative,short-format=\scshape}
+%\DeclareAcronym{s}{short=s,long=single~argument~of~canonical~intransitive~verb,short-format=\scshape}
+%\DeclareAcronym{sbj}{short=sbj,long=subject,short-format=\scshape}
+%\DeclareAcronym{sg}{short=sg,long=singular,short-format=\scshape}
+%\newGlossingAbbrev{thedur}{durative the-}
+%\newGlossingAbbrev{thepunct}{punctual the-}
+%\DeclareAcronym{top}{short=top,long=topic,short-format=\scshape}
+%\DeclareAcronym{tr}{short=tr,long=transitive,short-format=\scshape}
+%\DeclareAcronym{adm}{short=adm,long=admonitive,short-format=\scshape}
+%\DeclareAcronym{adp}{short=adp,long=adposition,short-format=\scshape}
+%\DeclareAcronym{advz}{short=advz,long=adverbalizer,short-format=\scshape}
+%\DeclareAcronym{agt}{short=agt,long=agent,short-format=\scshape}
+%\DeclareAcronym{ana}{short=ana,long=anaphoric,short-format=\scshape}
+%\DeclareAcronym{asp}{short=asp,long=aspect,short-format=\scshape}
+%\DeclareAcronym{ass}{short=ass,long=assertive,short-format=\scshape}
+%\DeclareAcronym{cntr}{short=cntr,long=contrastive,short-format=\scshape}
+%\DeclareAcronym{cont}{short=cont,long=continuative,short-format=\scshape}
+%\DeclareAcronym{deict}{short=deict,long=deixis/deictic,short-format=\scshape}
+%\DeclareAcronym{dir}{short=dir,long=direct,short-format=\scshape}
+%\DeclareAcronym{do}{short=do,long=direct~object,short-format=\scshape}
+%\DeclareAcronym{ds}{short=ds,long=different~subject,short-format=\scshape}
+%\DeclareAcronym{emp}{short=emp,long=emphatic,short-format=\scshape}
+%\DeclareAcronym{e}{short=e,long=epenthetic,short-format=\scshape}
+%\DeclareAcronym{exist}{short=exist,long=existential,short-format=\scshape}
+%\DeclareAcronym{freq}{short=freq,long=frequentative,short-format=\scshape}
+%\DeclareAcronym{anim}{short=anim,long=animate,short-format=\scshape}
+%\DeclareAcronym{hab}{short=hab,long=habitual,short-format=\scshape}
+%\DeclareAcronym{hum}{short=hum,long=human,short-format=\scshape}
+%\DeclareAcronym{inal}{short=inal,long=inalienable,short-format=\scshape}
+%\DeclareAcronym{inan}{short=inan,long=inanimate,short-format=\scshape}
+%\DeclareAcronym{ints}{short=ints,long=intensifier,short-format=\scshape}
+%\DeclareAcronym{io}{short=io,long=indirect~object,short-format=\scshape}
+%\DeclareAcronym{iter}{short=iter,long=iterative,short-format=\scshape}
+%\DeclareAcronym{med}{short=med,long=medial,short-format=\scshape}
+%\DeclareAcronym{mid}{short=mid,long=middle,short-format=\scshape}
+%\DeclareAcronym{npst}{short=npst,long=non-past,short-format=\scshape}
+%\DeclareAcronym{nsg}{short=nsg,long=non-singular,short-format=\scshape}
+%\DeclareAcronym{nspec}{short=nspec,long=non-specific,short-format=\scshape}
+%\DeclareAcronym{pat}{short=pat,long=patient,short-format=\scshape}
+%\newGlossingAbbrev{punc}{punctual}
+%\DeclareAcronym{pro}{short=pro,long=pronoun,short-format=\scshape}
+%\DeclareAcronym{real}{short=real,long=realis,short-format=\scshape}
+%\DeclareAcronym{rec}{short=rec,long=recent~past,short-format=\scshape}
+%\DeclareAcronym{rep}{short=rep,long=repetitive,short-format=\scshape}
+%\DeclareAcronym{S\textsubscript{A}}{short=S\textsubscript{A},long=S~marked~like~A,short-format=\scshape}
+%\DeclareAcronym{S\textsubscript{P}}{short=S\textsubscript{P},long=S~marked~like~P,short-format=\scshape}
+%\DeclareAcronym{sap}{short=sap,long=speech~act~participant,short-format=\scshape}
+%\DeclareAcronym{sem}{short=sem,long=semelfactive,short-format=\scshape}
+%\DeclareAcronym{seq}{short=seq,long=sequential,short-format=\scshape}
+%\DeclareAcronym{spec}{short=spec,long=specific,short-format=\scshape}
+%\DeclareAcronym{ss}{short=ss,long=same~subject,short-format=\scshape}
+%\DeclareAcronym{stat}{short=stat,long=stative,short-format=\scshape}
+%\DeclareAcronym{subr}{short=subr,long=subordinator,short-format=\scshape}

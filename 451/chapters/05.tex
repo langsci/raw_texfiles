@@ -1,0 +1,788 @@
+% !TeX spellcheck = en_US
+\chapter{The choice of features in feature-based \context models}\label{chap5}
+
+\section{Introduction}\label{sec:intro}
+
+Building on the work in \chapref{chap4}, where the adequacy and representativeness of corpora for the \context task were assessed through the reconstruction of five systems from the \grec shared tasks, this chapter aims to provide a comprehensive overview of the features used in these systems.\footnote{The studies presented in this chapter are based on two published articles: $[\text{study \studB{}}]$ \fullcite{same-van-deemter-2020-linguistic}. $[\text{study \studC{}}]$ \fullcite{same-van-deemter-2020-computational}.}
+
+The choice of features is a crucial aspect of the success of any feature-based \context model. As discussed in \chapref{chap3}, the process of feature engineering demands significant resources. Focusing only on those features whose contribution to the task is certain can make the feature selection process more efficient. To this end, study \studB, detailed in \sectref{sec:consensus}, focuses on analyzing the features employed in feature-based systems to identify those most beneficial for the \context task.
+
+The complexity of feature engineering is further compounded by the variety of ways a single feature can be implemented. Taking the measurement of recency as an example, the myriad approaches to calculating the distance between the target RE and its antecedent (ANTE) can lead to substantial variations in model performance. Study \studC, discussed in \sectref{sec:recency}, investigates different implementations of the recency feature to evaluate their respective impacts on the \context task. This study also includes an analysis of recency across two different corpora, aiming to uncover any corpus-dependent traits.
+
+\section{Study B: Choosing a consensus set of features for the RFS task}\label{sec:consensus}
+
+\chapref{chap2} highlighted various theories of reference, such as those proposed by \citet{gundel1993cognitive}, \citet{ariel2001accessibility}, \citet{grosz1995centering}, and \citet{Heusinger2019}, which seek to explain the RF choices speakers make. A common thread in these theories -- referred to here as the linguistic tradition -- is the correlation between the form used for referring to a referent and its prominence status at a given point in the discourse. Short anaphoric forms like pronouns are typically sufficient for prominent referents, while longer, more semantically rich forms are employed for less prominent ones. The prominence of a referent is shaped by various prominence-lending cues, including recency and frequency of mention \citep{ariel1990accessing}, grammatical function \citep{Brennan1995}, animacy \citep{fukumura2011effect}, and competition \citep{arnold2007effect}.
+
+Study \studB aims to scrutinize feature-based RFS models through a linguistic lens. The features in these models vary significantly, with some aligning with the linguistic tradition and others being more abstract and less linguistically interpretable. This study systematically evaluates previous feature-based \context models to determine the relative contribution of different features within these models. 
+
+We hypothesize that not all features are equally contributory and that a reduced set of features from each feature set could perform comparably to the full feature set. To test this, we analyze the features employed in various \context models for their impact on the task. Our second hypothesis posits that a small set of features drawn from previously published datasets can form a model substantially as accurate as the best-performing existing model. Through several feature selection experiments, we aim to identify a \emph{consensus} set of the most effective features for the \context task and compare these features against those prioritized in the linguistic tradition.
+
+The structure of this study is as follows: \sectref{sec:rol} introduces relevant studies focusing on feature selection in the \context task. In \sectref{sec:prereq}, we provide a comprehensive overview of the features considered for our feature selection studies and detail their application to the \wsj corpus. \sectref{sec:experiments} discusses our feature selection experiments and the resulting consensus feature set. In \sectref{subsec:consensusling}, we examine the consensus set from a linguistic standpoint, assessing the interpretability of these features within a linguistic framework. Finally, \sectref{sec:studybconc} summarizes our key findings.
+
+
+
+\subsection{The importance of feature selection}\label{sec:rol}
+
+Data-driven, feature-based models rely on carefully selected features to approximate human decision-making processes. In a study grounded in psycholinguistic insights, \citet{greenbacker2009feature} emphasized the critical role of feature selection for the \context task. They developed several models informed by linguistic insights and analyzed misclassifications made by these models. Their aim was to determine if psycholinguistic research could shed light on the observed misclassification patterns. Additionally, they incorporated features from \citet{hendrickx2008cnts} and compiled a comprehensive list of features believed to influence RF choice. Training C5.0 decision trees on various subsets of these features, they discovered that using the maximum number of features did not always result in optimal performance. However, their study had limitations, such as the lack of clarity in their feature subset selection process and a somewhat subjective approach to feature selection, primarily focused on features they deemed important rather than a broader range of features used in other models. Moreover, they did not offer a linguistic explanation for the performance of their best model.
+
+\citet{kibrik2016referential} also touched upon feature selection, specifically highlighting the significance of recency-related features. Although their study was linguistically informed, the annotation effort behind it was very intense. This raises a question: Could a more concise set of features achieve similar results? Our study seeks to systematically evaluate the features utilized in various \context studies, building upon and extending the work of \citet{greenbacker2009feature} and \citet{kibrik2016referential}. We aim to identify a potentially smaller yet effective set of features that can yield comparable outcomes in \context tasks.
+
+\subsection{Prerequisites for a systematic evaluation}\label{sec:prereq}
+In conducting a systematic evaluation, a fundamental aspect is the selection of the objects of study, which, in our case, are the feature sets of RFS algorithms. Our approach to selecting these feature sets is as follows:
+
+\begin{itemize}
+	
+	\item We begin by selecting all RFS algorithms submitted to the \grec shared tasks, as documented in \citet{belz2010generating}, and extract their feature sets. \grec is chosen as the starting point due to its aggregation of major RFS algorithms existing at that time.
+	
+	\item We extend our scope to include two additional feature sets from papers in the ACL anthology. The criteria and methods used for this selection are detailed in \sectref{subsec:featsets}.
+	
+	\item The features identified through this process are then reimplemented following the methodology outlined in \sectref{seubsec:corpus}.
+	
+\end{itemize}
+
+It is important to note that our systematic evaluation excludes E2E models, such as those proposed by \citet{ferreira2018neuralreg}, \citet{cao2019referring}, and \citet{cunha-etal-2020-referring}. The reason for this exclusion is that, in their current state, these models do not yet offer many possibilities for linguistic interpretation. Therefore, our focus is on linguistically interpretable features, providing a clearer insight into the mechanisms driving effective RFS algorithms.
+
+\subsubsection{Feature sets used}\label{subsec:featsets}
+
+In selecting feature sets for our study, we established the following criteria: we targeted studies that (1) primarily focus on RFS, (2) employ a machine learning (ML) method, (3) use an English dataset, and (4) incorporate interpretable features.
+
+Our initial step involved selecting feature sets from the RFS algorithms submitted to the \grec challenges. We excluded the \modname{JUNLG} set \citep{gupta2009junlg} due to its rule-based approach, and the \modname{WLV} feature set \citep{orasan-dornescu-2009-wlv} because we were unable to interpret some of their features.
+
+Given that the \grec challenges were conducted several years ago, it was imperative to also consider more recent research in order to include contemporary RFS feature sets meeting our criteria. To achieve this, we downloaded the complete BibTeX file of the ACL anthology.\footnote{\url{http://www.aclweb.org/anthology/}} We then used regular expressions to manually search for specific terms (listed in \tabref{tab:term}) in the titles and abstracts of the articles. This approach helped in identifying relevant studies that have contributed to the field of RFS after the \grec challenges, ensuring a comprehensive and current selection of feature sets for our evaluation.
+
+
+\begin{table}
+	\caption{Terms used to search for RFS studies.}
+	\label{tab:term}
+	\begin{tabularx}{\textwidth}{Q}
+		\lsptoprule
+		Regular expressions \\
+		\midrule
+		{[R$|$r]}eferring {[E$|$e]}xpression.*{[M$|$m]}achine {[L$|$l]}earning \\
+		title =.*{[R$|$r]}eferring {[E$|$e]}xpression \\ 
+		{[G$|$g]}enerat{[ion$|$ing]}.*[R$|$r]eferring [E$|$e]xpression.*discourse \\ 
+		title =.*{[R$|$r]}efer.* {[G$|$g]}eneration\\
+		{[D$|$d]}ata-driven.*{[E$|$e]}xpression \\
+		\lspbottomrule
+	\end{tabularx}
+\end{table}
+
+
+Based on our search results and adherence to the predefined criteria, we selected the feature sets from the studies by \citet{castro-ferreira-etal-2016-towards-variation} and \citet{kibrik2016referential}. These two sets, in conjunction with the feature sets from the \grec challenges, constitute the seven sets used in our feature selection experiments.\footnote{Several studies identified in our search were excluded as they did not meet our criteria, including \citet{zarriess2013combining}, \citet{siddharthan2011information}, \citet{stent2011computational}, and \citet{ferreira2017improving}.} The datasets employed in this study are detailed in \tabref{tab:dtset}. The \grec feature sets are referenced as named in \citet{belz2010generating}, while the other two feature sets are identified by the last names of their primary authors.
+
+
+\begin{table}
+    \begin{tabularx}{\textwidth}{rXlr}
+    	\lsptoprule
+        Number & Dataset & Reference & Number of features  \\
+        \midrule
+        1 & \modname{IS-G} & \citet{bohnet2008g} & 5 \\
+        2 & \modname{Ferreira} &  \citet{castro-ferreira-etal-2016-towards-variation}& 5 \\
+        3 & \modname{OSU} & \citet{jamison2008osu} & 8 \\
+        4 & \modname{ICSI} &  \citet{favre2009icsi} & 14 \\
+        5 & \modname{Kibrik} &  \citet{kibrik2016referential} & 17\\
+        6 & \modname{U-Del} &  \citet{greenbacker2009udel} & 18 \\
+        7 & \modname{CNTS} &  \citet{hendrickx2008cnts} & 21 \\
+        \lspbottomrule
+    \end{tabularx}
+    \caption[Feature sets used in Study \studB.]{The feature sets used in study \studB. The first two columns specify the numerical identifier and the name assigned to each dataset, facilitating easy reference throughout the study.}
+    \label{tab:dtset}
+\end{table}
+
+To facilitate a structured overview, we have classified the features into nine broad categories for analysis: \term{grammatical} \term{role}, \term{inherent} \term{features}, \term{referential} \term{status}, \term{recency}, \term{competition}, \term{antecedent} \term{form}, \term{surrounding} \term{patterns}, \term{position}, and \term{protagonism}. These categories are further elaborated in the subsequent sections. Within the context of the datasets discussed in this chapter, the term REF denotes the current referent, and ANTE refers to its coreferential antecedent.
+
+\largerpage
+In \tabref{tab:gmrole} to \tabref{tab:pattern}, the first column, labeled \texttt{Feature}, provides a description of each feature. The \texttt{Type} column categorizes the value of each feature as either \term{numeric} (\val{num}), \term{categorical} (\val{cat}), \term{boolean} (\val{bool}), or \term{character} (\val{char}). Additionally, the notation \texttt{[N]} next to the \texttt{Type} attribute indicates the number of distinct features encoded. For example, a feature like \term{grammatical role of the $2^{nd}$ and $3^{rd}$ ANTE} with the type attribute \val{cat[2]} signifies two categorical features: \term{grammatical role of the $2^{nd}$ ANTE} and \term{grammatical role of the $3^{rd}$ ANTE}.
+The \texttt{DT} column specifies which datasets include each feature, corresponding to the values in the \texttt{Number} column of \tabref{tab:dtset}. Lastly, the \texttt{Symbol} column presents the nomenclature used to refer to the features in our analysis.
+
+\paragraph*{Grammatical role} 
+This category encompasses features related to the syntactic properties of both the referent (REF) and its antecedent (ANTE), as detailed in \tabref{tab:gmrole}.
+
+\begin{table}
+\fittable{
+    \begin{tabular}{llrl}
+    	\lsptoprule
+        Feature & Type[N] & DT & Symbol\\
+        \midrule
+         Grammatical role of REF  & \val{cat[1]} & 1--7 & \val{gm}\\
+         Grammatical role of ANTE & \val{cat[1]} & 5,6 & \val{gm\_p1}\\
+         Grammatical role of the $2^{nd}$ and $3^{rd}$ ANTE  & \val{cat[2]} & 6 & \val{gm\_p2}, \val{gm\_p3}\\
+         Trigram grammatical roles of the three antecedents & \val{cat[1]} & 7 & \val{gm\_tri}\\
+         Is REF the subject of this \& the two previous sentences? &  \val{bool[3]} & 6 & \val{subj\_S}, \val{subj\_prevS}, \val{subj\_prev2S}\\
+         Is ANTE in the subject position?& \val{bool[1]} & 6 & \val{ante\_subj} \\
+         Are REF and ANTE prepositional phrases? & \val{bool[2]} & 5 & \val{ref\_pp}, \val{ante\_pp}\\
+         \lspbottomrule
+    \end{tabular}}
+    \caption{Grammatical features encoded in different feature sets.}
+    \label{tab:gmrole}
+\end{table}
+
+\paragraph*{Inherent features of a referent} This category encompasses features that describe the intrinsic semantic properties inherent to referents. These features provide insight into the essential characteristics of the referents themselves, independent of their contextual usage or syntactic roles in discourse.
+
+\begin{table}
+\begin{tabularx}{\textwidth}{lXr@{\qquad\qquad\qquad}l}
+	\lsptoprule
+	Feature & Type & DT & Symbol\\
+	\midrule
+	Animacy/semantic category  & \val{cat[1]} & 3,4,5,7 & \val{anim}\\
+	Gender & \val{cat[1]} & 5 & \val{gender}\\
+	Plurality  & \val{cat[1]} & 5 & \val{plur} \\
+	\lspbottomrule
+\end{tabularx}
+	\caption{Inherent features encoded in different feature sets.}
+	\label{tab:inherent}
+\end{table}
+
+\paragraph*{Position} 
+This category, as outlined in \tabref{tab:position}, includes features that provide information about the position of the referent (REF) within the text.
+
+\begin{table}
+\fittable{
+    \begin{tabular}{llrl}
+    	\lsptoprule
+        Feature & Type[N] & DT & Symbol\\
+         \midrule
+         Sentence Number & \val{num[1]} & 6,7 & \val{sent\_num} \\
+         NP number & \val{num[1]} & 7 & \val{np\_num} \\
+         Mention number & \val{num[1]} & 1,5,6 & \val{ment\_num} \\
+         Referent number & \val{num[1]} & 6 & \val{ref\_num} \\
+         How many times has REF occurred since the beginning? (1,2,3,4+) & \val{cat[1]} & 4 & \val{count\_bef} \\
+         How many times does REF occur since the last change? (1,2,3,4+) & \val{cat[1]} & 4& \val{count\_aft}\\
+         Mention order (first, second, middle, last) & \val{cat[1]} & 3 & \val{ment\_ord}\\ 
+         Does REF appear in the first sentence? & \val{bool[1]} & 7 & \val{first\_sent} \\
+         Does REF appear at the beginning of a paragraph? & \val{bool[1]} & 4 & \val{firstS\_par} \\
+         \lspbottomrule
+    \end{tabular}}
+    \caption{Positional features of different feature sets.}
+    \label{tab:position}
+\end{table}
+
+\paragraph*{Recency} 
+The recency category, detailed in \tabref{tab:recency}, focuses on features that quantify the distance between the REF and its ANTE. This distance is measured in various units such as words, noun phrases (NPs), markables, sentences, and paragraphs.
+
+\begin{table}
+\fittable{
+    \begin{tabular}{llrl}
+    	\lsptoprule
+        Feature & Type[N] & DT & Symbol\\
+         \midrule
+         Distance in number of words & \val{num[1]}& 1,5 & \val{dist\_w} \\
+         Distance in number of NPs & \val{num[1]} & 7 & \val{dist\_np} \\
+         Distance in number of markables & \val{num[1]} & 5 & \val{dist\_mark}\\
+         Distance in number of sentences & \val{num[1]} & 5,7 & \val{dist\_sent} \\
+         Distance in number of paragraphs & \val{num[1]} & 5 & \val{dist\_par} \\
+         Distance to the nearest non-pronominal antecedent & \val{num[1]} & 5 & \val{dist\_full} \\
+         Word distance (5 bins of 0--10, 11--20, 21--30, 31--40 and 40+) & \val{cat[1]} & 2 & \val{bin5\_w}\\
+         Word distance (3 bins of 0--5, 6--12 and 13+) & \val{cat[1]} & 3 & \val{bin3\_w} \\
+         Sentence distance (+/-2 sentences) & \val{cat[1]} & 6 & \val{bin2\_sent} \\
+         Sentence distance (3 bins of 0, 1, 2+ sentences) & \val{cat[1]} & 3 & \val{bin3\_sent}\\
+         \lspbottomrule
+         
+    \end{tabular}}
+    \caption{Recency features of different feature sets.}
+    \label{tab:recency}
+\end{table}
+
+\largerpage[2]
+\paragraph*{Competition} This category, as outlined in \tabref{tab:competition}, includes features that capture the competition between REF and other potential referents in the discourse. In this context, a competitor refers to any other entity in the text, regardless of its gender or type.
+
+\begin{table}
+\fittable{
+    \begin{tabular}{lcrl}
+    	\lsptoprule
+        Feature & Type[N] & DT & Symbol\\
+         \midrule
+          Does the previous RE refer to the same entity? & \val{bool[1]} & 4 & \val{same\_ante}\\
+        Does REF have a competitor in the whole text? & \val{bool[1]} & 3 & \val{compet\_txt}\\
+         Does REF have a competitor since the beginning of the text? & \val{bool[1]} & 3 & \val{compet\_beg}\\
+         Is there a competitor between REF and ANTE? & \val{bool[1]} & 3,6 & \val{compet\_prev}\\
+         Are there other referents in the same sentence? & \val{bool[1]} & 6 & \val{compet\_sent} \\
+         Does the previous sentence contain another referent? & \val{bool[1]} & 7 & \val{compet\_prevS} \\
+         \lspbottomrule
+    \end{tabular}}
+    \caption{Competition features of different feature sets.}
+    \label{tab:competition}
+\end{table}
+
+
+
+\paragraph*{Surrounding patterns} This category, as detailed in \tabref{tab:pattern}, encompasses features related to the lexical content and Part-Of-Speech (POS) tags of the tokens surrounding the target RE. 
+
+\begin{table}
+\fittable{
+    \begin{tabular}{llrl}
+    	\lsptoprule
+        Feature & Type[N] & DT & Symbol\\
+         \midrule
+         Word unigram and bigram before and after REF & \val{char[4]} & 4,7 & \val{w\_(uni$|$bi)\_(bef$|$aft)} \\ 
+         Word trigram before and after REF & \val{char[2]} & 7 & \val{w\_tri\_(bef$|$aft)} \\
+         Three POS tags before and after REF & \val{char[6]} & 7 & \val{pos\_(1$|$2$|$3)\_(bef$|$aft)} \\
+         Punctuation type before and after REF & \val{cat[2]} & 4 & \val{punct\_(bef$|$aft)} \\
+         Morphology of the previous and next words (-ed, -ing, -s, -) & \val{cat[2]} & 4& \val{morph\_(bef$|$aft)}\\
+          Is REF immediately followed by \texttt{and}, \texttt{but}, \texttt{then}? & \val{bool[3]} & 6 & \val{w\_(and$|$but$|$then)} \\
+         Is REF between a comma and ``and"? & \val{bool[1]} & 6 & \val{w\_command} \\
+         \lspbottomrule
+    \end{tabular}}
+    \caption{Surrounding pattern features of different feature sets.}
+    \label{tab:pattern}
+\end{table}
+
+
+\paragraph*{Antecedent form} This feature, known as \val{ante\_form}, specifically addresses the form of the antecedent (ANTE). As noted by \citet{bohnet2008g}, in most prediction tasks, the input to this feature is typically a predicted referential form rather than one produced by a human. Therefore, the content of this feature might contain elements of uncertainty. It is used in datasets 1 and 5.
+
+
+\paragraph*{Referential status} This category includes features that determine the newness of the referent within various textual scopes. For instance, whether REF is new in the sentence (\texttt{same\_sent}) [datasets 1 \& 2], new in the paragraph (\texttt{new\_in\_par}) [dataset 2], or new in the text (\texttt{new\_in\_text}) [dataset 2]. Some of these features can also be considered under the category of recency features.\footnote{The symbol \val{same\_sent} is used to indicate that if a referent is not new in the sentence, it implies that its antecedent is in the \emph{same} sentence.}
+
+\paragraph*{Protagonism} 
+In their study, \citet{kibrik2016referential} introduced two measures of protagonism. The first, \texttt{protagonism1}, calculates the ratio of REF's chain length to the maximum chain length in the text. The second, \texttt{protagonism2}, compares REF's chain length to the sum of all REs in the text. These measures provide insights into the relative occurrence of REF within the overall text.
+
+
+
+\paragraph*{An overview of each feature set} 
+\tabref{tab:features} provides a summary of the types of features used in each model, categorized according to the nine categories previously discussed. This table highlights the predominant type of features present in each feature set, offering an insight into the primary focus of each model's feature selection.
+
+For instance, in the \modname{ICSI} feature set, eight out of 14 features are dedicated to describing the surrounding patterns of REF. Similarly, the \modname{kibrik} feature set includes four features that emphasize recency, and another four that provide information about the grammatical position of REF. Such an overview allows for a comparative analysis of the different models, revealing the varied emphases placed on certain feature categories and their potential impact on the models' performance in the \context task.
+
+ \begin{table}
+\fittable{
+ \begin{tabular}{lrrrrrrr}
+\lsptoprule
+ General classes & \modname{isg} & \modname{ferreira} & \modname{osu} & \modname{icsi} & \modname{kibrik} & \modname{udel} & \modname{cnts} \\
+ \midrule
+ Grammatical role & 1 & 1 & 1 & 1 & 4 & 8 & 2 \\
+ Inherent & 0 & 0 & 1 & 1 & 3 & 0 & 1 \\
+ Referential status / Givenness & 0 & 3 & 0 & 0 & 0 & 0 & 0 \\
+ Distance / Recency & 2 & 1 & 2 & 0 & 4 & 1 & 2 \\
+ Competition & 0 & 0 & 3 & 1 & 0 & 2 & 1 \\
+ Antecedent form & 1 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ Pattern & 0 & 0 & 0 & 8 & 0 & 4 & 12 \\
+ Position & 1 & 0 & 1 & 3 & 1 & 3 & 3 \\
+ Protagonism & 0 & 0 & 0 & 0 & 2 & 0 & 0 \\
+ \midrule
+ Total number of features & 5 & 5 & 8 & 14 & 15 & 18 & 21\\
+ \lspbottomrule
+ \end{tabular}}
+ \caption[General classes of the features used in the feature sets.]{General classes of the features used in the feature sets.}
+ \label{tab:features}
+ \end{table}
+
+\subsubsection{Applying feature sets to the \wsj dataset}\label{seubsec:corpus}
+In light of the preceding discussion, the \wsj corpus emerges as a particularly apt choice for our feature selection experiments. By applying the various feature sets to \wsj, we identify a total of 65 distinct features. However, some features could not be implemented due to the limitations of the existing annotations within the corpus. Notable examples include the elementary discourse unit (EDU) and rhetorical distance (RhD) measurements from \citet{kibrik2016referential}. 
+
+Furthermore, \wsj does not inherently have the paragraph-related information. To incorporate these features, we used paragraph information from the \modname{PDTB} parser.\footnote{\url{https://github.com/WING-NUS/pdtb-parser/tree/master/external/aux_data/paragraphs}}
+
+Implementing these features presents its own set of challenges. For instance, the recency features, particularly the calculation of word distance between mentions, require a decision on whether to include or exclude punctuation in the count. In this study, punctuation is considered in calculating word distance.
+
+The \wsj corpus, encompassing approximately 30,500 REs, is partitioned into 60\% for training, 10\% for validation, and 30\% for testing. The RFS task is structured as a 3-way classification, with the classes being \val{pronoun}, \val{proper name}, and \val{description}. Detailed methodologies and results of the feature selection experiments are discussed in \sectref{sec:experiments}.
+
+\subsection{Feature selection experiments for assessing the features}\label{sec:experiments}
+
+To evaluate the efficacy of the proposed feature sets, our initial step involves constructing classifiers using these features applied to the \wsj corpus. Following this, we conduct two distinct feature selection experiments, named Experiment \expone and Experiment \exptwo. These experiments aim to scrutinize the significance and impact of the individual features.
+
+Upon analyzing the outcomes of experiments \expone and \exptwo, we proceed with Experiment \expthree, in which the models are rerun with various subsets of features. The objective here is to determine whether models with these feature subsets can match or even surpass the performance of models employing the full array of features. This approach allows us to assess not only the individual contribution of each feature but also the optimal combination of features for efficient and effective RFS modeling.
+
+
+\subsubsection{Building models for predicting RF}\label{subsec:building}
+
+In this study, we employ the \method{Random Forest} algorithm, a well-known ensemble learning method that operates by creating a multitude of decision trees during training and aggregating their results for classification \citep{nayak2016comparative,biau2012analysis}. One of the key advantages of using Random Forest is its ability to assess the \term{permutation importance} of variables, which is crucial for understanding the contribution of each feature in the classification models.
+
+For the implementation of Random Forest, we use \method{ranger} \citep{wright2015ranger}, a fast implementation of Random Forest in the R programming language. The performance results of the models, each employing the original features from their respective feature sets, are presented in \tabref{tab:random forest_allstat}.
+
+\input{figures_tex_snippets/05/random forest_all_summarystat}
+
+\tabref{tab:random forest_allstat} reveals that the model trained with the \modname{Kibrik} feature set achieves the highest accuracy, making it the best-performing model among those tested. It is followed by the models using the \modname{CNTS} and \modname{OSU} feature sets. In the subsequent section, we evaluate the features from each set to identify those that most significantly contribute to the predictive success of the models.
+
+\subsubsection{Experiment 1: Evaluating the importance of the features using RFI} \label{subsec:rfi}
+
+In this experiment, we employ the built-in permutation importance feature of the Random Forest algorithm, known as RFI (Random Forest Importance), which ranks features based on their \term{importance} in the model \citep{breiman2001random}. As outlined by \citet{strobl2008conditional}, the process to determine the importance of a specific feature \texttt{$X_{i}$} involves several steps. Initially, the model is built, and its accuracy is assessed using \method{Out-of-bag} (OOB) observations. Then, the connection between the values of \texttt{$X_{i}$} and the model's outcome is disrupted by permuting all values of \texttt{$X_{i}$}. The model's accuracy is recalculated using these permuted values.
+
+The permutation importance of \texttt{$X_{i}$} is quantified as the difference between the accuracy of the model with permuted values and the original model's accuracy. A feature with little to no impact on the model's predictions would show negligible change in accuracy upon permutation. Conversely, a substantial change in accuracy indicates the feature's significant role in the prediction task. \figref{fig:c5_varimp_3} illustrates the importance of various features across the seven models, with the \term{Mean Decrease in Accuracy} represented on the x-axis indicating the relative importance of each feature. The higher this score on the x-axis, the more important the feature.
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{figures_tex_snippets/05/rf_varimp_recent.pdf}
+	\caption[Variable importance plot of the RFS models.]{Variable importance plot of the RFS models. The y-axis lists the features of each model; the x-axis shows the permutation importance (Mean Decrease in Accuracy) of each feature.}
+	\label{fig:c5_varimp_3}
+\end{figure}
+
+In addition to assessing feature importance through RFI, we also calculate the p-values for the variables using the method of \citet{altmann2010permutation} . The test is based on the null hypothesis that permuting the values of the variables has no effect on the model's accuracy.
+
+Out of the 65 distinct features analyzed, the null hypothesis was confirmed for four features from the \modname{UDeL} dataset (\texttt{w\_and}, \texttt{w\_but}, \texttt{w\_then}, and \texttt{w\_command}) and one feature from the \modname{OSU} dataset (\texttt{compet\_txt}). This indicates that these particular features did not have a statistically significant impact on the accuracy of the models. On the other hand, the remaining features demonstrated varying degrees of contribution to the models, with their effects on model accuracy being statistically significant.
+
+\subsubsection{Experiment 2: Evaluating the importance of the features using SFS}\label{subsec:ffs}
+
+The second technique employed in our feature selection process is the Sequential Forward Search (SFS) algorithm. SFS begins with an empty set and incrementally adds features, continuing this process until there is no substantial improvement in accuracy. We have set a threshold of alpha=0.01 as the minimum required improvement for the algorithm to continue adding features. Once the improvement in accuracy falls below this threshold, the algorithm terminates.
+
+For the implementation of SFS, we used the R package \method{mlr} \citep{bischl2016mlr}. In this framework, the learner specified for our model is \val{classif.randomForest}, and the chosen resampling strategy is \term{Holdout}. \tabref{tab:model_features} provides an overview of the features selected from each feature set using the SFS algorithm.
+
+\begin{table}
+\small
+	\begin{tabularx}{\textwidth}{l@{~}QQ>{\raggedright}p{2.2cm}>{\raggedright}p{2.2cm}Q}
+		\lsptoprule
+		Model & Feature 1 & Feature 2 & Feature 3 & Feature 4 & Feature 5 \\ \midrule
+		\modname{is-g} & grammatical role of \refe [\val{gm}] & RF of \ante [\val{ante\_form}] & whether \refe and \ante are in the same sentence [\val{same\_sent}] & & \\ \midrule
+		\modname{ferreira} & grammatical role of \refe [\val{gm}] & whether \refe and \ante are in the same sentence [\val{same\_sent}] & word distance in five bins [\val{bin5\_w}] & new in paragraph [\val{new\_in\_par}] & \\ \midrule
+		\modname{osu} & grammatical role of \refe [\val{gm}] & animacy or entity type [\val{anim}] & sentence distance in three bins [\val{bin3\_sent}] & word distance in three bins [\val{bin3\_w}] & \\ \midrule
+		\modname{icsi} & grammatical role of \refe [\val{gm}] & animacy or entity type [\val{anim}] & whether previous RE refer to the same REF [\val{same\_ante}] & number of times REF occurs since the last change [\val{count\_aft}] & punctuation before \refe [\val{punct\_bef}] \\ \midrule
+		\modname{kibrik} & animacy or entity type [\val{anim}] & plurality [\val{plur}] & sentence distance [\val{dist\_sent}] & paragraph distance [\val{dist\_par}] & RF of \ante [\val{ante\_form}] \\ \midrule
+		\modname{udel} & grammatical role of \refe [\val{gm}] & grammatical role of \ante [\val{gm\_p1}] & sentence distance in two bins [\val{bin2\_sent}] & referent number [\val{ref\_num}] & \\ \midrule
+		\modname{cnts} & grammatical role of \refe [gm] & animacy or entity type [anim] & sentence distance [dist\_sent] & NP distance [dist\_np] & POS tag of preceding word [pos\_1\_bef] \\ \lspbottomrule
+	\end{tabularx}
+	\caption{An overview of features selected from each set using SFS.}
+	\label{tab:model_features}
+\end{table}
+
+
+\subsubsection{Experiment 3: Exploring different feature subsets based on their importance}\label{subsec:optfeatures}
+
+In this experiment, we first analyze the accuracy of various subsets within each feature set, as determined by the results of the RFI and SFS experiments. Subsequently, we investigate combinations of all features to identify an optimal consensus set for the \context task.
+
+\paragraph*{Subsets of each feature set}\label{par:subset1}
+
+\tabref{tab:subsetting} provides a comparative overview of model accuracies. The \texttt{original} column displays the initial accuracy of each model, as previously shown in \tabref{tab:random forest_allstat}. The columns \val{top1}, \val{top2}, and \val{top3} report the Random Forest performance using the one, two, and three most important features from each feature set, as identified by their permutation importance in \figref{fig:c5_varimp_3}. For instance, in the \modname{OSU} model, the top two features are \texttt{\{anim, bin3\_sent\}}. The \texttt{top 50\%} column presents the performance when applying the Random Forest to the top 50\% of features in each set, as indicated by the dashed line in \figref{fig:c5_varimp_3}. For \modname{Kibrik}, this includes features like \texttt{\{ante\_form, anim, dist\_sent, plur, dist\_par, gender\}}. Finally, the \texttt{sfs} column reflects the Random Forest results using the feature subsets selected in the SFS experiment, as outlined in \tabref{tab:model_features}. An example of this is \texttt{\{gm, gm\_p1, bin2\_sent, ref\_num\}} from the \modname{UDel} feature set.
+
+ \input{figures_tex_snippets/05/testconditions}
+
+An interesting observation is that for models like \modname{IS-G} and \modname{OSU}, the accuracy with SFS-selected features slightly exceeds that of the original feature sets. In the case of the \modname{ferreira} model, the accuracies of the original and SFS-based models are identical.
+ 
+ \paragraph*{Subsets of all features}\label{par:sebset2}
+
+After examining subsets within individual feature sets, we now turn our attention to exploring various combinations of \textit{all} features. This approach is guided by the insights gained from the RFI and SFS experiments, aiming to determine the most effective feature combinations for the \context task.
+
+
+
+\begin{enumerate}
+	
+	\item Initially, we apply the Random Forest algorithm to the set of features with the highest permutation importance from each model, as identified in \figref{fig:c5_varimp_3}. This set includes \{\val{gm}, \val{anim}, \val{dist\_sent}, \val{ante\_form}\}, resulting in a model accuracy of 0.728.
+    
+    \item Next, we test the algorithm on the union of the two top features from each feature set: \{\val{gm},
+    \val{bin2\_sent}, \val{dist\_sent}, \val{bin3\_sent}, \val{same\_ante}, \val{ante\_form}, 
+    \val{anim},
+    \val{same\_sent}\}. Surprisingly, this model yields a slightly lower accuracy of 0.723, contrary to our expectations.
+      
+    \item \label{item:sfs} We then train the algorithm on the union of all the SFS features, as detailed in \sectref{subsec:ffs}. This combined set, comprising 19 distinct features, achieves an accuracy of 0.779 – the highest among the subsets tested.
+    
+    \item \label{item:sfsunion} Building on the success of the subset in item \ref{item:sfs}, we further apply the \method{SFS} algorithm to this set of 19 features. Our aim is to find an optimal balance between a minimal number of features and maximum performance. The SFS-selected subset consists of \{\val{gm}, \val{ante\_form}, \val{bin3\_sent}, \val{anim}, \val{plur}, \val{dist\_par}\} and achieves an accuracy of 0.776.  We then employ BF analysis with a beta distribution, setting a threshold of 0.01, to test whether there is evidence of a difference greater than or less than 0.01 between the best performing model, \modname{Kibrik}, with an accuracy of 0.793, and the new model.
+    The evidence positively suggests that the two rates come from similar distributions, so they are not significantly different.\footnote{While the original paper \citep{same-van-deemter-2020-linguistic} reports the BF results with a threshold of 0.05, we have adjusted it to 0.01 for this analysis to capture very small differences. The evidence still indicates that the two models' accuracy rates are derived from similar distributions.}
+    
+\end{enumerate}
+
+
+\subsection{The consensus set of features from a linguistic perspective}\label{subsec:consensusling}
+
+The consensus set of features, as identified in item \ref{item:sfsunion} of the previous section, encompasses elements from four of the nine feature classes outlined in \sectref{subsec:featsets}. \tabref{tab:consensus} presents these features alongside their respective categories. In the following discussion, we aim to link the relevance of these categories to \context in light of various linguistic theories.
+
+
+\begin{table}
+	\begin{tabular}[t]{ll}
+		\lsptoprule
+		Category & Feature \\
+		\midrule
+		\multirow{2}{*}{Inherent Feature} & Animacy \\
+		& Plurality  \\
+		\tablevspace
+		\multirow{2}{*}{Recency} & Sentence distance (3 bins of 0, 1, 2+ sentences) \\
+		& Distance in number of paragraphs  \\
+		\tablevspace
+		Antecedent form & Antecedent form \\
+		\tablevspace
+		Grammatical role & Grammatical role of the current RE \\
+		\lspbottomrule
+	\end{tabular}\caption[The consensus set of features for the \context task.]{\label{tab:consensus} The consensus set of features for the \context task.}
+\end{table}
+
+
+In the remainder of this section, we frequently refer to \term{row-wise} and \term{column-wise} data distributions. The term row-wise refers to the distribution within rows where the sum equals 1 (or 100\%), and similarly, the term column-wise pertains to distributions within columns that also sum up to 1 (or 100\%). 
+
+
+
+\subsubsection{Inherent features}
+
+Animacy and plurality are two inherent features of a referent that play an important role in predicting RF. 
+
+\subsubsubsection{Animacy} 
+The significance of animacy in RF selection has been well-noted in linguistic studies. As mentioned in \chapref{chap2}, research has shown that pronouns are more frequently used for animate than inanimate referents \citep{Dahl1996,fukumura2011effect,vogels2014referential}. Within the \wsj corpus, 32.2\% of REs (n=9817) pertain to humans, while 67.8\% (n=20654) are non-human. The row-wise distribution, marked by the sign \texttt{row\%}, in \tabref{tab:rfanim} indicates that pronouns are used 40.8\% of the time for human REs, compared to only 15.9\% for non-human REs. This pattern suggests that models are more likely to predict non-pronominal forms (descriptions or proper names) for non-human referents. 
+
+\input{figures_tex_snippets/05/rfanim}
+
+However, distinguishing between descriptions and proper names can be challenging, as the distribution is relatively balanced between the two (47.1\% for descriptions versus 37\% for proper names). In what follows, we investigate whether the inclusion of more fine-grained animacy values contributes to the choice of descriptions vs. proper names.
+
+\figref{fig:crosstabrfdesc} provides a more detailed breakdown of animacy values in the \wsj corpus, illustrating how different animacy values (or entity types) correlate with RF choices. This mosaic plot reveals distinct trends: For example, geopolitical entities (\val{gpe}) such as cities and countries are commonly referred to by proper names, whereas the \term{other} category, i.e., something other than a \term{city}, \term{country}, \term{person}, or \term{organization}, tends to be described using descriptions. This tendency might be attributable to the fact that many entities outside typical categories (like \term{objects}) lack proper names and are therefore referred to using descriptions or pronouns.
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figures_tex_snippets/05/crosstab_rfdesc}
+\caption[Mosaic plot of the animacy values of the REs (x-axis) and
+their RFs (y-axis).]{Mosaic plot of the animacy values (x-axis) and their RFs (y-axis). The animacy values are: \val{gpe} -- geopolitical locations such as cities and countries, \val{hu} -- human, \val{org} -- organization, \val{other} -- referents such as objects, time, other locations, etc. The colors black, light gray, and dark gray correspond to the classes \val{pronoun}, \val{name}, and \val{description}, respectively.} 
+
+\label{fig:crosstabrfdesc}
+\end{figure}
+
+
+Tables \ref{tab:rfanim} and \figref{fig:crosstabrfdesc} collectively highlight how different animacy values influence the distribution of RFs. For a 2-way RFS task, a broad distinction between human and non-human referents suffices, while a more detailed classification, as illustrated in \figref{fig:crosstabrfdesc}, is beneficial for a 3-way classification task to effectively differentiate between descriptions and proper names.
+
+\subsubsubsection{Plurality} 
+Plurality is another inherent feature that contributes significantly to feature-based \context models. Within the \wsj corpus, the majority of REs (82\%, $n=24963$) pertain to singular entities, while a smaller proportion (18\%, $n=5508$) refers to plural entities. The corpus exhibits various types of plural REs, including conjoined noun phrases (NPs) (\intext{South Korea, Taiwan, and Saudi Arabia}), plural definite descriptions (\intext{the sponsors}), numerically quantified NPs (\intext{the five senators}), and inherently plural NPs (\intext{the Senate}). \tabref{tab:pluralfreq} presents the distribution of RFs for plural referents in \wsj, highlighting that proper names are used in only 10.53\% of cases referring to plural referents.
+
+\input{figures_tex_snippets/05/pluralfreq}
+
+This distribution suggests that the plurality feature plays a crucial role in guiding the choice between using a proper name and a description. Given that plural referents are more frequently represented as descriptions rather than proper names, the plurality feature can be a key determinant in the \context decision-making process. Further research is needed to fully understand the extent and nuances of this feature's contribution to the task of RFS.
+
+
+
+\subsubsection{Antecedent form}
+
+The referential form of the antecedent plays a pivotal role in the RFS task. As previously mentioned, in the practical implementation of REG algorithms, the RF of an antecedent is typically predicted, rendering it a piece of uncertain information \citep{bohnet2008g}. Nonetheless, for this study, we had access to accurate antecedent data from the corpus and included these values in our evaluation. The significant impact of this factor on the RFS task aligns with findings from linguistic research \citep{kaiser2003word,gundel2008reference,Brilmayer2021}.
+
+\citet{bohnet2008g} suggests that the importance of antecedent form is partly due to a tendency to avoid repetitive expression use. While this may be particularly true for consecutive uses of pronouns, our models are not designed to confirm this hypothesis, as we only considered short antecedent--target chains, encoding merely the RF of the immediate antecedent.
+
+\input{figures_tex_snippets/05/prtype3}
+
+\tabref{tab:prtype3} shows the likelihood of encountering different types of antecedents for each RF. The antecedents can be categorized as pronouns (\val{ante\_pronoun}), proper names (\val{ante\_name}), or descriptions (\val{ante\_description}). The percentages in \tabref{tab:prtype3} indicate the likelihood that an RE has an antecedent of the same type. According to this table, descriptions have a 69.4\% chance, proper names 68.5\%, and pronouns 31\% of sharing the same RF type with their antecedent. Notably, the distribution of antecedent types for pronouns is relatively balanced (37.2\% for description antecedents, 31.8\% for name antecedents, and 31\% for pronoun antecedents), while non-pronominal REs predominantly share the same RF type as their antecedent. This finding is in line with \citet{Brilmayer2021}'s observation in an ERP study, where they noted that pronoun anaphors, unlike noun anaphors, exhibit less dependence on the RF of their antecedent.
+
+
+\subsubsection{Grammatical role}
+
+Numerous studies, particularly those based on Centering Theory, have established that referents in the subject position are more likely to be pronominalized in subsequent sentences \citep{brennan-etal-1987-centering,Brennan1995,kaiser2010effects}. These research efforts have typically emphasized the subjecthood of the antecedent rather than the subjecthood of the current mention. However, our analysis indicates that the grammatical role of the current mention may play a more pivotal role than that of the antecedent in predicting RF. This observation is visually represented in \figref{fig:crosstabrefexgm}, which displays a mosaic plot illustrating the correlation between various grammatical roles and their respective RFs. 
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figures_tex_snippets/05/crosstab_refex_gm}
+\caption[Mosaic plot of the RE's grammatical roles (x-axis) and their RFs (y-axis).]{Mosaic plot of the RE's grammatical roles (x-axis) and their RFs (y-axis). The grammatical role values are: \val{subj} -- subject, \val{poss} -- possessive determiner, \val{obj} -- other grammatical roles. The colors black, light gray, and dark gray corresponds to the classes \val{description}, \val{name}, and \val{pronoun}, respectively.}
+\label{fig:crosstabrefexgm}
+\end{figure}
+
+
+An intriguing aspect of our findings is the divergence from traditional linguistic studies, which predominantly emphasize the role of the subject position. Our analysis reveals a rather equal distribution of RF types across instances where the referent is in the subject position. In contrast, the other two categories -- possessive modifiers and objects -- demonstrate more distinct patterns in their RF usage.
+
+Specifically, possessive modifiers predominantly take the form of pronouns. Conversely, referents in the object position are infrequently realized as pronouns. This distinct pattern suggests that the grammatical roles of possessive modifiers and objects are particularly influential in determining whether a referential expression will be pronominal or non-pronominal. These findings highlight the nuanced ways in which different grammatical roles can guide the selection of RFs, underscoring the importance of considering a range of grammatical positions beyond just the subject in the study of RF.
+
+\subsubsection{Recency}
+
+Recency is a concept frequently emphasized in linguistic research, though its definition often lacks specificity. In our study, we propose a more concrete definition of recency, suggesting it should be primarily quantified by the number of sentences separating the antecedent and the current RE. A secondary, yet effective, measure is the number of paragraphs between them. This operational definition aligns with the linguistic tradition's inclination towards \textit{higher-level} measures of discourse structure, as highlighted in works by \citet{Fox1987}, \citet{Tomlin1987}, \citet{henschel2000pronominalization}, and \citet{arnold2009reference}.
+
+Further exploration and analysis of the recency concept will be undertaken in study \studC of this chapter, where we aim to delve deeper into its implications and applications within the context of RFS.
+
+\subsection{Summary and discussion of study \studB}\label{sec:studybconc}
+
+The primary objective of this study was to conduct a systematic examination of feature-based RFS models, with the aim of identifying the most effective features driving their success. By analyzing the feature sets of computational RFS studies from a linguistic perspective, we endeavored to bridge the gap between the computational application of these features and the linguistic theories underpinning them.
+
+Following two feature selection experiments conducted across seven distinct feature sets, as well as the methodology detailed in \sectref{par:sebset2}, we identified a consensus set comprising six key features. The significance and functionality of these features were further explored and elucidated in \sectref{subsec:consensusling}.
+
+This comparative analysis between the consensus set and previously established feature sets not only sheds light on the mechanics of feature-based RFS models but also offers insights that are relevant to both computational RFS research and linguistic studies. We will discuss the implications of this systematic analysis for both these fields.
+
+
+
+\subsubsection{Implications for feature-based RFS studies}
+
+Our findings suggest that a model equipped with a limited yet well-chosen set of features can achieve satisfactory performance. Notably, our proposed model, using merely six features, demonstrates performance comparable to the best-performing model in the \context literature, which employs 2.5 times as many features.
+
+One key insight from our research is that the inclusion of a large number of features in a model does not necessarily guarantee optimal performance. The results presented in \tabref{tab:subsetting} indicate that models with a carefully selected subset of features often perform as well as those with a more extensive feature set. An interesting observation from \tabref{tab:subsetting} is that two models actually exhibited slightly improved performance when utilizing a subset of their original features, compared to their full feature sets. This finding warrants further investigation to understand why the exclusion of certain features from these models resulted in enhanced performance.
+
+\tabref{tab:recency} reveals that all systems, except \modname{ICSI}, incorporate some form of recency measurement. These encodings vary, with some systems using lower-level units such as word, NP, and intervening RE counts, while others employ higher-level units like sentences and paragraphs. In both feature selection experiments, metrics at the higher level are consistently deemed more important than their lower-level counterparts. This disparity underscores the notion that different operationalizations of a concept contribute unevenly to a model's success. The nuances of these encoding strategies and their impact on RFS models will be further explored in study \studC.
+
+\subsubsection{Implications for linguistics}
+
+In \sectref{subsec:featsets}, we categorized the features employed by earlier \context models into nine broad categories. Several of these, such as grammatical role, recency, and referential status, align with the prominence-lending cues frequently highlighted in linguistic research \citep{Kaiser2011,gundel2003,Heusinger2019}. Meanwhile, other categories like surrounding lexical patterns are more commonly found in computational studies. Intriguingly, our feature selection experiments revealed that the most contributive features for the \context task tend to fall into the categories emphasized in linguistic tradition (namely, inherent features, recency, grammatical role, and antecedent form). This observation suggests a convergence of mechanisms in both the production and generation of referential expressions in context.
+
+However, notable differences also emerge. For instance, as discussed in \sectref{subsec:consensusling}, linguistic studies typically focus on the grammatical role of the antecedent, particularly linking the prominence of a referent to the subjecthood of its antecedent. Contrastingly, only two of the feature sets in \sectref{subsec:featsets} incorporate the grammatical role of the antecedent, while all seven feature sets consider the grammatical role of the current RE. Furthermore, our feature selection experiments indicate that it is the grammatical role of the current RE, rather than that of the antecedent, which significantly impacts model performance.
+
+This discrepancy raises an intriguing question: If the mechanisms underlying reference production and generation are similar, why do we observe this divergence in practice? Understanding the roots of this discrepancy could provide valuable insights into the interplay between linguistic theory and computational modeling in the domain of RFS.
+ 
+While most features in the consensus set align with established themes in linguistic studies of reference in context, the role of plurality has not been as extensively explored. In the realm of computational studies, the generation of plural referents is addressed in several \shot studies \citep{deemter2002generating,gatt-van-deemter-2007-incremental}, but its exploration in \context studies remains limited. A notable exception is the work of \citet{gatt2009generating}, who examined the behavior of plural REs in discourse using the \corpus{gnome} corpus \citep{poesio2000gnome}.
+
+The \corpus{gnome} corpus, with its detailed annotations, allowed \citet{gatt2009generating} to identify three main classes of plural anaphors: \term{identity}, \term{element}, and \term{split}. Their examples \ref{ex:identity}--\ref{ex:element} illustrate these classes. The study found that for identity anaphors, there is an equal tendency to use either pronominal forms or \textit{same-head} non-pronominal forms. Conversely, the use of pronouns to refer to the other two types of anaphors is considerably less common.
+
+\begin{exe}
+	\ex
+	\begin{xlist}
+		\ex\label{ex:identity} \example{identity:} [Precious metals such as silver and gold]$_{i}$, have been widely used
+		from antiquity to the present day. [Their]$_{i}$ use is due, at least in part, to [their]$_{i}$ essential physical properties. (\example{GNOME:text3:34--35})
+		\ex\label{ex:split} \example{split:} [[Caffieri]$_{i}$ ’s [wife]$_{j}$]
+		bought a royal privilege . . . which allowed [them]$_{i+j}$ to gild bronze as well as cast it . . .
+		(\example{GNOME:getty:49})
+		\ex\label{ex:element} \example{element:} [[The Swiss artist Verena Sieber Fuchs]$_{i}$ and the
+		[German-born but Irish-based artist Brigitte Turba]$_{j}$]$_{i+j}$ use
+		discarded or waste materials as a source for their work. For [Sieber Fuchs]$_{i}$, old pill packaging, wrapper or film create possibilities. . .
+		(\example{GNOME:text3:22--26})
+	\end{xlist}
+\end{exe} 
+
+
+Conducting an analysis of plural REs in the \wsj corpus, akin to the approach of \citet{gatt2009generating}, could offer deeper insights into the use of plural REs within this corpus. Such an analysis would potentially enhance our understanding of the distributions observed in \tabref{tab:pluralfreq}.
+
+
+\section{Study C: Computational interpretations of recency}\label{sec:recency}
+
+Study \studB, presented in \sectref{sec:consensus}, underscored the significance of recency-based metrics in feature-based \context research. However, this study left unexplored the nuances of how different implementations of recency might impact the effectiveness of these metrics. The primary objective of our current study is to find out the most effective conceptualization of recency for the RFS task. Drawing on insights from Study \studB and established methodologies in linguistic research, we hypothesize that recency metrics that encode \term{higher-level} distances contribute more to RFS than those based on \term{lower-level} distances. Additionally, we postulate that the effectiveness of recency metrics varies depending on corpus-specific characteristics, such as the genre and structure of texts.
+
+To test these hypotheses, our approach involves two key steps: firstly, we will develop a comprehensive taxonomy of the various computational operationalizations of recency, providing a clear overview of the spectrum of metrics employed. Subsequently, we will conduct an evaluation of these recency metrics across two distinct corpora, \grectwo and \wsj, which differ in terms of their genre and structural attributes. This comparative analysis aims to shed light on the relative effectiveness of different recency measures in varying textual contexts.
+
+The structure of this section is as follows: \sectref{subsec:recencylit} offers a concise overview of the concept of recency in both linguistic and computational studies, setting the stage for the development of a taxonomy of recency metrics in \sectref{subsec:recencytaxonomy}. An in-depth evaluation of these metrics is conducted in \sectref{sec:studyc}, followed by a summary and review of the study's findings in \sectref{sec:conclusionstudyc}.
+
+\subsection{Recency in linguistic and computational linguistic studies}\label{subsec:recencylit}
+
+The concept of recency posits a direct relationship between an RE's form and the referent's distance from its antecedent \citep{vonk1992use,givon1992grammar,Arnold2010}. Specifically, the greater the distance between the referent and its antecedent, the more likely it is that richer RFs will be employed, and vice versa. As detailed in \chapref{chap2}, linguistic literature interprets recency in three primary ways. The first two interpretations focus on measuring distance in terms of the number of sentences or clauses. Immediate context considers the antecedent's presence within the same or preceding utterance (or clause) \citep{hobbs1978resolving,ariel1990accessing,Hitzeman1998,henschel2000pronominalization,poesio2004centering}, while non-local context typically encompasses a broader range of sentences \citep{mccoy1999generating,arnold2009reference}, with studies like \citet{Givon1983} measuring up to 20 clauses back. The third interpretation, unit boundary, extends beyond sentence level to consider paragraphs \citep{Fox1987,Tomlin1987}. The question at hand is which of these interpretations is most effective for predicting RF in discourse.
+
+Most feature-based \context models integrate various interpretations of recency. For instance, the binary feature of \citet{bohnet2008g}, indicating if the antecedent appears in the same sentence, aligns with the immediate context interpretation. Other models measure recency differently, such as counting the intervening words between an RE and its antecedent \citep{bohnet2008g,jamison2008osu}.
+
+As shown in \tabref{tab:recency} from study \studB, the metrics in feature-based studies vary in their units of measurement (e.g., word distance vs. sentence distance) and encoding strategies. Some distances are quantified using natural numbers, while others are grouped into broader \term{bins}. For instance, in the following example, from \msrcor \citep{belz2010generating}, one could measure the distance between the expression \intext{its} and its antecedent \intext{Berlin} as 21 words (a natural number). Alternatively, following the approach of \citet{castro-ferreira-etal-2016-towards-variation}, distances can be categorized into bins, placing the distance between \intext{its} and \intext{Berlin} in the 21–30 word bin.
+
+
+\ea\label{ex:berlin}
+\italunder{Berlin}$_{(1)}$ is$_{(2)}$ the$_{(3)}$ capital$_{(4)}$ city$_{(5)}$ and$_{(6)}$ one$_{(7)}$ of$_{(8)}$ the$_{(9)}$ sixteen$_{(10)}$ federal$_{(11)}$ states$_{(12)}$ of$_{(13)}$ Germany$_{(14)}$ .$_{(15)}$ With$_{(16)}$ a$_{(17)}$ population$_{(18)}$ of$_{(19)}$ 3.4$_{(20)}$ million$_{(21)}$ in$_{(22)}$ \italunder{its}$_{(23)}$ city$_{(24)}$ limits$_{(25)}$,...
+\z
+ 
+
+\subsection{Taxonomy of recency metrics in computational studies}\label{subsec:recencytaxonomy}
+
+To develop a comprehensive understanding of recency metrics used in Machine Learning (ML) literature, we compiled a wide range of metrics and constructed a taxonomy, as shown in \tabref{tab:metric2}. These metrics exhibit significant variation, particularly in three key aspects: \term{the type of antecedent}, \term{the unit of measurement}, and \term{the type of encoding}.\footnote{\citeauthor{greenbacker2009udel} defined their recency metric as follows: ``Referring expressions which were separated from the most recent reference by more than two sentences were marked as long distance references" (\citeyear[101]{greenbacker2009udel}). This definition is interpreted in two ways in metrics 5 and 6 of our taxonomy.}
+
+\input{figures_tex_snippets/05/metrics_v2}
+
+\subsubsection{The type of antecedent}
+Most metrics identify the antecedent as the closest preceding mention of the same entity. However, one metric (metric 14 in \tabref{tab:metric2}) measures the distance to the nearest full NP antecedent, rather than the nearest mention.
+
+\subsubsection{The unit of measurement}\label{par:measunit} 
+The metrics vary in their chosen unit for measuring distance. In \tabref{tab:metric2}, the units include: (1) \term{words} [metrics 1--3], (2) \term{sentences} [metrics 4--11], (3) \term{NPs} [metric 12], (4) \term{markables} (textual expressions between which coreferential relations are established) \citep{chiarcos2005annotation} [metrics 13--14], and (5) \term{paragraphs} [metric 15].
+
+\subsubsection{The type of encoding} 
+A key distinction between metrics, as exemplified in \REF{ex:berlin}, is whether the distance is represented as a numeric value or categorized into bins. In \tabref{tab:metric2}, metrics 2, 3, 5, 6, 7, and 10 are categorical, while the others are numeric. The numeric values themselves are encoded differently across metrics: 1, 4, and 12--15 use natural numbers (including 0), metric 8 applies the natural logarithm, metric 9 uses an exponential form, and metric 11 involves normalized distance, as detailed below.\footnote{The exponential distance is not included for \wsj in this study.}
+
+\begin{description}[leftmargin=0cm]
+	\item[Scaled/normalized sentence distance.] 
+	To address disparities in sentence distance measurements, we normalize these values between [0, 1] using the formula below. This metric, along with the other 14, will be further discussed in \sectref{sec:studyc}.
+	\[
+		x_{\text{norm}} = \frac{x_i - x_{\min}}{x_{\max} - x_{\min}}
+	\]
+\end{description}
+
+
+
+
+\subsection{Assessing recency metrics}\label{sec:studyc}
+
+In this section, we undertake a comprehensive evaluation of the recency metrics discussed previously. Our primary objective is to determine which metrics contribute most to the success of \context models. As a first step, we first outline the necessary prerequisites for our experimental approach in \sectref{sec:methodology}. Subsequently, in \sectref{subsec:study}, we delve into the classifiers used for the assessment, examining their performance and the implications of the findings. Following this, two distinct methodologies for evaluating the recency metrics are explored: a Bayesian approach detailed in \sectref{subsec:bayesrecency}, and a sequential forward search (SFS) method presented in \sectref{subsec:ffsrecency}.
+
+
+
+\subsubsection{Prerequisites of the studies}\label{sec:methodology}
+
+This section outlines the foundational elements necessary for our investigation of recency metrics in \context models. We begin by detailing the datasets used for this assessment, followed by a description of the baseline model and the machine learning methodology employed to construct the RFS classifiers. The performance of each model, measured in terms of accuracy, is also presented.
+
+\paragraph*{Corpora used in this study}\label{subsec:corpora}
+
+A critical aspect of our study is determining how the choice of recency metrics might vary depending on the characteristics of the corpus. Since corpora can differ significantly in size, genre (e.g., Wikipedia articles, newspapers, and medical reports), and document structure (such as length and sentence structure), we selected two corpora examined in \chapref{chap4}: \wsj and \msrcor. These corpora differ notably in text genre and length-related attributes, providing a diverse basis for our analysis. We omitted \negcor due to its limited suitability for a 3-way classification task, primarily because only 4\% of its REs are descriptions. \tabref{tab:corpora} compares these two corpora, highlighting differences in document length, sentence and paragraph counts, and distribution of RE types. Based on this table, the \wsj documents are on average 3.5 times longer than the \msrcor documents, with a mean length of 530.7 words for \wsj compared to 148.3 words for \msrcor. Additionally, \wsj documents contain notably more sentences and paragraphs.
+
+\begin{table}
+	\begin{tabularx}{\textwidth}{Xrr}
+		\lsptoprule
+		Corpus features & \msrcor & \wsj \\ \midrule
+		Genre & Wikipedia & Newspaper\\
+		Number of documents & 1655   & 589   \\ 
+		Average number of words per document & 148.3  & 530.7   \\ 
+		Average number of sentences per document & 7.2  & 25   \\ 
+		Average number of paragraphs per document & 2.3  & 11   \\ 
+		Average number of referents per document & 1   & 15   \\ 
+		Average number of REs per document & 7.1   & 52.1   \\ 
+		Average length of sentences & 25.8   & 29.5   \\ 
+		Number of descriptions & 1613   & 6917   \\ 
+		Number of proper names & 2813   & 7695   \\ 
+		Number of pronouns & 4880   & 6953   \\ 
+		\lspbottomrule
+	\end{tabularx}
+	\caption[Comparison of the \msrcor and \wsj corpora.]{\label{tab:corpora}
+		Comparison of the \msrcor and \wsj corpora, focusing on length-related features and RF distributions.}
+\end{table}
+
+
+For the 3-way RFS classification task, models must choose between \val{pronoun}, \val{proper name}, and \val{description}. First-mentioned referents, which lack an antecedent and therefore have no recency value, are excluded from our analysis. The total number of REs in \msrcor and \wsj amount to 9306 and 21565, respectively, with 70\% allocated to a training set and 30\% to a test set.
+
+\paragraph*{Baseline algorithms and ML method}\label{subsec:baselinesystem}
+
+To effectively assess the impact of recency metrics, we establish a baseline algorithm that excludes recency metrics, serving as a comparison point for the experimental algorithms incorporating these metrics. The baseline algorithm features the grammatical role of the current and preceding mentions. This choice ensures consistency across both corpora, eliminating discrepancies that might arise from differing annotations.
+
+The study uses a Multilayer Perceptron (MLP), a type of artificial neural network algorithm, for model training. This network is \textit{feedforward}, meaning information flows in one direction from input to output. It includes two hidden layers with 16 and 8 units, respectively, which are internal layers that help process the data. These layers use the Rectified Linear Unit (ReLU) activation function to determine the output of each unit, effectively allowing the network to learn non-linear patterns. The output layer employs the softmax function, converting the network's output into probabilities for classification.
+
+The MLP undergoes training in 50 epochs, where each epoch is a complete pass of the entire dataset through the network. Training is conducted in batches of 50 samples to optimize learning efficiency. Since MLPs cannot directly handle categorical data, a transformation technique known as one-hot encoding is used. In one-hot encoding, each categorical value within the dataset is converted into a new, separate categorical column. These columns are then filled with binary values: a \val{1} is assigned to the column corresponding to the data point's actual category, and \val{0}s are assigned to all other columns. This process effectively converts each categorical value into a distinct binary vector. As a result, every integer value, previously categorical, is represented in a format that the MLP can process. 
+
+
+\subsubsection{Building classifiers using MLP}\label{subsec:study}
+
+\paragraph*{Baseline algorithms} 
+
+In our study, we trained MLP algorithms on both the \msrcor and \wsj corpora. These algorithms use the grammatical roles of the current RE and its antecedent to form the baseline models. The accuracies achieved by the baseline models are 0.585 for \msrcor and 0.55 for \wsj, respectively.
+
+\paragraph*{Assessing recency metrics}
+
+Each experimental algorithm, in addition to the two baseline features, incorporates a single recency metric. For instance, \model 4 includes the grammatical role of an RE and its antecedent, coupled with metric 4, which quantifies the numerical distance in the number of sentences. In total, we tested 28 experimental algorithms across the two corpora, encompassing 14 distinct recency metrics.\footnote{Metrics 9 and 13 were not applicable to \wsj and \msrcor, respectively.} The rationale behind testing each recency metric separately is to isolate its individual contribution to the algorithm's success, avoiding confounding effects that could arise from combining multiple metrics. The accuracies achieved by these experimental algorithms, which integrate varying recency metrics, are summarized in \tabref{tab:acc}.
+
+\begin{table}
+\begin{tabularx}{.8\textwidth}{Xlrr}
+	\lsptoprule
+	\textbf{Measurement Unit} & \textbf{Name} & \msrcor & \wsj \\
+	\midrule
+	-- & baseline & 0.585 & 0.55 \\
+	\midrule
+	\multirow{3}{*}{Word} & \model 1 & 0.60 & 0.576\\ 
+	& \model 2 & 0.594 & 0.551\\
+	& \model 3 & 0.592 & 0.572\\ \midrule 
+	\multirow{8}{*}{Sentence} & \model 4 & 0.607 & 0.62\\
+	& \model 5 & 0.588 & 0.582\\
+	& \model 6 & 0.608 & 0.622\\
+	& \model 7 & 0.602 & 0.622\\
+	& \model 8 &0.607 & 0.611\\
+	& \model 9 & 0.609 & -\\
+	& \model 10 &0.589 & 0.597\\
+	& \model 11 &0.602 & 0.604\\ \midrule
+	NP & \model 12 & 0.59 & 0.623\\ \midrule 
+	\multirow{2}{*}{Markable} & \model 13 & -  & 0.577\\
+	& \model 14 & 0.594  & 0.561 \\\midrule
+	Paragraph & \model 15 & 0.625  & 0.616 \\
+	\lspbottomrule
+\end{tabularx}\caption[Accuracy of experimental algorithms.]{\label{tab:acc} Accuracy of experimental algorithms. The first column indicates the measurement unit of each metric, as detailed in \sectref{par:measunit}.}
+\end{table}
+
+While all experimental algorithms outperform the baseline in terms of accuracy, it remains to be determined whether the inclusion of recency metrics significantly enhances their performance. Notably, for the \wsj corpus, seven models (encompassing six sentence metrics and one NP metric) achieved higher accuracy than their \msrcor counterparts with corresponding metrics. The significance of these findings and the performance of the experimental algorithms will be further evaluated in \sectref{subsec:bayesrecency} and \sectref{subsec:ffsrecency}.
+
+\subsubsection{Bayes factor analysis}\label{subsec:bayesrecency}
+
+To investigate whether the experimental and baseline algorithms derive from distributions with similar or different underlying probability parameters, we conduct a Bayes Factor (BF) analysis using a beta distribution. Specifically, BF analysis is employed to determine if the differences in accuracy rates between models are less than or exceed a predefined threshold of 0.01, chosen to detect very small differences. The evidence is in favor of similar distributions if the difference in accuracy is below the threshold. If it is above the threshold, there is good evidence that the outcome comes from different distributions. A result suggesting different distributions implies that the inclusion of recency metrics substantively improves the performance of experimental algorithms. We assess the strength of the evidence for each experimental model compared to the baseline following the scale by \citet{kass1995bayes}, as presented in \tabref{kaasinterp} in \chapref{chap4}. Here, we report only those results where experimental algorithms and baselines appear to originate from \emph{different} distributions.
+
+
+\paragraph*{BF analysis of the \msrcor models}
+
+Comparing each experimental model's correct prediction rates with the baseline reveals that only \model 15, incorporating paragraph distance as a recency metric, shows positive evidence (BF = 3.286) of differing from the baseline. Other models outperform the baseline, but lack sufficient evidence to assert that they differ from the baseline.
+
+\paragraph*{BF analysis of the \wsj models}
+
+For \wsj, eight models exhibit accuracy rates distinct from the baseline. Similar to \msrcor, \model 15 significantly differs. Additionally, six out of seven sentence-based recency metrics and \model 12 (using NP distance) also show very strong evidence of improved performance compared to the baseline. The exception is \model 5, which does not demonstrate a significant impact.
+
+\begin{table}
+\begin{tabularx}{.8\textwidth}{XXXr}
+	\lsptoprule
+	Name & Measurement unit & Definition & BF \\ 
+	\midrule
+	\model 4 & sentence & num & 54$\times$10\textsuperscript{8} \\ 
+	\model 6 & sentence & cat (4) & 19$\times$10\textsuperscript{9} \\
+	\model 7 & sentence & cat (3) & 37$\times$10\textsuperscript{9} \\ 
+	\model 8 & sentence & log & 78$\times$10\textsuperscript{5} \\ 
+	\model 10 & sentence & binary & 14$\times$10\textsuperscript{2} \\ 
+	\model 11 & sentence & norm & 12$\times$10\textsuperscript{4} \\ \midrule
+	\model 12  & NP & num & 56$\times$10\textsuperscript{9} \\ \midrule
+	\model 15 & paragraph & num & 16$\times$10\textsuperscript{7} \\ \lspbottomrule
+\end{tabularx}\caption[BF analysis of accuracy ratings.]{\label{tab:bayes} The BF analysis provides the ratio of probabilities, assessing whether the underlying accuracy rates are within a 1\% margin of each other or not. According to the scale by \citet{kass1995bayes}, as presented in \tabref{kaasinterp}, there is very strong evidence suggesting that the accuracy rates of all these models differ significantly from the baseline. In the column labeled \texttt{Def}, a brief definition of the metrics is provided, in accordance with \tabref{tab:metric2}. For example, \texttt{cat(4)} refers to the categorical distance across four bins.}
+\end{table}
+
+
+In the \wsj model assessments, it is notable that all sentence-based recency metrics, with the exception of metric 5, significantly enhance model performance. This discrepancy invites a deeper examination of why metric 5 is an outlier. A key distinction of metric 5 is in its categorical binning approach for measuring immediate context. Specifically, it combines instances where the antecedent and the referent are either in the same sentence (distance = 0) or adjacent sentences (distance = 1) into a single category. This binning strategy contrasts with the methods employed by other sentence-based metrics, which typically assign these scenarios to distinct categories. In essence, metrics other than metric 5 provide a finer-grained distinction by separately categorizing instances where referents share the same sentence from those where they are separated by a single sentence.
+
+
+\paragraph*{BF analysis of the best performing models}
+
+We further compare the models with best performance across different measurement units. The only difference between the models is the recency metric they use. If the accuracy difference exceeds the threshold, we attribute it to the use of distinct recency metrics. \tabref{tab:bestperforming} lists the top algorithms for each measurement unit.
+
+\begin{table}
+\begin{tabularx}{.8\textwidth}{XXl}
+	\lsptoprule
+	\textbf{Meas Unit} & \msrcor & \wsj \\ 
+	\midrule
+	Word & \model 1   & \model 1  \\ 
+	Sentence           & \model 9    & \model 7   \\ 
+	NP       & \model 12   & \model 12  \\ 
+	Markable      & \model 14   & \model 13   \\ 
+	Paragraph & \model 15   & \model 15   \\
+	\lspbottomrule
+\end{tabularx}
+\caption{\label{tab:bestperforming}
+	Best-performing algorithms of each measurement unit.}
+\end{table}
+%%%%This were already paragraphs
+
+\newpage
+\paragraph*{\RNum{1}. \msrcor models}
+
+Upon making one-to-one comparisons between the best-performing models for each measurement unit in the \msrcor corpus, we observe that these models do not exhibit statistically significant differences in performance. 
+
+\paragraph*{\RNum{2}. \wsj models}
+
+For the \wsj corpus, a different picture emerges. The models employing sentence (model 7), NP (model 12), and paragraph (model 15) recency metrics do not seem to evidentially differ from each other, suggesting these metrics are equally effective. However, when these three models are compared with the best-performing models using word and markable metrics, there is a significant shift in accuracy rates exceeding the 0.01 threshold. This indicates that models 7, 12, and 15 are statistically different from those using word and markable metrics.
+
+Upon contrasting \msrcor and \wsj, it becomes evident that the incorporation of recency metrics yields more substantial improvements in \wsj. While only one \msrcor model significantly outperforms its baseline, eight \wsj models exhibit statistically superior performance compared to their baseline. Notably, metrics based on sentences, paragraphs, and NPs significantly enhance the performance of the \wsj algorithms.
+
+
+While this section has focused on individually assessing recency metrics, it is important to note that many \context models incorporate multiple recency metrics. In the following section, we will explore a feature selection study aimed at identifying the most effective combinations of recency metrics for \context models.
+
+\subsubsection{Sequential forward search}\label{subsec:ffsrecency}
+
+To assess the combined impact of various recency metrics in \context models, we employ SFS with the learner \texttt{classif.mlp}. We also use 5-fold cross-validation for resampling. This approach follows the methodology detailed in \sectref{subsec:ffs}. The aim is to identify which combinations of recency metrics result in the most effective predictive models.
+
+\paragraph*{\msrcor experiment}
+For the \msrcor corpus, SFS identifies two recency metrics as particularly influential: metric 15 (distance measured in paragraphs) and metric 9 (exponential distance in sentences). Incorporating these metrics into our model yields an accuracy of 0.637. Subsequent BF analysis confirms that the outcome of this model is statistically different from the baseline. 
+
+\paragraph*{\wsj experiment}
+In the \wsj experiment, SFS selects metric 15 (distance in paragraphs) and metric 8 (logarithmic distance in sentences) as the most impactful combination. The model trained with these metrics achieves an accuracy of 0.631. BF analysis provides very strong evidence that the performance of this model differs significantly from the baseline, reinforcing the importance of paragraph distance in the context of \wsj.
+
+The results from both corpora consistently point to the relevance of paragraph-based distance as a key factor in \context studies. This insight aligns with the broader theme of emphasizing higher-level structural elements in text for effective reference generation. A more in-depth exploration of the role of paragraph structure in \context models is presented in the next chapter.
+
+
+\subsection{Summary and discussion of study \studC}\label{sec:conclusionstudyc}
+
+In study \studC, we delved into the diverse interpretations of recency to identify the most effective metrics for predicting the form of referring expressions in context. Additionally, we examined how corpus-specific characteristics, such as text genre and structure, influence the choice of recency metrics. This study's findings are of interest to both theoretical linguists and computational linguists, who have explored the relationship between recency and RF.
+
+The concept of recency has often been explored in the linguistic tradition without a clear definition being offered. In the computational tradition, on the other hand, researchers have dwelt less on theoretical justifications but have had to provide precise definitions to ensure that their algorithms can handle a wide range of inputs. For example, \citet{kibrik2016referential} proposed seven distinct implementations of recency based on various units of measurement, while \citet{saha2011single} explored different sentence-related metrics.
+
+Interestingly, computational research has ventured beyond conventional sentence or paragraph-level metrics, incorporating unconventional measures like word count, markables, and noun phrases (NPs). This expansion of recency metrics in computational studies potentially paves the way for novel insights and could prompt a reevaluation of recency concepts within linguistic theory. In many computational works, however, there is no explanation as to why a particular metric or encoding method was chosen over another. Our results contribute the following to the literature:
+
+\paragraph*{Creating a taxonomy of recency metrics} 
+Our study not only gives an overview of recency interpretations in the linguistic tradition but also, for the first time to our knowledge, establishes a comprehensive taxonomy of recency metrics used in feature-based ML studies. This taxonomy clarifies the nuances between these metrics, providing a foundational step for analyzing various aspects of recency and for developing new, refined metrics. 
+
+\paragraph*{Assessing a wide range of recency metrics} 
+
+Using an MLP algorithm, we constructed classifiers based on individual recency metrics. Subsequent Bayes factor analysis assessed whether models with recency metrics diverged significantly from baseline models. Additionally, a comparative BF analysis among the top-performing models of each measurement unit was conducted to verify if noticeable differences existed in their outcomes.
+
+As indicated in \tabref{tab:bayes}, the \wsj models integrating NP, paragraph, and sentence metrics showed a substantial difference (>0.01) from the baseline. There is also strong evidence that these models significantly differ from those incorporating word and markable distance measures. Sequential Forward Search experiments demonstrated that a combination of paragraph and sentence metrics yielded the best results for both corpora. This aligns with study \studB's findings, where sentence- and paragraph-based distances were key components in the consensus feature set.
+
+The combined results from BF analysis and SFS suggest that higher-level metrics (paragraph and sentence) may enhance algorithm performance more effectively than lower-level metrics (word and markable). This observation leads to a pertinent question: Why is a higher-level measurement, like the distance in the number of sentences, more effective than a lower-level measurement, such as the distance in the number of words? This consideration is particularly significant given that word-based distance measures might more accurately reflect the physical proximity between mentions, considering the considerable variability in sentence lengths. 
+
+One potential explanation is that the physical distance between referents does not influence their prominence status. Instead, what may be more critical are the transitions between distinct units. This reasoning can explain the effectiveness of sentence and paragraph metrics, since the former involve a transition between sentences, and the latter a transition between paragraphs. However, this explanation does not sufficiently account for the observed success of the NP-based metric.
+
+Another notable finding is the varying effectiveness of different solutions. For example, in one metric, sentence distance categorized into two bins yielded a marginal performance improvement, while another metric with four bins significantly enhanced accuracy. This underscores the importance of how recency is operationalized in computational models.
+
+\paragraph*{Significance of paragraph-based distance}
+Both BF and SFS analyses underscore the importance of paragraph-based distance in the success of algorithms. This finding corroborates the discussion in \chapref{chap2}, where transitions across episode boundaries were shown to influence referent accessibility and form. Including paragraph distance can thus markedly improve algorithms' ability to predict referential form. Despite its significance, paragraph distance has been underutilized in computational studies, with only one featured study from \tabref{tab:metric2} incorporating it. The impact of paragraph boundaries on \context tasks will be further explored in \chapref{chap6}.
+
+\largerpage
+\paragraph*{Importance of the choice of corpus} 
+
+Our study reveals that the impact of recency metrics in \context models is significantly influenced by the characteristics of the chosen corpus. This was particularly evident when comparing the effects of recency measures in the \wsj and \msrcor corpora.
+
+In \msrcor, only the metric measuring distance in the number of paragraphs yielded a distribution significantly different from the baseline when considered independently. In contrast, eight distinct recency metrics in \wsj led to significant divergences. This discrepancy can be attributed to the distinct structural features of these corpora. As shown in \tabref{tab:corpora}, \wsj texts are substantially longer, with nearly four times as many words, sentences, and paragraphs compared to \msrcor. This difference in length-related features might account for the varying importance of recency metrics in the respective models.
+
+Furthermore, the genre of each corpus could play a role. \msrcor documents, typically introductory sections of Wikipedia articles, often focus on a single main topic. This format likely results in repeated mentions of the referent across sentences, diminishing the relevance of metrics like sentential distance.
+
+\tabref{tab:msrrecdistrib} presents the distribution of sentential distances in \msrcor. Approximately 88\% of REs are found within the immediate context of their antecedents (distance $<$ 2 sentences). This concentration in immediate context may reduce the effectiveness of sentential recency metrics in this corpus.
+
+\begin{table}[b]
+\begin{tabularx}{\textwidth}{Xrrrrrrr}
+	\lsptoprule
+	distance (num) & 0 & 1 & 2 & 3 & 4 & 5 & $<$5 \\ 
+	\midrule
+	 total & 30.98 & 56.86 & 7.54 & 2.57 & 1.03 & 0.48 & 0.55 \\ 
+	total\_cumulative & 30.98 & 87.83 & 95.37 & 97.94 & 98.98 & 99.45 & 100.00 \\ 
+	\lspbottomrule
+\end{tabularx}\caption{Sentence-based recency distributions in \msrcor.}\label{tab:msrrecdistrib}
+\end{table}
+
+Our findings suggest that the complexity and diversity of a text's discourse structure significantly influence the efficacy of recency metrics. Therefore, understanding the genre and structural features of the textual source is imperative when selecting recency metrics for computational studies.
+
+\section{Discussion and final remarks}
+The studies presented in this chapter both dealt with the choice of features for the feature-based \context task.
+
+Study \studB functioned as a \term{survival of the fittest} challenge among a variety of features, culminating in the selection of six key features. These features spanned four primary categories: grammatical role, antecedent form, inherent characteristics, and recency. The principal aim of this study was to propose a concise set of features as a robust foundation for constructing effective feature-based \context models.
+
+A unique aspect of this study was its endeavor to not just identify but also elucidate the significance of these features in the context of \context models. Although computational models do not rely on explicative frameworks, understanding the underlying reasons for a model's performance is crucial for further improvements. However, one limitation of study \studB was its relative lack of focus on the specific operationalization of these features, a crucial aspect for comprehending their full impact.
+
+In contrast, study \studC delved into the intricate details of one feature category, providing a nuanced understanding of how different dimensions of a feature (such as the unit of measurement and encoding method) can influence the effectiveness of \context models. Focused exclusively on recency-based metrics, this study revealed key insights into the multifaceted nature of this feature class.
+
+Importantly, study \studC extended the findings of study \studB by highlighting that while recency is a pivotal feature in reference studies, the choice of what and how to encode this feature is critical. For instance, the study demonstrated that sentence-based recency metrics were more impactful for models using the \wsj corpus compared to those using \msrcor, emphasizing the need to consider corpus-specific characteristics in feature selection. Additionally, the study illuminated that not all operationalizations of sentence-related recency metrics contributed equally to the models' success, underscoring the necessity of a strategic approach in feature encoding.
+
+The insights from study \studC have broader implications, extending beyond recency metrics to other feature-based studies in reference. They underscore the importance of meticulous feature analysis and selection in developing sophisticated and effective computational models for studying reference in context.
+

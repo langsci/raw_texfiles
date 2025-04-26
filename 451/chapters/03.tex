@@ -1,0 +1,430 @@
+% !TeX spellcheck = en_US
+\chapter{Generating referring expressions in context: Computational studies}\label{chap3}
+
+
+\section{Introduction}\label{sec:introduction}
+
+\chapref{chap2} explained the linguistic theories pertaining to the choice of referring expressions and the factors that influence that choice. The current chapter concentrates on computational theories of reference.
+Chapters~\ref{chap2} and \ref{chap3} collectively establish the context for the studies detailed later in this work.
+
+This chapter begins with an introduction to Natural Language Generation in \sectref{sec:nlg} and delineates the primary subtasks of an NLG pipeline. Subsequently, I explore the task of Referring Expression Generation in \sectref{sec:introreg}. Two distinct subtasks of REG, specifically \shot and \context, receive comprehensive explanations in \sectref{subsec:distinguishing} and \sectref{subsec:referentialChoice}. The aim is to understand the methodologies employed in addressing and resolving REG challenges. In  \sectref{sec:evaluationtheory}, I introduce the various approaches for evaluating REG algorithms, highlighting the most commonly employed evaluation techniques. The chapter concludes in \sectref{sec:summarychap3} with a discussion of the most important aspects of the \context task that need further examination.
+
+ 
+\section{Natural language generation}\label{sec:nlg}
+NLG is concerned with the generation of natural language text from non-lin\-guis\-tic input \citep{gatt2018survey}. These systems are used in practical applications, such as the generation of weather forecasts \citep{mei-etal-2016-talk}, clinical reports \citep{portet2009,gatt2009data}, and soccer reports \citep{van-der-lee-etal-2017-pass}.
+
+The primary subtasks of NLG systems encompass \term{content determination}, \term{text structuring}, \term{sentence aggregation}, \term{lexicalization}, \term{referring expression generation}, and \term{linguistic realization} \citep{reiter2000building}. Consider the objective of automatically generating a report on the Brazil--Germany match in the 2014 FIFA World Cup semifinals. The following describes the pipeline structure for generating such a report:
+
+\begin{description}
+\item[Content determination:] Initially, one must decide which information to include in the report. Match statistics encompass details about corners, passes, fouls, and more. However, it might not be necessary to detail every pass and foul in the report. After deciding which content to include, raw data is transformed into data objects or messages for inclusion in the final output.
+
+\item[Text structuring:] The aim of this task is to establish the sequence for presenting the information. It is logical to begin a soccer report with general information, such as the location and time of the game, followed by significant events (e.g., goals, penalties) in chronological order. In this phase, a discourse, text, or document plan is developed, serving as a structured and ordered representation of the messages \citep{gatt2018survey}. Content determination and text structuring constitute the \term{macro-planning} phases of the pipeline, where decisions regarding \textit{what to say} are made.
+
+\item[Sentence aggregation:] Mapping messages to sentences in a one-to-one ratio results in excessively lengthy and challenging-to-read text. Aggregating relevant sentences allows for the construction of more complex sentences. For instance, Toni Kroos scored a goal in the 24th minute of the Brazil vs. Germany match and another in the 26th minute. These two goal-scoring events can be synthesized into a single, more concise sentence.
+
+\begin{exe}
+\ex\label{ex:sentenceAggregation} Toni Kroos scored in the 24th and 26th minutes.
+\end{exe}
+
+\item[Lexicalization:] A single event can often be verbalized in multiple ways. For instance, the scoring event in \REF{ex:sentenceAggregation} might be expressed as \intext{to score a goal} or \intext{to kick a goal}. These verbalization choices occur during the lexicalization stage.
+
+\item[Referring expression generation:] This task involves choosing expressions to refer to domain entities. The process resembles lexicalization; however, the chosen expression must differentiate the target referent, Toni Kroos, from other referents. Therefore, if Toni Kroos is not a prominent referent in the context, using his name is advisable. Conversely, if he is prominent, such as being mentioned in the preceding sentence, a pronoun may be more appropriate. Sentence aggregation, lexicalization, and referring expression generation constitute the \term{micro-planning} stages of the pipeline, where decisions are made regarding \textit{how to express} the content.
+
+\item[Linguistic realization:] The final step involves combining all the selected words into well-formed sentences. For an in-depth overview of the NLG subtasks outlined above, see \citet{reiter2000building} and \citet{gatt2018survey}. 
+\end{description}
+
+It is important to note that the sequence and number of tasks employed in various NLG modular systems can vary considerably. Additionally, a specific task might be segmented into subtasks and executed at different stages of the generation process \citep{mellish_scott_cahill_paiva_evans_reape_2006}. However, the modular pipeline structure described above is merely one of the many approaches to NLG. For information on alternative NLG architectures, such as planning-based methods, refer to \citet{gatt2018survey}. 
+
+A particular NLG architecture that has become popular in recent years is the neural end-to-end data-to-text approach. With the rapid advancement of neural methods, direct mapping from input to output has become feasible \citep{Goodfellow2016,Goldberg2017}. These models learn input-output mappings directly and rely much less on explicit intermediate representations such as the ones outlined previously \citep{castro-ferreira-etal-2019-neural}. Despite the increasing popularity and efficacy of end-to-end NLG approaches, pipeline-based methods remain widespread \citep{gatt2018survey}. For one, they align well with linguistic and psycholinguistic research \citep{Gompel2019}. They also predominate in commercial applications of NLG (for further argumentation, see \cite{reiter2016method,reiter-2017-commercial}). Furthermore, a systematic comparison of pipeline and end-to-end REG systems has shown that ``having explicit intermediate steps in the generation process results in better texts than the ones generated by end-to-end approaches" \citet[552]{castro-ferreira-etal-2019-neural}. For these reasons, it is crucial to have a thorough understanding of the subtasks of the modular architecture. 
+
+This book focuses on the REG subtask, which is one of the essential steps in the micro-planning stage. Additionally, REG can be relatively easily separated from a specific application domain and studied on its own \citep{gatt2018survey}. Therefore, several stand-alone solutions to the REG problem exist, making the evaluation of such models feasible and necessary. In the rest of this chapter, the focus will be exclusively on different aspects of the REG step. 
+
+\section{Referring expression generation}\label{sec:introreg}
+REG studies address one of these two tasks \citep{gatt2014models}:  
+
+ \begin{itemize}
+     \item \term{Conceptualization} -- the choice of properties to represent in an RE that is a full definite noun phrase.
+     \item \term{Choice of (anaphoric) REs} in discourse (e.g., full definite NP, reduced NP, pronoun).
+ \end{itemize}
+
+Suppose you wish to identify the figures enclosed by the black rectangle in both visual scenes of \figref{fig:menwomen}: In the context of the first visual scene, the property profession, as indicated in the referring expression \intext{the judge}, is sufficient for identifying the figure. In the second visual scene, an additional distinctive feature such as wig color is necessary to provide a distinguishing description: \intext{the judge in a dark wig}. The conceptualization task focuses on selecting the attributes required to create unique descriptions. The descriptions generated by this task are also known as \term{one-shot}, \term{non-anaphoric} expressions. As mentioned in \chapref{chap1}, this task is referred to as \shot.
+
+% TODO: \usepackage{graphicx} required
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=\linewidth]{figures_tex_snippets/03/visualScenes}
+	\caption[Referents in two different visual scenes.]{Referents in two different visual scenes. To describe \val{d2}, the RE \intext{the judge} is distinctive, while a more distinctive RE such as \intext{the judge in a dark wig} is needed to describe \val{e2}.}
+	\label{fig:menwomen}
+\end{figure}
+
+
+ 
+Now, imagine the enclosed figure of the second visual scene is already prominent in the discourse, for example, through its mention in \REF{fig:judge}. A reduced NP, such as \intext{the judge}, or the pronoun, \intext{him}, can then be used to refer to the judge \texttt{e2} in \REF{fig:judgereduced}.
+\begin{exe}
+	\ex \begin{xlist}
+		\ex\label{fig:judge} \italunder{The judge in a dark wig} asked the police about the crime scene. 
+		\ex\label{fig:judgereduced} The police's response made \italunder{the judge/him} very concerned.
+	\end{xlist}
+\end{exe}
+
+Here, the decision concerning the form and content of a referring expression is influenced by a range of factors that affect the prominence status of a referent. Owing to the contextual nature of these decisions, as previously discussed in \chapref{chap1}, this task is known as \context. \sectref{subsec:distinguishing} introduces several well-known approaches to \shot, and \sectref{subsec:referentialChoice} provides an in-depth overview of methods for handling \context. 
+
+
+
+\subsection{One-shot REG}\label{subsec:distinguishing}
+
+In this section, I concentrate on \shot. The discussion begins with an explanation of the task and then transitions to the primary methods employed in the task, along with its various extensions.
+
+\Shot is defined as follows: Given a target object \texttt{r} in a finite domain \texttt{D} (\texttt{r} $\in$ \texttt{D}),  the goal is to find a set of attribute$-$value pairs, \texttt{L}, whose conjunction is true of the target, but not of any of the distractors. \texttt{L} is referred to as \term{a distinguishing description} of the target \citep{dale1995computational,comreg2019}. For instance, consider the context of \figref{fig:ducks}, where the objective is to identify a distinguishing description for duck \texttt{d1} (\texttt{r=d1}). The finite domain and attributes are outlined below:
+ 
+ \begin{center}
+ 	D=$\{\texttt{d1}:\texttt{d7}\}$ \\ Attributes=$\{\texttt{body color}, \texttt{hair color}, \texttt{bill color}\}$
+ \end{center}
+
+  \begin{figure}[htb]
+ 	\captionsetup{justification=centering}
+ 	\centering
+ 	\begin{tikzpicture}[font=\footnotesize]
+ 		\node[duck, skin=blue, bill= green, minimum size=1cm](A){d1};
+ 		\draw[black] (A.north west) rectangle (A.south east);
+ 		\node[duck, bill=red, minimum size=1cm,xshift=1.5cm] {d2};
+ 		\node[duck, bill=red, skin=blue, minimum size=1cm,xshift=3cm] {d3};
+ 		\node[duck, bill=red, hair=gray, minimum size=1cm,xshift=4.5cm] {d4};
+ 		\node[duck, skin=blue, bill=yellow, minimum size=1cm,xshift=6cm] {d5};
+ 		\node[duck, bill=red, minimum size=1cm,xshift=7.5cm] {d6};
+ 		\node[duck, bill=red, minimum size=1cm,xshift=9cm] {d7};
+ 	\end{tikzpicture}
+ 	\caption{Set of ducks.}
+ 	\label{fig:ducks}
+ \end{figure}
+
+If the sole objective is identification, a fault-proof strategy involves combining all the properties of duck \texttt{d1} to create a distinguishing description, assuming the referent is distinguishable. In such a scenario, \intext{the duck with a blue body, black hair, and a green bill} serves as an apt description for \texttt{d1}. However, in addition to creating a distinctive description, it is also important to consider \term{humanlikeness}. The vast majority of REG solutions attempt to generate referring expressions that closely resemble those of humans \citep{van2012toward,van2016computational}. Below, some of the most seminal approaches are explored.
+
+\paragraph*{The Full Brevity Algorithm}
+\term{The Full Brevity Algorithm} produces the shortest distinguishing description for an intended referent \citep{dale1989cooking}. This algorithm adheres to Grice's maxim of quantity \citep{grice1975logic} and consistently uses the minimum number of properties necessary to identify a given referent. As a result, the algorithm generates \intext{the duck with a green bill} as the distinguishing description of duck \texttt{d1}. However, this algorithm is not widely implemented due to two primary reasons: First, conducting an exhaustive search for the shortest distinguishing description is not computationally efficient; second, humans often produce non-minimal descriptions (\citealt{comreg2019}).
+
+\paragraph*{The Greedy Heuristic Algorithm} \term{The Greedy Heuristic Algorithm} is an extension of the Full Brevity Algorithm, which attempts to generate humanlike expressions with more redundant properties \citep{dale1989cooking}. This algorithm first determines the property of the referent that excludes the most distractors. It then adds this property to the description. In subsequent iterations, the algorithm evaluates which of the remaining properties excludes the most distractors. This process continues until no distractors are left. The algorithm lacks \term{backtracking}; that is, once a property is added to the description, it remains, even if it becomes redundant. To describe \texttt{d3}, the first attribute eliminating the most distractors (four ducks) is skin color. Bill color, possessing the next highest discriminatory power, excludes the remaining two distractors. Consequently, the distinguishing description generated by this algorithm is \intext{the blue duck with a red bill}.
+
+Although the Greedy Heuristic Algorithm may generate more natural results, its performance is not yet comparable to that of humans. According to \citet{dale1995computational}, humans might begin to utter an RE before they have fully scanned the set of distractors.
+Moreover, several studies have shown that people tend to use color attributes more frequently than any other attribute \citep{pechmann1989incremental, viethen2017color}, even in situations where the color does not lead to a discriminative description. If one shows individuals a picture that includes a white bird, a black cup, and a white cup, and asks them to come up with a distinguishing description for the white bird, they tend to refer to it as \textit{the white bird}, even though \intext{the bird} is sufficient \citep{pechmann1989incremental}. \intext{The white bird} in this scenario exemplifies an \term{overspecified} description, where an excess of attributes is used.
+
+\paragraph*{The Incremental Algorithm and its extensions}
+As just mentioned, people exhibit preference for certain properties over others when referring to entities. For instance, to refer to one of the ducks described earlier, people may prefer body color over bill color. This preference order constitutes one of the parameters of the \term{Incremental Algorithm} (IA) \citep{dale1995computational}. A simplified representation of IA is illustrated in Algorithm \ref{algo:inc} \citep{comreg2019}.
+
+\begin{algorithm}
+	\caption{Sketch of the core Incremental Algorithm \citep{comreg2019}.}
+	\label{algo:inc}
+	Incremental Algorithm~$(\{r\}, D, Pref)\{$\;
+	L $\leftarrow$ ∅ \;
+	C $\leftarrow$ D-\{r\}\;
+	\For{each A\sous{i} in list \textit{Pref}}{
+		V = Value (r, A\sous{i})\;
+		\textbf{if} C $\cap$ RulesOut($\langle$ A\sous{i}, V $\rangle$) $\ne$ ∅\;
+		\textbf{then} L $\leftarrow$ L $\cup$ \{$\langle$ A\sous{i}, V $\rangle$\}\;
+		\hspace{1cm} C $\leftarrow$  C $-$ RulesOut($\langle$ A\sous{i}, V $\rangle$)
+		
+		\textbf{endif}\;
+		
+		\textbf{if} C $\ne$ ∅
+		
+		\textbf{then return} L
+		
+		\textbf{endif}}\;
+	\textbf{return failure} \}\;
+  
+  
+\end{algorithm}
+
+Suppose we want to generate a description of \texttt{d3} in the context of \figref{fig:ducks}. The input of the algorithm is an object \texttt{r}, a domain \texttt{D} consisting of all objects \texttt{d1}$:$\texttt{d7}, and a list of preferred attributes shown in the first line of the algorithm \ref{algo:inc}. Assume that \texttt{Pref} = body color > hair color > bill color. Line (2) shows that the description is initialized with an empty set. As shown in (3), the context set \texttt{C} of distractors (everything except \texttt{d3}) is initialized as \texttt{D}$-$\{\texttt{d3}\}. In (4), the algorithm iterates over the list of attributes listed in \texttt{Pref}, and for each attribute, it looks up the value of the target referent (5). It then checks whether this attribute--value pair excludes any of the distractors (6). The function \texttt{RulesOut} ($\langle$ A\sous{i}, V $\rangle$) returns a set of objects that have different values for the attribute A\sous{i} than the target object. If one or more distractors are excluded, the attribute--value pair $\langle$ A\sous{i}, V $\rangle$ is added to the description under construction (7), and a new set of distractors is computed (8). Body color is the first attribute to be considered, for which \texttt{d3} has the value \texttt{blue}. According to this rule, all ducks except \texttt{d1} and \texttt{d5} are excluded and the attribute--value pair ⟨bodyColor, blue⟩ is added to the description \texttt{L}. The new set of distractors is \texttt{C} = \{\texttt{d1}, \texttt{d5}\}, and the next attribute ⟨hair color⟩ is tested. Since they all have the same hair color, no distractor can be ruled out, so the attribute--value pair ⟨hairColor, black⟩ is not included in the description. Next, the third attribute is checked. The target's bill is red while the remaining distractors' bills are not, so the attribute--value pair ⟨billColor, red⟩ is also included. At this point, all distractors have been ruled out (10), a set of properties has been discovered that uniquely characterize the target, and the task is complete (11). The algorithm would have failed if it had reached the end of the \texttt{Pref} list without eliminating all the distractors (14).
+
+The Incremental Algorithm does not incorporate backtracking, enhancing its computational efficiency. Simultaneously, this approach permits redundant descriptions that are psycholinguistically more plausible and align more closely with human-produced language. Consequently, IA has become the most widely implemented REG algorithm. However, the original IA, along with all its predecessors, is not capable of generating more complex expressions, such as references to sets of objects. Here is a brief overview of some of the extensions to IA.
+ 
+\Citet{deemter2002generating} enhanced the IA algorithm, enabling it to generate expressions with negated properties \REF{ex:negation}, expressions referring to sets of objects \REF{ex:set}, and expressions containing a logical disjunction of properties \REF{ex:disjunct}. These algorithms operate in stages, attempting to generate a longer disjunction of properties when shorter descriptions fail to create a distinguishing description. The subsequent expressions refer to the various ducks depicted in \figref{fig:ducks}.
+
+\begin{exe}
+\ex\label{ex:negation} $[\texttt{d4}]$: The yellow duck that does not have black hair
+\ex\label{ex:set} $[\texttt{d1}, \texttt{d3}, \texttt{d5}]$: The blue ducks
+\ex\label{ex:disjunct} $[\texttt{d1},\texttt{d4}]$: The duck with a green bill and the duck with gray hair
+\end{exe}
+
+A more recent extension of IA considers the conceptual naturalness of sets and generates set expressions that are conceptually coherent. The idea behind this approach is that the felicity of a description is influenced by the conceptual relatedness of the elements of the set \citep{gatt2007lexical}. Imagine a set consisting of three people: an Italian composer, a Greek chef, and a German engineer. The phrase \intext{the Greek and the German} forms a more coherent expression than \intext{the Greek and the engineer}, since the former is derived from a single coherent perspective, namely the nationality of the set's members \citep{gatt2007lexical}. In contrast, the latter phrase is derived from two perspectives. Various extensions of IA have been developed to incorporate different dimensions of RE generation into the algorithm. For a more comprehensive overview, refer to \citet{viethen2011generation}, \citet{krahmer2012computational}, and \citet{van2019compref}.
+
+The studies mentioned thus far are rule-based, algorithmic solutions proposed for attribute selection in the \shot task. In what follows, I present two other approaches that tackle \shot differently: firstly, a machine learning experiment conducted by \citet{jordan2005learning2} for automatic attribute selection; and secondly, research focused on the \corpus{tuna} corpus -- a semantically and pragmatically transparent corpus comprising identifying references to objects within visual domains \citep{van2006building}. The \corpus{tuna} studies emphasize the empirical evaluation of \shot algorithms against human-produced data.
+
+\citet{jordan2005learning2} conducted their REG study on the \textsc{coconut} corpus using a machine learning approach. This corpus comprises computer-mediated dialogs between two individuals. Each participant had a virtual budget and a list of furniture inventories. Their task was to collaboratively purchase furniture to furnish two rooms. \citet{jordan2005learning2} used \textsc{ripper}, a program capable of automatically deriving rules from observations \citep{cohen1996learning}, to infer rules. Three sets of features were tested both separately and in combination in their experiment: (1) \term{contrast set} factors, inspired by the IA \citep{dale1995computational}, (2) \term{conceptual pact} factors, drawing on the lexical alignment model of \citet{brennan1996lexical}, and (3) \term{intentional influence} factors, based on a model by \citet{jordan2000learning}. As a baseline for their experiment, the generator simply predicted the most frequent attribute combinations. All systems outperformed the baseline system significantly. \citet{jordan2005learning2} concluded that ``the choice to use theoretically inspired features is validated, in the sense that every set of cognitive features improves performance over the baseline." Combining the features of all three systems raised the accuracy of their model to 60\%. This study is not only among the pioneering machine learning experiments in the REG domain but also underscores the importance of linguistically motivated features in REG studies.
+
+\begin{sloppypar}
+A comprehensive assessment of \shot was conducted in the \textsc{tuna} project. By applying the above-mentioned algorithms to a semantically and pragmatically transparent corpus known as \textsc{tuna}, \citet{gatt2007evaluating} investigated whether IA matched speakers' behaviors better than other algorithms. Data were collected through a web experiment in which participants described either singular or plural targets in the presence of six other distractor items. For the sake of generality, objects from two different domains were included, namely constructed images of furniture and actual photographs of people \citep{van2006building}.
+\end{sloppypar}
+
+\begin{figure}
+	\begin{floatrow}
+	\captionsetup{margin=.05\linewidth}
+		\ffigbox{\includegraphics[width=.9\linewidth]{figures_tex_snippets/03/TUNA-object.JPG}}
+		{\caption{An example scene from the \corpus{tuna} corpus' object domain.}
+		\label{fig:tuna-object}}
+		\ffigbox{\includegraphics[width=.9\linewidth]{figures_tex_snippets/03/TUNA-people.JPG}}
+		{\caption{An example scene from the \corpus{tuna} corpus' people domain.}
+		\label{fig:tuna-people}}
+	\end{floatrow}
+\end{figure}
+
+\newpage
+The results of the evaluation demonstrated that the performance of IA was entirely dependent on the preference order established for the attributes \citep{gatt2007evaluating}. \textsc{tuna} represents one of the initial systematic efforts to evaluate NLG algorithms against human-informed decisions. Moreover, it highlights the significance of corpus-driven approaches in assessing REG algorithms. An additional contribution of \textsc{tuna} to REG studies was the introduction of the first REG shared tasks, establishing a platform for various research groups to propose solutions to a given problem. 
+
+More recent approaches in one-shot RE generation place a greater emphasis on probabilistic methods. Notable examples of such models include \term{the Probabilistic Referential Overspecification model (PRO)} by \citet{Gompel2019}, the \term{Rational Speech Act} (RSA) model by \citet{Frank2012}, which conceptualizes the production and comprehension of REs within a Bayesian framework, and the RSA-based model by \citet{Degen2020} for generating overspecified REs.
+
+As highlighted at the beginning of this section, \shot approaches do not account for discourse context in generating distinguishing descriptions. Considering our daily communication, however, it becomes evident that most REs we produce are embedded within a discourse context. In the remainder of this chapter, I will focus exclusively on the task of \context.
+
+\subsection{\context}\label{subsec:referentialChoice}
+
+As mentioned in \chapref{chap1}, \citet{belz2007generation} defines \context in this way: ``given an intended referent and a discourse context, how do we generate appropriate referential expressions (REs) to refer to the referent at different points in the discourse?" (p.~9). This task can be subdivided into two subtasks: (1) determining the form of the RE, and (2) deciding the content of the RE. The initial step involves determining the form. For example, when referring to Joe Biden at a specific point in a discourse, one must decide whether to use a proper name (\intext{Joe Biden}), a description (\intext{the president of the United States}), a demonstrative form (\intext{this person}), or a pronoun (\intext{he}). The subsequent step involves determining the content, namely, selecting from the various ways a particular RF can be realized. For example, in generating a description of Joe Biden, one must choose whether to mention only his job (for example, \intext{the president} \textit{entered the Oval Office}) or to include the country as well (for instance, \intext{the president of the United States} \textit{arrived in Cornwall for the G7 Summit}). These tasks are defined as follows:
+
+\begin{description}
+\item[Referential Form Selection (RFS):] Given a text whose REs are yet to be generated, and given the intended referent for each of these REs, the task of RFS involves developing an algorithm that identifies the appropriate referential form (RF) from a set of K candidate RFs. RFS presents a classification challenge, where the algorithm's role is to select a referential class from a predefined set of classes. For instance, in a pronominalization task, two classes exist: pronominal and non-pronominal forms (K=2), and the RFS task determines the suitable form to use.
+
+\item[Referential Content Selection (RCS):] Given a text whose REs are yet to be generated, and given the intended referent for each of these REs, the RCS task entails building an algorithm that generates all these REs.
+\end{description}
+
+The primary focus of this book is the RFS task, although the RCS task also receives attention in \chapref{chap6}. In what follows, I will outline three main approaches that have gained popularity in \context generation over the last three decades: rule-based, feature-based, and neural network-based models. 
+
+In the 1990s and early 2000s, rule-based models were at the forefront of research in REG, utilizing linguistic theories to formulate rules for generating REs \citep{dale1989cooking,passonneau1996using, mccoy1999generating, henschel2000pronominalization}. This approach is discussed in detail in \sectref{subsubsec:rulebased}.
+
+Feature-based ML models have been prevalent since the mid-2000s. The \grec shared tasks \citep{belz2010generating}, introduced in \chapref{chap1}, sparked a plethora of feature-based models for \context \citep{hendrickx2008cnts,bohnet2008g,greenbacker2009udel}. 
+This approach is discussed in depth in \sectref{subsubsec:featbased}.  Rule-based and feature-based models are typically considered two-stage methods, separately addressing RFS and RCS.
+
+More recently, various neural network-based REG models have emerged that are capable of generating REs in an E2E manner, eliminating the need for feature engineering \citep{ferreira2018neuralreg, cao2019referring, cunha-etal-2020-referring}. This method is detailed in \sectref{subsubsec:neuralbased}.
+
+
+\subsubsection{Rule-based approach}\label{subsubsec:rulebased}
+One of the earliest \context algorithms was implemented in \textsc{epicure}, an NLG pipeline for generating cooking recipes \citep{dale1989cooking,Dale1992}. The concepts of \term{local} and \term{global} \term{focus}, as introduced by \citet{grosz1983providing}, were fundamental to the REG component of this system. Local focus encompasses the lexical, syntactic, and semantic content of the utterance being generated, whereas global focus pertains to the semantic representation of the recipe as a whole. The discourse center, a concept detailed in Centering Theory \citep{grosz1983providing} and elaborated upon in \chapref{chap2}, is another critical parameter in this system. Within the domain of recipes, the center is defined as the outcome of the preceding operation. For example, following the utterance \intext{chop the onion}, the center becomes the \intext{onion}.
+Pronominalization, the algorithm's initial rule, allows the subsequent mention of the center to be pronominalized. Similar to \citet{grosz1983providing}, \citet{dale1989cooking} also concluded that other entities presented in local focus can be pronominalized, provided the center itself is a pronoun. 
+
+After completing the pronominalization stage, the next step involves selecting appropriate definite descriptions for the remaining referents in the sentence. This process adheres to two principles, akin to Grice's conversational maxims \citep{grice1975logic}. The principle of \term{adequacy} requires that the intended RE should be unambiguous. Conversely, the principle of \term{efficiency} dictates that REs should not include more information than necessary. Merging these principles yields the shortest distinguishing description, paralleling the use of the Full Brevity Algorithm discussed earlier. Comprehensive details of \textsc{epicure}'s implementation are available in \citet{Dale1992}.
+
+According to \citet{reiter2000building}, two types of errors can occur in such an algorithm: (1) \term{missed pronouns}, that is, the algorithm decides not to use a pronoun even though it is perfectly acceptable; and (2) \term{inappropriate pronouns}, that is, when a pronoun is ambiguous in context. To reduce these errors, \citet{passonneau1996using} took the model of \citet{Dale1992} as a baseline and supplemented it with the full focus-structure information of CT. \citeauthor{passonneau1996using} suggested that integrating centering constraints could relax the principles outlined in \citet{Dale1992}. Consequently, the model could reduce the aforementioned errors. \citet{passonneau1996using} tested the model on a corpus of narratives known as \corpus{Pear Stories} \citep{pearstories} to determine whether it could accurately predict the use of pronouns, minimal descriptions, and overspecified descriptions. This study was the first corpus-based investigation of \context \citep{viethen2011generation}. \citeauthor{passonneau1996using} discovered that this model was a more effective predictor of minimal and overspecified REs than the model in \citet{Dale1992}.
+
+\citet{mccoy1999generating} adopted a more critical stance, arguing that backward-looking centers are not typically pronominalized in most natural contexts. They concluded that, in addition to cues such as distance from the antecedent and the presence of competing referents, information about the temporal structure is also crucial in REG accounts. This is because temporal changes in discourse often lead to the use of overspecified NPs. The authors distinguish between four types of temporal cues, driven both by semantic cues in the text (for example, adverbial time phrases) and by changes in verb tense.
+
+According to \citet{henschel2000pronominalization}, temporal changes are not always critical in all text genres, such as descriptive texts, and are thus not essential in algorithms applied to these texts. Their algorithm is founded on the concept of local focus, that is, a set of referents eligible for pronominalization. The local focus for each utterance is calculated and defined as the set of referents from the previous utterance that are either discourse-old or realized in the subject position. Theoretically, the local focus set can comprise multiple members; however, in most instances, it consists of a single member, aligning with the backward-looking center as defined in CT. When the target referent does not align with any of the local focus criteria, additional factors such as recency and competition are considered to decide if a pronominal form is appropriate. Algorithm \ref{algo:b} illustrates the implementation proposed by \citet{henschel2000pronominalization}.
+
+\begin{algorithm}
+	Let $X$ be a referent to be generated in utterance ($u2$), and $focus$ be the set of referents of the previous utterance ($u1$) which are\\
+	\hspace{1cm}(a) discourse-old, or\\
+	\hspace{1cm}(b) realized as subject. \;
+	
+	$X$ has an antecedent beyond a segment boundary \hspace{1.5cm} \textcolor{blue}{\textsc{description}}\;
+	$X$ has an antecedent two or more utterances distant \hspace{1.185cm} \textcolor{blue}{\textsc{description}} \;
+	$X$ has an antecedent in ($u1$), and \;
+	\hspace{1cm}$X$ occurs in strong parallel context \hspace{3cm} \textcolor{blue}{\textsc{pronoun}}\;
+	\hspace{1cm} $X$ $\notin$ $focus$ \hspace{6.6cm} \textcolor{blue}{\textsc{description}} \;
+	\hspace{1cm} $X$ $\in$ $focus$ and \;
+	\hspace{2cm} $X$ has a competing referent $Y$ $\in$ $focus$ \hspace{1.2cm} \textcolor{blue}{\textsc{description}} \;
+	\hspace{2cm} $X$ has a competing referent $Y$ in ($u1$) amplified with\\ \hspace{2cm} apposition or non-restrictive relative clause\hspace{0.4cm} \textcolor{blue}{\textsc{description}} \;
+	\hspace{2cm} else \hspace{6.85cm} \textcolor{blue}{\textsc{pronoun}} \;
+	
+	\caption{\citegen{henschel2000pronominalization} algorithm}
+	\label{algo:b}
+\end{algorithm}
+
+\citet{henschel2000pronominalization} validated their assumptions using the \textsc{gnome} corpus which comprises texts that describe museum objects and patient information leaflets \citep{poesio2004discourse, poesio2004centering, di1997learning}.
+Their research primarily addressed the pronominalization problem, where the task is to decide between the use of pronouns and non-pronominal forms. A notable similarity between this algorithm and those previously discussed is the treatment of salience as a \textit{black and white} concept, that is, a referent is deemed either salient or not salient.
+
+
+\citet{krahmer2002efficient} incorporated a graded concept of salience into their incremental algorithm for generating \term{context-sensitive} REs.
+Instead of solely focusing on generating unique descriptions that differentiate a referent from distractors, this algorithm also considers the salience of the referent in its choice of RE. \citet{krahmer2002efficient} assigned a salience weight (\val{sw}) ranging from 0 to 10 to each entity, based on the topic/focus distinction of \citet{hajivcova1993issues} and the Centering Theory of \citet{grosz1995centering}.
+
+The algorithm generates context-sensitive expressions by modifying the third line of algorithm \ref{algo:inc} (see \autopageref{algo:inc}). It narrows down the distractors to those domain elements whose salience weight is equal to or greater than the salience weight of the target \texttt{r}: the third line $C \leftarrow D-\{r\}\;$ is altered to $C \leftarrow \{x|w(x) \geq sw(r)\} - {r}$.
+\figref{fig:ducks2} presents a simplified version of \REF{fig:ducks}, showcasing attributes such as body color, hair color, and bill color.
+
+\begin{figure}[htb]
+	\captionsetup{justification=centering}
+	\centering
+	\begin{tikzpicture}[font=\footnotesize]
+		\node[duck, skin=blue, bill= green, minimum size=1.5cm](A){d1};
+		\node[duck, bill=red, minimum size=1.5cm,xshift=2cm] {d2};
+		\node[draw,yshift= 1cm, xshift=3cm] {Hallo!};
+		\node[name = d3, duck, bill=red, mirrored, skin=blue, minimum size=1.5cm,xshift=6cm] {d3};
+		\node[draw,yshift= 1cm, xshift=4.7cm] {Bonjour!};
+		\node[duck, bill=red, hair=gray, minimum size=1.5cm,xshift=8cm, mirrored] {d4};
+	\end{tikzpicture}
+	\caption[A simplified version of \figref{fig:ducks}.]{A simplified version of \figref{fig:ducks} for generating context-sensitive REs.}
+	\label{fig:ducks2}
+\end{figure}
+
+Imagine we are at the beginning of a conversation and wish to refer to duck \texttt{d2}. As the ducks have not yet been mentioned, they all possess identical salience weights. Therefore, a distinguishing description for \texttt{d2} would be \intext{the yellow duck with black hair}, aligning with the classic Incremental Algorithm (IA) prediction.
+
+Now, consider a scenario where based on previous discussions, we know only ducks \texttt{d2} and \texttt{d3} are capable of speaking. Suppose $\texttt{sw(d2)=sw(d3)=10}$ and \texttt{sw(d1)}\texttt{=} \texttt{sw(d4)}\texttt{=}\texttt{0}. The salience weights of \texttt{d2} and \texttt{d3} are highest, rendering the other two ducks non-salient. To refer to the German-speaking duck (\texttt{d2}), the contrast set has only one member: $\texttt{C=\{d2, d3\}-\{d2\}=\{d3\}}$. In this context, selecting the body color attribute is adequate for generating a distinguishing description, making \intext{the yellow duck} an appropriate expression.
+
+According to \citet{krahmer2002efficient}, integrating CT with the concept of the continuous decrease in salience for unmentioned entities facilitates the generation of context-sensitive REs. 
+Moreover, they noted that pronouns are employed when a referent is the sole salient entity in the discourse context. Hence, this algorithm is capable of generating both context-sensitive descriptions and pronominal forms. The models discussed in this section rely on explicit rules formulated by researchers. While these rules are essential for defining and implementing the models, they might restrict the development of more complex models.
+
+\subsubsection{Feature-based approach}\label{subsubsec:featbased}
+
+Feature-based machine learning algorithms deduce rules and learn generalizations from feature-value pairs extracted from corpora.
+\citet{stoia2006noun} developed a dialog agent that leveraged machine learning to provide real-time instructions in a 3D virtual environment. They trained a decision tree to determine the appropriate use of determiners (for example, \intext{the}, \intext{that}, \intext{a}), the type of head noun (for example, pronoun), and whether to include a modifier. The training incorporated features pertinent to dialog history (such as the number of mentions), the referent’s position and its relationship with other entities in the visual scene, and its inherent properties (for example, semantic type). This study was among the first to consider both linguistic and non-linguistic factors as predictors of RF.
+
+The initial systematic studies that focused directly on the \context task were the \grec shared tasks, as documented in \citep{belz2010grec, belz2010generating}. The primary objective of \grec was to explore methods for generating appropriate references to entities in contexts extending beyond a single sentence. The theoretical motivation behind \grec centered on understanding \textit{which types of information} might influence the choice of REs in context. Two distinct corpora, \grectwo and \grecp, were utilized in the \grec shared tasks. Both corpora comprised introductory sections of Wikipedia articles. The \grec shared tasks addressed both RFS and RCS.
+
+\subsubsubsection{The RFS task in \grec} The \grec RFS task involved a 4-way classification challenge, where participating systems were required to predict the most suitable referential form -- be it a pronoun, a zero form, a description, or a proper name -- to refer to a given referent within a specific discourse context. The submissions for these shared tasks predominantly employed feature-based algorithms such as \method{C5.0} decision trees \citep{greenbacker2009udel, orasan-dornescu-2009-wlv}, \method{Conditional Random Field} \citep{bohnet2008g}, and \method{Multilayer Perceptron} \citep{favre2009icsi}. Additionally, these models leveraged a broad spectrum of features, including the encoding of local context \citep{hendrickx2008cnts, favre2009icsi}, recency \citep{jamison2008osu}, subjecthood and parallelism \citep{greenbacker2009udel}, and competition \citep{jamison2008osu}.
+
+\subsubsubsection{The RCS task in \grec}
+The \grec corpora provide a range of alternative REs, including the original RE found in the corpus, for each reference slot. \tabref{tab:talbot} displays the initial mention of James Joyce as it appears in the corpus, represented as \intext{James Augustine Aloysius Joyce}, along with a set of alternative REs corresponding to this reference slot.
+
+\begin{table}
+	\caption{Alternative set of REs for the referent James Joyce}
+	\begin{tabular}{l} 
+		\lsptoprule
+  James Augustine Aloysius Joyce himself \\
+  James Augustine Aloysius Joyce \\ 
+  James Joyce himself \\
+  James Joyce \\
+  Joyce himself \\
+  Joyce \\ 
+  he himself \\
+  he \\
+  who himself  \\
+  who \\
+  \_ (null RE) \\ 
+		\lspbottomrule
+	\end{tabular}
+\end{table}
+
+In the shared tasks focused on content selection, the participating systems employed a two-step methodology: (1) determining the RF, and (2) selecting the actual RE from a set of alternatives using various heuristic rules. For instance, \citet{greenbacker2009udel} opted for the longest non-emphatic string for the first mention and the shortest non-emphatic string for subsequent mentions when a proper name was predicted as the RF. 
+
+\tabref{tab:talbot} displays the original text alongside output generated by a system named \modname{WLV} \citep{orasan-dornescu-2009-wlv}. This model inaccurately predicted null REs in two instances where the use of null references is typically not allowed. As demonstrated in the original sentence of \REF{ex:wlvorig}, employing an overt subject (for example, \intext{he}) is required, yet \modname{wlv} incorrectly predicted a null form.
+
+\begin{table}
+		\begin{tabularx}{\textwidth}{ Q }
+			\lsptoprule
+			\modname{Original} \\\midrule
+			\italunder{Sam Talbot} (born December 27, 1977) is a Sicilian-American chef from Charlotte, North Carolina, best known as a semi-finalist on Season 2 of Bravo's Top Chef, eventually placing third. \italunder{He} also became the fan favorite for the season. \italunder{Sam} received \italunder{his} education from Johnson \& Wales University in Charleston, South Carolina. After working \italunder{his} way up to production chef at Dean and DeLuca, \italunder{he} worked under \italunder{James Burns}, the acclaimed head chef at Charleston’s J. Bistro. In Charleston, \italunder{he} also met \italunder{Sarah Vida} \italunder{who} later became his business partner in Williamsburgh Cafe after \italunder{he} moved to New York City. In New York City, \italunder{he} has held the position of executive chef at several restaurants, such as the Black Duck, Williamsburgh Cafe, and Punch. Recently, \italunder{he} was planning on opening a restaurant named Spitzer's Corner, but when \italunder{he} could not agree with \italunder{business partners Will and Rob Shamlian} with the direction of the restaurant, \italunder{they} separated. \italunder{Talbot} is a diabetic and \italunder{-} wears an insulin pump attached to \italunder{his} leg. \italunder{Talbot} returned to Top Chef for a special “Four Star All Stars” episode along with \italunder{Elia Aboumrad}, \italunder{Marcel Vigneron}, and \italunder{Ilan Hall}.\\\midrule
+			\textsc{wlv} \\ \midrule
+			\italunder{Sam Talbot} (born December 27, 1977) is a Sicilian-American chef from Charlotte, North Carolina, best known as a semi-finalist on Season 2 of Bravo's Top Chef, eventually placing third. \italunder{he} also became the fan favorite for the season. \italunder{-} received \italunder{his} education from Johnson Wales University in Charleston, South Carolina. After working \italunder{his} way up to production chef at Dean and DeLuca, \italunder{-} worked under \italunder{James Burns}, the acclaimed head chef at Charleston’s J. Bistro. In Charleston, \italunder{he} also met \italunder{Sarah Vida} \italunder{she} later became \italunder{his} business partner in Williamsburgh Cafe after \italunder{he} moved to New York City. In New York City, \italunder{-} has held the position of executive chef at several restaurants, such as the Black Duck, Williamsburgh Cafe, and Punch. Recently, \italunder{he} was planning on opening a restaurant named Spitzer's Corner, but when \italunder{-} could not agree with \italunder{business partners Will and Rob Shamlian} with the direction of the restaurant, \italunder{they} separated. \italunder{he} is a diabetic and \italunder{-} wears an insulin pump attached to \italunder{his} leg. \italunder{Sam} returned to Top Chef for a special “Four Star All Stars” episode along with \italunder{Elia Aboumrad}, \italunder{Marcel Vigneron}, and \italunder{Ilan Hall}.
+			\\ 
+			\lspbottomrule
+	\end{tabularx}
+	\caption[A Wikipedia document (left) and the output of \modname{WLV} (right).]{An example showing a Wikipedia document on the left and the output generated by \modname{WLV} on the right, with the target REs highlighted in bold.}\label{tab:talbot}
+\end{table}
+
+
+\begin{exe}
+	\ex \begin{xlist}
+		\ex\label{ex:wlvorig} \textsc{original:} After working his way up to production chef at Dean and DeLuca, \fbox{he} worked under James Burns, the acclaimed head chef at Charleston’s J. Bistro.
+		\ex\label{ex:wlv} \textsc{wvl:} After working his way up to production chef at Dean and DeLuca, \fbox{-} worked under James Burns, the acclaimed head chef at Charleston’s J. Bistro.
+	\end{xlist}
+\end{exe}
+
+\subsubsubsection{Post-\grec studies}
+\begin{sloppypar}
+In a more recent study, \citet{kibrik2016referential} carried out a multifactorial feature-based analysis, incorporating factors from four primary categories: inherent properties of the referent, factors related to the anaphor, factors concerning the antecedent, and the distance between the anaphor and its antecedent. They trained their decision trees on a subset of data from the RST Discourse Treebank \citep{Carlson2002}. A critical observation made by \citet{kibrik2016referential} is that human reference production is not entirely categorical or deterministic. Often, more than one RE can be aptly used to refer to an entity at a specific point in the discourse.
+\end{sloppypar}
+
+The feature-based \context studies thus far have predominantly relied on written corpora with a single gold standard RE per reference slot. However, this approach presents conceptual challenges, as different authors may opt for varied REs for the same target slot. The non-deterministic generation of REs has been more extensively explored in \shot studies \citep{gatt2013we, van2016computational, Gompel2019}, and to a lesser extent in the realm of \context. Notably, two \context studies that acknowledged the non-deterministic nature of reference choice are \citet{castro-ferreira-etal-2016-individual} and \citet{castro-ferreira-etal-2016-towards-variation}.
+
+\citet{castro-ferreira-etal-2016-individual} developed the \corpus{VaREG} corpus which comprises REs generated by multiple participants in identical contexts. They used the \term{normalized entropy} metric to analyze the variance in RF choices among different participants, uncovering significant individual differences. For instance, they observed more variation in RF choice when the referent was in the object position. In a subsequent study, \citet{castro-ferreira-etal-2016-towards-variation} employed the Jensen-Shannon Divergence metric to compare the similarity between distributions produced by humans and those predicted by models. However, the appeal of their non-deterministic approach is offset by the extensive time commitment required to compile a corpus of parallel human judgments. The \corpus{VaREG} corpus, for instance, includes 36 different texts with annotations limited to references to the main topics. For larger-scale projects involving more texts and referential annotations, replicating this experimental approach with numerous human participants to produce REs is often impractical.
+
+\subsubsection{End-to-end neural network-based approach}\label{subsubsec:neuralbased}
+
+Both rule-based and machine learning feature-based studies in REG typically adhere to a two-step generation process. However, the swift advancements in neural methodologies in recent years have enabled the direct mapping of input to output, bypassing intermediate steps. This  end-to-end (E2E) approach offers a significant benefit over feature-based methods as it eliminates the need for extensive feature engineering. 
+
+The concept of neural E2E REG was first introduced by \citet{ferreira2018neuralreg}.
+They developed their models, referred to as \modname{neuralreg}, using a REG dataset extracted from the \webnlg corpus. This corpus was established by \citet{gardent-etal-2017-creating} to assess the performance of NLG systems. It was created via a crowd-sourcing experiment where participants were tasked with writing descriptions for given \term{Resource Description Framework} (RDF) triples. In these experiments, an RDF triple consists of three elements: a subject, a predicate, and an object. The subject and object are either constants or Wikipedia entities, and the predicate elucidates their relationship. Further details about the \webnlg corpus are provided in \chapref{chap7}.
+
+The \modname{neuralreg} models employed an \term{encoder--decoder} framework, encoding the target referent and its contextual environment into a unified vector representation. This representation was then decoded into an RE specifically tailored to the discourse context. \citet{ferreira2018neuralreg} explored three distinct decoding architectures: a \term{sequence-to-sequence decoder} (Seq2Seq), a \term{concatenative attention mechanism} (CAtt), and a \term{hierarchical attention mechanism} (HierAtt). Their findings indicated that all the neural models surpassed the established baselines in performance, with the CAtt model showing the most effective results, closely followed by the HierAtt model.
+
+While the \modname{neuralreg} models demonstrated significant capabilities, they were constrained by their inability to handle unseen entities. To overcome this limitation, \citet{cao2019referring} introduced the \modname{profilereg} model, specifically designed to address this challenge. As indicated by its name, the model constructs profiles for entities featured in the \webnlg dataset. These profiles are composed of the first three sentences from Wikipedia articles about these entities, providing a foundational context from which REs for unseen entities can be generated.
+
+The \modname{profilereg} model employs three \term{bidirectional Long Short-Term Memory} (LSTM) encoders to process pre-context, post-context, and entity profiles. Additionally, it uses a unidirectional LSTM decoder for the generation of REs. This approach enables the model to generate REs for both previously encountered (seen) and novel (unseen) entities. The performance of \modname{profilereg} surpasses that of \modname{neuralreg}.
+
+To address the challenge of unseen entities, \citet{cunha-etal-2020-referring} introduced a copy mechanism that enables the transfer of tokens from the input representations of target entities directly to the output. In addition to this mechanism, they incorporated gender and type information into their model's input. This strategy is grounded in the notion that gender information can aid in generating appropriate pronominal forms, while type information is useful in generating descriptive REs for unseen entities. Notably, their findings revealed a surprising outcome: the simplest baseline model, named \modname{OnlyNames}, which essentially copies a Wikipedia ID (representing the entity name) into the RE slot, performed on par with, or in some cases, even surpassed the more complex neural models. This unexpected result calls for a reevaluation of the effectiveness of end-to-end (E2E) models in this domain.
+Given the simplicity yet high efficacy of the \modname{OnlyNames} baseline, it raises an important question regarding the potential superiority of well-designed rule-based or feature-based models over the E2E models previously mentioned. This observation suggests that the complexity of a model does not always correlate with its performance in the task of REG.
+
+
+\section{Evaluation methods}\label{sec:evaluationtheory}
+
+\Citet{van2019best} assert that the necessity of evaluating the output of NLG systems is undisputed, yet they note, ``what is perhaps more contentious is the way in which evaluation should be conducted" \citep[355]{van2019best}. Broadly, there are two primary methods for evaluating a system's performance. The first method is automatic evaluation. Given that most \context studies are corpus-based, their outputs can be compared against the original texts in the corpus, often referred to as the \term{gold standard}. An alternative approach is human evaluation, where individuals assess various aspects of the generated text. This section aims to introduce some prevalent automated evaluation metrics and then provide an overview of human evaluation methods, underscoring their significance in REG studies.
+
+\subsection{Automatic evaluations}\label{subsec:automaticevaluation}
+ 
+ A straightforward method for evaluating an algorithm’s output compared to the gold standard involves assessing the similarity of the predictions to the original values. \term{Accuracy}, representing the fraction of correct predictions made by the model, is one such measure. In the \grec shared tasks, two forms of accuracy -- \term{type accuracy} and \term{string accuracy} -- were employed. Type accuracy measures the percentage of correct RF type predictions, while string accuracy calculates the accuracy of the predicted strings \citep{belz2010grec}.
+
+Other commonly utilized metrics include \term{precision} and \term{recall}. Precision assesses the proportion of positive identifications that are actually correct, whereas recall quantifies the proportion of actual positives that were correctly identified. These metrics are largely deterministic, although the choice of RE often is not, as multiple referential options can be valid (see \citealt{Gompel2019} for an extensive discussion on probabilistic modeling and evaluation).
+
+\term{BLEU} and \term{NIST}, initially developed for machine translation, have also been adapted for REG evaluations \citep{belz2010grec,belz2008automatic,van2019best, gatt2009introducing}. BLEU measures the n-gram overlap between strings \citep{papineni2002bleu}, while NIST, a BLEU variant, places greater emphasis on less frequent n-grams, assuming they carry more information \citep{comreg2019}. The \term{Levenshtein edit distance} is another metric, calculating the minimum number of edits needed to transform a generated string into the original string. A smaller Levenshtein distance is preferable, indicating fewer steps required for the transformation.
+
+While automatic metrics are advantageous for being ``fast, cheap, and repeatable" \citep[555]{reiter2009investigation}, they are not without drawbacks. In their work, \citet{van2019best} point out the lack of interpretability of these metrics, noting that different types of incorrect outputs can yield similar scores. Additionally, these metrics may assign low scores to correct but uncommon expressions.
+
+String-based metrics, for example, exhibit the issue of scoring the expression \intext{the delicious pie} as being more similar to \intext{the delicious pig} than to \intext{the tasty pie}. As another example, in the context of the second visual scene from \figref{fig:menwomen}, \intext{the policeman} and \intext{the policewoman} differ only by a Levenshtein distance of two, despite the former being the only appropriate description for target \texttt{e4}. Conversely, \intext{the man on the right} and \intext{the policeman} have a Levenshtein distance of 14 but both accurately describe target \texttt{e4}. This inconsistency in automatic metrics not aligning with human judgments, as reported by \citet{reiter2009investigation} and \citet{belz2010generating}, has spurred growing interest in human evaluation methods in NLG.
+
+
+
+\subsection{Human evaluations}\label{humaneval}
+
+As a complement or alternative to automatic evaluations, human judges are often employed to assess the texts generated by NLG systems. In many REG studies, the primary evaluation criterion is the quality of the text, including aspects like fluency and naturalness (also known as humanlikeness). However, as \citet{van2019best} point out, measuring these criteria is challenging due to the lack of uniform definitions for terms like fluency or quality. Human evaluations of generated expressions typically employ both \term{intrinsic} and \term{extrinsic} methods \citep{belz-reiter-2006-comparing, reiter2009investigation}.
+
+Extrinsic evaluation focuses on the impact of the generated text on other tasks. An example of this can be found in the study by \citet{belz2010generating}, which involved a comprehension experiment. Participants read the texts and then answered three comprehension questions. The underlying hypothesis was that suboptimal REs could negatively affect comprehension ease, thereby impacting reading speed and comprehension accuracy. This experiment measured reading time, response speed, and answer accuracy. Despite its potential for providing more concrete results, extrinsic evaluation remains rare in the field, with most studies concentrating on intrinsic assessments \citep{van2019best}.
+
+
+Intrinsic methods, on the other hand, directly evaluate the attributes of the generated outputs. For example, human judges might be asked to assess the fluency and naturalness of an NLG system’s output. In one of the \corpus{grec} shared tasks, participants conducted a rating experiment, evaluating each text in terms of clarity, fluency, and coherence \citep[312]{belz2010generating}. The criteria were defined as follows:
+
+\begin{description}
+	\item [\term{Referential clarity}:] It should be easy to identify who or what the referring expressions in the text are referring to. If a person or other entity is mentioned, it should be clear what their role in the story is. So, a reference would be unclear if an entity is referenced, but their identity or relation to the story remains unclear.
+	
+	\item [\term{Fluency}:] A referring expression should \textit{read well}; i.e., it should be written in good, clear English, and the use of titles and names should seem natural.
+	
+	\item [\term{Structure and coherence}:] The text should be well structured and well organized. The text should not just be a heap of related information, but build from sentence to sentence to a coherent body of information about a topic.
+\end{description}
+
+
+In the experiment conducted as part of the shared task evaluation, participants were presented with 24 texts, encompassing both generated and original versions. They were tasked with rating these texts on a five-point Likert scale based on specified criteria, viewing each text independently without the need for direct comparison between original and generated texts.
+
+In the \modname{neuralreg} study referenced in \sectref{subsubsec:neuralbased}, \citet{ferreira2018neuralreg} implemented a 7-point Likert scale experiment to assess their models. Participants evaluated the texts -- including the original, baseline, and experimental models -- based on three criteria: \term{fluency} (assessing the natural flow and readability of the text), \term{grammaticality} (evaluating the absence of spelling or grammatical errors), and \term{clarity} (determining the effectiveness of the text in expressing the intended data). According to the results of this human evaluation, all neural models surpassed the baselines in these criteria. However, only their best neural model, CAtt, achieved a significantly higher performance than the baselines.
+
+Preference judgment tasks represent another approach to human evaluation. This method was employed by \citet{belz2010generating} in their \grecnegnine shared task evaluation. Participants were shown a random selection of texts from various systems alongside the original Wikipedia texts. They were asked to indicate their preference between the versions in terms of fluency and clarity. Additionally, the participants quantified the strength of their preference using a slider mechanism. An illustration of this type of task can be seen in \figref{fig:humanevaluation}.
+
+\begin{figure}
+\captionsetup{font=scriptsize}
+    \centering
+    \includegraphics[scale=1]{figures_tex_snippets/03/belz2010generating.jpg}
+    \caption[Example of a text pair.]{Example of a text pair presented in the preference judgment experiment conducted by \citet{belz2010generating}.}
+    \label{fig:humanevaluation}
+\end{figure}
+
+\citet{cao2019referring} implemented a preference judgment task in their study, where participants were shown outputs from their experimental model alongside a comparison model (either the original text or one of the baselines). The participants were asked to assess whether the texts were equally good or if they had a preference for one over the other. The evaluation criteria focused on fluency, readability, and grammaticality. In comparing their model's output with the original texts, it was found that 86 out of 100 texts were identical or very similar to the original. While this suggests the models' proficiency in generating high-quality REs, it is important to note, as will be further discussed in \chapref{chap7}, that the \webnlg dataset used in their experiment predominantly features simplistic texts, potentially limiting referential variability.
+
+This section has provided a concise overview of various automatic and human evaluation methods used in NLG. \citet{howcroft-etal-2020-twenty} conducted an analysis of human evaluations in 165 NLG papers and concluded two key points: (1) there is a notable lack of standardized practices in human evaluations within the NLG field, and (2) the information provided in NLG papers regarding human evaluations is often incomplete. These findings underscore the necessity for standardization in human evaluation tasks and improved reporting of human evaluation outcomes in NLG research.
+
+
+\section{Summary and discussion}\label{sec:summarychap3}
+
+The previous sections chronologically presented \context studies, starting with rule-based approaches, progressing to data-driven models, which began with feature-based approaches and concluded with E2E neural models. Henceforth, rule-based and feature-based methods are referred to as \term{classic} approaches.
+
+E2E studies in this chapter suggest that E2E models (1) generally outperform classic \context models, (2) eliminate the need for feature engineering, and (3) enable direct input-to-output mapping. These claims prompt the question: Why should classic \context approaches still be considered? The following discussions aim to address this query.
+
+\paragraph*{Methodology concerns}
+
+The automatic evaluation results from \citet{cunha-etal-2020-referring} and human evaluations by \citet{ferreira2018neuralreg} raise doubts about the aforementioned claims. The former study's baseline performance was comparable to that of their neural models. In the latter, while neural models scored higher, the significant difference from the baseline was limited to only one neural model and a single criterion. These mixed results underscore the need for a systematic comparison of the three approaches.
+
+\paragraph*{Baseline concerns}
+
+In their study, \citet{ferreira2018neuralreg} used two baselines, \modname{onlynames} and \modname{ferreira}. The uninformed baseline, \modname{OnlyNames}, simply replaced underscores with whitespaces in entity Wikipedia IDs (for example, \intext{Joe\_Biden} was converted to \intext{Joe Biden}) to fill reference slots, not generating pronominal REs. The informed baseline, \modname{Ferreira}, inspired by \citet{castro-ferreira-etal-2016-towards-variation}, used only three features, namely sentence information status (determining if the RE is new at the sentence level), text information status  (determining if the RE is new at the text level), and grammatical role (identifying whether the RE functions as a subject, object, or possessive determiner). The adoption of these baseline models in subsequent studies raises an important consideration: What would be the impact on the outcomes if these baselines were replaced with stronger baseline models? This question underlines the potential for further exploration and refinement in the approach to baseline model selection in \context studies.
+
+\paragraph*{Corpus concerns}
+
+A significant limitation in the field of E2E \context studies is the predominant use of a single dataset, specifically \webnlg. This reliance prompts a critical question: Can the findings derived from this dataset be reliably generalized to other data types, encompassing various genres and complexities? Additionally, the \webnlg dataset used in the study by \citet{ferreira2018neuralreg} comprised ``78,901 referring expressions to 1,501 Wikipedia entities, of which 71.4\% (56,321) are proper names, 5.6\% (4,467) pronouns, 22.6\% (17,795) descriptions, and 0.4\% (318) demonstrative REs" (p. 1961). This distribution indicates that a significant majority (over 90\%) of the data used for training their models consists of non-pronominal REs.
+
+However, this composition contrasts with common linguistic usage, where pronouns are frequently employed in speech, as discussed in the linguistic studies of \chapref{chap2}. This discrepancy leads to a crucial question: Is the \webnlg dataset sufficiently representative and versatile to serve as the foundation for E2E \context model training? The potential mismatch between the dataset's composition and natural language usage poses a challenge to the dataset's suitability for effectively training models that reflect real-world linguistic patterns.
+
+The concerns discussed in the context of end-to-end neural models bring to light broader considerations essential to any \context study. These key considerations include: (1) the choice of appropriate corpora, (2) the choice of informed rules or features, and (3) the choice of a suitable approach for the task at hand. The subsequent chapters are structured to address these issues.
+
+In \chapref{chap4}, a replication of the \grec systems is applied to three distinct corpora to evaluate their suitability for the \context task. This chapter aims to provide insights into the effectiveness of these corpora in capturing the nuances of referring expression generation.
+
+\chapref{chap5} delves into a comprehensive analysis of the features used in earlier feature-based machine learning studies. The goal is to identify which linguistic features are most influential and effective in contributing to the \context task.
+
+\chapref{chap6} shifts the focus to paragraph-related features, an area that has not been extensively explored in previous research. This chapter evaluates the significance of these features in the context of \context studies.
+
+Finally, \chapref{chap7} presents a systematic comparison of various \context approaches, using two markedly different datasets. This comparative analysis is supplemented by both automatic and human assessments of the outputs generated by the models.
+
+Through this structured approach, the upcoming chapters aim to deepen the understanding of the \context field, addressing the aforementioned concerns and contributing to the ongoing development and refinement of \context methodologies.
+

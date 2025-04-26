@@ -1,0 +1,484 @@
+% !TeX spellcheck = en_US
+\chapter{Conclusion}\label{chap8}
+
+\section{Introduction}\label{chap8:sec:intro}
+
+As highlighted in \chapref{chap3}, the concept of REG involves two distinct tasks: \shot and \context. The \shot task focuses on identifying a set of attributes to distinguish a referent from a group of distractors. It aims to single out a referent in a single shot, without considering the surrounding linguistic context \citep{krahmer2012computational}. In contrast, \context extends beyond this by incorporating the linguistic context of an expression. It entails producing suitable referring expressions (REs) to denote a referent at different stages in a discourse \citep{belz2007generation}.
+
+This book has delved into various studies related to the \context task. In Chapters \2 and \3, we explored both linguistic and computational perspectives on the selection of REs in context. \chapref{chap4} focused on comparing three corpora for predicting the form of REs in context, while also addressing the limitations of accuracy-based metrics for evaluating model performance. The exploration continued in Chapters \5 and \6, which focused on the linguistic features critical to feature-based \context studies. \chapref{chap5} revisited features from previous studies, while \chapref{chap6} shed light on paragraph-related concepts, a relatively less explored area in computational research. Finally, \chapref{chap7} provided a comprehensive evaluation of various approaches to the task. This evaluation included rule-based, feature-based, and E2E neural network models, supplemented by a series of experiments aimed at interpreting the outputs of neural RFS models.
+
+This chapter is organized as follows. In \sectref{sec:diffaspects}, a critical overview of the various aspects of the \context task, as discussed in previous chapters, is provided. This section not only delineates the strengths and weaknesses of the conducted studies but also proposes directions for future research. The studies presented in this book have been exclusively focused on the \context task. To provide a broader perspective, in section \sectref{sec:shotversuscontext}, a concise comparison between \context and the other principal task, \shot, is drawn. This comparison intends to shed light on their similarities and differences to offer a comprehensive understanding of the field.
+
+While the primary focus of this work has been on computational solutions to enhance the performance of \context models, it also recognizes the value of integrating insights from linguistics. In \sectref{sec:lessonslearned}, the discussion revolves around how insights from the linguistic approach can augment the computational generation of REs, and conversely, how computational methods can inform linguistic understanding.
+
+Finally, \sectref{sec:contrib_chap8} presents a summary of the preceding chapters, highlighting the main findings that emerged from this research.
+
+
+\section{Different aspects of the \context task}\label{sec:diffaspects}
+
+Addressing the \context task involves making a series of critical decisions, such as the choice of corpus, approach, features, and evaluation methods. Each of these choices introduces its own complexities and limitations. In the following subsections, I will discuss some of the most significant choices and their implications. The organization of this section is as follows:
+
+In \sectref{chap8_subsec:corporalim}, the focus lies on the selection of corpora and their inherent limitations. This discussion aims to shed light on how the choice of corpus can impact the outcomes and interpretations in \context studies.
+
+\sectref{chap8_subsec:featurelim} explores the features employed in feature-based \context models, as well as various methods for assessing these features. This subsection will delve into the nuances of feature selection and evaluation, highlighting their critical role in the effectiveness of the models.
+
+The methodologies adopted in this work are discussed in \sectref{chap8_subsec:method}. This includes an examination of the three primary \context approaches: feature-based, rule-based, and end-to-end neural network-based methods. The unique strengths and challenges of each approach will be outlined, providing a comprehensive overview of the techniques employed.
+
+Closely linked to the choice of approach is the issue of interpretability, which is discussed in \sectref{chap8_subsec:interp}. This subsection will explore the balance between model performance and the ability to interpret the model’s decision-making processes, a critical consideration in the development of these models.
+
+Finally, in \sectref{chap8_subsec:evaluation}, the limitations of the evaluation methods used in this research are discussed. This will involve a critical assessment of the metrics and procedures employed in evaluating the effectiveness of the \context models.
+
+\subsection{Limitations of the corpora that were used}\label{chap8_subsec:corporalim}
+
+The selection of a corpus for linguistic research can significantly influence the derived outcomes and insights. In this book, I used four different corpora to investigate various aspects of the \context task. The appropriateness and implications of these corpus choices were primarily addressed in \chapref{chap4}. However, the relevance of this choice resurfaced in Chapters \5 and \7, particularly during discussions on the selection of features and approaches for the \context task. This recurrence underscores the pivotal role the choice of corpus plays in shaping the research's trajectory and its outcomes. \tabref{tab:allcorporaindiss} provides a comprehensive overview of the corpora used, alongside a breakdown of each corpus' contribution to the respective chapters.
+
+\begin{table}[h]
+	\scalebox{0.75}{
+		\begin{tabular}{lcccc}
+			\lsptoprule
+			& \grectwo & \grecp  & \wsj & \webnlg \\
+			\midrule
+			Genre &  Wikipedia & Wikipedia & Newspaper articles & \begin{tabular}[c]{@{}l@{}} crowdsourced texts from RDFs \end{tabular} \\
+			Task & RFS & RFS  & RFS \& RCS & RFS, RCS, NeuralRFS  \\
+			Chapter & 4 \& 5 & 4  & 4--7 & 7   \\
+			Num of doc & 1655 & 808  & 585 & 25373 (triples)  \\
+			Num of RE & 11,705 & 8378 & 30,471 & 94,515\\
+			Length (sent) & 7.2 & 5.8 & 25 & 1.4 \\ \lspbottomrule
+	\end{tabular}}\caption[Different corpora used in this book]{Different corpora used in this book.}\label{tab:allcorporaindiss}
+\end{table}
+
+
+\paragraph*{Appropriateness of corpora for the task}
+
+Whenever a task involves using corpora, the primary question should be the suitability of the selected corpus for the intended task. In \chapref{chap4}, the suitability of the chosen corpora for the \context task was discussed. For instance, the \grecp corpus, as highlighted, was found to be unsuitable for a 3-way classification task (involving \val{pronoun}, \val{description}, and \val{name}). Its utility was limited primarily to addressing the pronominalization task. This limitation stems from a significant imbalance in label distribution within the \grecp corpus, where the \val{description} class represents a mere 4\% of the data. Such imbalances can skew classification algorithms towards the majority class, undermining the learning of minority classes.
+
+This situation raises an important question: Is the scarcity of the \val{description} class a general phenomenon, or is it specific to this dataset? The prevalence of this class as the majority in the \wsj dataset suggests the latter. Furthermore, some classes might be inherently less common in specific linguistic contexts. For example, empty REs are a relatively rare class in English, constituting only 6.28\% and 6.47\% of REs in the \grectwo and \grecp corpora, respectively.
+
+To address such imbalances, researchers can employ resampling techniques to alter the distribution of classes in the dataset and force the algorithm to learn the less-represented classes \citep{weiss2003learning,Mountassir2012,Branco2016,padurariu2019dealing}. Common resampling methods include random \term{undersampling}, which involves removing instances from the majority class, and \term{oversampling}, which adds copies of the minority class. Each method has its drawbacks: Undersampling risks losing valuable information for the majority class, while oversampling increases the likelihood of overfitting. More sophisticated resampling strategies are reviewed in \citet{Branco2016}, offering insights into how to balance datasets more effectively without compromising the integrity of the data.
+
+
+\paragraph*{Corpus-dependent choice of features in feature-based models}  
+In the realm of feature-based \context models, the selection of features is intrinsically linked to the characteristics of the corpora used. This dependency was evident in study \studC of \chapref{chap5}. Our findings revealed that while the distance in the number of sentences is a significant factor in models trained on the \wsj corpus, it holds less importance in models based on the \grectwo dataset. This observation prompts an important question: How crucial is sentential distance in feature-based models? The answer is not straightforward but is contingent on the specific corpus used for training the models.
+
+This scenario underscores a central lesson for researchers: When developing feature-based models, or when defining probing tasks based on certain features, it is imperative to ensure that these features are relevant and meaningful within the context of the chosen corpora. This relevance is crucial not only for the accuracy and effectiveness of the models but also for the validity of the research findings. A feature that is influential in one corpus may not necessarily hold the same level of significance in another, highlighting the need for a careful, corpus-specific approach to feature selection.
+
+\paragraph*{Representativeness of \wsj for the \context task}
+
+
+In chapters \4 and \7, we discussed the limitations of the \grec (comprising \grectwo and \grecp) and \webnlg corpora, highlighting their specific constraints for the \context task. For instance, \grecp, focusing solely on human referents, is unsuitable for a 3-way classification involving descriptions, which are predominantly used for non-human entities. \grectwo, despite its broader range of documented entities (such as cities, countries, and mountains), is limited by its annotation of only the main topic of each document, thereby failing to capture the dynamics of competition mechanisms and the presence of other entities. The \webnlg data, examined in \chapref{chap7}, comprises very short documents with simple syntactic structures, averaging 1.4 sentences per document. This brevity restricts our understanding of REs in longer, more complex texts.
+
+In contrast, the \wsj corpus, used throughout this study, overcomes many of these limitations. It offers a balanced representation of referential classes, with annotations of multiple referents per document, and features an average document length of 25 sentences. This corpus, therefore, provides a more comprehensive landscape for studying REs. However, it is not without its own limitations. For instance, null cases are not annotated in the \wsj corpus. Additionally, the syntactic complexity of the \wsj documents, primarily comprising Wall Street Journal articles with a focus on finance, may surpass the complexity found in other text sources. This higher complexity is exemplified in \REF{ex:copyrights}, which features an introductory sentence with various nested clauses from a \wsj document. While this example alone does not quantify the overall complexity of the \wsj corpus, it serves as an indicator of the types of sentences prevalent in this corpus.
+
+\begin{exe}
+	\ex\label{ex:copyrights} The U.S., claiming some success in its trade diplomacy, removed South Korea, Taiwan and Saudi Arabia from a list of countries it is closely watching for allegedly failing to honor U.S. patents, copyrights and other intellectual-property
+	rights.
+\end{exe}
+
+These insights lead to the pivotal question: What kind of language use does the \wsj corpus represent, and what can we learn from it? The corpus's lack of the previously mentioned limitations enriches our study by providing a more robust and diverse dataset. However, the unique features of the \wsj corpus, such as its syntactic complexity and financial focus, may also influence the generalizability of our findings.
+
+Another notable aspect regarding the structure of the \wsj documents is their distinct paragraph format, which differs significantly from other written genres like essays and commentaries. As highlighted in \chapref{chap6}, the average number of sentences per paragraph in the \wsj is 2.13, with approximately 25\% of paragraphs consisting of only a single sentence. This brevity is atypical when compared to the average paragraph length in other written sources.
+
+This structural difference has important implications for the generalizability of models trained on the \wsj corpus. In their study, \citet{hendrickx2009coreference} found that the performance of their coreference resolver declined markedly when applied to less structured data sources, such as blog texts and reader comments, after being trained on structured news texts. Their findings align with my belief that to enhance the generalizability of results in corpus-based studies, a more diverse dataset is essential. The reliance on a single type of text structure, as is the case with the \wsj corpus, can limit the applicability of models to other genres and formats of text.
+
+
+\subsection{The importance of linguistic features for \context}\label{chap8_subsec:featurelim}
+
+The crucial role of linguistically informed features in \context models has been a recurring theme in this book, particularly emphasized in Chapters \5, \6, and in study \studF of \chapref{chap7}. This section is dedicated to discussing three key aspects: (1) the significance of thoroughly understanding linguistic features, (2) the formation of an effective set of features in feature-based models, and (3) the various methods of evaluating linguistic features.
+
+\paragraph*{The importance of a thorough understanding of linguistic features}
+The selection of features is a pivotal step in constructing feature-based \context models. Appropriate feature inclusion can markedly enhance model performance. A deep understanding of the features that influence the choice of REs is equally vital for crafting rules in rule-based models. Although feature selection is not directly applicable to E2E models, a comprehensive grasp of linguistic features is essential for designing probing experiments to inspect these models.
+
+\paragraph*{Features used in feature-based \context models}
+In study \studB of \chapref{chap5}, we undertook a comprehensive review, gathering 65 features from prior feature-based \context studies and categorizing them into nine distinct groups. These groups were grammatical role, inherent features, referential status, recency, competition, antecedent form, surrounding patterns, position, and protagonism. According to the findings in \chapref{chap2}, the characterization of linguistic features can be based on their inherent or derived accessibility. The consensus set of features in study \studB contains both categories, including crucial aspects like the grammatical role of the RE, the antecedent's form, animacy, plurality, sentence distance, and paragraph distance. Features such as animacy reflect the inherent accessibility of a referent, while concepts like recency are derived.
+
+\paragraph*{Various ways of assessing linguistic information}
+In feature-engineered models, linguistic features are more transparent and interpretable, as demonstrated in studies \studB, \studC, and \studE. These studies involved integrating various features into models and observing their impact on predictive capabilities, representing a direct method of assessment. The goal is to determine whether incorporating a specific feature enhances model performance.
+
+E2E models, such as those employed in study \studF, present a more opaque scenario, where the internal workings are less immediately apparent. It is theorized that these models' effectiveness stems from their capacity to encode a continuous analogue of linguistic structures  \citep{torroba-hennigen-etal-2020-intrinsic}. To decode these encoded features, study \studG employed probing experiments. These experiments involve training neural network-based models on the RFS task to produce representations, which are then used in probing classifiers. These classifiers, designed around features thought to influence RF choice (like recency and grammatical role), test if the model has learned information pertinent to the classifiers' tasks. Good performance by these classifiers suggests successful encoding of the relevant features, offering insights into the neural models' latent representations. This method, considered an extrinsic evaluation \citep{torroba-hennigen-etal-2020-intrinsic}, allows us to view a neural model’s representations through the lens of linguistic features.
+
+
+\subsection{The approaches used for tackling \context}\label{chap8_subsec:method}
+
+In this book, three distinct approaches were employed to study the \context task: rule-based models, feature-based machine learning models, and end-to-end neural models. Each approach presents unique characteristics and methodologies.
+
+Rule-based and feature-based models follow a modular pipeline architecture. In these models, two sequential subtasks are performed: Referential Form Selection (RFS) and Referential Content Selection (RCS). In contrast, E2E architectures simplify this process by generating referring expressions in a single integrated step. This approach contrasts markedly with the segmented process of modular architectures. Study \studF, in agreement with \citet{Rudin2019} and \citet{castro-ferreira-etal-2019-neural}, suggested that more complex architectures do not always equate to superior performance.
+
+In the following sections, I discuss the specifics of RFS and RCS, the two integral components of the modular approach. Subsequently, I will examine each of the three methodologies used in this book in greater detail, highlighting their respective advantages and shortcomings.
+
+\paragraph*{RFS and RCS: Two subtasks of the modular architecture}
+RFS is often considered the initial module in a modular REG architecture. However, it can also be viewed as a testing ground for linguistic assumptions. This is because most linguistic theories concentrate on the choice of RF, as opposed to the specific content of an RE. The reason for this is that, while the classifications of RF, such as the Accessibility Hierarchy by \citet{ariel2001accessibility}, can be categorized into a finite list of classes, the actual content of an RE has infinite possibilities. In this book, alongside classic rule-based and feature-based models, neuralRFS models were used in study \studG for class prediction. Interestingly, for the \webnlg corpus, these neural classifiers outperformed feature-based classifiers across all classification tasks. In contrast, with a corpus like \wsj, the performance gap between neural and feature-based models may not be as pronounced. Should neural classifiers surpass feature-based models in effectiveness, a potential alternative architecture could involve combining a neural form selector with a data-driven content selector in a modular REG model.
+
+RCS is the subsequent module in the modular architecture. In this book, the rule-based models described in \chapref{chap7} adhere to a strict realization protocol. If the predicted form is not pronominal, the model refers to the entity using a delexicalized phrase, converting underscores in the phrase to whitespaces. Feature-based models take a different approach: They determine the most frequent RE for each combination of features. If no corresponding content is available, they resort to the backoff method detailed in \chapref{chap7}. While this strategy allows for a broader range of realizations, it remains deterministic, relying on the frequency of REs in the training data. For example, when referring to \intext{Arria NLG}, the most common reference in the dataset, \intext{Arria}, is selected. However, the more natural approach might be to use the full company name on its first mention. To address such nuances, a hybrid approach combining rules and data-driven methods could potentially yield more natural results. Nevertheless, this integration poses the risk of overly complicating the content realization process.
+
+\paragraph*{Rule-based models} 
+
+A key advantage of rule-based models lies in their transparency. These models operate with a clear set of predefined rules, making their decision-making process fully comprehensible and traceable. This transparency is particularly valuable when the aim is to understand the underlying logic of the model's decisions. However, designing these systems can be challenging, especially when attempting to incorporate a wide array of conditions and their interplay. As demonstrated in study \studF, a straightforward but thoughtfully designed rule-based system like \modname{RREG-S} performs well with simpler corpora such as \webnlg. Yet, when dealing with more intricate data sets, this simplicity may not suffice. In these cases, the development of more complex rules and the careful consideration of their interactions become imperative. 
+
+\paragraph*{Feature-based machine learning models} These models distinguish themselves by learning rules automatically from input data, as opposed to relying on manually encoded knowledge \citep{bishop2006pattern}. These models exhibit transparency at two distinct levels: (1) model or algorithmic transparency \citep{BARREDOARRIETA202082}, and (2) transparency in the choice of features.
+
+Model or algorithmic transparency is about the transparency of a model's decision-making process. For example, \figref{fig:decisiontreebranch} illustrates a decision node from the application of the C5.0 decision tree algorithm to the \modname{OSU} dataset in study \studB. 
+
+\begin{figure}
+	\includegraphics[width=\textwidth]{figures_tex_snippets/08/osu_node11.pdf}
+	\caption[One of the branches of the \modname{OSU} decision tree for a 3-way distinction.]{One of the branches of the \modname{OSU} decision tree for a 3-way distinction. In this image, \texttt{n} is \val{proper name}, \texttt{d} is \val{description}, and \texttt{p} is \val{pronoun}.}
+	\label{fig:decisiontreebranch}
+\end{figure}
+
+This figure exemplifies a clear decision-making process: Each node in the decision tree splits the data based on certain criteria, leading to a prediction. The decision node number 13, for instance, divides into a termination leaf node (node 14) and a further decision node (node 15). Each termination leaf node provides the number of instances examined (\texttt{n}) and the error rate (\texttt{err}). Node 15’s detailed breakdown is shown in \figref{fig:dtterminationnode}, where we observe that node 16 correctly predicts 70\% of cases, with the remaining 30\% falling into other categories.
+
+\begin{figure}
+	\includegraphics[width=.66\textwidth]{figures_tex_snippets/08/osu3_node15.pdf}
+	\caption{Branch 15 and its termination leaves.}
+	\label{fig:dtterminationnode}
+\end{figure}
+
+\largerpage
+The second level of transparency pertains to the choice of features in these models. In feature-based ML models, the features, their types, and values are explicitly known. This transparency is particularly evident in models like decision trees, where the decision-making process and the role of each feature are clearly visible. However, this level of transparency varies across different ML algorithms. For instance, while decision trees, as shown above, provide a clear insight into both decision steps and features, other algorithms like Random Forest and gradient boosting methods do not offer the same degree of transparency.
+
+\paragraph*{Neural E2E models}
+\begin{sloppypar}
+Neural end-to-end (E2E) models present a stark contrast to rule- and feature-based methods, particularly in terms of transparency. Firstly, these models do not use predefined features in their decision-making processes. This absence of explicit features means that the basis on which these models make decisions remains largely unknown. Secondly, the internal decision-making steps of neural E2E models are not accessible, obscuring the path by which they arrive at predictions. This opacity is a significant departure from the more interpretable nature of rule- and feature-based models.
+\end{sloppypar}
+
+Despite this lack of transparency, the success of neural E2E models is undeniable. Their effectiveness is largely attributed to the combination of sophisticated learning algorithms and their extensive parametric space, as noted by \citet{castelvecchi2016can}, \citet{West2018}, and \citet{BARREDOARRIETA202082}. The rapid evolution of deep learning approaches, along with their continually improving learning, reasoning, and adaptation capabilities, has enabled these models to achieve remarkable performance levels in complex computational tasks \citep{West2018}. This advancement has established them as a central and increasingly dominant force in NLP.
+
+However, with the growing reliance on and applicability of these models, the importance of interpretability and explainability has come to the forefront. In recent years, the field of \term{eXplainable AI} (XAI) has gained significant momentum, with numerous research initiatives aimed at elucidating the inner workings of neural systems. These efforts reflect a growing recognition in the AI community of the need to bridge the gap between the high performance of neural E2E models and our understanding of their decision-making processes \citep{Dosilovic2018,BARREDOARRIETA202082}.
+
+\paragraph*{Accuracy vs. model transparency}
+
+\figref{fig:tradeoff} illustrates a fundamental trade-off in model architectures between accuracy and transparency, as discussed by \citet{Dosilovic2018} and \citet{BARREDOARRIETA202082}. This trade-off is a key consideration in the development and selection of models for computational tasks.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures_tex_snippets/08/tradeoff}
+	\caption[Trade-off between model interpretability and performance.]{Trade-off between model interpretability and performance taken from \citet{BARREDOARRIETA202082}.}
+	\label{fig:tradeoff}
+\end{figure}
+
+
+In the scope of study \studF, from a methodological perspective, rule-based models emerge as the most interpretable owing to their explicit decision-making rules. However, when it comes to model accuracy, particularly in handling complex data, feature-based models, especially those employing XGBoost (a gradient boosting ensemble algorithm), demonstrate superior performance. This increased accuracy may be attributed to various factors, including the use of linguistic features or the inherent strengths of the model architecture itself. The observed dichotomy between interpretability and accuracy presents a significant challenge. On the one hand, the need for transparency in models is paramount for understanding the models. On the other hand, the need for high accuracy, particularly in complex data scenarios, often necessitates more sophisticated and less transparent models.
+
+
+
+\subsection{Interpretability and explainability of the outcome of \context models}\label{chap8_subsec:interp}
+
+The previous section primarily focused on the transparency of different model architectures, categorizing them into transparent models, like rule-based models and decision trees, and more opaque models, such as CatBoost, XGBoost, and neural models. This book also explores several \term{post-hoc explainability} methods \citep{BARREDOARRIETA202082} to enhance the explainability of these models. Post-hoc explainability refers to external techniques used to make the predictions of models more interpretable. This concept is akin to how individuals justify their decisions without fully understanding their own decision-making processes \citep{Dosilovic2018}.
+
+In this work, various methods were used to elucidate the findings, including model-agnostic variable importance, Sequential Forward Selection (SFS), global and local SHapley Additive exPlanations (SHAP), probing experiments, and error analysis. The following discussion provides an overview of these methods: (1) feature relevance analysis, which assesses the importance of features in feature-based model predictions, (2) probing experiments, which add interpretability to neural models, and (3) error analysis, which helps interpret the predictions made by \context models.
+
+\paragraph*{Feature relevance explanation}
+
+In this work, both global and local feature relevance analyses were conducted to shed light on how different features influence model predictions. The global feature analysis aimed to identify the features with the most significant contribution to a model's overall predictive performance. This analysis was crucial for several reasons. For instance, in study \studB, it was instrumental in determining a consensus set of features critical for the \context task. Study \studG used feature relevance analysis to hypothesize which features would be encoded in the latent representations of neural models. 
+
+The methodologies for assessing feature relevance vary, and each offers unique insights. Techniques like model-agnostic variable importance and Sequential Forward Selection assess each feature's overall contribution to a model’s performance. In contrast, SHAP analysis goes a step further by illustrating both the positive and negative impacts of each feature on the prediction of individual classes. This dual perspective provided by SHAP analysis not only identifies important features for the task but also clarifies their role in predicting specific classes.
+
+On a more granular level, local feature relevance analysis, as exemplified in the error analysis of study \studE, calculates the contribution of features to individual predictions. This local approach to explainability is particularly valuable for diagnosing the causes of specific incorrect predictions. It allows for a detailed examination of why a model might have made an error in a particular instance, enhancing our understanding of model behavior at a micro-level.
+
+\paragraph*{Probing tasks}
+
+Probing tasks offer a unique approach to understanding deep learning models, especially in cases where traditional post-hoc explainability techniques used in feature-based models are not applicable. However, the application of probing tasks comes with certain limitations, as highlighted in study \studG. One key limitation is the difficulty in generalizing the results, partly due to the unsuitability of the underlying corpus used for these tasks. Additionally, there is a critical distinction to be made between ``extracting the linguistic structure encoded in the representations" and ``learning the probing task" itself, as noted by \citet[5136]{kunz-kuhlmann-2020-classifier}. This distinction raises caution in interpreting probing results. If a model appears to encode a feature, it might not necessarily mean that the feature is truly encoded in the model's latent representations. Instead, it could indicate that the probing classifier has learned to perform the task independently of the model's actual encoding capabilities \citep{kunz-kuhlmann-2020-classifier}. 
+
+Moreover, the absence of a feature in the model's latent representation does not necessarily imply that the feature is irrelevant to the task. It could suggest a limitation in the model’s ability to encode that particular feature. Given that probing is a relatively new field in NLP research, the methodologies employed still lack a robust theoretical foundation, making cautious interpretation essential. Despite these challenges, probing tasks represent a significant step forward in enhancing the interpretability of neural models.
+
+\paragraph*{Error analysis} 
+Error analysis, while being a vital method, is frequently overlooked in the natural language generation (NLG) community. As pointed out by \citet{van-miltenburg-etal-2021-underreporting}, there is a notable trend of \term{underreporting} errors in NLG research. This underreporting, as they define it, occurs when ``authors neither include any error analysis nor provide any examples of errors made by the system, and they do not make reference
+to different kinds of errors that may appear in
+the output" (p. 140).
+
+Recognizing this gap, in study \studE, I undertook a comprehensive error analysis to assess the impact of incorporating paragraph-related attributes in \context models.  Initially, the analysis involved reporting the errors made by both models to identify their general weaknesses. Subsequently, I examined the errors made by each model individually. Out of the 213 individual errors identified, 142 were attributed to the strong baseline model, while 71 errors were associated with the model that included paragraph-related information. Notably, the strong baseline model made nearly twice as many incorrect predictions as the experimental model. Despite the minimal difference in overall accuracy between the two models, this significant disparity in error rates would have remained undetected without a thorough error analysis.
+
+Further, the study examined how individual features contributed to specific individual errors. It revealed that errors in the strong baseline model were often related to the lack of encoded paragraph transitions. For example, errors frequently occurred when a human subject referent was situated just one sentence away from its antecedent but located in a different paragraph. While not a common scenario in the \wsj dataset, this pattern could be more prevalent in other document types, like Wikipedia articles where sentences typically center around the main subject of the article. Here, paragraph boundaries might significantly affect model performance.
+
+Similarly, study \studF from \chapref{chap7}, which compared different \context approaches, could greatly benefit from detailed error analysis.
+As noted by \citet{van-miltenburg-etal-2021-underreporting}, error reporting is particularly valuable when assessing various implementation paradigms, such as pipeline-based data-to-text systems versus neural end-to-end systems. Each system has unique weaknesses, and identifying where they falter can provide valuable insights. For instance, study \studF found that feature-based models with well-designed features are better suited for complex data. An in-depth error analysis can illuminate why these models outperform others and identify the types of predictions that are challenging for different approaches. Furthermore, by examining the errors, we can determine whether the primary difficulties lie in the step of selecting the appropriate form of a referring expression, or in the content realization step.
+
+\subsection{Evaluation methods used}\label{chap8_subsec:evaluation}
+
+This work presented a comprehensive evaluation of the \context models, using both automatic and human evaluation methods. The following sections delve into the specifics of each approach. Additionally, the necessity for in-depth qualitative evaluations of model outcomes is explored.
+
+\paragraph*{Automatic evaluations}
+
+In this book, we explored a range of automatic evaluations conducted to assess the performance of both the RFS and RCS tasks. This section will offer an overview of the key metrics used in these evaluations.
+ 
+In study \studA, as detailed in \chapref{chap4}, it was demonstrated that overall model accuracy is not always a reliable indicator of performance, particularly in cases of imbalanced class distributions. This observation aligns with the insights provided by \citet{padurariu2019dealing}, who argue for a shift in focus from optimizing overall classification accuracy to a more nuanced approach that balances precision and recall, especially in imbalanced datasets. This approach emphasizes the importance of evaluating the precision, recall, and F1 score for each individual class. For instance, the analysis in study \studA revealed that a model might achieve high overall accuracy but still overpredict certain classes, like pronouns, while underperforming in others, such as descriptions, as evidenced by very low F1 scores.
+
+In addition to these class-specific metrics, we also used weighted-averaged scores. These scores provide a comprehensive perspective on the performance of RFS classification models by taking into account the prevalence of each class in the dataset. This method ensures a more balanced evaluation which is especially important in datasets with uneven class distributions.
+
+In study \studF, which concentrated on the actual realization of REs, we employed two distinct classes of automatic metrics to evaluate the outcomes: (1) RE Accuracy and String Edit Distance \citep[SED,][]{Levenshtein_SPD66} for measuring the quality of the generated REs, and (2) Text Accuracy and BLEU \citep{papineni2002bleu} for assessing the quality of the documents after the REs were inserted. These metrics combined offer a comprehensive evaluation of the \context models. While RE Accuracy and SED focus on the precision of individual REs, Text Accuracy and BLEU provide a broader assessment of how these REs integrate into and affect the overall quality of the generated documents.
+
+\paragraph*{Human evaluations}
+
+In study \studF, we conducted two human evaluation experiments to assess the fluency, grammaticality, and clarity of the outputs generated by the models. Human evaluations involve participants reviewing and rating the generated text based on these criteria. However, this process can present certain challenges, as not all aspects of these criteria are immediately apparent. Consider the following example generated by the neural model \modname{att-meta}:
+
+\begin{exe}
+	\ex\label{ex:william} William Anders was born in British Hong Kong but is an American . He was a member of Apollo 8 which is operated by NASA . His backup pilot was Buzz Aldrin . \italunder{They} retired in 1969-09-01 .
+\end{exe}
+
+At first glance, this example appears grammatically correct. However, a closer look at the corresponding RDF data, as shown in \tabref{tab:william}, reveals an inconsistency. The retirement date is associated only with \intext{William Anders}, not with both \intext{William Anders} and \intext{Buzz Aldrin}. Therefore, the italicized \intext{They} in the example is incorrect.
+
+\begin{table}
+	\begin{tabular}{lll}
+		\lsptoprule
+		William\_Anders & dateOfRetirement & 1969-09-01 \\
+		William\_Anders & was a crew member of & Apollo\_8 \\
+		William\_Anders & nationality & United\_States \\
+		William\_Anders & birthPlace & British\_Hong\_Kong \\
+		Apollo\_8 & backup pilot & Buzz\_Aldrin \\
+		Apollo\_8 & crewMembers & Frank\_Borman \\
+		Apollo\_8 & operator & NASA\\
+		\lspbottomrule
+	\end{tabular}
+	\caption{The RFD of \REF{ex:william}.}\label{tab:william}
+\end{table}
+
+This discrepancy poses a challenge for human evaluators. Some may recognize the error based on the RDF information and deem the sentence ungrammatical, while others, focusing solely on the text, might interpret a plural subject and consider the sentence grammatically correct.
+
+Human evaluations play a critical role in understanding the nuances of natural language generation, beyond what automated metrics can capture. However, as this example illustrates, ensuring accuracy in human evaluations requires careful consideration of the evaluators' perspectives and the provision of complete information to guide their judgments.
+
+Another significant challenge in evaluating NLG models lies in reconciling the results of automatic and human evaluations. Research by \citet{novikova-etal-2017-need} and \citet{ferreira2018advances} has highlighted that there is not always a clear correlation between the results of these two types of evaluation. For instance, consider a scenario where a model scores highly in automatic metrics but receives low ratings in human evaluations. This discrepancy raises important questions about how to accurately interpret the performance of the model. Are the automatic metrics not capturing certain qualitative aspects that human evaluators are sensitive to, or are there other factors at play?
+ 
+Moreover, it is important to note that both automatic and human evaluations discussed in this work are forms of intrinsic evaluation metrics. As pointed out by \citet{van-miltenburg-etal-2021-underreporting}, these intrinsic metrics, despite their usefulness, may be too coarse-grained to capture all relevant information. They provide general evaluations of system performance, estimating an average case performance across a limited set of abstract dimensions. However, this approach might not fully reflect the real-world effectiveness and applicability of the models. 
+
+Given these limitations, there is a growing recognition of the value of extrinsic methods in measuring performance. While these methods are more expensive and time-consuming \citep{gkatzia-mahamood-2015-snapshot}, they offer a more comprehensive view of a model's performance by evaluating it in the context of its intended use. Thus, despite the challenges, incorporating extrinsic evaluation methods alongside intrinsic ones could offer a more complete picture of a \context model's capabilities. 
+
+\paragraph*{A need for in-depth qualitative evaluations}
+
+As previously discussed in \chapref{chap7}, one of the significant challenges faced by E2E generation systems is the occurrence of \term{hallucinations}. In the context of natural language generation, a hallucination refers to instances where the system generates content that is either untrue or not present in the input data \citep{rohrbach-etal-2018-object,hallucination2018,nie-etal-2019-simple}. This phenomenon raises serious concerns about the reliability and accuracy of these systems. An illustrative example of this can be seen in \REF{ex:aston}, which compares the original text (\ref{ex:aston1}) with the output generated by the model \modname{profilereg} (\ref{ex:aston2}) in study \studF.
+
+
+\begin{exe}
+	\ex\label{ex:aston}
+	\begin{xlist}
+		\ex\label{ex:aston1} \modname{original:} \italunder{The Aston Martin V8} is assembled in the United Kingdom, the leader of which, is Elizabeth II.
+		\ex\label{ex:aston2}  \modname{profilereg:} \italunder{Simon Martin} is assembled in the United Kingdom, the leader of which, is Elizabeth II.
+	\end{xlist}
+\end{exe}
+
+In this instance, the model replaces \intext{The Aston Martin V8} with \intext{Simon Martin}, which is not only incorrect but also not found in the input data. Such errors highlight the necessity for in-depth qualitative evaluations. 
+
+In addition to hallucinations, another type of error that may not be adequately captured by automatic or human evaluations is the issue of incomplete information. This occurs when the generated text, while not incorrect per se, fails to provide comprehensive and informative content. An illustrative case of this can be seen in \REF{ex:aidastella_attmeta} generated by the \modname{att-meta} system:
+
+\begin{exe}
+	\ex\label{ex:aidastella_attmeta} AIDAstella is operated by Rostock based AIDA, Cruises. It was built by \italunder{Meyer} and is owned by Costa Crociere.
+\end{exe}
+
+The corresponding RDF data for this example is shown in \tabref{tab:aidastella_attmeta}. Here, the text mentions \intext{Meyer} as the builder of \intext{AIDAstella}. While this is not incorrect, it is not entirely complete either. The full name of the builder, as indicated in the RDF, is \intext{Meyer Werft}. Since this is the first mention of the referent \intext{Meyer Werft} in the text, the omission of \intext{Werft} results in incomplete information being presented.
+
+\begin{table}
+	\begin{tabular}{lll}
+		\lsptoprule
+		AIDA\_Cruises & location & Rostock \\
+		AIDAstella & operator & AIDA\_Cruises \\
+		AIDAstella & builder & Meyer\_Werft \\
+		AIDAstella & owner & Costa\_Crociere \\
+	   \lspbottomrule
+	\end{tabular}
+	\caption{The RFD of \REF{ex:aidastella_attmeta}.}\label{tab:aidastella_attmeta}
+\end{table}
+
+These examples underscore the need for more in-depth qualitative evaluations. Such evaluations should not only check for factual accuracy or grammaticality but also assess the completeness and informativeness of the information provided.
+
+In addition to the errors mentioned above, \citet{reiter2020} has highlighted a range of error types that may appear in the outputs of E2E NLG systems. These include the inappropriate use of words, implying incorrect attributes, and suggesting undue importance. Each of these error types can significantly impact the effectiveness and reliability of the generated text. A comprehensive qualitative analysis is therefore needed to provide insights into the extent and types of errors that occur, beyond what is possible through automatic metrics or surface-level human evaluations. 
+
+
+\section{One-shot REG vs. \context}\label{sec:shotversuscontext}
+
+In \chapref{chap3}, a clear distinction was made between two REG tasks: \context and \shot. While \context incorporates linguistic context in generating referring expressions, \shot operates without this context. This fundamental difference -- the presence or absence of context -- leads to distinct challenges and mechanisms in each task.
+
+In this section, I delve into the different mechanisms underlying both \context and \shot, focusing on their central goals of achieving identifiability and naturalness (or humanlikeness). Despite sharing the objective of identifiability, the strategies employed by \context and \shot may differ significantly due to the role of context.
+
+One of the common issues in \shot is overspecification. This section examines how this problem manifests differently in \context, where the additional layer of contextual information plays a role. Another key area of discussion is the use of referential forms. In \shot, the referring expressions are typically descriptions. However, \context allows for a broader range of forms, including pronouns and proper names. 
+
+Finally, given that this book has focused on \context, an important goal of this section is to assess the implications of the \context studies for understanding and improving \shot. This involves considering whether the insights and findings from \context can be extended to enhance our approach to \shot, and to what extent the challenges and solutions identified in \context are applicable to the one-shot task.
+
+\paragraph*{The central goal of both tasks}
+
+In \shot, a central question revolves around the choice of properties for an RE to uniquely identify a referent. If the sole aim were identifiability, one straightforward approach would be to include \emph{all} properties of a referent. This method would ensure unique identification in most cases. However, as discussed in \chapref{chap3}, achieving identifiability alone is not sufficient for effective REG.
+
+In \shot, algorithms such as the Incremental Algorithm not only aim for identifiability but also aim to produce REs that are natural and humanlike. The criterion of humanlikeness, as defined by \citet{van2016computational}, assesses how closely the output of an algorithm resembles what a human speaker would naturally produce. Achieving humanlikeness in REs can be approached in various ways, such as generating overspecified expressions or varying the order of attributes \citep{van2012toward}.
+ 
+In contrast, \context requires an additional layer of consideration. To attain humanlikeness in \context, it is crucial to take into account the contextual cues and the prominence status of referents within the discourse. Consider examples \ref{aida-feats} and \ref{aida-attcopy}, generated by two different algorithms discussed in \chapref{chap7}, and observe how the referent \intext{AIDAstella} is mentioned in the bolded portions of these examples:
+
+\begin{exe}
+	\ex\label{aida-feats} $[$\modname{feat-s}$]$ AIDAstella is operated by Rostock based AIDA Cruises. \italunder{AIDA-stella} was built by Meyer Werft and is owned by Costa Crociere .
+	\ex\label{aida-attcopy} $[$\modname{att-copy}$]$ AIDAstella is operated by Rostock based AIDA Cruises. \italunder{It} was built by Meyer and is owned by Costa Costa .
+\end{exe}
+
+In the \context task, the use of a pronominal expression (\intext{It}) to refer to \intext{AIDAstella}, as seen in \REF{aida-attcopy}, aligns with how humans typically refer to prominent entities in discourse. Conversely, in the \shot task, the assumption is that there is no contextual information influencing the status of the referents. All entities -- the target and its distractors -- are considered to have similar prominence. Therefore, the selection of an RE in \shot does not account for the referent's prominence within a larger discourse, as the task is designed to be context-free. In this scenario, a more descriptive form of RE, like the full name \intext{AIDAstella} as seen in \REF{aida-feats}, might be preferred for identifiability, even though it may not reflect natural human usage in a contextual setting.
+
+\paragraph*{Overspecification}
+
+Overspecification, a concept widely debated in the context of \shot, refers to instances where an RE includes more properties than necessary for unambiguous identification of the referent \citep{van2016computational}. This phenomenon has been observed in both experimental and computational studies, revealing that humans frequently produce overspecified REs \citep{pechmann1989incremental, ENGELHARDT2006, Koolen2011, Paraboni2017,Degen2020}. Interestingly, research indicates that listeners often do not perceive overspecified REs negatively; in some cases, they may even facilitate referent identification \citep{ENGELHARDT2006, Arts2011}.
+
+The generation of overspecified REs has been extensively explored and implemented within the framework of \shot. For instance, the Incremental Algorithm \citep{dale1995computational} accommodates a certain level of overspecification. This is based on a preference ordering, provided that the overspecified attributes possess discriminatory power. Additionally, non-deterministic algorithms have explored overspecification by varying the order in which a referent’s properties are considered, assigning different probabilities to each order \citep{van2012toward,van2016computational,Gompel2019}.
+
+The phenomenon of overspecification is not exclusive to \shot and often appears in \context as well. In \chapref{chap6}, it was observed that more than 90\% of paragraph-initial REs in \context are non-pronominal, even though a pronominal form would have sufficed in many instances. This can be considered a form of \term{form-overspecification}, where a richer form is used even when a simpler reduced one would be adequate for identification. For instance, in \REF{ex:edwardegnuss2}, \intext{Mr. Egnuss's} is used instead of a pronoun, despite Edward Egnuss being the only masculine referent in the preceding context.
+
+
+\begin{exe}
+	\ex \example{wsj-1021} \label{ex:edwardegnuss}
+	\begin{xlist}
+		\ex \label{ex:edwardegnuss1} $[$Paragraph 1$]$ Program trading is ``a racket," complains \italunder{Edward Egnuss, a White Plains, N.Y., investor and electronics sales executive}, ``and it's not to the benefit of the small investor, that's for sure." But although \italunder{he} thinks that it is hurting \italunder{him}, \italunder{he} doubts it could be stopped.
+		\ex \label{ex:edwardegnuss2} $[$First sentence of paragraph 2$]$ \italunder{Mr. Egnuss's} dislike of program trading is echoed by many small investors interviewed by Wall Street Journal reporters across the country.
+	\end{xlist}
+\end{exe}
+
+
+This choice might be influenced by a desire to avoid repetition of forms or to mark a transition between paragraphs. While strictly speaking, this RE could be labeled as overspecified based on identification criteria alone, its role in the discourse may justify its usage. This complexity underscores the need for further research to identify the cases of overspecification.
+
+\term{Content-overspecification} represents a second, intriguing form of overspecification. While some overspecifications are purely functional, such as including additional location information in spatial and hierarchical domains to aid the addressee in locating referents \citep{paraboni2007generating, paraboni2014reference}, other instances serve a more narrative or descriptive purpose. An interesting example of this can be seen in the way \intext{Amanda Gorman} is referred to in \REF{ex:amandagorman}:\footnote{\url{https://www.cnbc.com/2021/01/20/meet-amanda-gorman-the-youngest-inaugural-poet-in-us-history.html}}
+
+\begin{exe}
+	\ex\label{ex:amandagorman} Amanda Gorman became the youngest inaugural poet in U.S. history when she recited her poem “The Hill We Climb” at President Joe Biden’s swear-ing in ceremony Wednesday.	
+	\italunder{The 22-year-old Los Angeles resident and daughter of a school teacher} began writing at an early age in an attempt to cope with a speech impediment. 
+\end{exe}
+
+In this example, Amanda Gorman is initially introduced with relevant details pertaining to her role as a poet at Joe Biden's inauguration event. The bolded RE in the following sentence provides additional attributes about her age, hometown, and family background. While these details are not strictly necessary for identifying Amanda Gorman, given the context of the first sentence, they enrich the narrative by offering a more comprehensive picture of her. 
+
+The inclusion of such content-overspecification in the second sentence extends beyond the mere facilitation of identification. It provides the reader with engaging information that, while not essential to understanding the core narrative, adds depth to the character being described. Furthermore, these additional details can serve as a narrative bridge, smoothly transitioning the reader to subsequent topics or themes within the article.
+
+
+As highlighted in the previous paragraphs, overspecification is a common phenomenon in both REG tasks. While form-overspecification appears to be unique to \context, content-overspecification is relevant and observable in both \context and \shot. Drawing inspiration from \shot research \citep{paraboni2007generating,Gompel2019,Degen2020}, \context research should aim to identify and categorize the different types of overspecification. The goal would be to not only understand these phenomena but also to integrate them into algorithmic solutions for natural language generation. Moreover, the inherent complexity of contextual cues in \context allows for exploring more varied cases of overspecification. 
+
+\paragraph*{Proper names}
+
+In the \shot task, the typical objective is to use one or more properties of a referent to generate a distinguishing description to differentiate the referent from a set of distractors. Traditionally, most REG algorithms focus on generating descriptions rather than considering other categories, such as proper names. However, this conventional approach raises an important question about the naturalness and efficiency of REs in real-world communication.
+
+\begin{figure}
+	\includegraphics[width=0.6\linewidth]{figures_tex_snippets/08/TUNA-people-obama}
+	\caption{A modified example from the people domain of the \corpus{TUNA} corpus.}
+	\label{fig:tuna-people-obama}
+\end{figure}
+
+Consider a modified example from the people domain of the \corpus{TUNA} corpus, illustrated in \figref{fig:tuna-people-obama}.\footnote{The image of Barack Obama is not part of the \corpus{TUNA} corpus; it was obtained from the following website: \url{https://www.nobelprize.org/prizes/peace/2009/obama/facts/}.} Suppose participants in a \shot experiment are shown this image and asked to produce a distinctive RE for the enclosed image. If restricted to descriptions, participants might generate an RE like \intext{the man with black hair and a tie}. Yet, if allowed to choose freely, many would likely use a proper name, such as \intext{Barack Obama}, which is more direct and intuitively recognizable.
+
+
+This example raises the question of why a distinguishing RE should always take the form of a description. In natural language usage, people might be more inclined to use a referent's proper name to distinguish it from a set of distractors, especially when given the choice between using a proper name and a description. As \citet{van2016computational} suggests, proper names can be incorporated into a knowledge base (KB) as properties of a referent, similar to other properties. By integrating proper names into the REG mechanism, they can be used in conjunction with other properties and relations to create more natural and efficient REs.
+
+In the context of \context, the use of proper names as properties provides an interesting perspective on the generation of REs. This approach is exemplified in the \wsj corpus, as seen in \REF{ex:gary}, where the referent \intext{Garry Hoffman} is introduced with multiple attributes.
+
+\begin{exe}
+	\ex\label{ex:gary} \italunder{Gary Hoffman, a Washington lawyer specializing in intellectual property cases}, said the threat of U.S. retaliation, combined with a growing recognition that protecting intellectual property is in a country's own interest, prompted the improvements made by South Korea, Taiwan and Saudi Arabia.
+\end{exe}
+
+\begin{table}
+	\begin{tabular}{ll}
+		\lsptoprule
+		Property & Value \\
+		\midrule
+		Name & Gary Hoffman \\
+		Job & Lawyer \\
+		Place of Work & Washington \\
+		Speciality & Intellectual-property \\
+		\lspbottomrule
+	\end{tabular}\caption{An example of a KB for the referent \intext{Gary Hoffman}.}\label{tab:kb}
+\end{table}
+
+The corresponding knowledge base (KB), shown in \tabref{tab:kb}, lists \intext{Garry Hoffman} as a property among others, such as his profession and specialization.\footnote{When the REG task is implemented in closed and restricted domains, KBs can be built for all referents and then used to generate REs \citep{siddharthan-copestake-2004-generating}. In an open domain such as the \wsj corpus used in this work, KBs cannot be easily built for all referents.} In this example, the conjunction of multiple attributes -- Gary Hoffman's name, profession, place of work, and area of specialization -- effectively introduces the referent in a manner that mirrors how humans typically provide context about a person in conversation.
+
+
+
+
+If we view proper names as properties, an interesting question arises: Are the mechanisms for generating first mentions in \context similar to generation mechanisms in \shot? The answer is a partial yes. While there are similarities, \context differs from \shot in that the generation of first mentions in \context is influenced by contextual factors and the prominence of referents. Consider the following example, which could be the opening sentence of a newspaper article:
+
+\begin{exe}
+	\ex\label{ex:bush} George Bush, the President of the United States, entered the White House.
+\end{exe}
+
+
+In this instance, the RE \intext{George Bush} could refer to either \intext{George H. W. Bush} or \intext{George W. Bush}, with the correct identification depending on whether the article was written in 1992 or 2002. This example illustrates that in \context, an RE cannot always be identified independently, but rather, its clarity depends on the surrounding context.
+
+In contrast, \shot is traditionally defined as a context-free task. However, when we consider an example like that in \figref{fig:tuna-people-obama}, we might question whether context, in the form of global importance or recognizability, plays a role even in \shot. Does the prominence of a figure like Barack Obama make the use of a proper name more appropriate than a descriptive RE in this context? This observation leads us to reconsider whether \shot is entirely devoid of contextual cues.
+
+Reflecting on these discussions, it becomes apparent that similar mechanisms may be at play in both \context and \shot, albeit at different levels of complexity. Both tasks deal with the challenge of generating clear and identifiable REs, but \context introduces additional layers of complexity due to its reliance on contextual information and referent prominence. 
+
+\section{Linguistic vs. computational approaches}\label{sec:lessonslearned}
+
+This book has endeavored to incorporate linguistic insights into the computational exploration of the \context task. While this work has drawn upon a range of psycholinguistic concepts, it is important to acknowledge that other relevant topics like alignment, audience design, egocentricity, and non-determinism, though not covered here, also hold significant value for the \context task (see \citealt{van2012toward} for a discussion on the cognitive plausibility of REG models).
+
+In this section, I aim to bridge the gap between linguistic (both theoretical and experimental) and computational perspectives on reference production. This dialogue is particularly necessary in light of the growing separation between these fields in recent years. An analysis by \citet{reiter-2007-last} of citations in computational linguistics journals from 1995 and 2005 revealed a significant shift. The study found that articles published in 2005 demonstrated markedly less influence from diverse language research communities compared to those from 1995. This trend of isolation has been intensified by the rapid advancement of DL models in recent years, leading to an even more pronounced disconnect between computational linguistics and other linguistic disciplines.
+
+\begin{sloppypar}
+As observed by \citet{rogers-augenstein-2020-improve}, there is a tendency in the mainstream computational linguistics community to prioritize DL-based methods, which might inadvertently marginalize interdisciplinary research efforts. This trend towards intellectual segregation is concerning, as it overlooks the rich insights that linguistic research can offer to computational approaches in natural language processing. In the following discussion, I will explore instances where the paths of linguistics and computational science diverge and identify areas where cross-disciplinary input could be mutually beneficial. 
+\end{sloppypar}
+
+\subsection{Refining the concepts} 
+In this section, I illustrate with two examples how computational and experimental studies can mutually enhance each other in refining and testing linguistic concepts. Theoretical frameworks of reference, as discussed in \chapref{chap2}, provide a general direction for the choice of REs \citep{gundel1993cognitive, ariel2001accessibility, grosz1995centering}. However, these theories often lack detailed guidance on practical implementation.
+
+Centering Theory, described in \chapref{chap2} as a framework for understanding local coherence and salience, illustrates this point. The theory includes various rules, constraints, and parameters, the specifics of which are open to interpretation \citep{poesio2004centering}. \citeauthor{poesio2004centering} demonstrated that while behavioral experiments are valuable for validating centering assumptions, the diverse ways the theory can be implemented pose a challenge. To address this, they adopted a computational approach, applying different parameter settings to an annotated corpus. This method enabled them to compare various interpretations of the theory and formalize some previously unspecified parameters. The insights gained from this computational analysis can subsequently guide behavioral experiments, providing refined parameter settings for more targeted empirical studies.
+
+Similarly, study \studC in \chapref{chap5} followed this approach by computationally testing different implementations of recency, a concept derived from corpus-based \citep{Givon1983, ariel1990accessing} and experimental \citep{Arnold2010} studies. These studies predominantly used an utterance-based notion of recency, leaving other methods, such as word-based recency, less explored. Our study examined 15 different recency measures and found that higher-level measures like sentences and paragraphs were more influential in the choice of RF than lower-level measures. This finding suggests that the prominence of a referent may decrease not merely due to distance, but rather due to the transitions between sentences or paragraphs. Such a hypothesis, arising from computational analysis, can be further examined through controlled linguistic experiments.
+
+These examples demonstrate the value of using computational methods to test and refine linguistic theories, creating opportunities for new hypotheses that can be validated experimentally. This synergistic approach, combining computational models with linguistic theory and experimentation, underscores the importance of interdisciplinary collaboration in natural language processing, where computational insights can inform experimental designs and vice versa.
+
+\subsection{Building reliable corpora} 
+
+In this work, the significance of corpus selection for the \context task has been a recurring theme. The approaches to corpus development in linguistics and computational science differ markedly, but there are opportunities for these fields to mutually enrich each other in creating more reliable and effective corpora.
+
+Computer scientists typically work with large datasets, often relying on automatic preprocessing libraries and automated rule-based processing. For example, in annotating REs in the \webnlg corpus, a simple rule is applied: If a determiner precedes a noun phrase, it is classified as a description; otherwise, it is considered a proper name. However, as demonstrated in \chapref{chap7}, adhering strictly to this rule can lead to misclassifications, affecting the performance of classification models. Linguistic corpus-based studies, on the other hand, generally use smaller, meticulously annotated corpora. While this attention to detail ensures high precision, it can sometimes result in datasets that are idiosyncratic and less amenable to reuse for different research purposes. \citet{schmidt2014avoiding} highlight the challenges of linguistic data heterogeneity, pointing out that corpora are often created with specific theories and research questions in mind, which can limit their broader applicability.
+
+The contrast between these approaches suggests a potential for mutual benefit. Linguistic expertise in detailed annotation and exception handling can enhance the precision of large datasets typically used in computational work. Conversely, computational methods for creating standardized, large-scale corpora can contribute to the linguistic need for broader, more versatile datasets. By collaborating, linguists and computer scientists can develop corpora that balance precision with abundance, catering to the needs of both fields. For instance, in the construction of a REG corpus for E2E studies, incorporating delexicalized forms of REs is crucial. While these were automatically generated in study \studF and may contain errors, a collaborative approach involving linguistic input could improve their accuracy.
+
+In summary, a closer collaboration between linguists and computer scientists could lead to the development of more reliable, interoperable corpora. Such joint efforts can leverage the strengths of both disciplines, resulting in datasets that are not only extensive and standardized but also meticulously annotated and adaptable for various research needs.
+
+\subsection{Evaluation and experimentation}
+
+The fields of computational linguistics and psycholinguistics offer unique methods and perspectives that can be mutually beneficial, particularly in evaluating models and testing linguistic hypotheses. This section explores two ways these fields can interact: (1) using psycholinguistic methods in computational studies, and (2) employing language models as subjects in psycholinguistic experiments.
+
+\textit{Applying psycholinguistic methods in computational studies.} In \chapref{chap7}, we conducted a Magnitude Estimation task to evaluate the outputs of the \wsj models. Given that most evaluation studies have focused on shorter texts, there was uncertainty about the effectiveness of this method for longer articles. Recent advancements in neuropsychological experiments, particularly in naturalistic language processing involving non-trivial context, suggest new avenues for evaluation methods. Neuroimaging techniques like fMRI and ERP, as highlighted by \citet{Alday2018}, are increasingly used in naturalistic language studies and could be adapted to evaluate the outputs of NLG models, especially for longer texts.
+	
+\textit{Language models as psycholinguistic subjects.} In recent years, the NLP community has witnessed the emergence of a new research field that applies psycholinguistic methods to examine the linguistic capabilities of black-box models \citep{linzen2016assessing,futrell-etal-2019-neural,ettinger-2020-bert}. \citet{baroni2021proper} coined the term \term{linguistically-oriented deep net analysis} for this growing area. This field adopts a psycholinguistic viewpoint, conducting sophisticated experiments to probe the knowledge implicit in a model's behavior, analogous to studying a species' behavior. One interesting aspect of this research, as \citet{baroni2021proper} notes, is understanding why models, presumably operating on different principles than the human brain, excel in processing human language.
+
+So far, most studies in this area have focused on syntactic phenomena \citep{linzen2016assessing,futrell-etal-2019-neural,hewitt-manning-2019-structural}. However, a notable exception is the study by \citet{upadhye-etal-2020-predicting}, which explored reference processing. They investigated the next-mention biases of two language models, \method{Transformer-XL} and \method{GPT-2}, in various contexts: the use of implicit causality verbs, the comparison of motion versus transfer of possession verbs, and aspectual marking in transfer of possession verbs. Their research is particularly compelling as it replicates experiments typically conducted with human subjects, using language models instead. This approach enables a direct comparison between human and model behaviors, offering valuable insights into the similarities and differences in language processing between humans and language models.
+
+These examples illustrate the potential for a collaborative approach between computational linguistics and psycholinguistics. By adopting methods from each other’s domains, researchers can develop more sophisticated evaluation techniques and gain a deeper understanding of both artificial and human language processing.
+
+
+\subsection{REG in NLG applications} 
+REG is not only a vibrant area of academic research but also an essential component in commercial NLG applications \citep{reiter2016method,reiter-2017-commercial}. The deployment of NLG technologies spans diverse fields such as healthcare, the oil and gas industry, journalism, and financial services, each with its specific requirements and challenges (for a detailed list of use cases, see \url{https://www.arria.com/industry-expertise/}).
+
+In certain applications, especially those in critical domains like healthcare, accuracy is paramount. As \citet{reiter2016commercial} points out, for some applications, ``it is essential that the systems produce reasonable texts in \emph{all} cases. For example, a medical decision-support system cannot produce texts that decrease the quality of patient care." In such contexts, it is crucial for the system to recognize potential ambiguities in REs and avoid them to ensure clarity and precision. Conversely, other applications might prioritize more varied and humanlike expressions in both form and content, allowing for a lesser degree of control. This variation in requirements underscores the necessity for context-sensitive approaches in constructing REs. What is considered a high-quality RE in one application might differ significantly in another, depending on the specific needs and objectives \citep{reiter-2017-commercial}.
+
+The development of effective REG systems for these diverse applications can greatly benefit from a synergy between linguistic insights and computational methodologies. Linguistic research provides a deep understanding of the nuances of human language, including how context influences referential clarity and naturalness. Computational approaches, on the other hand, offer the tools and frameworks to implement these insights at scale.
+
+\section{This book in a nutshell} \label{sec:contrib_chap8}
+This book presents seven in-depth studies exploring various aspects of the \context task, each aimed at developing solutions informed by linguistic theory. The following is an overview of Chapters \4 to \7, summarizing the key studies and their contributions.
+
+\subsection{Overview of Chapters \4--\7}
+
+\chapref{chap4}  delves into the critical issue of corpus selection in \context studies. The central study in this chapter (study \studA) examined whether the choice of corpus significantly impacts the outcomes of \context research (question addressed: \textbf{QA}). Two hypotheses were tested: (1) The corpora used in the previous \context studies are not adequate for the task (\textbf{HA1}), and (2) the lessons learned in previous \context studies are not generally valid (\textbf{HA2}). The investigation revealed that one of the corpora, \grecp, was not suitable for \context, highlighting the importance of corpus choice. The study underscored the substantial corpus-dependence of any REG algorithm, raising concerns about the generalizability of past findings. It emphasized the need to critically evaluate whether a chosen language corpus aligns with the specific linguistic phenomena of interest to the researchers, ensuring the relevance and applicability of the research outcomes. The findings of this chapter highlight the significance of corpus selection in NLP and NLG research. It calls for a more refined approach to choosing and evaluating corpora, emphasizing the need to ensure that they are not only technically suitable but also representative of the language use and phenomena under investigation.
+ 
+\chapref{chap5} addresses the critical aspect of feature selection for feature-based models in the \context task. Study \studB investigated the effectiveness of various feature sets used in previous feature-based \context studies (question addressed: \textbf{QB}). It tested two hypotheses: (1) a reduced subset of features from each set can perform comparably to the full feature set (\textbf{HB1}), and (2) a small set of features drawn from previously published datasets can form a model substantially as accurate as the best-performing existing model (\textbf{HB2}). The study's findings indicated that not all features previously used are equally relevant to the task. A linguistically informed subset of each feature set yields results almost identical to those obtained using the full set. Moreover, a consensus set of just six features, drawn from various sets, performed nearly as well as the best-performing model from prior studies, which used 2.5 times as many features.
+
+In addition, study \studC in this chapter examined the optimal conceptualization of recency for the RFS task (\textbf{QC}). It evaluated two hypotheses: (1) recency metrics that encode \term{higher-level} distances contribute more to RFS than those based on \term{lower-level} distances (\textbf{HC1}), and (2) the effectiveness of recency metrics varies depending on corpus-specific characteristics, such as the genre and structure of texts (\textbf{HC2}). The exhaustive evaluation of various recency measures revealed that higher-level metrics like distance in number of sentences and paragraphs are generally more influential than lower-level ones like word count. Furthermore, the study uncovered that the effectiveness of these recency metrics differs across corpora, being more pronounced in the news text corpus (\wsj) compared to the Wikipedia corpus (\grectwo).
+ 
+\chapref{chap6}  delves into the significance of paragraph-related features in \context models, examining how paragraph structure influences the choice of RF (\textbf{QDE}). Study \studD  investigated the impact of paragraph structure on RF choice using data from the \wsj corpus. The chapter evaluated three key hypotheses: (1) paragraph-prominent entities are substantially more likely to be pronominalized (\textbf{HD1}); (2) paragraph-new and paragraph-initial REs are substantially more likely to be non-pronominal (\textbf{HD2}); and (3) paragraph-new REs are more likely to be pronominal if the referent is prominent in the current and the previous paragraph (\textbf{HD3}). The study's findings supported the first hypothesis, revealing that prominent referents are substantially more likely to be pronominalized (almost 4.5 times more likely). It also confirmed that over 90\% of paragraph-new and paragraph-initial REs are realized non-pronominally. However, while the data suggested a tendency for cross-boundary pronominalization of prominent referents, it was not sufficient for a conclusive judgment on the third hypothesis.
+
+Additionally, study \studE in this chapter aimed to assess the utility of incorporating paragraph-related features into \context models. The hypothesis was that the inclusion of paragraph-related information substantially improves the performance of feature-based \context models (\textbf{HE1}). Results demonstrated that models trained on the \wsj corpus with paragraph-related features did perform better. However, compared to a strong baseline model, the improvement was modest. This study further hypothesized that the impact of paragraph-related features could be more pronounced in datasets like \grectwo and \grecp, where specific entities play central roles and are repeatedly mentioned.
+
+
+\chapref{chap7}  addresses the critical issue of selecting appropriate \context approaches, with a specific focus on evaluating the efficacy of neural REG models in comparison to rule-based and feature-based models. The first study in this chapter, study \studF, investigated the prevailing assumption that neural REG models are superior (\textbf{QF}). The hypothesis (\textbf{HF1}) challenged this belief, positing that neural REG models are not always better than rule-based and feature-based models. The systematic evaluation of three different \context approaches across two distinct corpora revealed that contrary to the prevailing assumption, the linguistically informed feature-based model demonstrated superior performance over other models, including neural ones, particularly when applied to the more complex \wsj corpus. This outcome suggests that a deep understanding of linguistic principles can significantly enhance the effectiveness of \context models, even in the face of advanced neural architectures.
+
+Additionally, study \studG conducted eight probing experiments to investigate the types of linguistic features encoded by neural \context models (\textbf{QG}). The experiments revealed that models consistently performed well on features related to referential status and grammatical role. Furthermore, models with an attention mechanism showed a better capacity for encoding linguistic features compared to simpler models. However, the neural classifier designed for pronominalization displayed a somewhat distinct performance pattern. A word of caution is necessary here, as the corpus used for this study may not have been ideally suited for the task, which could affect the interpretability of the results.
+
+\subsection{Overview of the major lessons}
+
+The research presented in this book offered several crucial lessons that contribute to our understanding and implementation of the \context task:
+
+\begin{itemize}
+	\item The studies in Chapters \4, \5, and \7 (specifically, studies \studA, \studC, and \studF) underscore the critical role of corpus selection in \context research. This choice influences all subsequent decisions, including feature selection, methodology, and evaluation metrics, highlighting the need for careful consideration in corpus selection to ensure the relevance and effectiveness of \context models.
+	
+	\item Study \studB in \chapref{chap5} demonstrates that a small set of well-chosen, linguistically informed features can achieve high performance in feature-based models. Features such as grammatical role, recency, and animacy are particularly impactful, suggesting that a focused and informed approach to feature selection is key to efficient and effective modeling.
+	
+	\item Chapters \6's studies \studD and \studE reveal that incorporating broader contextual information, like paragraph-boundary transitions, enhances the \context task. However, the degree of this enhancement varies depending on the dataset, underscoring the importance of context-aware modeling.
+	
+	\item  The systematic evaluation in study \studF of \chapref{chap7} illustrates that rule-based systems with simple rules can perform on par with, or even better than, neural REG systems. Particularly in complex datasets, feature-based models with linguistically informed features excel, emphasizing the value of integrating linguistic knowledge into algorithmic solutions.
+	
+	\item As indicated in study \studA of \chapref{chap4} and study \studF of \chapref{chap7}, the overall accuracy of a model should not be the sole criterion for evaluation. Moving away from overall accuracy performance seems even more important when the dataset contains imbalanced classes. Furthermore, other factors like model transparency and resource usage must be considered for a comprehensive assessment of a model's utility.
+	
+	\item 	The opacity of neural model architectures, as discussed in study \studG of \chapref{chap7}, poses a challenge for understanding their internal workings. Methods like probing offer a viable approach to gain insights into the models' latent representations. Furthermore, when feasible, post-hoc explainability methods, including variable importance analysis and SHAP analysis, should be used. These methods aid in clarifying the predictions made by the models.
+	
+\end{itemize}
+
+These lessons collectively advance our knowledge in the field of \context. They highlight the importance of corpus selection, the efficiency of targeted feature selection, the need for context-aware modeling, and the value of a comprehensive approach to model evaluation and interpretation. This comprehensive understanding paves the way for developing more sophisticated, linguistically informed, and contextually appropriate natural language generation systems.
+

@@ -1,0 +1,682 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.14017923}
+\author{Voula Giouli\affiliation{Aristotle University of Thessaloniki and Institute for Language and Speech Processing, ATHENA RC, Greece}}
+\title[Annotating light-verb constructions for Human Language Technologies]{Annotating light-verb constructions for Human Language Technologies: The PARSEME-el corpus}
+
+\abstract{Light-verb constructions (LVCs) are idiosyncratic lexical items, pervasive in many languages.  Being complex-verb predicates, they comprise a verb that is \textit{\em{light}} in that it contributes little or no meaning to the phrase and a predicative noun, that is, a noun that has semantic arguments. LVCs---like other Multiword Expressions (MWEs)---are still an obstacle to many natural language processing tasks. Therefore, the existence of quality datasets is a prerequisite for their efficient processing. This chapter introduces a Modern Greek corpus annotated for MWEs, including LVCs. The chapter details the annotation methodology, the guidelines, challenges, and results, highlighting Greek LVC properties. The corpus is available for research via LINDAT/CLARIAH-CZ under a Creative Commons License.
+
+\bigskip
+
+Ως μία κατηγορία πολυλεκτικών εκφράσεων (ΠΛΕ), οι δομές με υποστηρικτικό ρήμα, δηλαδή περιφραστικά ρηματικά κατηγορήματα που αποτελούνται από ένα απολεξικοποιημένο ρήμα και ένα κατηγορικό ουσιαστικό, αποτελούν πρόκληση για διάφορες εφαρμογές Επεξεργασίας Φυσικής Γλώσσας. Τα σώματα κειμένων αποτελούν προϋπόθεση για την αυτόματη αναγνώρισή τους σε κείμενο. Στο κεφά-λαιο αυτό παρουσιάζεται σώμα κειμένων της Νέας Ελληνικής, το οποίο φέρει επισημείωση κατάλληλη για την αναγνώριση ΠΛΕ---μεταξύ των οποίων και δομών με υποστηρικτικό ρήμα. Παρουσιάζεται η μεθοδολογία χειροκίνητης επισημείωσης, με έμφαση στις προδιαγραφές, οι προκλήσεις και τα αποτελέσματα της έρευνας. Το σώμα κειμένων είναι διαθέσιμο στην ερευνητική κοινότητα μέσω του αποθετηρίου LINDAT/CLARIAH-CZ με άδεια χρήσης Creative Commons.
+}
+
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[2]%%chapternumber
+}{}
+
+\begin{document}
+\emergencystretch 3em
+
+\maketitle
+
+
+\section{Introduction}
+Support- or light-Verb constructions\footnote{The dataset is accessible via the LINDAT/CLARIAH-CZ repository under a Creative Commons Licence: \url{http://hdl.handle.net/11372/LRT-5124}.} have been the focus of attention in natural language processing\is{Natural Language Processing} (NLP henceforth) under the umbrella term Multi-Word Expressions (MWEs henceforth). The latter term encompasses a large variety of linguistic phenomena that range from nominal compounds (i.e., \textbf{\em{cat's eye}}), phrasal verbs (i.e., \textbf{\em{give up}}, \textbf{\em{take off}}),  multiword terms (i.e., \textbf{\em{black hole}}, \textbf{\em{lithium chloride}}), and multiword Named Entities (i.e., \textbf{\em{United Kingdom}}, \textbf{\em{United Arab Emirates}}) over light-verb constructions (i.e., \textbf{\em{give}}  a \textbf{\em{lecture}}, \textbf{\em{take}} a \textbf{\em{shower}}), to idiomatic expressions (i.e., \textbf{\em{spill the beans}}). 
+
+According to \citet[190]{sag_etal_2002}, MWEs are “idiosyncratic interpretations that cross word boundaries (or spaces)” thus posing challenges to downstream NLP applications. These challenges are due to their lexical, syntactic, semantic, and even pragmatic idiosyncrasies \citep{gross_1982, baldwin_kim_2010}. In this regard, considerable effort has been made within the research community to efficiently process them in running text and thus to improve the accuracy of downstream NLP tasks, for example dependency parsing \citep{Nivre-Nilsson}, probabilistic parsing \citep{Arun-Keller, Korkotzelos-Manandhar, Constant-et-al}, or applications such as Machine Translation \citep{Ren-et-al, Carpuat-Diab, Bouamor-et-al, Zaninello-Birch}. Other applications that benefit from automatic Verbal Multi-Word-Expression (VMWE henceforth) identification include automatic text simplification \citep{Kochmar2020, gooding-etal-2020-incorporating, shardlow-etal-2021-semeval}, social media mining \citep{maistoetal-2017}, abusive and offensive language detection \citep{caselli-etal-2020-feel}, and language learning and assessment \citep{paquot2019}. 
+
+
+In this context, their classification in linguistically grounded categories is useful \textemdash a task that poses serious theoretical as well as practical difficulties. Verbal fixed or idiomatic expressions (VIDs henceforth), that is, word sequences that constitute a distinct semantic unit or a complex lexical unit are characterised as having a compound phonological, lexical, and morphological structure and a non-compositional meaning \citep{gross_1982}. Similarly, support-verb or light-verb constructions (LVCs henceforth), that is word combinations that consist of a support or light verb and a predicative noun, that is, a noun that has semantic arguments, are ambiguous and variable across texts.
+
+To facilitate training and testing of tools for MWE processing in running text, datasets are needed that model their properties - especially for languages other than the well-resourced ones including English, and even French, German, Spanish, and Chinese. In this regard, considerable effort has been made within the research community to model them in language resources \textemdash both lexica and corpora \textemdash in a way that facilitates their robust computational treatment \citep{Constant-et-al}.  
+
+
+This chapter presents work aimed at developing a corpus of Modern Greek\footnote{Modern Greek (EL) \textemdash henceforth simply Greek \textemdash is the official language spoken in Greece and Cyprus (1453- .).} annotated with LVCs in the context of modelling VMWEs in running text. Note that we opt for the term light-verb construction as opposed to the term Support-Verb Construction which is used in the title of the volume since it corresponds to the notation adopted in our annotation scheme. The focus will be on the multilingual setting within which the annotation was performed, the typology of VMWEs that applies to Modern Greek, and the criteria set for classifying candidate VMWEs including LVCs; we will further discuss the methodology adopted for reliably annotating our corpus and the results obtained in terms of the types and properties of LVCs identified in the corpus. We will also report on the inter-annotator agreement focusing on the fuzzy or ambiguous instances that fall in between categories posing, thus, a challenge with regard to their identification.
+
+Our contribution is twofold: on the one hand, we briefly present a multilingual -- and, thus, to a great extent universal -- annotation scheme, and on the other hand, we present the application of this generic scheme to Modern Greek, focusing on LVCs.
+
+The chapter is structured as follows. In \sectref{sec:definitions-scope}, we present the rationale and scope of our work and we report on the initiative within which corpus annotation took place, including the definition of a light verb (and light-verb construction); in \sectref{sec:Background}, we give an account of previous work on light-verb constructions in Modern Greek. We will then present the Greek corpus in \sectref{sec:corpus} focusing also on the typology defined and the annotation methodology adopted (\sectref{sec:methodology}). In  \sectref{sec:results}, we discuss our findings in the corpus, and finally, in \sectref{sec:conclusion}, we conclude.
+
+
+
+
+\section{Rationale and scope}
+\label{sec:definitions-scope}
+Despite being a phenomenon pervasive in many languages, MWEs present lexical, syntactic, semantic, and even pragmatic idiosyncrasies \citep{gross_1982, baldwin_kim_2010}, in a way that is not uniform across languages. This is particularly true for VMWEs of all types, which, by default -- like their simple-word counterparts -- are used to denote the event, state of affairs, or action conveyed in utterances or text segments. As a result, their robust identification and classification in running text is of paramount importance for downstream NLP applications.
+Similarly to VIDs, LVCs pose challenges to NLP across the following lines:
+\begin{itemize}
+    \item their meaning is semi-compositional in that it cannot be computed simply based on the meaning of their parts and the way they are combined. For example, the LVC (en) to \textbf{\em{give}} a \textbf{\em{stare}} does not imply a \textit{giving} event but rather a \textit{staring} one. This is possibly a pitfall for natural language understanding tasks, mainly those that involve the semantic interpretation of sentences, for example, event identification and Information Extraction;
+    \item there is hardly any cross-lingual equivalence between LVCs, thus rendering their automatic translation problematic. As shown in (\ref{ex:perno-apofasi}) and (\ref{ex:make-decision}) the predicative nouns (el) \textbf{απόφαση} \textit{apofasi} `decision' and its translational equivalence (en) \textbf{\em{decision}} select different light verbs in the two languages, namely (el) \textbf{παίρνω} \textit{perno} `take' and (en) \textbf{\em{make}} respectively. The same holds for the German LVC (de) \textbf{\em{Vortrag halten}} (lit. `to hold a lecture') `to lecture' and its English counterpart (en) \textbf{\em{to give a lecture}}; here, word-order discrepancies are also attested.
+    
+
+
+\ea
+\label{ex:perno-apofasi}
+\settowidth \jamwidth{(EL)} 
+\glll 
+\textbf{\em{παίρνω}}       	\textbf{\em{απόφαση}}\\
+\textit{perno}       	\textit{apofasi}\\
+take.\textsc{prs.1sg}             decision.\textsc{sg.acc}\\
+\glt ‘to decide’
+\z
+
+
+\ea
+\label{ex:make-decision}
+\settowidth \jamwidth{(EN)} 
+to \textbf{\em{make}}      a 	\textbf{\em{decision}}\\
+\glt ‘to decide’
+\z
+
+    
+   \item when it comes to corpus occurrences, they appear in a variety of surface forms, including long-distance dependencies, as shown in (\ref{ex:make-effort}) and (\ref{ex:give-advice}):
+
+\ea
+\label{ex:make-effort}
+\settowidth \jamwidth{(EN)}
+the \textbf{\em{effort}} he \textbf{\em{made}} to remain calm
+%\glt 'he tried to remain calm'
+\z
+
+\ea
+\label{ex:give-advice}
+\settowidth \jamwidth{(EN)}
+he \textbf{\em{gave}} himself one last word of \textbf{\em{advice}}.
+\z
+
+
+  \item moreover, besides an idiosyncratic meaning or reading, literal occurrences of MWEs are also attested \textemdash a phenomenon referred to as the \textit{literal-idiomatic ambiguity} \citep{savary_etal_2019}; a case of such ambiguity is shown in (\ref{ex:take-photo-LVC}) and (\ref{ex:take-photo-literal}). 
+
+ \ea
+\label{ex:take-photo-LVC}
+\settowidth \jamwidth{(EN)}
+Mary \textbf{\em{took}} a \textbf{\em{photo}} of the kids playing
+%\glt 'he tried to remain calm'
+\z
+
+\ea
+\label{ex:take-photo-literal}
+\settowidth \jamwidth{(EN)}
+He \textbf{\em{took}} the \textbf{\em{photo}} I left on the table.
+\z
+    
+\end{itemize}
+
+
+
+
+In this respect, the automatic identification of LVCs in running text is hindered despite the sound linguistic criteria that have been defined. Therefore, our corpus was developed in the framework of PARSEME,\footnote{Parsing and multi-word expressions. Towards linguistic precision and computational efficiency in natural language processing (PARSEME) IC1207.} a collective effort to create multilingual harmonised language resources, namely annotated corpora and dedicated tools that would serve as a workbench for training and evaluating tools for the robust identification of VMWEs in running text \citep{savary_etal_2017} and for as many languages as possible. 
+
+
+Over the years, the corpus has been expanded and made available to the research community via frequent releases \citep{Savary-et-al-PMWE-2018, ramisch_etal_2018, ramisch_etal_2020, savary-etal-2023-parseme}. Ultimately, the goal was to build a universal framework of VMWE detection taking into account the special characteristics of each language. The working hypothesis, therefore, was that given a universal framework for annotating a linguistic phenomenon in corpora, the idiosyncrasies of discrete languages can be captured. The annotation of the Greek section of the PARSEME initiative seeks to test whether this hypothesis holds.
+
+\subsection{The setting: annotation scope}
+\label{sec:PARSEMEScope}
+
+The task of annotating VMWEs in texts can be defined across three axes: (a) spotting all the occurrences of VMWEs in the texts, (b) marking their lexicalised elements as opposed to the non-lexicalised ones, and (c) assigning a tag to the VMWE identified that signals the category it falls into. Therefore, the task is conceived of as a classification one and, in this context, LVC is one of the categories that are foreseen in our typology and the relevant annotation scheme.
+
+Although the exact definition of an LVC varies in the literature, we use the following operational definition: an LVC is a verb-complement pair in which the verb serves as the syntactic head of the phrase, but contributes no lexical meaning and is, therefore, “light”; by contrast, the semantic content of the phrase is retrieved from the complement, being, thus, the semantic head of the expression. The verb is semantically ``bleached'' contributing to the whole only morphological person, number, tense, and morphological aspect; on the contrary, the complement is a \textit{predicative noun}, that is, one that denotes an event or state, as shown in (\ref{ex:kano_erotisi}); the noun is sometimes headed by a preposition whereas, less often, the complement is an adjective as in (\ref{ex:proveno-se-diagrafi}) and (\ref{ex:kano-gnosto}) respectively.
+
+\ea
+\label{ex:kano_erotisi}
+\settowidth \jamwidth{(EL)} 
+\glll 
+\textbf{\em{κάνω}}       	\textbf{\em{ερώτηση}}\\
+\textit{kano}        	\textit{erotisi}\\
+make.\textsc{prs.1sg}             question.\textsc{sg.acc}\\
+\glt ‘to ask’
+\z
+
+\ea
+\label{ex:proveno-se-diagrafi}
+\settowidth \jamwidth{(EL)} 
+\glll 
+\textbf{\em{προβαίνω}} \textbf{\em{σε}}  \textbf{\em{διαγραφή}} χρεών\\
+\textit{proveno} \textit{se} \textit{δiaγrafi} \textit{chreon}\\
+proceed.\textsc{prs.1sg}  to delisting.\textsc{sg.acc} debt.\textsc{pl.gen}\\
+\glt ‘to delist debts’
+\z
+
+\ea
+\label{ex:kano-gnosto}
+\settowidth \jamwidth{(EL)} 
+\glll 
+\textbf{\em{κάνω}} \textbf{\em{γνωστό}} \\
+\textit{kano} \textit{γnosto}\\
+make.\textsc{prs.1sg}  known.\textsc{sg.acc} \\
+\glt ‘to make known’
+\z
+
+Two are the main issues to be taken into account here: (a) the definition of a predicative noun, i.e., a noun that is used to predicate the whole phrase, and (b) the operational definition of the light verb. We will elaborate further on the annotation scheme and the framework within which our work is placed in the next sections.
+
+\subsection{Annotation scheme}
+\label{sec:PARSEMEScheme}
+As in any annotation project, the most critical component of our linguistic annotation project was the definition of the annotation scheme that defines the labels and associated features to be linked with the appropriate annotation unit \citep{Ide2017}. This was not a trivial task for our project, \textemdash a task that was further hindered by the need to cover languages from different language families. To overcome this obstacle, an experimental procedure was adopted: a set of unified annotation guidelines across many languages from various genera were elaborated which were, then, tested against each language separately.
+
+The outcome was the definition of a VMWE typology that provides the following categories of VMWEs: (a) \textit{Light-verb constructions} (LVCs), which comprise a light verb and a predicative noun or adjective (sometimes headed by a preposition); (b) \textit{Verbal Idioms} (VIDs) which are primarily identified based on semantic properties, i.e., non-compositionality, but also on the grounds of their lexical, syntactic, and pragmatic idiosyncrasies; (c) \textit{Verb-Particle Constructions} (VPCs), which comprise a verb head and a particle; (d) \textit{Inherently Reflexive Verbs} (IRVs), that is, constructions comprising a verb head and a reflexive pronoun that bear a non-compositional meaning (i.e., (en) to \textbf{\em{find}} \textbf{\em{oneself}} in a difficult situation); and (e) \textit{Multi-Verb Constructions} (MVCs), i.e., constructions with two verb heads, for example, (en) to \textbf{\em{let go}}, to \textbf{\em{make do}}.
+
+In our annotation scheme, LVCs are further distinguished into two subcategories, namely, LVCs in which the verb is semantically totally \textit{bleached} (LVC.full), as in (\ref{ex:LVC.full}), and LVCs in which the verb adds a \textit{causative meaning} to the noun (LVC.cause), as shown in (\ref{ex:LVC.cause}).
+
+\ea
+\label{ex:LVC.full}
+\settowidth \jamwidth{(EN)}
+to \textbf{\em{give}} a \textbf{\em{lecture}}\\
+\z
+
+\ea
+\label{ex:LVC.cause}
+\settowidth \jamwidth{(EN)}
+to \textbf{\em{grant}} someone \textbf{\em{rights}}\\
+to \textbf{\em{give}} someone a \textbf{\em{headache}}\\
+\z
+
+Similarly, the category of VPC is also divided into two subcategories, namely, \textit{fully non-compositional VPCs} (VPC.full), in which the particle changes the meaning of the verb, as opposed to \textit{semi non-compositional VPCs} (VPC.semi), in which the particle adds a partly predictable but non-spatial meaning to the verb; examples of both subcategories are provided in (\ref{ex:VPC.full}) and (\ref{ex:VPC.semi}) respectively.
+
+\ea
+\label{ex:VPC.full}
+\settowidth \jamwidth{(EN)}
+to \textbf{\em{do in}}\\
+\z
+
+\ea
+\label{ex:VPC.semi}
+\settowidth \jamwidth{(EN)}
+to \textbf{\em{eat}} something \textbf{\em{up}}\\
+\z
+
+Of these, LVCs and VIDs are universal categories, in the sense that they are valid for all the languages participating in the initiative. Similarly, VPCs, IRVs, and MVCs are quasi-universal categories, in the sense that they are valid for some language groups or languages but non-existent or very exceptional in others.
+
+
+The project also allows languages to define their own, language-specific categories, defined for a particular language in a separate documentation.
+Finally, to give an account of structures of the type \textbf{\em{to come across}} and \textbf{\em{to rely on}}, the optional, experimental category \textit{Inherently Adpositional Verb} (IAV) has been proposed, which (if admitted by a given language) would be considered in the post-annotation step.
+
+The guidelines provide an ordered set of linguistic tests that need to be applied in a series; these tests are visualised as a diagram -- called a decision tree\is{decision tree} -- that helps annotators move through its paths to identify and categorise VMWEs \textemdash especially in difficult or ambiguous cases. 
+%An instance of the decision tree is provided in Figure (\ref{fig:decision_tree}). 
+\footnote{The latest guidelines can be found here: \url{https://parsemefr.lis-lab.fr/parseme-st-guidelines/1.3/?page=050_Cross-lingual_tests/010_Structural_tests__LB_S_RB_}.}
+The tests are accompanied by language-specific examples, whereas language-specific guidelines are also set for specific cases. Each language or language variety is marked in a different colour or shade. The Greek examples appear in pink.
+
+Tools for handling the data, for the visualisation of the annotations, or for the semi-automatic inspection and manual validation of the data have also been made available to the corpus developers (language leaders). Using these tools ensures to a great extent the quality of the annotations performed.
+
+%\begin{figure}
+%    \centering
+%    \includegraphics{images/decision-tree.png}
+%    \caption{Annotation guidelines as a decision tree: language-specific examples for Greek are shown in pink.}
+%    \label{fig:decision_tree}
+%\end{figure}
+
+To render the corpus as uniform as possible across all the participating languages, the pre-processing at the levels of lemma, part-of-speech (POS) tagging, and dependency annotation adheres -- for most of the languages -- to the Universal Dependencies (UD) guidelines \citep{nivre-etal-2020-universal}. Ultimately, conformance to a widely accepted annotation scheme ensures the development of harmonised corpora. 
+
+
+After all, the primary motivation that guided the creation of this highly multi-lingual corpus was to boost the VMWE-aware technology across languages. Therefore, a suite of Shared Tasks, that is, competitions for tools aimed at the identification and classification of VMWEs have been organized, and as one might expect the datasets developed have been used as training and testing data.
+The outcome of this effort is a rich ecosystem, an infrastructure that is as universal as possible taking also idiosyncrasies of each language into account.  
+
+
+\section{Previous work: LVCs in Greek}
+\label{sec:Background}
+
+Since initially introduced in the work of \citet{Jespersen} for English, the notion of a light verb, that is, a verb that is void of lexical meaning, and therefore its predicational contribution in structures like the ones depicted in (\ref{ex:jespersen-light-verb-constructions}) is not that of a main verb, has received a lot of attention cross-linguistically. In English, the verbs \textit{have}, \textit{give}, \textit{take}, \textit{make}, \textit{do}, and \textit{get} inter alia, enter in constructions with predicative nouns to form the so-called light-verb constructions.
+
+\ea
+\label{ex:jespersen-light-verb-constructions}
+\settowidth \jamwidth{(EN)} 
+\textbf{\em{have}} a \textbf{\em{try}} $/$ a \textbf{\em{look}} $/$ a \textbf{\em{shave}}\\
+\textbf{\em{give}} a \textbf{\em{glance}} $/$ a \textbf{\em{look}} $/$ a \textbf{\em{hint}}\\
+\textbf{\em{make}} a \textbf{\em{bolt}} $/$ a \textbf{\em{plunge}} $/$ a \textbf{\em{try}}\\
+\z
+
+Support- or light-verb constructions have received a lot of attention within the linguistic and computational linguistic community. Arguably, light verbs (and LVCs) are in nature a universal phenomenon, exhibiting, however, several idiosyncrasies in each language in terms of lexical, syntactic, and semantic properties \citep{grimshaw1988light, Butt2003TheLV, Butt2010}. 
+
+
+The first systematic attempts towards providing a formal definition of support- or light-verb constructions are found in the works of \citet{gross_1982} and \citet{Giry-Schneider-1987} -- among others -- within the Lexicon-Grammar framework. In an attempt to create a universal Deep-Syntactic paraphrasing system, \citet{melcuk-1982, melcuk-1996, melcuk-2004} tries to describe support or light verbs in the lexicon in terms of Lexical Functions based on French data; later on, he defines lexemic collocations (i.e., \textit{\textbf{pay a visit}}) as one of the universal categories of phraseological expressions based also on evidence from Russian \citep{melcuk-2023}.
+
+
+
+In this regard, LVCs are a well-studied area in theoretical linguistics. Our work builds on the findings of previous work on MWEs and LVCs in Modern Greek. Within the Lexicon-Grammar framework introduced by \citet{gross_methodes_1975}, the properties of VMWEs in Modern Greek were defined initially by \citet{Fotopoulou1993} who developed Lexicon-Grammar tables in which lexical, syntactic, and distributional properties of Greek VIDs were encoded. Within the same framework of Lexicon-Grammar, \citet{moustaki1995} gives an account of the so-called ``frozen" expressions with the support verb (el) \textbf{είμαι} \textit{ime} `to be' in Modern Greek, focusing on structures with prepositions and/or predicative nouns in the genitive or dative cases, and providing their properties at the levels of morphology and syntax.
+
+
+Along the same lines, support verb constructions in Modern Greek with (el) \textit{`δίνω'} \textit{dino} `to give', and (el) \textit{παίρνω} \textit{perno} `to take' are presented in \citet{tsolaki-1998}.
+Based on the assumption that the semantic nature of different classes of nominal predicates controls the presence of different kinds of intensifying support verbs and that support verbs intensify a different parameter when they actualise an action, \citet{gav-2004} gives an account of LVCs in Greek that denote emotion.
+
+Previous studies have set the criteria for the identification of LVCs, and have revealed their properties \citep{sklavounou-1994, sfetsiou-2007} also from a computational perspective. Cross-language comparative studies seek to capture the universal nature of LVCs \citep{fotopoulou-giouli-2018}. In this context, and in an attempt to develop Lexical Resources for NLP applications, \citet{Fotopoulou-Giouli-2015} try to develop a battery of formal linguistic tests to delineate support-verb constructions from verbal idiomatic expressions, and to apply them to Greek and French data, focusing on ambiguous cases. These formal tests (i.e., substitution, modification, coordination, etc.) help us classify VMWEs with verbs that are not normally considered light, as LVCs. Thus, verbs like (el) \textit{τρέφω} \textit{trefo} `to feed' and (el) \textit{χαίρω} \textit{chero} `to enjoy' are considered light when combined with predicative nouns denoting emotion or stance, as shown in (\ref{ex:trefo-elpida}) and (\ref{ex:chero-ektimisis}.
+
+
+\ea
+\label{ex:trefo-elpida}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{τρέφω}} \textbf{\em{ελπίδες}} \\
+\textit{trefo} \textit{elpides} \\
+feed.\textsc{prs.1sg} hope.\textsc{pl.acc} \\
+\glt ‘to have hope, to hope’
+\z
+
+\ea
+\label{ex:chero-ektimisis}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{χαίρω}} \textbf{\em{σεβασμού}} \\
+ \textit{chero} \textit{sevasmu}\\
+enjoy.\textsc{prs.1sg} respect.\textsc{sg.gen} \\
+\glt ‘to be respected’
+\z
+
+
+
+%Levin, Beth, and Malka Rappaport Hovav. 1998. Building Verb Meanings. In The Projection of Arguments: Lexical and Compositional Factors, ed. Miriam Butt and Wilhelm Geuder. 97–134. Stanford, California: CSLI Publications. 
+% Valetopoulos 2003 (comparative study EL-FR)
+
+\section{Corpus description}
+\label{sec:corpus}
+In contrast to corpora for other languages, the development of the Greek corpus spans consecutive releases due to a lack of substantial (human) resources. Over the years, the corpus has been gradually enhanced and enriched, and consecutive editions were released. The main design criteria for the textual material \textemdash set up for all languages centrally \textemdash were that texts should be written in the original rather than be translated and should be free from copyright issues, so as to be distributed under an open license. 
+
+
+The corpus comprises two main sub-corpora: (a) a collection of texts manually collected from various sources on the web; and (b) a part of the Greek Dependency Treebank (GDT henceforth) \citep{prokopidis-papageorgiou-2017}. The first sub-corpus was compiled manually by collecting raw data manually from the electronic version of major Greek newspapers (KAΘΗΜΕΡΙΝΗ, ΠΡΩΤΟ ΘΕΜΑ, ΤΑ ΝΕΑ, Athens Voice, etc.), news portals as well as Wikipedia articles; moreover, texts from news blogs (gova stileto, tromaktiko, etc.) and life-style and gossip news texts (espresso, etc.) were also collected; the latter bear a rather informal register. We managed to cover a variety of text genres, including newswire texts, press releases, opinion and popular science articles in various domains like medicine, physics, finance, etc., whereas the GDT also includes parliamentary debates.
+
+The so-collected textual data were pre-processed at the lemma, POS and dependency annotation levels; all these annotations were performed automatically using UDpipe \citep{straka_strakova_2017} and the latest models for the Greek language. Due to time and scope constraints, no manual annotation of the pre-processing stages has been performed. To somehow remedy this shortcoming and further enrich our corpus with data manually annotated at the aforementioned levels of linguistic analysis, we also included part of the Greek Dependency Treebank that has been manually annotated and rendered compatible with the Universal Dependencies initiative \citep{nivre-etal-2020-universal}. In essence, this is our so-called GOLD part of the corpus – GOLD in all levels. It should be noted that within the NLP community, the term GOLD STANDARD -- or simply GOLD – corpus refers to quality text collections manually annotated, usually by experts. 
+The annotation at both the VMWE level and at the levels of POS and dependency annotation can be viewed via Grew-match \citep{guillaume-2021-graph} a dedicated tool for visualising and querying annotated corpora, as shown in \figref{fig:grew-match}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/giouli/grew-match.png}
+    \caption{GrewMatch: the annotated VMWE is highlighted.}
+    \label{fig:grew-match}
+\end{figure}
+
+
+Using the tools that were made available for all the teams, we managed to improve the quality of the corpus by spotting discrepancies between annotators, and adjudicating as appropriate, ultimately providing annotations that are consistent throughout the corpus.
+
+In the latest release (version 1.3) of the PARSEME corpus, the Greek section (PARSEME-el) amounts to 698,424 tokens or 26,175 sentences \citep{savary-etal-2023-parseme} 
+in which a total of 8,508 VMWEs have been identified of which LVCs are the most frequently occurring category -- see \tabref{tab:numbers}.
+
+\begin{table}
+\caption{The PARSEME-el corpus in numbers for the latest releases.}
+\label{tab:numbers}
+ \begin{tabularx}{.8\textwidth}{X rr}
+  \lsptoprule
+            & Release 1.2 & Release 1.3  \\
+  \midrule
+LVC.full  &   4,696  &    5,293 \\
+LVC.cause  &   122 &   179 \\
+VID  &   2,297 &   2,842 \\
+VPC.full  &   119 &   143 \\
+MVC  &   48 &   51 \\
+ \midrule
+Total &   7,282 &   8,508 \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+Since the corpora were primarily developed to be used as a dataset for the Shared Tasks, the corpus for each language was split into three subsets: the training, development, and evaluation subsets. The former is provided by the Shared Task organisers to the participants to train their MWE identification systems, whereas the development sub-corpus is used to perform model selection and fine-tuning; the evaluation of the systems is performed against the test sub-corpus. Splitting into the three sub-corpora is performed based on specific criteria, and in a way that ensures that there is a balance between the development and test parts of the corpus in terms of VMWEs not previously seen \citep{ramisch_etal_2020, savary-etal-2023-parseme}.
+
+
+\section{Annotation methodology}
+\label{sec:methodology}
+Like all the corpora for all the languages, the Greek corpus was manually annotated for VMWEs as per the guidelines. It should be noted that before annotation proper, a two-phase pilot annotation was performed: during pilot annotation phase 1, two trained linguists, native speakers of the Greek language with extensive experience in annotation tasks and VMWEs alike, worked towards the development and testing of the universal guidelines; during annotation pilot phase 2, extended annotation of naturally occurring text took place and resulted in the consolidation of the universal guidelines. After the guidelines were consolidated, language-specific examples were elaborated as appropriate to help annotators assess difficult or ambiguous cases.
+
+Annotation proper was performed with the aid of the FoLiA Linguistic Annotation Tool (FLAT), a dedicated web-based multi-user and open-source annotation platform \citep{vanGompel_Reynaert_2013}. FLAT allows for the annotation of non-contiguous structures and is customised to support the file format adopted by PARSEME. Following the specifications set early in the lifecycle of the project, in this annotation task, all the occurrences of VMWE categories were annotated in the text, as shown in \figref{fig:flat}.
+Over the years, expert annotators -- all native speakers of the language -- contributed to the task of annotation.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/giouli/flat.png}
+    \caption{Annotating VMWEs in FLAT.}
+    \label{fig:flat}
+\end{figure}
+
+
+Initially, annotations were performed by each annotator separately; annotators then met to discuss difficult and ambiguous cases. After this initial training period was over, annotators worked separately.
+
+However, the task of manually annotating data is always demanding and prone to all sorts of errors. We calculate the degree of inter-annotator agreement in order to assess the consistency or reliability of annotations made by different annotators for the same spans of text. This measure helps us understand the level of agreement between annotators when labeling data. 
+Ultimately, it is a measure that shows the extent to which multiple annotators can make the same annotation decision for a certain category.
+
+
+The inter-annotator agreement rate gives us an estimate of how clear the annotation guidelines are, how uniformly the team of annotators understood the guidelines, and how reproducible the annotation task is. High inter-annotator agreement indicates that annotators are interpreting the guidelines consistently and are reaching similar conclusions enhancing the reliability of the annotated data. On the other hand, low inter-annotator agreement suggests inconsistencies or discrepancies in the annotations, which may signal the need for clarifying guidelines or additional training for annotators to improve the quality of the annotations.
+
+Therefore, to ensure the quality of the annotated corpus, a fragment of the data was annotated by all the team members who viewed the data independently. Then, the agreement between annotators was measured using a standard metric, namely Cohen's kappa\is{Cohen's kappa} co-efficient \citep{carletta-1996-assessing, artstein-poesio-2008-survey} using the VMWEs for which annotators agree on the span of the VMWE. 
+
+
+The annotation \textit{span} or \textit{scope} is determined by the lexicalised or fixed elements that can form a separate word. Therefore, determiners, modifiers, auxiliaries, and paricles are included in the markable only if they are lexicalised. As shown in (\ref{ex:perno-apofasi-tin}), the determiner (el) \textit{την} \textit{tin} `the' and the pronoun (el) \textit{μου} \textit{mu} `my' are not included in the span of the VMWE because they are not fixed (or integral) parts of the expression. Identifying the lexicalised elements of an expression is not always a trivial task.
+
+\ea
+\label{ex:perno-apofasi-tin}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{πήρα}} την \textbf{\em{απόφασή}} μου \\
+\textit{pira} \textit{tin} \textit{apofasi} \textit{mu} \\
+take.\textsc{pst.1sg} the.\textsc{sg.acc} hope.\textsc{sg.acc} my.\textsc{sg.gen}\\
+\glt ‘I made my decision, I decided.’
+\z
+
+Additionally, we used the F-score\is{F-score} metric, since it is particularly relevant in applications that are primarily concerned with the positive class. Note that in our annotation project, negative cases were not annotated.\footnote{Given a candidate VMWE, a positive case is when it is considered idiomatic and is therefore annotated, whereas a negative case is when the same candidate is used literally.} The F-score measures a system’s accuracy and is calculated as the harmonic mean of a system's precision and recall values. It is used to evaluate binary classification systems, which classify examples into `positive' or `negative'. In our case, the F-score is measured based on the annotations of pairs of raters. One rater is considered the one providing the GOLD annotation (as senior or expert annotator) and the other is the one providing the system's output. The F-score was 68.6 and Cohen's kappa\is{Cohen's kappa} was equal to 0.632 for the Greek data \citep{Savary-et-al-PMWE-2018} -- one of the best scores among the participating languages. In this way, the quality of our corpus is ensured.
+
+Apart from LVCs, the Greek section of the PARSEME corpus bears annotations for verbal idioms, as well as verb-particle and multi-verb constructions. In Modern Greek, we retained the two universal VMWE categories, namely VIDs (verbal idioms) which have an entirely non-compositional meaning as in (\ref{ex:vazo-ladi}), and LVCs of both sub-categories. In this regard, cases in which the light verb contributes to the meaning of the whole only morphological features (i.e., tense, grammatical aspect, number, and person) are annotated as LVC.full as in (\ref{ex:kano-episkepsi}); on the contrary, they are annotated as LVC.cause once the light verb is causative, in that it indicates that the subject of the verb is the cause or source of the event or state expressed by the predicative noun; these cases are expected to be less idiomatic than other VMWEs and can be understood as complex predicates with a causal support verb, as shown in (\ref{ex:prokalo-katastrofi}).
+
+\ea
+\label{ex:vazo-ladi}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{βάζω}} \textbf{\em{λάδι}} \textbf{\em{στη}} \textbf{\em{φωτιά}}  \\
+\textit{vazo} \textit{ladi} \textit{sti} \textit{fotia} \\
+put.\textsc{prs.1sg} oil.\textsc{sg.acc} to.the.\textsc{sg.acc}  fire.\textsc{sg.acc} \\
+\glt ‘make things even worse’
+\z
+
+\ea
+\label{ex:kano-episkepsi}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{κάνω}} \textbf{\em{επίσκεψη}} \\
+\textit{kano} \textit{episkepsi} \\
+make.\textsc{prs.1sg} visit.\textsc{sg.acc} \\
+\glt ‘to pay a visit, to visit’
+\z
+
+\ea
+\label{ex:prokalo-katastrofi}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{προκαλώ}} \textbf{\em{καταστροφή}} \\
+\textit{prokalo} \textit{katastrofi} \\
+cause.\textsc{prs.1sg} destruction.\textsc{sg.acc} \\
+\glt ‘to cause destruction, to destroy’
+\z
+
+Our language-specific annotation scheme includes two semi-universal categories, namely MVC (Multi-Verb Constructions) and VPC (Verb-Particle Constructions). MVCs in Greek are phrases that comprise two verbs, a \textit{vector verb} that is the functionally governing verb (\textit{V-gov}) and a \textit{polar verb} that functions as the dependent verb (\textit{V-dep}); in a dependency-based syntactic analysis, \textit{V-gov} might be seen as the head and \textit{V-dep} as the dependent and they have a shared subject. Ultimately, the two verbs function as a single predicate with non-compositional semantics, as shown in (\ref{ex:aporo}). 
+
+ \ea
+ \label{ex:aporo}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{απορώ}} \textbf{\em{και}} \textbf{\em{εξίσταμαι}} \\
+\textit{aporo} \textit{ke} \textit{eksistame} \\
+wonder.\textsc{prs.1sg} and get-surprised.\textsc{prs.1sg} \\
+\glt ‘to question myself’
+\z
+
+As VPCs, on the other hand, we have annotated those verb + adverb constructions, in which the adverb shares characteristics with particles in languages like English, shown in (\ref{ex:vazo-mesa}). 
+
+
+%\footnote{For a detailed argumentation, see also \citet{giouliannotating}.}
+
+\ea
+ \label{ex:vazo-mesa}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{βάζω}} κάποιον \textbf{\em{μέσα}} /  \textbf{\em{βάζω}} \textbf{\em{μέσα}} κάποιον \\ 
+ \textit{vazo} \textit{kapion} \textit{mesa} / \textit{vazo} \textit{mesa} \textit{kapion} \\
+ put.\textsc{prs.1sg} someone.\textsc{sg.acc} in / put.\textsc{prs.1sg} in someone.\textsc{sg.acc} \\
+ \glt ‘to cause someone to go bankrupt’ \\
+ \z
+
+As we have already mentioned, the annotation guidelines are universal but were adopted in a way that the idiosyncrasies of each language are taken into account. We opted for retaining the category of VPCs, based on linguistic tests that proved that the adverbs in question exhibit most, if not all, of the properties that particles in other languages have \citep{giouliannotating}.
+
+
+As argued in \citet{giouli-et-al-2024}, these adverbs are not morphologically derived from adjectives, and they have two distinct functions: as adverbs denoting time or location, they are used as modifiers; when combined with prepositions, they form complex prepositions \citep{holton_etal_1997}, for example (el) \textit{μπροστά από} \textit{brosta apo} (lit. `in-front from') `in front of', (el) \textit{μέσα σε} \textit{mesa se} (lit. `in to') `in', etc. Therefore expressions of the form (el) \textit{πέφτω μέσα} \textit{pefto mesa} (lit. `fall in') `to guess correctly' and (el) \textit{βάζω μπρος} \textit{vazo bros} (lit. `put in-front') `to start' were classified as VPCs.  
+
+
+In terms of their semantics, Greek VPCs were identified as non-compositional in meaning. As previously shown \citep{savary_etal_2019}, these constructions are the most ambiguous. Depending on the context, they can be used literally and have a fully compositional meaning. In that case, they are not VMWEs. In the remainder, we will focus on the annotation of LVCs.
+
+\section{LVCs in the Greek section of the PARSEME corpus}
+\label{sec:results}
+\subsection{The data}
+When it comes to annotation, there are two major questions that annotators need to tackle: (a) what to annotate, and (b) how to annotate. The former question -- ``what to annotate'' -- has to do with the linguistic phenomenon that we need to capture, which also comes with the extra flavour of ``how much'' to annotate. The latter brings to mind the question of the markable extent that is always crucial \textemdash especially when computational aspects are entailed. In other words, we need to specify the string length and the elements that must be annotated. 
+
+
+In the case of VMWEs in general (and LVCs in particular), we annotate as integral parts all lexicalised elements of the expression that form a separate word. We consider lexicalised those elements that have some sort of morphological, syntactic, or lexical idiosyncrasy or fixedness. For instance, determiners and modifiers of the predicative nouns are not lexicalised, and therefore, they are not part of the markable; similarly, auxiliaries or other dependents of the light verb are not included in the annotation, as shown in (\ref{ex:perno-mod}).\footnote{According to the notation followed, the lexicalised elements of the expression that are marked in boldface are annotated.}
+
+\ea
+\label{ex:perno-mod}
+\settowidth \jamwidth{(EL)}
+ \glll
+ο Ναγκούμο έχει \textbf{\em{πάρει}} την \textbf{\em{απόφασή}} του. \\
+\textit{o} \textit{Nagoumo} \textit{echi} \textit{pari} \textit{tin} \textit{apofasi} \textit{tu} \\
+the.\textsc{sg.nom} Nagoumo have.\textsc{prs.3sg} take.\textsc{inf} the.\textsc{sg.acc} decision.\textsc{sg.acc} his.\textsc{3.sg} \\
+\glt `Nagoumo has decided' \\
+\z
+
+The question of ``what to annotate'' is tackled by the annotation guidelines that we have already mentioned and the operational definition of LVCs provided. This definition obviously includes two elements as integral parts of an LVC: a verb head with void semantics (the syntactic head) and a predicative noun that serves as the semantic head of the expression. 
+
+
+This entails that phrases that comprise \textit{aspectual variants} of light verbs, i.e., verbs that contribute an aspectual meaning to the expression once they substitute the light verb proper were not taken into account and not annotated -- a decision that has received criticism \citep{fotopoulou-etal-2021-aspectual}. In theoretical linguistics, these aspectual variants are usually studied under the umbrella term of LVCs \citep{gross_1982, Giry-Schneider-1987}. However, there are discrepancies between the two which we wish to keep for later study.
+In this respect, the expression (el) \textbf{\em{δίνω απάντηση}} \textit{dino apantisi} (lit. `give answer) `to answer' is annotated as an LVC, whereas its aspectual variant (el) \textbf{\em{παίρνω απάντηση}} \textit{perno apantisi} (lit. `take answer') `to receive an answer' is not.
+
+Once again, the data prove the assertion that LVCs form a very productive category of highly idiosyncratic expressions, in that predicative nouns select their syntactic head instead of verbs selecting their dependents, see (\ref{ex:perno-kano}).  
+
+\ea
+ \label{ex:perno-kano}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{παίρνω}} \textbf{\em{απόφαση}} / *\textbf{\em{κάνω}} \textbf{\em{απόφαση}}\\ 
+\textit{perno} \textit{apofasi} / \textit{kano} \textit{apofasi} \\
+take.\textsc{prs.1sg} decision.\textsc{sg.acc} / make.\textsc{prs.1sg} decision.\textsc{sg.acc} \\
+\glt `to make a decision, to decide' \\
+\z
+
+In our corpus, the most frequently encountered light verbs are (el) \textit{κάνω} \textit{kano} `to make, to do', \textit{έχω} \textit{echo} `to have', \textit{παίρνω} \textit{perno} `to take', and \textit{δίνω} \textit{dino} `to give'. Other light verbs include (el) \textit{ασκώ} \textit{asko} `to exert', \textit{βάζω} \textit{vazo} `to put', \textit{βγάζω} \textit{vgazo} `to take.out', \textit{βγαίνω} \textit{vgeno} `to go.out', \textit{θέτω} \textit{θeto} `to put, to set', \textit{καταβάλλω} \textit{katavalo} `to give', \textit{λαμβάνω} \textit{lamvano} `to get', \textit{κρατάω} \textit{kratao} `to keep', \textit{παρέχω} \textit{parecho} `to provide', \textit{αναλαμβάνω} \textit{analamvano} `to undertake', \textit{αποδίδω} \textit{apodido} `to give', \textit{διαπράττω} \textit{diapratto} `to commit', \textit{διενεργώ} \textit{dienergo} `to carry out', \textit{διεξάγω} \textit{δiexaγο} `to conduct', \textit{εκπονώ} \textit{ekpono} `to conduct, to carry out', \textit{εκτελώ} \textit{ektelo} `to execute, to carry out', and \textit{έρχομαι} \textit{erchome} `to come'.
+
+
+Alternative light verbs also occur with the same predicative noun, often signalling a shift in the register. In most cases, pairs of verbs like \textit{παίρνω} \textit{perno} (`take') and \textit{λαμβάνω} \textit{lamvano} (`take'), or \textit{κάνω} \textit{kano} (`make') and \textit{ασκώ} \textit{asko} (`exert') are variants, the latter bearing a formal register, as attested in (\ref{ex:perno-lamvano}) and (\ref{ex:kano-asko}). 
+
+\ea
+ \label{ex:perno-lamvano}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{παίρνω}} \textbf{\em{απόφαση}} / \textbf{\em{λαμβάνω}} \textbf{\em{απόφαση}}\\ 
+\textit{perno} \textit{apofasi} / \textit{lamvano} \textit{apofasi} \\
+take.\textsc{prs.1sg} decision.\textsc{sg.acc} / take.\textsc{prs.1sg} decision.\textsc{sg.acc} \\
+\glt `to make a decision, to decide' \\
+\z
+
+\ea
+ \label{ex:kano-asko}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{κάνω}} \textbf{\em{κριτική}} / \textbf{\em{ασκώ}} \textbf{\em{κριτική}}\\ 
+\textit{kano} \textit{kritiki} / \textit{asko} \textit{kritiki} \\
+make.\textsc{prs.1sg} criticism.\textsc{sg.acc} / exert.\textsc{prs.1sg} criticism.\textsc{sg.acc} \\
+\glt `to criticise' \\
+\z
+
+Similarly, some sort of lexical variation is due to the predicative noun used – notably in the case of LVCs with loan words (neologisms) and terms. For instance, the predicative nouns (el) \textit{εκφοβισμό} \textit{ekfovismo} `bullying' and \textit{μπούλιγκ} \textit{bullying} `bullying' in (\ref{ex:kano-ekfovismo}) and (\ref{ex:kano-ekfovismo-2}) are synonymous -- the latter being a loanword that has been adopted in Greek (target language) as a transliterated form of the term \textit{bullying} in English (source language). The loanword is also attested in the corpus as non-transliterated, keeping, thus, the orthography of the source language.
+
+\ea
+ \label{ex:kano-ekfovismo}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{κάνω}} \textbf{\em{εκφοβισμό}} / \textbf{\em{ασκώ}} \textbf{\em{εκφοβισμό}}\\ 
+\textit{kano} \textit{ekfovismo} / \textit{asko} \textit{ekfovismo} \\
+make.\textsc{prs.1sg} bullying.\textsc{sg.acc} / exert.\textsc{prs.1sg} bullying.\textsc{sg.acc} \\
+\glt `to bully' \\
+\z
+
+\ea
+ \label{ex:kano-ekfovismo-2}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{κάνω}} \textbf{\em{μπούλιγκ}} / \textbf{\em{κάνω}} \textbf{\em{bullying}}\\ 
+\textit{kano} \textit{bullying} / \textit{kano} \textit{bullying} \\
+make.\textsc{prs.1sg} bullying.\textsc{sg.acc} / make.\textsc{prs.1sg} bullying.\textsc{sg.acc} \\
+\glt `to bully' \\
+\z
+
+The phenomenon of \textit{language mixing} which ‟is understood as involving lexical items and grammatical features from two languages that appear in one sentence, [...] can either be word internal, [...] or involve lexical elements of two languages", has been studied for bilingual speakers of many languages/language pairs, including Greek \citet[166]{Alexiadou-2017}. 
+
+
+In our news corpus, this type of mixing is attested in texts that belong to specific domains. For instance, LVCs with loanwords such as (el) \textbf{\em{κάνω σουτ}} \textit{kano sut} (`make shoot') 'to shoot' in the domain of SPORTS is used in parallel with the derived verb (el) \textit{σουτάρω} \textit{sutaro} 'to shoot'. Similarly, LVCs of the form (el) \textbf{\em{κάνω πρέσιγκ}} \textit{kano pressing} (`make pressing') `to press' are attested in the domain of FINANCE. Finally, LVCs of this type are abundant in the sub-corpus of lifestyle texts.
+In the next sections, we will elaborate on the linguistic properties of LVCs as they are attested in the corpus.
+
+\subsection{Linguistic properties of LVCs}
+Our data reveal the linguistic properties of LVCs. As in many other languages, most of our LVCs are morphologically related to a full verb that can ‘replace’ them without a significant change in meaning. Therefore, (el) \textbf{\em{δίνω υπόσχεση}} \textit{δino iposchesi} `to give a promise' can be replaced by the verb \textit{υπόσχομαι} \textit{iposchome} `to promise'. According to the guidelines, this was the primary linguistic test used while annotating. Where a morphologically related verb was not found, we checked for a synonymous one to use. To this end, the linguistic tests of lexical substitution or lexical and phrasal paraphrasing were applied.
+
+
+A high degree of variation was also attested in the corpus, namely morphological, syntactic, and lexical variation. As it has been noticed in many studies, for example, \citep{Butt2010}, the predicative noun may be used in the plural:
+
+\ea
+ \label{ex:morpho-dino-iposchesi}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{δίνω}} \textbf{\em{υπόσχεση}} / \textbf{\em{δίνω}} \textbf{\em{υποσχέσεις}}\\ 
+\textit{δino} \textit{iposchesi} / \textit{δino} \textit{iposchesis} \\
+give.\textsc{prs.1sg} promise.\textsc{sg.acc} / give.\textsc{prs.1sg} promises.\textsc{pl.acc} \\
+\glt `to make a promise, to promise' \\
+\z
+
+Syntactic variants of LVCs are also attested quite often in the corpus - the most frequent one being LVCs that enter in diathesis alternations (passive, causative-inchoative), as shown in (\ref{ex:syntax-active}) and (\ref{ex:syntax-passive}).
+
+\ea
+ \label{ex:syntax-active}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{έλαβα}} μία  δύσκολη \textbf{\em{απόφαση}} \\ 
+\textit{elava} \textit{mia} \textit{diskoli} \textit{apofasi} \\
+take.\textsc{pst.1sg} one difficult apofasi.\textsc{sg.acc} \\
+\glt `I made a tough decision' \\
+\z
+
+
+\ea
+ \label{ex:syntax-passive}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{ελήφθησαν}}  δύσκολες \textbf{\em{αποφάσεις}} \\ 
+\textit{elifθisan} \textit{diskoles} \textit{apofasis} \\
+take.\textsc{pass.pst.3pl} difficult.\textsc{pl.nom} apofasi.\textsc{pl.nom} \\
+\glt `Tough decisions were made' \\
+\z
+
+Note that in some cases, different verbs signal diathesis alternation. LVCs which comprise certain pairs of light verbs combined with the same predicative noun signal syntactic alternations (i.e., diathesis alternation, causative-inchoative alternation, etc.). This is mainly true for pairs of verbs like (el) βγάζω \textit{vgazo} ‘to take out’ and (el) βγαίνω \textit{vgeno} ‘to be taken out’, or (el) κάνω \textit{kano} `to do, to make' and (el) γίνομαι \textit{ginome} `to be made'.
+They predominately differ in the grammatical features and the syntactic function that the predicative noun assumes. 
+
+
+For example, the LVCs (el) \textbf{\em{βγάζω}} \textbf{\em{συμπέρασμα}} \textit{vgazo symperasma} (lit. ‘take-out.\textsc{prs.1sg} conclusion.\textsc{sg.acc}') ‘to conclude' and (el) \textbf{\em{βγαίνει}} \textbf{\em{συμπέρασμα}} \textit{vgeni symperasma} (lit. ‘is-taken-out.\textsc{3sg}   conclusion.\textsc{sg.nom}') ‘it is concluded' enter in the causative-inchoative alternation. In the former, the lexicalised element is the argument in object position (and following the rules of the language, it is realised as a Noun Phrase (NP henceforth) in the accusative case); in the latter, the predicative noun is the subject and is realised as an NP in the nominative, as shown in (\ref{ex:vgazo-symperasma}) and (\ref{ex:vgeni-symperasma}).
+
+\ea
+\label{ex:vgazo-symperasma}
+\settowidth \jamwidth{(EL)}
+\glll
+Οι πολίτες \textbf{\em{βγάζουν}} τα \textbf{\em{συμπέρασματά}} τους. \\
+\textit{I} \textit{polites} \textit{vgazun} \textit{ta}	\textit{simperasmata} \textit{tus}\\
+The.\textsc{pl.nom} citizen.\textsc{pl.nom} take.out.\textsc{prs.3sg} the.\textsc{pl.acc} conclusion.\textsc{pl.acc} their\textsc{3sg}\\
+\glt ‘Citizens come to a conclusion.’
+\z
+
+
+\ea
+\label{ex:vgeni-symperasma}
+\settowidth \jamwidth{(EL)}
+\glll
+\textbf{\em{Βγαίνει}} το \textbf{\em{συμπέρασμα}} ότι η χώρα κινδυνεύει. \\
+\textit{vgeni} \textit{to} \textit{simperasma} \textit{oti} \textit{i} \textit{chora} \textit{kindinevi}\\
+go.out.\textsc{prs.3sg} the.\textsc{sg.nom} conclusion.\textsc{sg.nom} that the country is-in-danger\\
+\glt ‘It is concluded that the country is in danger.’
+\z
+
+
+According to the universal guidelines, nominal groups (headed by nominal complements taken from the prototypical LVCs) with relative clauses are also annotated. As a matter of fact, the structure in (\ref{ex:apofasi-pu-pirame}) is also used as a test for deciding whether a candidate LVC should be annotated or not. The test is shown in the decision tree\is{decision tree} of the guidelines.
+
+\ea
+\label{ex:apofasi-pu-pirame}
+\settowidth \jamwidth{(EL)}
+\glll
+η \textbf{\em{απόφαση}} που \textbf{\em{πήραμε}} \\
+\textit{i} \textit{apofasi} \textit{pu} \textit{pirame} \\
+the.\textsc{sg.nom} decision.\textsc{sg.nom} that take.\textsc{pst.1pl}.\textsc{pres} \\
+\glt ‘the decision we made’
+\z
+
+LVCs in running text sometimes appear as constructions in which the predicative nouns share the same verb head, as shown in (\ref{ex:echi-vulisi}). These LVCs are annotated separately.
+
+\ea
+\label{ex:echi-vulisi}
+\settowidth \jamwidth{(EL)}
+\glll
+η κυβέρνηση \textbf{\em{έχει}} τη \textbf{\em{βούληση}} και την \textbf{\em{ικανότητα}} \\
+\textit{i} \textit{kivernisi} \textit{echi} \textit{ti} \textit{vulisi} \textit{ke} \textit{tin} \textit{ikanotita} \\
+the.\textsc{sg.nom} government.\textsc{sg.nom} have.\textsc{prs.3sg} the volition and the ability \\
+\glt `the government wants and can' \\
+\z
+
+Insertion of other elements, for example, modifiers, and determiners, are a serious drawback not only to systems that seek to automatically identify VMWEs in text but also to human annotators. In effect, long-distance dependencies, that is, dependencies that need not hold between strictly linearly adjacent words or morphemes, are problematic to annotators as well. In most cases, LVCs are non-continuous constructions; sometimes, the elements of the LVC are completely discontinous. %as ahown in Figure (\ref{fig:long}).
+
+%\begin{figure}
+%    \centering
+%    \includegraphics{images/long-distance.png}
+%    \caption{Discontinuous LVCs: long distance dependencies.}
+%    \label{fig:long}
+%\end{figure}
+
+
+\subsection{Ambiguous cases}
+
+The distinction between LVCs and fixed or idiomatic expressions is not always straightforward and the limits between the two are often fuzzy. According to \citet{Fotopoulou-Giouli-2015} among others, there exists a scalar passage between the two types of VMWEs. The annotation guidelines provide robust linguistic tests that guide annotation. After all, the task of annotation - any annotation - is a deterministic one; decisions need to be made.
+
+Sometimes, synonymous VMWEs fall into different categories based on the noun: if the noun is predicative, the expression is tagged as an LVC, as shown in the examples. We consider predicative a noun that denotes an event, a situation, or a sentiment, etc. \citep{gross_methodes_1975, gross_1982}. VIDs, on the other hand, are defined as having a non-compositional meaning that cannot be deduced from the meaning of their parts \citep{gross_1982}. According to this principle, the noun (el) \textit{ρεζίλι} \textit{rezili} `ridicule' in (\ref{ex:kano-rezili}) is predicative, whereas the noun (el) \textit{ρόμπα} \textit{roba} `robe' in (\ref{ex:kano-roba}) is not.
+%(Bobrow and Bell, 1973; Chomsky, 1980; Fraser, 1970; Swinney and Cutler, 1979; Gross, 1982, 1988; Van der Linden, 1992).
+
+\ea
+ \label{ex:kano-rezili}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{κάνω}} κάποιον \textbf{\em{ρεζίλι}} (LVC)\\ 
+\textit{kano} \textit{kapion} \textit{rezili} \\
+make.\textsc{prs.1sg} someone ridicule.\textsc{sg.acc} \\
+\glt `to ridicule' \\
+\z
+
+\ea
+ \label{ex:kano-roba}
+ \settowidth \jamwidth{(EL)}
+ \glll
+ \textbf{\em{κάνω}} κάποιον \textbf{\em{ρόμπα}} (VID)\\ 
+\textit{kano} \textit{kapion} \textit{roba} \\
+make.\textsc{prs.1sg} someone robe.\textsc{sg.acc} \\
+\glt `to ridicule' \\
+\z
+
+
+Literal occurrences of MWEs, also referred to as their literal readings or literal meanings, have received considerable attention equally from the linguistic and computational linguistic communities. In an experiment run for German, Greek, Basque, Polish, and Brazilian Portuguese, \citep{savary_etal_2019} almost 11.5\% of the VMWE occurrences in the Greek corpus were found to be literal readings of the VMWE surface forms -- a phenomenon referred to as the \textit{literal-idiomatic ambiguity}.\footnote{For a definition of the literal-idiomatic ambiguity, see \citet{savary_etal_2019}.} Literal occurences of LVCs were not annotated.
+
+ 
+
+
+
+\section{Conclusion and outlook for future research}
+\label{sec:conclusion}
+We have presented a corpus of Modern Greek that has been annotated for VMWEs within the framework of a highly multilingual initiative that currently covers 26 languages and language varieties. Before presenting our work, the definition of LVCs in our approach was given. 
+Our work is primarily intended to serve applications in the field of natural language processing\is{Natural Language Processing}, where LVCs are generally treated under the umbrella term MWEs, and to prepare a corpus for Modern Greek that is compatible with multi-lingual initiatives.
+From another perspective, the corpus and the accompanying infrastructure can be used for the study of LVC-related phenomena.
+
+Future work has already been envisaged towards enriching the corpus with new data and extending the annotation scheme to new grammatical categories, for example, nominal or adverbial MWEs. Of great importance in the future are the adjudication of the pre-processing levels, so as to have a corpus resource that is GOLD at all the levels of linguistic analysis. This will allow us -- among other things -- to provide the research community with a corpus that is usable for linguistic analyses.
+
+
+\section*{Abbreviations}
+\begin{tabularx}{.85\textwidth}{lQ}
+FLAT & oLiA Linguistic Annotation Tool \\
+IAV & Inherently Adpositional Verb \\
+IRV & Inherently Reflexive Verbs \\
+LVC & Light Verb Construction \\
+MVC & Multi-Verb Constructions \\
+MWE & Multiword Expression \\
+NLP & Natural Language Processing \\
+NP & Noun Phrase \\
+POS & Part-of-Speech \\
+UD & Universal Dependencies \\
+VMWE & Verbal Multiword Expression \\
+VID & Vebal Idiomatic Expression \\
+VPC & Verb-Particle Construction \\
+\end{tabularx}
+
+
+\section*{Acknowledgements}
+The work described in this chapter has been supported by the IC1207 PARSEME COST action. The author is also grateful to the annotators of the Greek section of the PARSEME corpus for their contribution. We thank the anonymous reviewers and the editor for their insightful comments, which led to a significant improvement in the original text.
+
+
+\sloppy
+\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}

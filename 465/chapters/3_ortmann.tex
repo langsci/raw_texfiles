@@ -1,0 +1,619 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.13383787}
+\author{Katrin Ortmann%\orcid{}
+\affiliation{Ruhr-Universität Bochum} and
+        Sophia Voigtmann\orcid{0009-0002-2504-4117}
+        \affiliation{Universität des Saarlandes} and
+        Stefanie Dipper\orcid{0000-0003-4357-9078}\affiliation{Ruhr-Universität Bochum} and
+        Augustin Speyer\orcid{0000-0003-1027-2635}\affiliation{Universität des Saarlandes}}
+\title[Constituent order in the German middle field]{An information-theoretic account of constituent order in the German middle field}
+\abstract{This paper proposes a novel approach to explain object order in German. Although the order of constituents is relatively free in modern German, there are clear preferences for the order dative before accusative (nominal) objects and for the order given before new objects. A range of influential factors have been described in the literature, most prominently givenness and length. We assume processing-related reasons and use information-theoretic measures, in particular surprisal and DORM \citep{cuskley21}, to explore the interplay of information structure and information density as factors for object order. We propose a measure called \DDIFF and the \textit{corpus of variants} method for comparing information profiles between different plausible constituent orders. Our investigations show that language users follow information-theoretic principles \citep[UID, ][]{Levy.Jaeger} in choosing the object order that leads to a more uniform distribution of information. We argue that this preference also explains deviations from the unmarked object order (i.e., accusative preceding dative and new preceding given) if it is associated with smoother information profiles.}
+
+%move the following commands to the "local..." files of the master project when integrating this chapter
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[3]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+In contrast to languages with a fixed word order, the order of constituents in a language like German is relatively free. Nevertheless, there still exist clear preferences for certain  word and constituent orders in German. One such preference concerns the relative order of nominal dative and accusative object.
+For example, sentence~\xref{ex:dat-acc} is generally preferred over sentence~\xref{ex:acc-dat}, even though both constituent orders are possible and occur in natural data.
+
+\ea
+  \ea\label{ex:dat-acc}
+  \gll Ich werde \up{[}einem Jungen\up{]\sub{\textsc{dat}}} \up{[}ein Buch\up{]\sub{\textsc{acc}}} geben. \\
+   I will [a boy]\sub{\textsc{dat}} [a book]\sub{\textsc{acc}} give \\
+   \glt `I will give a boy a book.'
+%
+   \ex\label{ex:acc-dat}
+   \gll Ich werde \up{[}ein Buch\up{]\sub{\textsc{acc}}} \up{[}einem Jungen\up{]\sub{\textsc{dat}}} geben. \\
+    I will [a book]\sub{\textsc{acc}} [a boy]\sub{\textsc{dat}} give \\
+    \glt `I will give a book to a boy.'
+    \z
+\z
+
+
+There are numerous works on this phenomenon which try to capture the observed preferences. Among the known influential factors are animacy, familiarity, givenness, salience and length (cf., e.g., \citealt{lenerz77,speyer11, Behagel}, and for English, \citealt{bresnan07}). However, these factors cannot \textit{explain} the preferences but only describe them. In this paper, we try to go beyond a mere description and attempt to explain this phenomenon based on the cognitive processing effort of the constructions \citep[cf., e.g.,][]{Fenk-Oczlon}. 
+
+Some of the factors mentioned above certainly have an influence on processing effort, e.g., givenness as illustrated in \xref{ex:case-given-all}. These sentences all have the marked case order accusative before dative, but differ with respect to givenness. Regarding givenness, the order given before new represents the common order (\sectref{sec:results}), so \xref{ex:acc-dat.given-new} should be easier to process than the other examples since it is the most common object order, and familiarity can facilitate processing \citep[cf., e.g.][]{Futrell}. However, such factors, and in fact all of the factors mentioned above except length, are difficult to quantify and thus hard to operationalize.
+
+\ea\label{ex:case-given-all}
+  \ea\label{ex:acc-dat.given-new}
+  \gll Ich werde \up{[}das Buch\up{]\sub{\textsc{acc}, given}} \up{[}einem Jungen\up{]\sub{\textsc{dat}, new}} geben. \\
+    I will [the book]\sub{\textsc{acc}, given} [a boy]\sub{\textsc{dat}, new} give \\
+  \glt `I will give the book to a boy.'
+%
+  \ex\label{ex:acc-dat.new-give}
+  \gll Ich werde \up{[}ein Buch\up{]\sub{\textsc{acc}, new}} \up{[}dem Jungen\up{]\sub{\textsc{dat}, given}} geben. \\
+  I will [a book]\sub{\textsc{acc}, new} [the boy]\sub{\textsc{dat}, given} give \\
+  \glt `I will give a book to the boy.'
+%
+ \ex\label{ex:acc-dat.given-given}
+  \gll Ich werde \up{[}das Buch\up{]\sub{\textsc{acc}, given}} \up{[}dem Jungen\up{]\sub{\textsc{dat}, given}} geben. \\
+  I will [the book]\sub{\textsc{acc}, given} [the boy]\sub{\textsc{dat}, given} give \\
+  \glt `I will give the book to the boy.'
+  \z
+\z
+
+In the present study, we explore the application of information-theoretic concepts to objectively quantify and approximate the effects of processing effort on object order in the middle field of the German sentence. We expect that a certain constituent order is used to assure an optimal information flow and to avoid processing difficulties.  
+%In the present study, we explore the application of information-theoretic concepts to objectively quantify and measure the effects of processing effort on object order in the middle field of the German sentence. 
+As a measure of processing difficulties, we use information density \citep{shannon-1948}. 
+In this framework, information is derived from the probability of a word in context. Information theory has been widely used to relate the probability of linguistic material occurring in an utterance (measured as surprisal: $S(unit) = -\log_2P(unit|context$), \citet{Hale.2001}) to the effort required to process that utterance. Lower predictability (probability) correlates with higher processing effort \citep[e.g.,][]{Hale.2001}. 
+Also, very high surprisal values or an uneven information profile are correlated with information loss, as \citep{cuskley21} argue. Therefore, speakers aim to keep the information flow as uniform as possible to ensure optimal communication \citep[``Uniform Information Density Hypothesis'', UID, ][]{Levy.Jaeger, Aylett.Turk.2004}. 
+
+Since the predictability of a word depends strongly on its context, the order of words and constituents has a high impact on the uniformity of the utterance \citep{cuskley21}. Changing the order can thus lead to more successful communication and, based on this assumption, we propose that changes in object order in the German middle field can be described and even explained by information density. 
+We test our hypothesis in a pilot study based on a large corpus of modern German.
+
+The remainder of this paper is structured as follows: \sectref{sec:order} gives an introduction of the theoretic background and explains the different factors that are known to influence constituent order in the German middle field. \sectref{sec:data} describes the data selection for this study, and \sectref{sec:method} details the methods used for analysis, including the calculation of constituent surprisal and information profiles. In \sectref{sec:results}, the results are presented and the effects of information-theoretic principles on constituent order are evaluated. Possible problems and enhancements of the methodology are discussed in \sectref{sec:discussion}. The paper concludes with a summary of the findings in \sectref{sec:conclusion}.\footnote{The statistical data and the R~script used in this study as well as the list of light verb constructions applied in data preparation are available at \git.}
+
+\section{Constituent order in the German middle field}\label{sec:order}
+As already mentioned, German is a language with a relatively free constituent order. This means that constituent order is not exclusively governed by structural factors such as grammatical function (subject, direct object, etc.) as is the case, e.g., in English. Instead, constituent order in German is influenced by several factors, many of which are non-syntactic factors but rather of a semantic or pragmatic nature \citep[see, e.g.,][]{lenerz77,rauth20}. This goes for historical stages of German as well \citep[][]{speyer11, speyer13, rauth20}.
+
+The point of interest for our study is the so-called middle field in the German clause. The term \textit{middle field} has its origin in the topological field model of the German clause \citep[for a recent overview, see, e.g.,][]{Woellstein.2010, Woellstein.2014}. 
+We introduce the model using the terminology of \citet{telljohann-et-al17}.
+
+Word order in German sentences is best described not by notions such as SVO (subject > verb > object\footnote{We use the notation \textit{a > b} for denoting the order \textit{a before b}.}) or the like, but rather by relating the constituents relative to the verb positions. Verb forms tend to be distributed over the German (matrix) clause in such a way that the finite part stands relatively early in the clause (linke (Satz-)Klammer (‘left sentence bracket’), abbreviated LK) and the remainder of the verb form at the end or close to the end of the clause, in a position often referred to as the \textit{right sentence bracket} ('rechte Satzklammer'). In the scheme of \citet{telljohann-et-al17}, this position is called \textit{VC} (for verb complex). The positions of the nonverbal constituents of the clause can be described relative to these verbal positions. Nonverbal constituents can be located:
+
+\begin{itemize}
+\item either before the LK, i.e., in the \emph{Vorfeld} (VF, ‘initial field’); this position is normally restricted to one constituent;
+\item or after the VC position, i.e., in the \emph{Nachfeld} (NF, ‘final field’); this position is often not filled;
+\item or between the two brackets LK and VC, i.e., in the \emph{Mittelfeld} (MF, ‘middle field’); it is this field that is in the focus of this paper. 
+\end{itemize}
+
+A sample German declarative main clause with its topological structure is given in \tabref{tab:Topolog.Uller}.
+
+\begin{table}
+  \tabcolsep=.5\tabcolsep
+  \begin{tabular}{ *9{l} }
+    \lsptoprule
+    \multicolumn{1}{c}{VF} & LK & \multicolumn{5}{c}{MF} & \multicolumn{1}{c}{VC} & NF\\\cmidrule(lr){1-1}\cmidrule{2-2}\cmidrule(lr){3-7}\cmidrule(lr){8-8}\cmidrule{9-9}
+    Heute & hat & Uller & einem & Freund & ein & Buch & empfohlen\\
+    today & has & Uller & a     & friend & a   & book & recommended\\\addlinespace
+    \multicolumn{8}{l}{`Today, Uller recommended a book to a friend.'}\\
+    \lspbottomrule
+  \end{tabular}
+    \caption{Example for the topological structure of a German declarative main clause}
+    \label{tab:Topolog.Uller}
+\end{table}
+
+
+The middle field is the relevant area for our investigations because most constituents of the clause cluster in this field. For example, the example given in \tabref{tab:Topolog.Uller} shows four basic constituents: the subject \emph{Uller}, the temporal adverbial \emph{heute}, the indirect object \emph{einem Freund} (in German usually in the dative case) and the direct object \emph{ein Buch} (in German usually in the accusative case). Three of these constituents are located in the middle field.
+
+As already mentioned, the relative order of the constituents in the middle field is subject to different syntactic, semantic and pragmatic factors. In short, syntactic factors, such as grammatical function (subject~>~objects) or case (dative object~>~accusative object, in the following \ReichDat{} > \ReichAcc{}) and the like are at play, but they can be easily overridden by non-syntactic factors \citep[cf.\ the seminal study by][]{lenerz77}. In this paper, we focus on the relative order of nominal objects in the German middle field. The unmarked order is \ReichDat{} > \ReichAcc{} \citep[][]{lenerz77}.\footnote{Interestingly, the unmarked order of \emph{pronominal} objects is \ReichAcc{} > \ReichDat{}. In this study, we focus on nominal objects, excluding pronominal objects.}
+
+Semantic factors that have proven to be quite prominent are definiteness and animacy. The effect of definiteness is such that definite referents tend to precede indefinite referents \citep{lenerz77}. It is questionable whether this definite~>~indefinite constraint is an effect of definiteness by itself or whether this is an epiphenomenon of other constraints. We will touch on this question later in this section. 
+
+Animacy has been identified as an important factor for the ordering of constituents in the German middle field by, e.g., \citet{Hoberg.1981}. Here, the unmarked order is animated referent~>~unanimated referent, see \xref{ex:animated}. In the prehistory of German, this ordering principle might have been quite prominent and in the end might have led to the development of \ReichDat{} > \ReichAcc{} as the unmarked order \citep[see][]{speyer15} because the dative is correlated with the semantic role of recipient in the classical case of verbs with three arguments that instantiate the agent--patient--recipient scheme, such as \emph{geben} (`give'), \emph{übermitteln} (`convey'), or \emph{anbieten} (`offer'). The recipient is usually animated whereas the patient is normally not.\largerpage
+
+\ea\label{ex:animated}
+    {\gll Heute hat \up{[}die Lehrerin\up{]\sub{\textsc{nom}, anim}} \up{[}der Schülerin\up{]\sub{\textsc{dat}, anim}} \\
+   today has {\ the} teacher {\ the} student \\}
+    \gll\up{[}das Buch\up{]\sub{\textsc{acc}, inanim}} gegeben. \\ 
+    {\ the} book given \\
+    \glt `The teacher gave the book to the student today.'
+\z
+
+We concentrate here on pragmatic factors, especially those that have traditionally been described in terms of \textit{information structure} \citep[][]{Fery.Krifka.2008}. Information-structural notions that have been found to play a role are, for example, the given~>~new constraint \citep[][]{lenerz77}  and the topic~>~comment constraint \citep[][]{frey04}. In our investigation, we focus on the given > new constraint. Basically, this ordering constraint says that knowledge that is assumedly familiar to the hearer is positioned before material that is new to the hearer. These constraints are not to be read as \textit{given information always stands before new information} but rather as constraints that can override the unmarked constituent order \ReichDat{} > \ReichAcc{} in certain cases, as in \xref{ex:Krimikontext}. In this example, the accusative object represents given information, whereas the dative object refers to a person that has not yet been introduced to the discourse. 
+
+\ea\label{ex:Krimikontext}
+$[$Context: discussion about a certain mystery novel$]$\\
+   \gll	Und dann hat sie \emph{[}den Krimi\emph{]\sub{\textsc{acc}, given}} \emph{[}einer Freundin\emph{]\sub{\textsc{dat}, new}} geschenkt. \\ 
+    and then has she {\ the} novel {\ a} friend presented \\
+    \glt `And then she gave the novel to a friend of hers as a present.'
+\z
+
+We see in \xref{ex:Krimikontext} that the objects bear different articles. A constraint that is correlated with given > new is the constraint that definite noun phrases precede indefinite noun phrases \citep{lenerz77,rauth20}. The correlation is as follows: Definite reference normally implies that the entity referred to is known to the speaker and hearer (hence given information). Using a definite determiner is felicitous only if the hearer can uniquely identify the referent, and this is only possible if it is known to the hearer or can be inferred by them \citep{Prince}. In contrast, in conveying new information, speakers tend to refer via indefinite noun phrases, indicating that the referent is not yet part of the discourse universe. This comes in handy, as it allows us to use definiteness as a proxy for givenness and indefiniteness as a proxy for newness in our pilot study, when dealing with data that is not annotated for givenness or \emph{information status}.
+
+German is not the only language that allows for variable orders of the direct and indirect objects. In other closely related languages such as Dutch and English, the relative linearization of the direct object (DO) and the indirect object  (IO) are subject to variation as well. An example is the phenomenon of dative alternation in English: The indirect object can be realized as a noun phrase preceding the direct object \xref{ex:case-order-english-da-oa}, or as a prepositional phrase following the direct object \xref{ex:case-order-english-oa-PP}. The phenomenon of Heavy NP shift provides another example: long (i.e., heavy) direct objects can be put after the prepositional indirect object \xref{ex:case-order-english-heavy}.
+
+\ea\label{ex:case-order-english}
+  \ea\label{ex:case-order-english-da-oa}
+  \emph{Then she gave \emph{[}her friend\emph{]\sub{IO, NP}} \emph{[}the new mystery novel\emph{]\sub{DO, NP}}.}
+%
+  \ex\label{ex:case-order-english-oa-PP} 
+  \emph{Then she gave \emph{[}the new mystery novel\emph{]\sub{DO, NP}} \emph{[}to her friend\emph{]\sub{IO, PP}}.}
+%
+  \ex\label{ex:case-order-english-heavy} 
+  \emph{Then she gave \emph{[}to her friend\emph{]\sub{IO, PP}} \emph{[}the new mystery novel about the murderer from Dartmoor\emph{]\sub{DO, NP}}.}
+  \z
+\z
+
+The factors governing these variations are partly of a different nature. While the length of the respective objects seems to be a governing factor, given-/newness does not seem to play a primary role here. \citet{engel2022}  found evidence that definiteness is a good predictor also for the English dative alternation (if the indirect object is indefinite, it is more often realized as prepositional phrase, but this effect is strongest in spoken informal texts). So it looks as though something similar to the German definite~>~indefinite constraint is at play in English as well, and the fact that the effect is strongest in orally produced texts indicates that it is a matter of constraints on language processing.
+
+In our investigations, we focus on sentences with ditransitive verbs whose objects are located in the middle field. In our study, we compare the two objects in their original order with a generated, reversed order (see \sectref{sec:method}). In this direct comparison, we want to investigate whether the role of givenness for word order can be quantified with the help of information-theoretic measures such as surprisal. Hence, as described in \sectref{sec:data}, we exclude all cases where the objects are either both definite or both indefinite (i.e., where givenness does not play a role) and keep the mixed cases only so that the two variants differ with regard to definiteness, our proxy for givenness. Moreover, other factors that could influence the order of constituents should be excluded when comparing the two variants. Hence, we control for object length because variations in length are known to have an impact on the order of constituents in the sentence \citep[``Gesetz der wachsenden Glieder'', or \emph{law of increasing constituents},][]{Behagel}.
+
+\section{Data}\label{sec:data}
+We use the SdeWaC corpus \citep{sdewac}\footnote{%
+\url{https://www.ims.uni-stuttgart.de/forschung/ressourcen/korpora/sdewac},\\accessed 2022/12/01.} %
+as the source of data for our analysis. The corpus consists of 44M~sentences with more than 845M~tokens from German webpages. It has been automatically tokenized, tagged, lemmatized, and parsed with \citet{bohnet2010}'s dependency parser.\footnote{\citet{bohnet2010}'s dependency parser was trained on the TIGER corpus \citep[][release August 2007]{brants-et-al04} which had been converted to dependency structures by Wolfgang Seeker.} %
+Using the dependency annotation, we select all sentences from the corpus that contain at least one ditransitive 
+verb with a dative and an accusative object, labeled \texttt{DA} (=~\ReichDat{}) and \texttt{OA} (=~\ReichAcc{}), respectively, in the dependency annotation.\footnote{The label \texttt{DA} is also used for free datives, see \citet{brants-et-al04}. However, free datives occur mainly in pronominal form, which are excluded from the present study.} In addition, the objects must meet the following criteria:
+
+\begin{enumerate}
+  \item[(i)] Both objects have a nominal head. This means that the word forms labeled with the dependency relation \texttt{OA} and \texttt{DA} must be tagged with the STTS tag \texttt{NN} for ``normal noun'' \citep{schiller-et-al99}. For example, in \xref{ex:nominal_head_both}, the accusative object \textit{ein Buch} (`a book') and the dative object \textit{dem Jungen} (`the boy') in \xref{ex:nominal_head} are recognized as having a nominal head. In contrast, the pronominal dative object \textit{ihm} (`him') in \xref{ex:non-nominal_head} is tagged as \texttt{PPER} for personal pronoun and the sentence would be excluded from the sample.
+  
+\ea\label{ex:nominal_head_both}
+  \ea\label{ex:nominal_head}
+  \gll Ich werde \up{[}dem Jungen\up{/\texttt{NN}/\texttt{DA}]\sub{\textsc{dat}}} \up{[}ein Buch\up{/\texttt{NN}/\texttt{OA}]\sub{\textsc{acc}}} geben. \\
+   I will {\ the} boy {\ a} book give \\
+   \glt `I will give a book to the boy.'
+%    
+  \ex\label{ex:non-nominal_head} 
+  \gll Ich werde \up{[}ihm\up{/\texttt{PPER}/\texttt{DA}]\sub{\textsc{dat}}} \up{[}ein Buch\up{/\texttt{NN}/\texttt{OA}]\sub{\textsc{acc}}} geben. \\
+    I will {\ him} {\ a} book give \\
+  \glt `I will give him a book.'
+  \z
+\z
+  
+  \item[(ii)] To draw conclusions about the givenness of the objects, the object noun phrases must differ with regard to definiteness, one being definite, the other being indefinite. That is, the head nouns of one of the objects must directly dominate a definite article (\texttt{def}) and the head noun of the other object must directly dominate an indefinite article (\texttt{indef}). Definite articles are word forms that are tagged with the STTS tag \texttt{ART} and are lemmatized as \textit{der} (`the'). Indefinite articles are word forms tagged as \texttt{ART} with the lemma \textit{ein} (`a'). 
+  Examples~\xref{ex:acc-dat.given-new} and \xref{ex:acc-dat.new-give} from the introduction would thus be included, while \xref{ex:dat-acc}, \xref{ex:acc-dat}, and \xref{ex:acc-dat.given-given} with two given or two new objects would be excluded. This criterion also entails that sentences with an indefinite plural object, like \textit{Bücher} (`books') in \xref{ex:indef-zero}, are rejected because they do not have a determiner in German.
+  
+\ea\label{ex:indef-zero}
+    \gll Ich werde \up{[}dem Jungen\up{/\texttt{DA}]\sub{\textsc{dat}}} \up{[}Bücher\up{/\texttt{OA}]\sub{\textsc{acc}}} geben. \\
+    I will {\ the} boy {\ books} give \\
+    \glt `I will give books to the boy.'
+\z
+    
+  \item[(iii)] To control for effects of length, the objects must contain the same number of words (ignoring punctuation). 
+  Example~\xref{ex:same-length} with two objects of length two would be accepted, but not \xref{ex:different-length} with objects of different lengths (two vs.\ three words).
+
+\ea  
+   \ea\label{ex:same-length}
+   \gll Ich werde \up{[}dem Jungen\up{]\sub{\textsc{dat}}} \up{[}ein Buch\up{]\sub{\textsc{acc}}} geben. \\
+   I will [the boy]\sub{\textsc{dat}} [a book]\sub{\textsc{acc}} give \\
+   \glt `I will give a book to the boy.'
+%   
+   \ex\label{ex:different-length}
+   \gll Ich werde \up{[}dem Jungen\up{]\sub{\textsc{dat}}} \up{[}ein gutes Buch\up{]\sub{\textsc{acc}}} geben. \\
+   I will [the boy]\sub{\textsc{dat}} [a good book]\sub{\textsc{acc}} give \\
+   \glt `I will give a good book to the boy.'
+   \z
+\z
+
+   
+  \item[(iv)] Both objects must be located within the same middle field (\texttt{MF}).\footnote{For determining the topological structure, we parse the sentences with the Berkeley parser \citep{petrov-et-al06} and a constituen\-cy model from \citet{ortmann21} trained on the TüBa-D/Z treebank, a corpus that has been annotated with syntactic and topological categories \citep{telljohann-et-al17}. We use the \texttt{News1} model from \url{https://github.com/rubcompling/konvens2021}, which was trained on 80\% of the TüBa-D/Z corpus. The model annotates constituents and topological fields at the same time.}
+  We only keep sentences in which the same \texttt{MF} node dominates both objects, as in \xref{ex:same-mf}. If one object is located in another field, for example, in another \texttt{MF} or in the initial field \texttt{VF} as in \xref{ex:not-same-mf}, the sentence is excluded.
+  
+\ea
+   \ea\label{ex:same-mf}
+   \gll Ich werde \up{$\lsem$[}das Buch\up{]\sub{\textsc{acc}}} \up{[}einem Jungen\up{]\sub{\textsc{dat}}$\rsem$\subtt{MF}} geben. \\
+    I will {\ \ the} book {\ a} boy give \\
+    \glt `I will give the book to a boy.'
+    %
+    \ex\label{ex:not-same-mf}
+    \gll \up{$\lsem$[}Das Buch\up{]\sub{\textsc{acc}}$\rsem$\subtt{VF}} werde \up{$\lsem$}ich \up{[}einem Jungen\up{]\sub{\textsc{dat}}$\rsem$\subtt{MF}} geben. \\
+  {\ \ the} book will {\ I} {\ a} boy give \\
+    \glt `I will give the book to a boy.'
+    \z
+\z
+    
+\item[(v)]
+    Finally, we exclude light verb constructions, in which a semantically faded (``light'') verb establishes one fused meaning with its object. For instance, the phrase \textit{einer Prüfung unterziehen} (`submit a check') in \xref{ex:Funktionsverbgefüge} is an example of such a construction: (\textit{to) submit a check} corresponds to \textit{(to) check}. In these constructions, there is a clear bias for the order in which the fused object is directly adjacent to the light verb. This even holds for cases where the fused object is the dative object, resulting in the fixed (otherwise marked) object order \ReichAcc{} > \ReichDat{}, as in \xref{ex:Funktionsverbgefüge}.
+  
+\ea\label{ex:Funktionsverbgefüge}
+   \gll Wir werden \up{[}die neuen Daten\up{]\sub{\textsc{acc}}} \up{[}einer genauen Prüfung\up{]\sub{\textsc{dat}}} unterziehen. \\
+   we will {\ the} new data {\ a} thorough check give\\
+   \glt `We will submit the new data to a thorough check.'
+\z
+    
+    We compiled a list of 120 light verb constructions from \citet{Eisenberg.2020} and \citet{program}.\footnote{The list is available at \git.} If the lemmas of the verb and of the head nouns of the objects are included in the list, the object pair is removed.
+\end{enumerate}
+
+
+\begin{figure}
+% % %   \includegraphics[width=.8\textwidth]{figures/3_example_data_with_gloss.png}
+    \small
+  	\begin{forest}
+		[...
+			[MF
+				[NX, calign=child, calign child=2 
+					[..., no edge]
+					[\gll der klägerischen Partei\\
+				          the suing party\\,roof,name=party]]
+				[NX [\gll ein qualifiziertes Zwischenzeugnis\\
+						  a qualified {interim certificate}\\,roof,name=cert]]
+			]
+			[VC
+				[VXINF, calign=child, calign child=1
+					[\gll zu erteilen\\
+						  to give\\,roof,name=give]
+			  		[..., no edge]
+				]
+			]
+		]
+		\draw [-{Stealth[]}] (give.250) |- ++(-0pt, -0.75\baselineskip) -| node [near start, below] {OA} (cert.335);
+		\draw [-{Stealth[]}] (give.south) |- ++(-0pt, -2.\baselineskip) -| node [near start, below] {DA} (party.335);
+	\end{forest}
+  \caption{Excerpt from an example sentence (engl.\ `to give the suing party a qualified interim certificate') with a ditransitive verb and its two objects, along with a constituency (top) and dependency (bottom) analysis}
+  \label{fig:example_obj_pair}
+\end{figure}
+
+\figref{fig:example_obj_pair} shows an example object pair with the corresponding dependency and constituency analysis. On top of the text, the constituency tree is displayed, consisting of noun phrases (labeled as \texttt{NX}, following the TüBa-D/Z annotation scheme, \cite{telljohann-et-al17}), an infinitive (\texttt{VXINF}), and nodes representing topological fields (\texttt{MF}, \texttt{VC}). Below the text, the relevant dependency relations are shown. As required, the verb dominates a nominal dative (\texttt{DA}) and accusative (\texttt{OA}) object pair within the same middle field (\texttt{MF}) and with the same number of words. The dative object has a definite article (\textit{der} (`the')) and the accusative object an indefinite one (\textit{ein} (`a')).
+
+For our analysis, the selected sentences are split into constituents based on their constituency parse. For each terminal token (ignoring punctuation), we choose as the constituent node the highest dominating phrasal node below the next topological field node. \xref{ex:phrases} shows an example constituency analysis from the data set.
+
+\ea\label{ex:phrases}
+ \gll \up{[}Sie\up{]\subtt{NX}} \up{[}sind\up{]\subtt{VXFIN}} \up{[}zudem\up{]\subtt{PX}} \up{[}ein wichtiges Stilmittel\up{]\subtt{NX}}, \up{[}um\up{]\subtt{C}} \up{[}dem Film\up{]\subtt{NX}} \up{[}eine Struktur\up{]\subtt{NX}} \up{[}zu verleihen\up{]\subtt{VXINF}}\\
+  {\ they}  {\ are} moreover  {\ an} important stylistic.device {\ to}  {\ the} film  {\ a} structure  {\ to} give\\
+ \glt `Moreover, they are an important stylistic device to give the film a structure.'
+\z
+
+The SdeWaC corpus contains approximately 1.8M ditransitive verbs. Among those, 13,472 object pairs in 13,458 sentences meet the aforementioned criteria. \tabref{tab:data_stats} gives a summary of the data. It shows that in 95.87\% of the cases, the dative object precedes the accusative object and 87.61\% of the definite objects precede an indefinite object. Only 5.32\% of the objects in the original data are longer than three words, so we decided to only include objects of length two and three in our final data set.\footnote{This decision was also made because data processing proved to be error-prone for objects with more than three words. This could be solved by filtering as described above.}
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{lrrrr}
+    \lsptoprule
+    & \multicolumn{2}{c}{Original data} & \multicolumn{2}{c}{Final data set} \\\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    & \multicolumn{1}{c}{$n$} & \multicolumn{1}{c}{\%} & \multicolumn{1}{c}{$n$} & \multicolumn{1}{c}{\%} \\
+    \midrule
+    Sentences & 13,458 && 12,742 \\
+    Object pairs & 13,472 && 12,756 \\
+    Sentences with $>$1 pair & 14 & 0.10 & 14 & 0.11 \\[0.5ex]
+    Dative before accusative (\ReichDat{}>\ReichAcc{}) & 12,916 & 95.87 & 12,253 & 96.06 \\
+    Definite before indefinite (def>indef) & 11,803 & 87.61 & 11,171 & 87.57 \\[0.5ex]
+    (i) \textsc{dat.def}>\textsc{acc.indef} & 11,601 & 86.11 & 10,999 & 86.23 \\
+    (ii) \textsc{dat.indef}>\textsc{acc.def} & 1,315 & 9.76 & 1,254 & 9.83 \\
+    (iii) \textsc{acc.def}>\textsc{dat.indef} & 354 & 2.63 & 331 & 2.59 \\
+    (iv) \textsc{acc.indef}>\textsc{dat.def} & 202 & 1.50 & 172 & 1.35 \\[0.5ex]
+
+    Min.\ object length (in words) & 2 && 2\\
+    Max.\ object length (in words) & 13 && 3\\
+    Avg.\ words per object & 2.35 && 2.22 \\[0.5ex]
+    Avg.\ constituents per sentence & 12.23 && 12.28 \\
+
+    \lspbottomrule
+    \end{tabular}
+    \caption{Summary of the selected sentences and object pairs from the SdeWaC corpus, for the original complete data and the final data set with objects of length two and three only}
+    \label{tab:data_stats}
+\end{table}
+
+The above constraints concerning case and definiteness result in a total of four possible combinations of object pairs: 
+
+\begin{enumerate}
+\item[(i)] \textsc{dat.def} > \textsc{acc.indef} (i.e., the definitive dative object precedes the indefinite accusative object)
+\item[(ii)] \textsc{dat.indef} > \textsc{acc.def}
+\item[(iii)] \textsc{acc.def} > \textsc{dat.indef}
+\item[(iv)] \textsc{acc.indef} > \textsc{dat.def}
+\end{enumerate}
+Examples \xxref{ex:sample.dat.def.acc.indef}{ex:sample.acc.indef.dat.def} show one sentence per group from the sample.
+
+\newpage
+\ea\label{ex:sample.dat.def.acc.indef}
+    Group (i): \textsc{dat.def} > \textsc{acc.indef}\\
+    \gll Beim Zeichnen des eigenen Gesichts kann man \up{[}dem Schüler\up{]\sub{\textsc{dat}, def}} \up{[}einen Spiegel\up{]\sub{\textsc{acc}, indef}} geben, aber man kann die Unterrichtseinheit auch mit der Fotografie beginnen. \\ 
+    when drawing the own face can one {\ the} student {\ a} mirror give but one can the lesson also with the photography start \\
+    \glt `When drawing your own face, you can give the student a mirror, but you can also start the lesson with photography.'
+    \z
+
+\ea\label{ex:sample.dat.indef.acc.def}
+   Group (ii): \textsc{dat.indef} > \textsc{acc.def}\\
+   \gll Ich fühle mich jetzt viel sicherer, schlafe nachts ruhig, weil ich mir keine Sorgen darüber machen muß, wie ich \up{[}einem Geldverleiher\up{]\sub{\textsc{dat}, indef}} \up{[}das Geld\up{]\sub{\textsc{acc}, def}} zurückzahlen soll.\\
+   I feel myself now much safer sleep at.night peacefully because I me no worries about make must how I {\ a} money.lender {\ the} money pay.back shall\\
+    \glt `I feel much safer now, sleep peacefully at night because I don't have to worry about paying back a money lender.'
+    \z 
+    
+\ea\label{ex:sample.acc.def.dat.indef}
+    Group (iii): \textsc{acc.def} > \textsc{dat.indef}\\
+    \gll Ein paar Tage später zeigte ich \up{[}den Film\up{]\sub{\textsc{acc}, def}} \up{[}einem Freund\up{]\sub{\textsc{dat}, indef}} und sah ihn noch einmal mit der gleichen Begeisterung.\\
+    a few days later showed I {\ the} film {\ a} friend and watched it once more with the same enthusiasm\\
+    \glt `A few days later, I showed the film to a friend and watched it again with the same enthusiasm.'
+    \z
+    
+\ea\label{ex:sample.acc.indef.dat.def}
+    Group (iv): \textsc{acc.indef} > \textsc{dat.def}\\
+    \gll Wegen der geänderten Zuständigkeiten im Grundgesetz müsse der Bund \up{[}eine Neukonzeption\up{]\sub{\textsc{acc}, indef}} \up{[}den Ländern\up{]\sub{\textsc{dat}, def}} überlassen. \\ %31414636
+   because.of the changed  responsibilities in.the constitution would.have.to the federal.government {\ a} redesign {\ the} states leave  \\
+    \glt `Because of the changed responsibilities in the constitution, the federal government would have to leave a redesign to the states.'
+    \z
+
+The vast majority follows the unmarked order of definite dative before indefinite accusative (group~(i)), cf.\ \figref{fig:obj_order}.\footnote{The plots have been created with the R~package ggplot2, \url{https://github.com/tidyverse/ggplot2}.} The example in \figref{fig:example_obj_pair} is also an instance of the unmarked order \textsc{dat.def} > \textsc{acc.indef}.
+
+\begin{figure}
+  \includegraphics[height=0.4\textheight]{figures/3_Barplot.Count.Dat.Acc.30.1.24.2.pdf}
+  \caption{Frequencies of case and article order in the final data set. The majority of object pairs follow the unmarked order of definite dative before indefinite accusative (group (i); upper part of the left bar).}
+  \label{fig:obj_order}
+\end{figure}
+
+\section{Methods}\label{sec:method}
+We propose information density and, more specifically, the uniform distribution of information in the sentence as an explanation of object order. In the information-theoretic framework, information can be derived from the predictability of a word in context \citep{shannon-1948}, with lower predictability causing higher processing effort \citep{Hale.2001, Levy.2008}. 
+
+We use language models to estimate the probability~$p(w)$ of individual tokens~$w$ from bigram lemma frequencies in the SdeWaC corpus. To keep the data size manageable, we include only bigrams with $\geq$50 occurrences and apply Jeffreys-Perks smoothing with $\lambda = 0.5$ \citep{jeffreys46}, yielding a total amount of approximately 1M bigrams with 100K distinct lemma types. Punctuation is ignored as we assume that it does not provide any additional information about processing efforts in the German middle field. 
+
+As we are interested in the order of constituents, we measure predictability not at the word level but at the level of whole constituents. We calculate the mean surprisal \emph{Surpr}$\sub{mean}$ of a constituent $c = w_1, \dots, w_n$ by adding up the individual surprisal values of all the words in the constituent and averaging them, see equation~(\ref{eq:3_surprisal}).
+\begin{equation}
+\textnormal{Surpr\sub{mean}}(c) = \frac{1}{n} \sum_{i=1}^n -\log_2(p(w_i)) \label{eq:3_surprisal}
+\end{equation}
+
+The information profile of a sentence, which indicates whether information is distributed uniformly and smoothly across the sentence, is composed of the surprisal values of all the constituents in the sentence, which are simply concatenated. \figref{fig:dorm_calculation} shows an example: The fragment marked as \textit{original} consists of the constituents [\textit{um}] (`in order'), [\textit{dem Film}] (`the film'), [\textit{eine Struktur}] (`a structure'), [\textit{zu verleihen}] (`to give') (see example~\xref{ex:phrases} for the complete sentence).\footnote{One could argue that the phrase \textit{eine Struktur verleihen} is a light verb construction because it can be replaced by \textit{strukturieren} (`(to) structure'). However, it is not part of our list of light verb constructions (see \sectref{sec:data}) and is therefore not excluded from the data.} The corresponding information profile is displayed in the second row (Surpr\sub{mean}(c)): For instance, the lemma-based mean bigram surprisal of the dative object (\textit{dem Film}) is $5.921$~bits, and the surprisal of the accusative object (\textit{eine Struktur}) is $9.879$~bits. The resulting profile of this fragment is the sequence [16.701, 5.921, 9.879, 8.348].
+
+\begin{figure}
+    \includegraphics[width=\textwidth]{figures/3_DORM.png}
+    \caption{Example calculation of rolling means and DORM values for a part of sentence~\xref{ex:phrases}}
+    \label{fig:dorm_calculation}
+\end{figure}
+
+We then compare this information profile with the profile of a competing variant, i.e., a generated alternative sentence that looks like the original sentence, except that the two objects are swapped. In \figref{fig:dorm_calculation}, the variant sentence with the two swapped objects is displayed below the original sentence. The upper part of \figref{fig:dorm_calculation} shows the original constituent order, the variant is displayed in the lower part. Note how the surprisal values change because of the swapped objects. As the original order has a lower DORM value (i.e., a smoother profile) than the generated variant, \DDIFF is negative for this fragment.
+
+We call this approach the \textit{corpus of variants} method because it allows us to inspect the differences between the observed word order and a plausible alternative order, while keeping other factors constant. The variant generation causes a change of bigram surprisals at the edges of the swapped objects, so we re-calculate the surprisal values on the basis of the language model that was also used for the original sentence and the information profile for the generated variant sentence, see \figref{fig:dorm_calculation}: The dative object now has a mean surprisal value of $6.511$~bits and the accusative object a surprisal of $8.393$~bits.
+
+For comparing the information profiles of the original sentence and the generated sentence, we use measures called DORM and DORM\textsubscript{diff}, as explained in the next sections.
+
+\subsection{DORM}
+
+DORM (Deviation of the Rolling Mean), which has been proposed by \citet{cuskley21}, is a measure that allows us to quantify the uniformity of a sentence's information profile. \citet[9]{cuskley21} describe DORM as an ``easily interpretable summary of how uniform or clumpy a particular utterance is''.
+DORM is calculated as follows: Given the sequence of surprisal scores of all constituents in a sentence, we first compute the rolling means $RM_i$ of each adjacent pair of surprisal scores $s_i, s_{i+1}$ as in equation~(\ref{eq:rolling}). 
+\begin{equation}
+\textnormal{for } i \textnormal{ in } (1\dots n-1): RM_i = \frac{s_i + s_{i+1}}{2}
+  \label{eq:rolling}
+\end{equation}
+
+For instance, the first mean RM$_1$ in \figref{fig:dorm_calculation} (original sentence) is the mean of 16.701 (=~[\emph{um}]'s surprisal) and 5.921 (=~[\emph{dem Film}]'s surprisal):
+\begin{equation}
+\frac{(16.701+5.921)}{2} = 11.311
+\end{equation}
+
+We next compute DORM, which corresponds to the sample variance of the rolling means and serves us as a measure of the overall smoothness, as shown in equation~(\ref{eq:variance}).
+\begin{equation}
+  \textnormal{DORM} = s^2 = \frac{\sum_{i=1}^n (RM_i - \bar{x})^2}{n - 1} \label{eq:variance}
+\end{equation}
+
+A lower DORM value indicates less variance, i.e., a smoother information signal, while a higher DORM value points at a less uniform information profile. This is usually achieved by placing linguistic units, in our case constituents, with similar surprisal values next to each other since extreme differences would no longer result in a low DORM value \citep{cuskley21}. Extreme surprisal values should, thus, be spread evenly across a sentence. 
+
+In \figref{fig:dorm_calculation}, the original sentence has a DORM value of 2.989, and the variant sentence has a DORM value of 8.782. This means that the original object order results in a smoother profile.
+
+As we show in the next section, we use the DORM values for pairwise comparing information profiles of original sentences and their variants  and introduce a new measure, DORM\textsubscript{diff}, for measuring the difference between the original and the variant sentence.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{DORM\textsubscript{diff}}\label{sec:dormdiff1}
+
+DORM values are directly comparable only for sequences that contain the same (number of) elements. Hence, the absolute DORM values can only be compared between the original constituent order (\Dorig) and the swapped variant (\Dvariant) of the same sentence. 
+
+In order to compare values from different sentences, we use the difference between DORM value pairs, as defined in equation~(\ref{eq:dormdiff}). That is, we collect the individual differences between all original and variant pairs of the sample and use these scores in our investigations.
+\begin{equation}
+\DDIFF = \Dorig - \Dvariant \label{eq:dormdiff}    
+\end{equation}
+
+\DDIFF allows us to investigate the difference between the observed information profile and the profile of the variant constituent order. 
+If there was no connection between object order and information profile, \DDIFF should be zero. In contrast, if speakers aimed at a smooth information profile in accordance with the UID hypothesis \citep{Levy.Jaeger}, DORM should be lower for original sentences than for the variants. If the information profile of the variant sentences was more uniform, there would have to be other explanations for the observed object order.
+
+Our hypothesis is therefore that, in general, \DDIFF should be negative (as in the example in \figref{fig:dorm_calculation}) -- because this would mean that the original sentence has a smoother profile than its variant and, hence, that constituent order can be traced back to information-theoretic principles.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{DORM\textsubscript{case} and DORM\textsubscript{giv}: Case and givenness order}\label{sec:dormdiff2}
+
+We use logistic regressions to investigate the effects of information profile, case, and givenness on object order. If any of these factors significantly influenced the order of dative and accusative or given and new object, they should help to predict which order will occur in the sentence. 
+
+However, we cannot simply use \DDIFF as defined in equation~(\ref{eq:dormdiff}) to predict case and givenness order because the order is encoded in the score. If the original sentence order is \ReichDat{} > \ReichAcc{}, \DDIFF is calculated as $\textnormal{DORM}\sub{\ReichDat{} > \ReichAcc{}} - \textnormal{DORM}\sub{\ReichAcc{} > \ReichDat{}}$. And if the original sentence order is \ReichAcc{} > \ReichDat{}, \DDIFF is calculated as $\textnormal{DORM}\sub{\ReichAcc{} > \ReichDat{}} - \textnormal{DORM}\sub{\ReichDat{} > \ReichAcc{}}$. The same applies analogously to def~>~indef.
+
+Hence, \DDIFF as a predicting factor must not be calculated with reference to \textit{orig} and \textit{variant}. Instead, it must abstract away from the actually occurring order and always use the same order of minuend and subtrahend, as shown in the equations (\ref{eq:dormdiff_dat-acc}) and (\ref{eq:dormdiff_def-indef}).\footnote{Note that $\textnormal{DORM}\sub{case}= -(\textnormal{DORM}\sub{\ReichAcc{} > \ReichDat{}} - \textnormal{DORM}\sub{\ReichDat{} > \ReichAcc{}})$, and, similarly, $\textnormal{DORM}\sub{giv} = -(\textnormal{DORM}\sub{\textsc{indef > def}} - \textnormal{DORM}\sub{\textsc{def > indef}})$. Hence, as long as it is used consistently, the order of minuend and subtrahend is irrelevant, and we arbitrarily decided for the orders \ReichDat{} > \ReichAcc{} and \textsc{def > indef} as the minuends.}
+\begin{equation}
+    \textnormal{DORM}\sub{case} = \textnormal{DORM}\sub{\ReichDat{} > \ReichAcc{}} - \textnormal{DORM}\sub{\ReichAcc{} > \ReichDat{}}\label{eq:dormdiff_dat-acc}
+\end{equation}
+\begin{equation}
+\textnormal{DORM}\sub{giv} = \textnormal{DORM}\sub{\textsc{def > indef}} - \textnormal{DORM}\sub{\textsc{indef > def}}\label{eq:dormdiff_def-indef}
+\end{equation}
+
+Based on equations (\ref{eq:dormdiff_dat-acc}) and (\ref{eq:dormdiff_def-indef}), we can predict if and how the order of the two objects will be influenced by a change in the uniformity of the information profile resulting from a change in case order (\textnormal{DORM}\sub{case}) or givenness order (\textnormal{DORM}\sub{giv}).
+
+ \textnormal{DORM}\sub{case} is smaller than zero if the order of \ReichDat{} > \ReichAcc{} has a more uniform information profile than \ReichAcc{} > \ReichDat{}, and greater than zero otherwise. Similarly, a negative \textnormal{DORM}\sub{giv} indicates a more uniform information profile for \textsc{def > indef}, while a positive value shows a more uniform distribution for \textsc{indef > def}.
+
+As \ReichDat{} > \ReichAcc{} and \textsc{def > indef} are considered the unmarked constituent order (cf.\ \sectref{sec:order}), they can be expected to be easier to process for language users since they are more familiar with this conventionalized order.
+However, if the information profile for \ReichAcc{} > \ReichDat{} or \textsc{indef} > \textsc{def} was smoother than for the default order, this could potentially lead to an inverse, marked order of objects to reduce processing difficulty. If this is true, a higher  \textnormal{DORM}\sub{case} (i.e., a less optimal information profile for \ReichDat{} > \ReichAcc{}) should increase the likelihood of \ReichAcc{} > \ReichDat{}. And, along the same lines, a higher \textnormal{DORM}\sub{giv}  (i.e., a smoother information profile for \textsc{indef > def}) should increase the probability of \textsc{indef > def}.
+
+\section{Results}\label{sec:results}
+
+\subsection{DORM\textsubscript{diff}: Object order and the information profile}\label{subsec:results_Dormdiff}
+
+To explore the relevance of information-theoretic principles for object order in the German middle field, we inspect the information profiles of the original sentences and their generated variants.
+For the data described in \sectref{sec:data} and their corresponding variants, \DDIFF lies between $-33.16$ and $23.90$, with slightly more than half of the values ($52.7\%$) being smaller than zero. On average, the DORM value of the original constituent order is significantly lower than the DORM value of the generated variants: $\DDIFF = -0.17$ ($t=-6.88$, $p<0.001$).\footnote{Statistical calculations have been performed with R \citep{R}. We used two-tailed Welsh $t$-tests for these calculations.} The effect size (Cohen's $d = 0.06$) is smaller than 0.2, which is traditionally assumed to indicate a small effect \citep{Winter.2020}, but the result suggests that natural language indeed follows information-theoretic principles, as writers tend to produce sentences with information profiles smoother than the ones that would result from an also plausible, but inverse object order.
+
+\begin{table}
+    \begin{tabular}{l *2{r@{~}r@{\,}l} r@{\,}l}
+    \lsptoprule
+      & \multicolumn{3}{c}{\textsc{def>indef}} & \multicolumn{3}{c}{\textsc{indef>def}} & \multicolumn{2}{c}{all} \\
+     \midrule
+    \ReichDat{}>\ReichAcc{} & (i)   & $-0.12$ & *** & (ii) & $-0.68$ & *** & $-0.18$ & *** \\
+    \ReichAcc{}>\ReichDat{} & (iii) & 0.10    &     & (iv) & $-0.23$ &     & $-0.01$ & \\
+    all                     &       & $-0.12$ & *** &      & $-0.63$ & *** & $-0.17$ & *** \\
+    \lspbottomrule
+    \end{tabular}
+    \caption{Mean \DDIFF values for different object orders; (i)--(iv) refer to the four groups of possible combinations (***\hspace{0.5em}$p < 0.001$; for the complete statistics, see \tabref{tab:t.test}).}
+    \label{tab:dorm_diffs}
+\end{table}
+
+
+\begin{figure}
+  \includegraphics[height=0.4\textheight]{figures/3_Boxplot.30.1.24.pdf}
+    \caption{\DDIFF by object order and givenness order (not displaying outliers). The boxes show the interquartile range from first to third quartile, with a black line for the median \DDIFF. The notches indicate the confidence intervals for the median. The four boxes correspond, from left to right, to the groups (i)--(iv), respectively.}
+    \label{fig:DormDiffCI}
+\end{figure}
+
+As \tabref{tab:dorm_diffs} shows, this observation holds independently of the observed order in the original sentence of dative and accusative or definite and indefinite object.\footnote{The complete statistics are presented in \tabref{tab:t.test}.} Looking first at the right-most column (\textit{all}), we see that for the unmarked order \ReichDat{} > \ReichAcc{} (first row), which appears in the majority of sentences of the original data set (\sectref{sec:data}), the mean \DDIFF is $-0.18$. For \ReichAcc{} > \ReichDat{}, the mean \DDIFF is also negative ($-0.01$) even though it is not significantly different from zero. Looking at the bottom row (\textit{all}), we see that for the marked order \textsc{indef > def}, \Dorig is on average $-0.63$ lower than \Dvariant. For the unmarked order \textsc{def > indef}, the difference ($-0.12$) is negative, too, and also significantly different from zero.
+
+Regarding the four possible combinations of case and givenness order (i.e., groups (i)--(v) in the inner part of \tabref{tab:dorm_diffs}),
+we see that three out of four groups show negative \DDIFF values on average, the order \ReichAcc{}\textsubscript{def} > \ReichDat{}\textsubscript{indef} being an exception with a \DDIFF of $0.10$. 
+Only the two groups with default case order \ReichDat{} > \ReichAcc{} result in highly significant differences, both for the unmarked givenness order, \textsc{def > indef}, with a mean of $-0.12$ as well as for the marked givenness order with a mean of $-0.68$. In the two cases where the original order is \ReichAcc{} > \ReichDat{}, no significant differences are found between the \DDIFF values. This can possibly be attributed to the small amount of data that is available in these groups (cf.\ \tabref{tab:data_stats}).
+
+\figref{fig:DormDiffCI} shows additional details about the distribution of the four combinations of case and givenness. If \textit{t} is negative, DORM\textsubscript{orig} is lower on average than DORM\textsubscript{variant}, which indicates a more uniform information profile for the original sentence. Traditionally, values of $0.2 \leq d < 0.5$ are interpreted as a small effect. In three out of four conditions, the majority of values lie below zero. However, this difference is significant only in the left group (\ReichDat{} > \ReichAcc{}) and, in particular, for the marked order \textsc{indef > def} (green box).\largerpage
+
+\begin{table}
+    \begin{tabular}{l *2{S[table-format=-1.2]} S[table-format=5.0] S[table-format=1.2] S[table-format=<1.3] @{\,}l}
+    \lsptoprule
+    & {\DDIFF} & {$t$} & {df} & {Cohen's $d$} & {$p$} &  \\
+    \midrule
+     all& -0.17 & -6.88 & 12755 & 0.06 & <0.001 & *** \\
+     \ReichDat{} > \ReichAcc{}& -0.18 & -6.98 & 12252 & 0.06 & <0.001 & *** \\
+     \ReichAcc{} > \ReichDat{}& -0.01 & -0.11 & 502 & 0.00 & 0.91 & \\
+     \textsc{def > indef}& -0.12 & -4.37 & 11329 & 0.04 & <0.001 & *** \\
+     \textsc{indef > def} & -0.63 & -8.26 & 1425 & 0.22 & <0.001  & *** \\
+     (i) \textsc{dat.def} > \textsc{acc.indef}& -0.12 & -4.55 & 10998 & 0.04 & <0.001 & *** \\
+     (ii) \textsc{dat.indef} > \textsc{acc.def}& -0.68& -8.20 & 1253 & 0.23 & <0.001  & *** \\
+     (iii) \textsc{acc.def} > \textsc{dat.indef}& 0.10 & 0.63 & 330 & 0.03 & 0.53 & \\
+     (iv) \textsc{acc.indef} > \textsc{dat.def}& -0.23 & -1.36 & 171 & 0.10  & 0.17 & \\
+    \lspbottomrule
+    \end{tabular}
+    \caption{Results of two-sided one sample $t$-tests for \DDIFF}
+    \label{tab:t.test}
+\end{table}
+
+We can interpret the observed trends as follows: In many cases, the information profil of the original sentence and its variant are rather similar, which is shown by many values close to zero and the small effect sizes (see \tabref{tab:t.test}). However, if sentences show the default case order (\ReichDat{} > \ReichAcc{}), this is associated with a more uniform information profile, which may explain the large preponderance of this order in modern German (cf.\ \sectref{sec:data}).
+At the same time, original sentences generally show a more uniform distribution of information than possible variant sentences --- even if the realized order violates the unmarked order of case or givenness though the effect is only significant in the \ReichDat{} > \ReichAcc{} order. So the preference of language users for smooth information profiles, as predicted by the UID hypothesis, may license deviations from the default case or givenness order.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\textnormal{DORM}\sub{case} and \textnormal{DORM}\sub{giv}: Case and givenness order}\label{subsec:results_order}
+
+To inspect possible effects of the information profile on the order of dative and accusative object and definite and indefinite object, we use logistic regression analyses in R \citep{R.2023}. We start with case order and run a logistic regression with \textnormal{DORM}\sub{case}, givenness status, and the number of constituents in the sentence as well as all two-way-interactions as predictors.\footnote{\texttt{glm(formula = Dat > Acc \textasciitilde (\textnormal{DORM}\textsubscript{case}\xspace + Dat\sub{definiteness} + n\_Constituents)$^2$, family = binomial(), data = constituents\_sample)}; for the complete final regression model, see \tabref{Regession.AV:DA.OA.neu}. Furthermore, we include the two-way interactions of the three factors. Since \textnormal{DORM}\sub{case} and \textnormal{DORM}\sub{giv} are strongly correlated ($r=0.73$), we choose to only include one of them as a predictor in each regression analysis.}
+
+Case order is sum-coded: \ReichDat{} > \ReichAcc{} received the coding $1$ and \ReichAcc{} > \ReichDat{} was sum-coded as $-1$. Thus, positive estimates in the main effects indicate the order \ReichDat{} > \ReichAcc{}. As givenness status, we use the definiteness of the dative, which was also sum-coded to increase the precision of the model \citep{Gries.2021}.\footnote{The objects always exhibit opposing definiteness (cf.\ \sectref{sec:data}). If the dative object is definite, the accusative object is indefinite, and vice versa. We arbitrarily selected the definiteness of the dative object as predictor. With the accusative as predictor, results would simply be reversed.}
+A definite dative was coded as $-1$, an indefinite dative as $+1$.
+While we control for object length in that both objects consists of the same number of words, the number of constituents varies between sentences.
+It seems plausible that a long sentence with a high number of constituents is harder to process than a sentence with fewer constituents. When the amount of information in a sentence already threatens to strain the working memory, the default order \ReichDat{} > \ReichAcc{} might be preferred to ease overall sentence processing. There might also be an interaction between the information profile of the sentence and its length.  However, the order \ReichAcc{} > \ReichDat{} only occurs once in sentences that have more than 40 constituents (cf. \figref{fig:object_order_sentence_length}). We, consequently, run the logistic regression on a sample of the whole data excluding sentences with more than 30 words.
+
+\begin{figure}
+  \includegraphics[width=.9\textwidth]{figures/3_Distrib.Sent.Leng.30.01.24.pdf}
+  \caption{Distribution of object order in the sentences of various length, shown by the number of constituents}
+  \label{fig:object_order_sentence_length}
+\end{figure}
+
+Then, we perform \textit{backward model selection} \citep{Gries.2021},
+excluding one interaction or one main effect at a time, depending on the $p$-value of the predictor.  
+We start with the interactions and first exclude those with the highest non-significant $p$-value. 
+To find out whether the exclusion led to an improvement of the model, a \textit{likelihood ratio} test with the \texttt{anova} function in R \citep{R} is performed. 
+It allows model comparison by capturing how well the model explains the data \citep{Winter.2020}. This process is repeated until only significant effects or main effects involved in a significant interaction remain in the model. 
+As soon as the \textit{likelihood ratio} test shows a significant difference between the models, the process of backward model selection is completed. The final model then corresponds to the model before the exclusion of the last predictor and is used to interpret the results.
+
+\subsubsection{Case order}
+
+\begin{table}
+    \begin{tabular}{l S[table-format=-1.2] S[table-format=1.3] S[table-format=-2.3] S[table-format=<1.3{***}] @{\,}  l}
+    \lsptoprule
+       Variable   & {Estimate} & {SE} & {$z$} & {$p$} &\\
+       \midrule
+    Intercept &    2.90  & 0.12 & 23.34 & <0.001&***\\
+    \textnormal{DORM}\sub{case}\xspace &  -0.06 &   0.02 &  -3.58 & <0.001 & ***\\
+ \ReichDat{}\textsubscript{def}          &     -1.83 &  0.12 & -14.695 & <0.001 & *** \\
+      Constituents          &  -0.014  & 0.009  &-1.60 &0.11 \\
+       \ReichDat{}\textsubscript{def}:Constituents       &0.03 &  0.01 &  3.64 & 0.001 &***\\
+   \lspbottomrule
+   \end{tabular}
+   \caption{Logistic regression with \textnormal{DORM}\textsubscript{case}\xspace, definiteness of the dative object and the number of constituents in the sentence to predict case order dative > accusative}
+   \label{Regession.AV:DA.OA.neu}
+\end{table}
+
+
+\tabref{Regession.AV:DA.OA.neu} shows the results of the regression analysis for case order.
+According to the model, \textnormal{DORM}\sub{case}\xspace ($z=-3.58$, $p<0.001$) has a highly significant influence on case order.\footnote{The model comparison with \texttt{anova} showed a $p$-value of  $0.11$. However, we cannot reduce the model any further because the number of constituents interacts with the definiteness of the dative.}
+A higher \textnormal{DORM}\sub{case}\xspace reduces the likelihood of observing \ReichDat{} > \ReichAcc{}. An increase of \textnormal{DORM}\sub{case}\xspace means that the information profile of \ReichAcc{} > \ReichDat{} is smoother than that of \ReichDat{} > \ReichAcc{}. Hence, a more uniform, smoother distribution for the order \ReichAcc{} > \ReichDat{} increases the likelihood of observing this marked order in the sentence. And vice versa, a more uniform distribution of \ReichDat{} > \ReichAcc{} increases the likelihood of this default order. 
+
+The second predictor, the definiteness of the dative, also significantly influences case order ($z=-14.695$, $p<0.001$).
+In accordance with information structure, an indefinite dative reduces the likelihood of observing the order \ReichDat{} > \ReichAcc{}. If the dative object is indefinite, it is more likely to follow the accusative (when controlling for other factors, including information density). This result can also hint at an explanation for the positive \textnormal{DORM}\textsubscript{diff}\xspace value in \tabref{tab:t.test} as the influence of the givenness seems to be stronger than the influence of the \textnormal{DORM}\textsubscript{case}\xspace.
+
+The raw number of constituents in the sentence does not significantly influence the order of objects. In the interaction with an indefinite dative ($z=3.64$, $p<0.001$), we can see that a definite dative is still a significant predictor for the \ReichDat{} > \ReichAcc{} constituent order. However, in long sentences, the likelihood of an indefinite dative preceding a definite accusative increases slightly.
+
+We conclude from these results that the information profile, indeed, influences object order as we hypothesized. Language users are more likely to produce the order of objects that results in the more uniform distribution of information. This holds independently of general preferences for the unmarked order \ReichDat{} > \ReichAcc{}: If placing the accusative before the dative object smoothes the information profile, language users are more likely to produce the marked order \ReichAcc{} > \ReichDat{}.
+
+What we also see from the regression analysis is that an indefinite dative tends to trigger the order \ReichAcc{} > \ReichDat{}, i.e., it favors maintaining the default order \textsc{def~>~indef} (our proxy for given before new). 
+This finding provides evidence for the influence of information status on object order, as described in \sectref{sec:order}. The effect is larger than for information density, though, which may explain violations of givenness order if that is associated with a more uniform information profile. Also, the interaction of definiteness and the number of constituents shows that, potentially, the importance of givenness decreases with increasing sentence length.
+
+\subsubsection{Givenness order}
+
+In addition to the investigation of case order, we run a second logistic regression analysis to inspect the effects of information distribution on givenness order. Similar to above, we include \textnormal{DORM}\sub{giv}\xspace, givenness status, and the number of constituents as predictors\footnote{\texttt{glm(formula = def > indef \textasciitilde (\textnormal{DORM}\textsubscript{giv}\xspace + Dat\sub{definiteness}+n\_Constituents)$^2$, family = binomial(), data = constituents\_sample)}; for the complete final regression model, see \tabref{Regession.AV:def>indef}. The \textsc{def > indef} order is coded as $1$, the \textsc{indef > def} order as $-1$. A definite dative was coded as $-1$, an indefinite dative as $+1$. Since \textnormal{DORM}\sub{case} and \textnormal{DORM}\sub{giv} are strongly correlated (r=$0.73$), we choose to only include one of them as a predictor in each regression analysis.} and performed a backward model selection, as described above.
+As shown in \tabref{Regession.AV:def>indef},\footnote{The model comparison with \texttt{anova} had a $p$-value of  $0.11$.} \textnormal{DORM}\sub{giv}\xspace is a  significant predictor for givenness order ($z=-3.58$, $p<0.001$). An increase in \textnormal{DORM}\sub{giv}\xspace reduces the likelihood of the \textsc{def > indef} order. A high \textnormal{DORM}\sub{giv}\xspace indicates that the information profile of the \textsc{def > indef} order is less smooth than the information profile of the \textsc{indef > def} order. Hence, similar to above, a more uniform, smoother information profile for \textsc{indef > def} increases the likelihood of observing this marked order. And vice versa, a more uniform distribution of \textsc{def > indef} increases the likelihood of this default order.
+
+\begin{table}
+    \begin{tabular}{l S[table-format=-1.2] S[table-format=1.2] S[table-format=-2.2] S[table-format=<1.3] @{\,} l}
+    \lsptoprule
+       Variable   & {Estimate} & {SE} & {$z$} & {$p$} & \\\midrule
+    Intercept &  1.81 &   0.12 & 14.68 & <0.001 & ***\\
+    \textnormal{DORM}\sub{giv}\xspace &  -0.06 &  0.02 &  -3.58 & <0.001 & ***\\
+    Dat\textsubscript{def} & -2.72 &  0.05 & -54.45 & <0.001 & ***\\
+    Constituents& -0.03 &   0.01&  -3.40 & <0.001 &*** \\
+   \lspbottomrule
+   \end{tabular}
+   \caption{Logistic regression with \textnormal{DORM}\textsubscript{giv}\xspace and number of constituents in the sentence to predict givenness order definite > indefinite}
+   \label{Regession.AV:def>indef}
+\end{table}
+
+These results may provide insights into the relationship between information theory and information structure. In general, we expect both concepts to make similar predictions regarding the order of objects. Placing a given object before a new object, as preferred by information structure, could help to ease processing of the new object by lowering its surprisal and smoothing the information signal. Indeed, we find that language users prefer placing definite, i.e., given objects before indefinite, i.e., new objects if that is associated with a more uniform distribution of information. If, however, the information profile of \textsc{indef > def} is smoother, this can license a deviation from the default information structure.
+
+Surprisingly, the number of constituents in a sentence ($z=-3.40$, $p<0.001$) also influences the givenness order: An increase in sentence length predicts the marked order \textsc{indef > def}. 
+Above, we argued that longer sentences should favor an unmarked object order to counterbalance the effort required for processing the high amount of information in the sentence. Instead, in long sentences, the less frequent givenness order seems to be preferred. 
+In the first regression analysis, we already found this effect for the interaction of an indefinite dative and the number of constituents (\tabref{Regession.AV:DA.OA.neu}). Here, the effect is predicted independently of case order, which was excluded during \textit{backward model selection}.
+
+Perhaps there are other influences on givenness order in longer sentences. As explained in \sectref{sec:order}, definiteness is only a proxy for givenness that we selected because it does not require complex additional annotations. However, our operationalization is independent of the context in which a constituent occurs, whereas givenness, as defined by \citet{Prince}, \citet{Gundel}, and \citet{Riester.Baumann}, can only be determined from the actual context. The longer the sentence, the more context is given in the sentence itself, probably leading to discrepancies between definiteness and givenness. In particular, longer sentences may include more referents and, therefore, require finer increments of givenness than a binary distinction of \textit{given/definite} vs.\ \textit{new/indefinite}. In future work, we will explore such effects with a more advanced annotation of givenness.
+
+\section{Discussion}\label{sec:discussion}
+The results from the previous section can be interpreted as a confirmation of our assumption that infor\-mation-theoretic features influence the order of objects in the German middle field (cf.\ \sectref{subsec:results_Dormdiff}): Small but significant effects of \DDIFF show up within the groups (i) and (ii) with default case order \ReichDat{} > \ReichAcc{}. No significant effects occur within the groups (iii) and (iv), possibly due to the small size of these groups. Independent of the group size, we could show in \sectref{subsec:results_order} that DORM, i.e., the smoothness of the information profile, can indeed predict the object order in the middle field. Speakers choose the order that results in the most uniform information profile. This holds both for the case order and for the givenness order (cf. Tables~\ref{Regession.AV:DA.OA.neu} and \ref{Regession.AV:def>indef}).
+
+As we saw in \figref{fig:obj_order}, there is a clear preponderance of the unmarked order \ReichDat{} > \ReichAcc{}. Even though recipients are not consciously aware of the default order, it seems reasonable that they will unconsciously expect the most frequent order of dative preceding accusative. So, if the sentence exhibits the default case order, less cognitive capacity would be consumed for processing the grammar (i.e., case order), according to \citet{Futrell}. Instead, this capacity would then be free, for example, to process deviations from default givenness order.
+Similarly, facing the default givenness order (given before new, as reflected by the determiner) would facilitate processing of the unusual case order \ReichAcc{} > \ReichDat{}. This view is supported by the fact that there is a tendency towards the order \textsc{def} > \textsc{indef} in sentences with \ReichAcc{} > \ReichDat{} (cf.\ \figref{fig:obj_order}).
+
+In future work, we want to extend and refine the approach from this pilot study. 
+In particular, we plan to develop improved language models. 
+So far, we used lemma-based bigram models to estimate the probability of observing specific words (and constituents) in different possible orders. Such models reflect lexical or content-based surprisal and can reveal whether a change in object order results in processing advantages on the lexical level. Compared to language models based on word forms, the use of lemmas has the advantage of reducing data sparsity by mapping different word forms to the same lemma. 
+However, this also comes at the price of lemmas being less informative than word forms. In the context of our investigation, this especially concerns case information, which is overtly realized by German determiners but has not been included in our language models. A model based on word forms instead of lemmas could capture the fact that during reading (or listening), the case of objects can already be recognized on the basis of the determiner, helping to reduce entropy early on. Especially in sentences that violate the default order, this could be particularly relevant for processing.
+
+In this pilot study, we have also excluded indefinite plural noun phrases, as they do not have an explicit article in German -- and, as a consequence, are shorter than equivalent definite noun phrases, which makes it difficult to compare \DDIFF values across different types of noun phrases. Integrating indefinite plurals into the analysis may give additional insights into the relevance of information-theoretic concepts for object order. For example, we have seen in exemplary observations that the proportion of the default order given>new seems to be even higher for object pairs with an indefinite plural object. Following our aforementioned considerations, this might be due to the missing determiner: because case is marked at the determiner,  the recipient cannot easily infer the case of an object realized as an indefinite plural noun phrase without a determiner. In these cases, the meaning of the word and its grammatical case must be processed simultaneously, which might increase the strain on the working memory. Maintaining the default order could be especially beneficial for processing such cases.
+
+Besides the mentioned enhancements, we plan to experiment with language models beyond $n$-grams. Depending on the sentence, the main verb can be located in the left or right sentence bracket, i.e., before or after the objects in the middle field. We assume that it makes a difference whether the main verb was already uttered or not, and that this should affect expectations and, thus, object surprisal. Overall, the majority of verbs in Geman are simple transitive verbs, requiring an accusative object only. In contrast, ditransitive verbs or verbs requiring a dative object are less frequent. If the main verb is located in the left sentence bracket, it is evident at an early stage whether a dative object is to be expected in the sentence. Hence, a dative object located in the middle field should be processed rather easily. In contrast, auxiliaries in the left bracket do not set up any expectations for a dative object. In this case, it might help the recipient to narrow down possible expectations of the verb in the right sentence bracket if the dative object (which is less frequent than an accusative object) occurs first. Due to the limited context, simple bigram models cannot capture such effects, and we plan to experiment with skip-gram models or models based on content words only. Implementing dependency-based models that take into account the relations between object head nouns and full verbs could also shed light on the direct influence of verb valency.
+
+A topic related to the issue of language models is the calculation of surprisal and DORM values. We proposed to investigate the effects of information density on object order by comparing information profiles of original sentences and variant sentences in which we swapped the two objects. We call this the \textit{corpus of variants} method because it allows us to directly inspect the differences between plausible alternative word orders, while keeping other factors constant. However, swapping two objects creates only punctual changes in the information profile of the entire sentence, leading to rather small \DDIFF values. Calculating DORM values only for the local context of the modified parts of the sentence (e.g., as in \figref{fig:dorm_calculation}) may return different results and, perhaps, reflect more closely the unfolding of the information flow and resulting effects on local decisions between different structures.
+
+\hspace*{-2mm}We calculate the \DDIFF values by subtracting the variant DORM values from the original DORM values. We argued in \sectref{sec:dormdiff1} that a negative \DDIFF value indicates a smoother information profile for the original variant. Since the \DDIFF values are influenced by the length of the sentence, as stated above, the most relevant part of the resulting figures is the algebraic sign, i.e., whether the \DDIFF value is negative or positive. Thus, it should be possible to interpret and use the \DDIFF values as a categorical variable instead of a numerical variable (though we would sacrifice the visibility of gradual changes in doing so).
+
+One area where this study could be further enhanced is by exploring alternative measures for givenness, instead of relying on definiteness as a proxy. We chose this operationalization because it does not require additional complex annotations. However, the binary distinction of \textit{given/definite} vs.\ \textit{new/indefi\-nite} may not be accurate enough, especially in longer sentences or longer contexts in general.  We plan to work on creating more nuanced annotations of givenness and inspect how this influences the order of objects in the middle field. Furthermore, we intend to also include objects with the same givenness status in the investigation to confirm that the information profile has an influence on the object order without being also influenced by the givenness.
+
+Finally, it is yet an open question how the current order preferences have been established. In future work, we want to extend the experiments to historical German. In historical language stages of German, the word order was generally more flexible than in modern German. Crucially, this also holds for dative and accusative objects, which showed much more variation with respect to their relative order than nowadays. However, similar factors as in modern German already played a role, in particular givenness \citep{rauth20}. Hence, in the long term, we are interested in investigating how information density relates to object order variation in historical German. Furthermore, a diachronic analysis could provide insight into the historical development of object order and reveal which role information density might have played diachronically, ultimately resulting in the clearly-preferred order of objects (dative before accusative) as we observe them for modern German. 
+
+Using the proposed methods, we will investigate how the object order in historical data can be explained. In a second step, we will trace the development to modern German and inspect relevant factors that contributed to the formation of modern standard object order. A prerequisite is that we can control for other factors besides length, in particular animacy, which plays an important role in language and cognitive processing.
+
+\section{Conclusion}\label{sec:conclusion}
+
+In this paper, we have motivated the order of dative and accusative objects in the German middle field with information-theoretic concepts, while controlling for the factor length.
+
+Overall, the corpus data shows an exceedingly strong bias for the unmarked orders (\ReichDat{} > \ReichAcc{} in 96\% and \textsc{def > indef} in 88\% of the cases). 
+As we hypothesized, the corpus sentences are in general characterized by a more uniform information profile than the generated swapped variants. This is true for corpus sentences with the default order \ReichDat{} > \ReichAcc{}. 
+This observation is confirmed by logistic regression models in which lower \textnormal{DORM}\textsubscript{case}\xspace and \textnormal{DORM}\textsubscript{giv}\xspace values increase the likelihood of the marked orders (accusative before dative, new before given).
+We thus argue that deviations from the default orders can be explained by more uniform information profiles, which improve overall sentence processing.
+
+In future work, we will extend the proposed approach to historical data. 
+We plan to investigate how the modern order preferences have been established and which role information-structural and information-theoretical factors may have played in this process.
+
+\section*{Acknowledgements}
+
+The work reported in this paper has been funded by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) -- project ID 232722074 -- SFB 1102 ``Information Density and Linguistic Encoding''.
+
+Our thanks goes to the reviewers and editors of this volume for many helpful comments, furthermore to Magdalena Meiser for helping with the light verb constructions. All remaining errors are of course ours.
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}

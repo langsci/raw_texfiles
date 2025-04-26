@@ -1,0 +1,509 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.13383791}
+
+\title{The role of information in modeling German intensifiers} 
+\author{J. Nathanael Philipp\orcid{0000-0003-0577-7831}\affiliation{Sächsische Akademie der Wissenschaften zu Leipzig; University of Leipzig} and Michael Richter\orcid{0000-0001-7460-4139}\affiliation{University of Leipzig} and Tatjana Scheffler\orcid{0000-0001-7498-6202}\affiliation{Ruhr University Bochum} and Roeland van Hout\orcid{0000-0002-8870-1631}\affiliation{Radboud University}}
+
+
+\abstract{In this study, context-free and context-dependent information measures are applied to a new corpus of tweets and blog posts. The aim is to account for the  expressive meaning and characterize the variability of available intensifying items. It comes to light that context-free and context-dependent information measures are highly correlated and account for the distribution of intensifiers in the data, giving credence to the notion that intensifiers form a common word class, even across syntactic and semantic differences.
+
+ Both information measures show that stacked intensifiers tend to be ordered from least to most expressive within a phrase, i.e., the information tends to increase. We explain this fact using the Uniform Information Density Hypothesis: The first, less expressive intensifier is used to introduce the phrase, ease the reader's processing load, and smooth the information flow. 
+}
+
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   %\togglepaper[23]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+%\pagenumbering{arabic}
+
+\section{Introduction} 
+Intensifiers such as as \textit{very} and \textit{so} add little to the referential content of a sentence. Instead, these expressions serve to increase the expressive value of an utterance by indicating that some property applies to a higher degree (\ref{ex:int}), or even merely by signaling a heightened emotional state (\ref{ex:intverb}):
+
+\ea\label{ex:int}
+\gll Der Sommer war so schön!\footnotemark\\
+The summer was so pretty\\
+\footnotetext{All German examples in this paper are attested in our corpus, except where marked otherwise.}
+\glt `The summer was so wonderful!'
+\ex\label{ex:intverb}
+\gll Ich freu mich so! :-)\\
+I be-happy me so :-)\\
+\glt `I am so happy! :-)'
+\z
+
+Intensifying expressions are subject to immense variation in a language and can often be added to an utterance in informal discourse without adding much to its core denotation. Their use and choice are therefore governed by expressivity as well as information structure and general communicative needs. We argue that inserting an intensifier in an utterance can ease processing by evening out the information density in a sentence to avoid large heights or troughs. 
+
+
+%model variation of intensification 
+In previous empirical studies \citep{richter2020ranking,scherihou2022}, expressivity and stacking of intensifiers in Dutch and German  Twitter data are modeled and operationalized by information theory \citep{shannon1948mathematical} and information measures derived from it. \citet{richter2020ranking} and \citet{scherihou2022} distinguish a paradigmatic  information value that represents expressivity (and represents the strength of an intensifier) and a syntagmatic information value representing transitional information (i.e., its ability to combine with various targets). The authors observe that in stacks of intensifiers, expressivity increases from left to right, leading them to conjecture that blander, less expressive intensifiers precede the more expressive ones and thus smooth information flow in the sentence.
+In addition, they argue that intensifiers may lose their expressive value over time, while new and expressive intensifiers carrying high surprisal come into vogue, and that the expressivity of intensifiers can be boosted by capitalization, lengthening (\textit{soooooo}), and repetitions (\textit{very, very nice}). In addition, it has been shown that the choice of a longer (and thus typically more unusual) intensifier such as \textit{atemberaubend} (`breathtakingly') over a short intensifier like \textit{sehr} (`very') can further increase the expressivity of an utterance \citep{bennett2018extremely}.
+
+In this paper, we follow the previous line of research by \citet{richter2020ranking} and \citet{scherihou2022} and represent the expressivity of intensifiers through  the amount of information encoded in an expression  \citep{shannon1948mathematical}. That is, our model operationalizes the measurement of expressivity. We also draw on the work of \citet{bennett2018extremely} mentioned above, who related costs, i.e. information, to the strength and expressivity of intensifiers.
+
+
+The idea of  determining expressivity and strength of intensification is already found in the work of \citet{zadeh1972fuzzy} couched in a fuzzy set theoretic model, and in work by \citet{potts2007expressive}, who proposes a separate expressive dimension of expressions. None of these works, however, include an empirically based determination of the  strength or expressivity of particular expressions. Our proposed model does not give a definition of expressivity itself, but rather provides a methodology for precisely measuring the amount of expressivity.
+We use semantic surprisal and Shannon information content (abbreviated as IC in the remainder of this paper) as lexical features of an intensifier $w$. Surprisal and IC are negative log-probabilities of $w$ that indicate the amount of information in bits. Surprisal is calculated in the sentential context of $w$, i.e., within the sentence in which $w$ occurs and within its extra-sentential context \citep{levy2008expectation}, that is, contexts in preceding and following sentences.
+IC, in contrast, is context-free, i.e., it is simply derived from the relative frequency of $w$. 
+Context plays a key role in the calculation of surprisal, and in the present study, we define semantic surprisal in the context of the 
+topics in the environment of $w$. This interpretation of the semantic context of a word is introduced by \citet{koelbl2020keyword, koelbl2021semantic}, and previously used by \citet{philipp2022keyword,philipp2023idioms}. 
+We will address our definition of surprisal and the topic contexts it is based on in more detail in \sectref{sec:information} below.
+
+
+We apply these information theoretic analyses to a new dataset of manually annotated intensifiers in two media, tweets and blog posts, in order to confirm  the predictions established in the previous research. The data consists of texts from blogs and tweets from the same set of 44 authors \citep{schefflerEtal2023corpus}. Including blog post texts enables us to extend the empirical picture of intensification by observing their behavior in a new medium. Our results show that while the intensifier word class indeed shows high variability, as indicated by previous studies, the class conforms to the information theoretic predictions established in prior work. These results hold even though the data we report on here is no longer restricted to  intensification of predicative adjectives. We compare the two media tweets and blogs to characterize the media related variability of intensification in our German corpus. We show that both context-free and context-dependent (semantic) information measures exhibit high correlation and can account for the distribution of intensifiers. 
+
+Finally, \citet{scherihou2022} argue that the order of stacked intensifiers (when multiple intensifiers follow each other in the same phrase) is determined by Uniform Information Density \citep{fenk1980konstanz, aylett2004smooth, levy2007speakers, jaeger2010redundancy}: They observe that intensifiers tend to occur from least to most expressive and conjecture that the less expressive first intensifier serves to introduce the phrase and ``bridge'' the information flow from copula verb to the expressive intensifier and adjective. In this paper, we  test this conjecture on our entire corpus of sentences with intensifiers. Since we now employ contextual information values which we can compute for each word in a text, we can systematically compare sentences with stacked intensifiers with the communicatively equivalent alternatives (i) containing only the last, most expressive intensifier, or (ii) containing both intensifiers in the opposite order. We compute information profiles for both alternatives and compare them to the actually attested variants. Our results show that the attested variants exhibit a smoother information contour with a slightly higher uniformity of the wordwise information density. This supports the Uniform Information Density hypothesis, which states that smoother information flow is preferred keeping other factors equal. This analysis may serve to shed light on the puzzle why writers bother to add further, redundant intensifiers beyond the most expressive one: Their function is to introduce the phrase, alert the reader to the word class which follows, and smooth the information flow.
+
+
+In the following, we first discuss the word class of intensifiers and why they are of particular interest for information theoretic approaches to language. We then discuss the empirical base of our annotation study for intensifiers in two written social media, blogs and tweets, before providing more details on the information measures we use for our analysis. Finally, we present our quantitative results.
+
+\section{Corpus study: Intensification in blogs and tweets}
+\subsection{Intensifiers as a word class}\label{sec:intensifiers}
+Gradable properties such as the body size expressed by the adjective \textit{fat} can be strengthened or toned down by certain fixed words or phrases. These words or phrases are called intensifiers because they increase (\ref{ex:intincrease}) or reduce (\ref{ex:intdecrease}) the intensity to which the gradable property applies. In common usage, non-gradable properties are also often the target of intensification (\ref{ex:nongradable}).
+
+\ea\label{ex:intincrease}
+This seal is extremely fat.\hfill(constructed)
+\ex\label{ex:intdecrease}
+This seal is pretty fat.\hfill(constructed)
+\ex\label{ex:nongradable}
+This seal is completely round.\hfill(constructed)
+\z
+
+Finally, it is well-known that although adjectives are the most common targets of intensification, other words such as verbs (\ref{ex:intverb}) or nouns (\ref{ex:intnoun}) can also be intensified \citep[see][]{bolinger_degree_1972}, as in the following two examples from our social media dataset (see \sectref{sec:corpus}):
+
+\ea\label{ex:intnoun}
+\ea
+\gll Was ganz Neues!\\
+Some completely new-thing\\
+\glt `Something completely new!'
+\ex 
+\gll Und warum zur Hölle habe ich damit so ein Problem, mich von den Kindern lösen zu können?\\
+And why in hell have I with-that so a problem, me from the kids separate to be-able-to\\
+\glt `And why in hell do I have such a problem with separating from the kids?'
+\z
+\z
+
+In this study, we analyze German intensifiers using measures from information theory. We assume that all intensifiers share a common semantic core, the basic notion of intensification, though they may differ in other connotations (e.g., level of formality, strength, or semantic domain restrictions). We focus on a semantically relatively uniform subset of the more broader set of ``intensity particles'' \citep{breindl2007intensitatspartikeln} sometimes discussed, namely only those that increase the extent to which a property applies, as exhibited in all previous examples (\ref{ex:int}--\ref{ex:intnoun}). This notion includes both so-called maximizers such as \textit{total} (`totally'), which indicate only the end point of a scale, as well as boosters such as \textit{sehr} (`very'), which restrict a property to a higher section of a scale \citep{bolinger_degree_1972}.
+
+This means that we expressly exclude downtoners, which lower the grade to which a property applies rather than increasing it (e.g., \textit{ein bisschen} `a little', \textit{etwas} `somewhat'), from further consideration. Accordingly, we do not consider intensifiers that can only occur with negated properties (e.g., \textit{gar} `at all'), since the negation implies a lowered intensity of the modified property. We further exclude words which look like intensifiers but which should better be analyzed as focus adverbs \citep[\textit{einfach} `simply', \textit{echt}, \textit{wirklich} `really'; see][]{beltrama2022,scherihou2022}. In the following, we reserve the term \textit{intensifier} for our more narrow definition  and call the broad category of gradability modifiers (including downtoners as well as some other expressions) \textit{grade indicators}.
+
+Given that all remaining intensifiers share a common semantic contribution, it remains a mystery why a language should provide so many different variants \citep[for German, see e.g.][]{claudi_intensifiers_2006,stratton_adjective_2020}. In addition, more intensifiers within the same phrase do not add much semantic value. Prior work proposes that longer intensification phrases (i.e., longer intensifiers or additional intensifiers within one phrase) increase the strength and thus the expressivity of  intensification \citep{fortin2011,bennett2018extremely,Fortin2022Jul}. Note though that this only explains the presence of intensifier stacks, but not the clear preferences for intensifier ordering that have been observed. In addition, establishing that the addition of an intensifier in an already intensified phrase increases expressivity is merely restating the facts, if no mechanism can be proposed why additional intensifiers are more expressive. 
+
+In the following, we propose, based on our previous work \citep{richter2020ranking,scherihou2022}, that both the variance between intensifiers as well as their stacking behavior can be modeled using information theoretic measures, which explain the different contributions of different intensifying expressions.
+We argue that the class of intensifiers is relatively uniform with respect to their core semantic contribution (increasing the degree of a property), but that they differ in expressive value. While the notion of amount of information which a linguistic item contributes has been characterized as that item's core propositional semantics in the past (and operationalized rather simply by (contextual) frequency), we extend this notion to include the non-propositional, expressive content of the item as well, for example the strength of intensification or involvement of the speaker when using an intensifier. In our view, it is this non-propositional, expressive difference between intensifiers that can be seen in their differing information values.
+
+\subsection{Dataset of blogs and tweets}\label{sec:corpus}
+Intensifiers are a highly variable word class \citep{tagliamonte_so_2008,stratton_adjective_2020}, which is undergoing constant innovation and with which speakers/authors adapt flexibly to different registers and media \citep{schefflerEtal2022register}. They are typical of speech, but also occur frequently in social media and even increase in frequency in newspaper corpora \citep{schmidt2022}. In this research, we use a novel multi-medium dataset to confirm previous results and advance the state of the art on the role of information measures in modeling intensifiers. Previous research has rarely addressed the way individuals change their use of intensifiers when switching media or text type. The data we study here consists of a corpus of tweets and blog posts from  44 parenting bloggers, collected in 2017. The corpus consists of 81,440 tweets ($\sim$1.2m tokens) and 468 blog posts ($\sim$360k tokens) in total, and is available for academic research by request.\footnote{\url{http://tiny.cc/twiblocop}} Each author ($N=44$) is represented with about 5--10 blog posts and up to 3200 tweets \citep[for more details, see][]{schefflerEtal2023corpus}. Any differences between the subcorpora can be attributed to special properties of the two media formats, since the authors and topics stay the same. 
+
+The corpus was automatically split into sentences and tokenized, and manually pseudonymized. 
+The tweet subcorpus consists of 137,914 sentences, while the blog posts contain 24,981 sentences in total.
+In all texts, all grade indicators have been manually marked by student research assistants with the help of the software WebAnno \citep{webanno}. To facilitate annotation, the set of frequent intensifiers identified by \citet{scherihou2022} was automatically preselected. Annotators were asked to both add additional intensifiers not included in the previously known list, as well as disambiguate all occurrences of the pre-annotated words regarding their status as an intensifier. The annotation was  based on a short guideline specifying examples and counterexamples. Contrary to some previous work, the annotation did not restrict the class of grade indicators (i.e., downtoners were included along with boosters; and intensity indicators modifying verbs and nouns were included along with adjective intensifiers). We aimed directly for the semantic/pragmatic function of intensity modification of a gradable property or relation. The annotation thus covered a broader range of items than are analyzed in this paper. Difficult cases were discussed with the students and the annotators did not raise major problems in identifying the grade indicators. To prevent any misunderstanding, we call this class of words  grade indicators in the remainder of this paper.
+
+
+Three of the authors individually evaluated all  grade indicators annotated in the corpus manually in order to identify true intensifiers in the more narrow sense which we defined above, i.e., expressions which indicate that a property is strengthened or increased. Of the three evaluations, between a more conservative and a more lenient evaluation,  we ultimately selected the intermediate one as our data for the following analysis. 
+
+\section{Modeling the information structure of intensification}\label{sec:information}
+
+We use three information theoretic measures to model the intensifiers in our data: first, local information content ($\mathrm{IC_{local}}$), which captures the paradigmatic information of a word. This measure was proposed by \citet{scherihou2022} to capture the variability of adjectival intensifiers and, actually, is the common Shannon Information, i.e., the logarithm of the unigram frequency of a linguistic unit $w$. In our case, the frequency is calculated (i) separately for the blog posts and for the tweets corpus and (ii) for the combined blog posts and tweet corpus. The definition is given in (\ref{f:eq0}):
+\begin{equation}\label{f:eq0}
+\text{IC}_{\text{local}}(w) = -\log_2 P(w)
+\end{equation}
+ 
+Second, we introduce here a semantic notion of information, that is, semantic surprisal based on the Topic Context Model (TCM) which incorporates the document context of a word. Third, we compare sentence variants using the average information change per word in a sentence, $\mathrm{UID_{wordwise}}$.
+
+\subsection{Surprisal}
+
+Surprisal was introduced by \citet{tribus1961information} in an engineering science context, and later adapted to communication theory and psycholinguistics \citep{hale2001probabilistic,levy2008expectation}.
+The surprisal of a word is its contextualized information and quantifies how unexpected it is, or among how many alternatives it was chosen. The occurrence of a linguistic unit causes an amount of surprisal for the language processor which is low when the linguistic unit is expected and high when it is unexpected. The amount of surprisal is proportional to the effort that is necessary to process it \citep{hale2001probabilistic, levy2008expectation}. One can say that surprisal expresses the discrepancy between what a language processor expects in a sentence and what actually occurs. For example, given the string \textit{the old man}, a language processor might expect a verb as the next word. The surprisal is high if a determiner occurs, as in the garden path sentence \textit{the old man the boat}.
+ 
+\citet{hale2001probabilistic} and \citet{hale2015modeling} define the surprisal of a word formally as its negative log-probability, which is equivalent to the definition of Shannon information IC. However, the calculation of surprisal requires conditional probabilities while the calculation of IC does not. Here, the probabilities $P(w_1, w_2 ... w_n)$ are calculated using the chain rule. Consider the example sentence from above \textit{the old man the boat}. The second determiner is extremely unexpected in this context, and its surprisal is  thus high. 
+
+Equation \ref{f:eq1} gives the definition of surprisal as a conditional probability of a word $w_i$ given the prior context $w_1\dots w_{i-1}$ \citep{levy2008expectation}, where $w_1\dots w_{i-1}$  represent co-occurrences of any kind of the target word $w_i$ within a sentence, and CONTEXT represents extra-sentential context of any kind, e.g., lexical, syntactic or semantic structures.
+\begin{equation}\label{f:eq1}
+\mathrm{surprisal}(w_i) = -\log_2(P(w_i\mid w_1,\dots,w_{i-1}, \mathrm{CONTEXT})
+\end{equation}
+
+\subsection{Topic context model}
+
+The Topic Context Model (TCM)\footnote{\url{https://github.com/jnphilipp/tcm}} \citep{koelbl2020keyword,koelbl2021semantic,philipp2022keyword,philipp2023idioms} outputs the semantic surprisal of a word given the topics in its environment. Simply put, in this operationalization, semantic surprisal expresses how surprising a word is to the language processor in the context of the topics in the words' environment. For example, the word \textit{chocolate} is likely to have a low probability in the context of topics such as \textit{information} or \textit{algorithms}, and would probably cause a high degree of semantic surprisal.
+
+TCM surprisal is thus specific to its environment, which can be the entire corpus, or documents within the corpus, paragraphs and even single sentences (in the remainder of the article, surprisal as information from the Topic Context Model is symbolized by TCM, and we use documents (blog posts, tweets) as the environments).
+
+Like generative probabilistic topic models, TCM is based on the assumption that contexts\slash discourses are thematically structured, that documents are generated by topics, and that topics are characterized by words. In the present study, TCM employs Latent Dirichlet Allocation \citep[LDA,][]{blei2003latent} for topic detection. LDA  treats documents as probability distributions of topics and topics as probability distributions of words.
+
+The definition of the average semantic surprisal (of a word $w$ in  a document $d$) from topics is given in Equation \ref{eq:topic}. $ P(w\mid t_i)$ is the probability of a word $w$ given a topic $t_i$, see Equation \ref{eq:lda_wti} where $ c_d(w_d) $ is the frequency of a word $ w $ in a document $ d $, $ |d| $ is the total number of words in a document $d$, and $WT$ is the normalized word topic distribution of the LDA.
+\begin{equation}\label{eq:topic}
+\overline{\text{surprisal}}(w_d) = -\frac{1}{n} \sum_{i=1}^{n}\log_2 P(w \mid  t_i)
+\end{equation}
+\begin{equation}\label{eq:lda_wti}
+P(w_d \mid  t_i) = \frac{c_d(w_d)}{|d|} WT_{w_d,t_i} P(t_i\mid d)
+\end{equation}
+
+For example, suppose a word $w$ occurs in $n$ documents in a corpus.
+LDA yields a topic distribution $ t $ for every document $ d $.
+This distribution takes the form of a $k$-dimensional vector of probabilities, which must sum to 1.
+TCM calculates the surprisal of $w$ by applying the formulas \ref{eq:topic} and \ref{eq:lda_wti} \citep{philipp2022keyword,philipp2023idioms}.
+
+Suppose the word \textit{mega} occurs two times in a document $d$ with 42 words in total, further suppose we train a LDA with three topics. The three probabilities for $ P(t_i\mid d)$ are $0.732$, $0.183$ and $0.085$ and the three values for $WT_{w_d,t_i}$ are $0.261$, $0.101$ and $0.096$. This results in three probabilities for $P(w_d\mid t_i)$, that is, $0.00910$, $0.00088$ and $0.00039$, respectively. Utilising Formula \ref{eq:topic}, we derive from these probabilities the average surprisal value of $9.41812$.
+
+In total, we trained three different LDAs and therefore have three different TCM structures. The first LDA was trained only on the blog posts, the second one only on the tweets, and the last one on the complete corpus. All LDAs were trained with 32 topics.\footnote{After some experiments, this appeared as a good number to us.} 
+The training corpora contained 30,111 words of blog data, 26,656 words from Twitter and 45,754 from the complete corpus. All three TCM values behave similarly in our analyses. However, since each tweet constitutes its own document, and the tweets are generally very short, we expect the tweet-based models to be less reliable than the models based on the blog data, where each document consists of an entire blog post. 
+
+
+\subsection{Wordwise uniform information density}
+
+Following \citet{collins2014information}, we  determine local Uniform Information\footnote{\url{https://github.com/jnphilipp/uid}} as a measure of the average squared information change per linguistic unit in sequences of linguistic units.  For this measure, \citet{scherihou2022} use the term $\mathrm{UID_{wordwise}}$. Its definition is given in (\ref{eq:uid}), where $id$ is the information value of a unit, $n$ is the number of units in a sequence (for instance in a sentence or in a stack on intensifiers), and the index $i=2$ indicates the second unit in the sequence (counting from left to right).
+\begin{equation}\label{eq:uid}
+\mathrm{UID_{wordwise}} = -\frac{1}{n} \sum_{i=1}^{n}(id_i - id_{i-1})^2
+\end{equation}
+
+Note that $\mathrm{UID_{wordwise}}$ is negative by definition, and therefore a $\mathrm{UID_{wordwise}}$ value close to zero indicates a high uniformity of the information density distribution, that is, smaller information differences from unit to unit. 
+ Information density is an important principle in linguistic communication, since information peaks and troughs must not be too extreme, so as not to make it too difficult for the recipient of a message to process it \citep{fenk1980konstanz, aylett2004smooth, levy2007speakers, jaeger2010redundancy}. 
+
+\section{Results}\label{sec:5_results}\largerpage
+
+%the data
+\subsection{Grade indicators and intensifiers}
+
+We found 3446 grade indicators in the blog posts and 2034 in the tweets. Given the token size of these two subcorpora (blogs $\sim$360k, tweets $\sim$1.2m), grade indicators turn out to be more frequent in the blogs. This result is even more pronounced when looking at the sentence level: The blog subcorpus contains 24,981 sentences, yielding an average of 0.139 grade indicators per sentence. In contrast, the tweets, with 137,914 utterances, contain about ten times fewer grade indicators, only 0.015 per sentence. Sentence segmentation was carried out automatically in prior work \citep{schefflerEtal2023corpus}. 
+Our database distinguishes single grade indicator tokens and stackings (sequences of more than one grade indicator). After lemmatization (combining variants), we obtained the top 10, which are presented in \tabref{tab:intlist} (both single indicators and stacks are included here).
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llrrr}
+\lsptoprule
+Lemma & Translation & N blogs &  N tweets &   N total \\\midrule
+\textit{so} & `so' &641 & 551& 1192	\\
+\textit{ganz} & `completely'& 486 & 263 & 749 \\
+\textit{sehr} & `very' & 424 & 259 & 683 \\
+\textit{gar} & `at all'& 200 & 134 & 334 \\
+\textit{zu} & `zu' & 180 & 68 & 248 \\
+\textit{wirklich} & `really' & 159 & 61 & 220 \\
+\textit{echt} & `really' & 30 & 79 & 109 \\
+\textit{total} & `totally' & 55 & 49 & 104 \\
+\textit{ziemlich} & `pretty' & 80 & 20 & 100 \\
+\textit{etwas} & `somewhat'& 76 & 22 & 98 \\
+\lspbottomrule
+\end{tabular} 
+\caption{Frequencies of the 10 most frequent grade indicators, per medium and in the total dataset}\label{tab:intlist}
+\end{center}
+\end{table}
+
+The list in \tabref{tab:intlist} shows grade indicators that are not an intensifier in the strict sense, like \textit{zu} (`too'), \textit{ziemlich} (`pretty'), and \textit{etwas} (`somewhat'). It also shows three highly frequent intensifiers, \textit{so}, \textit{ganz}, \textit{sehr}, in both media. Compared to the extensive tweet database studied by \citet{scherihou2022}, the high frequency of \textit{ganz} (`completely') in the blogs is remarkable, but the most important observation is that a comparable set of frequent intensifiers is present in this new dataset, as well. In the following analy\-ses, we exclude all grade indicators that are not intensifiers according to our definition, including downtoners (\textit{ziemlich} `pretty',  \textit{etwas} `somewhat'), and the excessivity marker \textit{zu} (`too').
+
+New intensifiers that were not present in the extensive tweet database by \citet{scherihou2022} all occurred with a frequency of only 1, e.g.,
+\textit{affengeil} (`(monkey) awesome'),
+\textit{bombenfest} (`bomb proof'),
+\textit{entsetzlich} (`terribly'),
+\textit{gewaltig} (`hugely'),
+\textit{höllisch} (`hellish'),
+\textit{riesen} (`giant').
+The occurrence of new intensifiers in fact demonstrates the openness of the word class of intensifiers and its innovative power, as pointed out earlier in comparing different inventories of German intensifiers \citep{scherihou2022}.
+
+Our database of blogs and tweets contains single occurrences and stacks. We start with analyzing the single occurrences. Next, we present the results on the stacks.
+
+\subsection{Single intensifiers}
+
+We selected only those intensifiers that were also present in the large Twitter database studied previously \citep{scherihou2022} for further analysis. In that  study,  89,358 intensified predicative phrases of the form pronoun + \textit{is/was} +\ \ldots\ + adjective (e.g., \textit{Frankfurt ist so arsch weit} `Frankfurt is so damn far') from a corpus of over 6 million German tweets were extracted.
+These intensified phrases contained 124 different frequent intensifiers, 68 of which also occur in our new blog and tweet corpus. They include \textit{echt} and \textit{wirklich} (`really'), which can express an intensifying function, but are in fact focus adverbs.
+We proceed with these 68 items as they qualify as validated, frequent intensifiers in German.
+
+For all 68 intensifiers, two information measures were computed, one for frequency ($\mathrm{IC_{local}}$, see above) and one for the transitional probability between the intensifiers and the following adjective ($\mathrm{IC_{trans}}$).
+In the extensive tweet database \citep{scherihou2022} the anticorrelation between these two information measures was extremely high, $-0.916$. This still applies to the  68 shared intensifiers in our new database. Their anticorrelation is even a bit higher at  $-0.944$, indicating that there is no selective bias in our new corpus compared to the previous large Twitter database. $\mathrm{IC_{local}}$ in the previously studied large Twitter database is  correlated with the log frequencies in both blogs and tweets of the new corpus (respectively, $r = 0.735$, $r = 0.838$). Interestingly, the correlation with the Twitter part of our new corpus is significantly higher than with blogs ($t = 3.06$, $p <0.001$), as is to be expected since the previous database also consisted of tweets. The register distinction between blogs and tweets is confirmed by data on capitalization and lengthening in the tokens of our 68 remaining intensifiers (respectively only 1 and 3 capitalizations, and  14 (0.6\%) and 50 lengthenings (3.1\%) in blogs vs. tweets); these numbers are much lower than in the extensive tweet database collected earlier. In particular, \textit{so} was the most popular intensifier for lengthening, similar to the findings in \citet{scherihou2022}.
+
+
+In this paper, we, in addition to IC, introduced the contextualized information measure TCM. This measure computes the information value of a word depending on its context (in our case, a document). These two information values are related to each other, insofar as the simple IC value captures some of the information content of a word, while TCM modulates this value to a specific context. The scattergrams of these two measures are given in \figref{fig:single1} and \figref{fig:single2}. In the blog posts, the TCM value of single intensifiers correlates linearly with the IC values (\figref{fig:single1}), whereas the relation is more fuzzy in tweets (\figref{fig:single2}) in the higher regions of IC and TCM.
+
+\begin{figure}
+\includegraphics[width=\textwidth]{5_Figure1.pdf}
+\caption{Information (TCM by IC) of single intensifiers in blogs}
+\label{fig:single1}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{5_Figure2.pdf}
+\caption{Information (IC by TCM) of single intensifiers in tweets}
+\label{fig:single2}
+\end{figure}
+
+%lower TCM with Blogs than with Tweets
+The TCM values are considerably higher in general for blogs than for tweets. This is due to the different context sizes. While the context in the tweets data set is restricted to only a single tweet in each case, the context for the blogs consists of several sentences. This means that the topic model on which TCM is based has more information available for training and can thus be more specific. 
+
+Despite these differences in TCM values, the two patterns in \figref{fig:single1} and \figref{fig:single2} resemble each other. The same frequent intensifiers can be found in their left parts. The patterns get more diffuse moving to the less frequent intensifiers in the second position in the stack.
+We also included \textit{wirklich} (`really') that we considered a focus particle. This status as a focus particle seems to be supported by the different relative position it has in the two scattergrams, although they fit the linear pattern.
+
+The scatter graphs indicate that the two measures are less closely related in the tweets subcorpus. It might be that the more diffuse pattern in tweets is (partly) related to the size of the database, a smaller database means more noise, in particular since the number of intensifiers is also lower in the tweets. To investigate the relation between IC and TCM more closely, we not only need more data, we also have to estimate the additional value of the TCM index more precisely. We start doing so in the next subsection by looking at the stacks.
+
+\subsection{Information values in intensifier stacks}
+
+Both IC and TCM capture the information, and in our understanding, the expressiveness, of an intensifier. The first question we asked ourselves was whether the two types of information values TCM and IC correlate in the intensifiers occurring in the stacks. Since stacks with three intensifiers are extremely rare in our data sets (only three occurrences), we focused solely on stacks with two intensifiers. 
+
+We determined the correlation between the two types of information values of the first intensifier in a stack (TCM1--IC1) and the values of the second intensifier in the stack (TCM2--IC2).
+\tabref{tab:corr} shows that the correlations between the information values for both intensifier positions are positive; the correlations (Pearson) in the Twitter data set are higher than in the blogs.
+
+\begin{table}
+\begin{tabular}{lcc}
+\lsptoprule
+        & \multicolumn{2}{c}{Pearson correlation}\\\cmidrule(lr){2-3}
+Data    & TCM1--IC1 & TMC2--IC2\\\midrule
+all     & 0.46      &  0.52 \\
+blogs   & 0.66      &  0.72 \\
+tweets  & 0.83      &  0.71 \\
+\lspbottomrule
+\end{tabular} 
+\caption{Pearson correlation between TCM and IC information values}\label{tab:corr}
+\end{table}
+
+
+In addition, the correlation is much lower across the entire data set, indicating a clear register difference between the blogs and tweets. 
+This is due to higher TCM values in the blog subcorpus, since the  TCM values depend on the number of different contexts and instances. This becomes clear in the scatter plots in Figures~\ref{fig:scatter_1} and \ref{fig:scatter_2}, which show the data points of TCM compared to IC for the first intensifier in blogs (\figref{fig:scatter_1}) and  the data points of TCM and IC for the second intensifier (\figref{fig:scatter_2}).
+
+\begin{figure}
+  \centering
+%   \includesvg[width=\textwidth]{5_si_blog_stacks-tatjana_1}
+  \includegraphics[width=\textwidth]{5_si_blog_stacks-tatjana_1.png}
+  \caption{Scatterplot of the blog data set, using the $IC/TCM$ values from the first intensifier in the stack}
+  \label{fig:scatter_1}
+\end{figure}
+
+\begin{figure}
+  \centering
+%   \includesvg[width=\textwidth]{5_si_blog_stacks-tatjana_2}
+  \includegraphics[width=\textwidth]{5_si_blog_stacks-tatjana_2.png}
+  \caption{Scatter plot of the blog data set, using the $IC/TCM$ values from the second intensifier in the stack}
+  \label{fig:scatter_2}
+\end{figure}
+
+Figures \ref{fig:scatter_1} and \ref{fig:scatter_2} clearly demonstrate the differences in the calculation of the actual IC and TCM values. \figref{fig:scatter_1} shows the IC and TCM values for the first intensifier in each stack in the blog subcorpus, \figref{fig:scatter_2} shows the values for the second intensifier. 
+All occurrences of \textit{so} have the same IC value, seen in the bottom row of dots in both figures, as this value depends only on the overall frequency of \textit{so}, independent of its context.  In contrast, the TCM surprisal values differ greatly between the instances, see \figref{fig:scatter_1}, with \textit{so unheimlich} having the lowest and \textit{so ganz} having the highest value. This is due to the fact that the topic modeling part of the TCM allows for a more fine-grained approach, enabling us to calculate a surprisal value that is text specific. The different TCM values for the same token indicate that it contributes different amounts of information to the context. It is thus not surprising that the correlation between the two information values IC and TCM is not perfect, as shown in \tabref{tab:corr}, and that the correlation is lower for blogs, which have a greater context, when calculating the surprisal values.
+
+Figures \ref{fig:scatter_1} and \ref{fig:scatter_2}  also make it possible to compare the spread of TCM for an intensifier like \textit{so} as the first in a stack and \textit{so} as the second intensifier in a stack. This shows that the spread, when \textit{so} occurs as the first intensifier in a stack, is much greater, compared to when it is only in the second position. One reason for this is that the word, being a low information intensifier, can be the start of many different intensifying phrases. This bridging function of the first intensifier towards another intensifier is discussed in \sectref{ssec:uid_intensifier_choice}.
+
+\subsection{Stacking intensifiers}
+
+Confirming previous studies using information theory to model intensifiers in Dutch and German \citep{richter2020ranking, scherihou2022}, we observed the tendency that in stacks of intensifiers, the information values increase from left to right. \tabref{tab:pred_viol} depicts  the number of stacks that behave according to the predictions, i.e., with information values increasing from the first to the second intensifier for both information types TCM and IC, and of stacks with violations of these predictions (mere repetitions such as \textit{so so} are excluded). \tabref{tab:pred_viol} illustrates the tendency towards increasing information in the blog, Twitter and the combined data sets. The proportions are almost identical when using TCM and IC.
+
+
+\begin{table}
+\begin{tabular}{llcccc}
+\lsptoprule
+Data    &     & Predicted & Violations & \% Pred. & \% Viol.\\\midrule
+all     & TCM &  92 & 51 & 0.64  & 0.36  \\
+        &  IC &  92 & 51 & 0.64   & 0.36 \\
+blogs   & TCM &  78 & 32 & 0.71   & 0.29 \\
+        &  IC &  69 & 41 & 0.63   & 0.37 \\ 
+tweets  & TCM &  26 & 7 & 0.79  & 0.21 \\
+        &  IC &  25 & 8 & 0.76  & 0.24 \\ 
+\lspbottomrule
+\end{tabular} 
+\caption{Counts of intensifier stacks following the predicted, increasing order of  TCM and IC information values, compared to violations of this predicted order}\label{tab:pred_viol}
+\end{table}
+
+We follow the argumentation by \citet{scherihou2022} that some number of violations of the predicted stacking order are expected due to the creative choices of the authors, but also due to the inherent uncertainty of our estimates of the information values. Both information values are computed within our relatively small corpus and thus may not fully reflect the true underlying information values that drive authors' choices when selecting intensifiers. \citet{scherihou2022} propose that this view can be confirmed by comparing the difference in information values between predicted stacks and violations: Violations of the stacking order should tend to exhibit small differences in information values between the two intensifiers, indicating that the involved intensifiers are similar to each other, and variation in their order may be due to chance or to our estimation error. On the other hand, when there are large differences in information value in an  intensifier pair, authors should be much more likely to choose the predicted order.
+
+In the current study, we again find this picture confirmed, as \figref{fig:UID} illustrates. The figure depicts the density distributions of the $\mathrm{UID_{wordwise}}$-values, i.e., the distribution of the average information change between the two intensifiers in a stack. The x-axis shows the $\mathrm{UID_{wordwise}}$-values, the y-axis the normalized relative frequency of each value. Let $min$ be the minimum of $\mathrm{UID_{wordwise}}$ in a data set and the maximum $= 0$. The area under the curve is determined by the integral \(\int_{\min}^{0} x \;\text{d}x\) = 1.
+
+\begin{figure}
+  \begin{subfigure}[t]{0.45\textwidth}
+  \centering
+%     \includesvg[inkscapelatex=false,width=\linewidth]{5_si_blog_stacks-tatjana_freq_violation.svg}
+    \includegraphics[width=\linewidth]{5_si_blog_stacks-tatjana_freq_violation.png}
+    \caption{Information Density of IC in the blog data}
+    \label{fig:UID_blog_ic}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+  \centering
+%     \includesvg[inkscapelatex=false,width=\linewidth]{5_si_blog_stacks-tatjana_tcm_violation.svg}
+    \includegraphics[width=\linewidth]{5_si_blog_stacks-tatjana_tcm_violation.png}
+    \caption{Information Density of TCM in the blog data}
+    \label{fig:UID_blog_tcm}
+  \end{subfigure}\\
+  \begin{subfigure}[t]{0.45\textwidth}
+  \centering
+%     \includesvg[inkscapelatex=false,width=\linewidth]{5_si_twitter_stacks-tatjana_freq_violation.svg}
+    \includegraphics[width=\linewidth]{5_si_twitter_stacks-tatjana_freq_violation.png}
+    \caption{Information Density of IC in the Twitter data}
+    \label{fig:UID_twitter_ic}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.45\textwidth}
+  \centering
+%     \includesvg[inkscapelatex=false,width=\linewidth]{5_si_twitter_stacks-tatjana_tcm_violation.svg}
+    \includegraphics[width=\linewidth]{5_si_twitter_stacks-tatjana_tcm_violation.png}
+    \caption{Information Density of TCM in the Twitter data}
+    \label{fig:UID_twitter_tcm}
+  \end{subfigure}
+\caption{$\mathrm{UID_{wordwise}}$ density plot of predicted information structures (TCM values and IC values) (blue) and of violations (orange)}
+\label{fig:UID}
+\end{figure}
+
+In the stacks with violations, the change in information values as captured by  $\mathrm{UID_{wordwise}}$ tend to be closer to zero than in stacks with the predicted order. This indicates closer information values within violations than in the  stacks with predicted increasing information. 
+The differing information density between predictions and violations holds both for the surprisal values TCM and for the IC values. This means that violations of the predicted increase in information values are more likely when the word-wise information changes are rather small. This replicates the previous finding by \citet{scherihou2022} on our new dataset in this study, for both information values. When the difference between the information values of two intensifiers in a stack is very small, the preference for their ordering is not very strong and they may thus occur in reverse order. 
+\largerpage
+
+\subsection{Can UID explain intensifier choice and order?}\label{ssec:uid_intensifier_choice}
+
+
+  
+\begin{figure}[b]
+  \centering
+  \begin{subfigure}[t]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{5_fcomp.png}
+    \caption{Flow of IC in the phrase \textit{und ist so verdammt schwer}}
+    \label{fig:flow-complete}
+  \end{subfigure}
+  \qquad
+  \begin{subfigure}[t]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{5_fshort.png}
+    \caption{Flow of IC when \textit{so} is omitted}
+    \label{fig:flow-short}
+  \end{subfigure}
+ 
+  \begin{subfigure}[t]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{5_frev.png}
+    \caption{Flow of IC when the order of \textit{so} and \textit{verdammt} is reversed}
+    \label{fig:flow-reverse}
+  \end{subfigure}
+
+\caption{Example flow of IC in (a) complete, (b) shortened, and (c) reversed stacks, for the phrase \textit{und ist so verdammt schwer} (`and is so damn hard')}
+\label{fig:flow}
+\end{figure}
+
+\citet[14]{scherihou2022} proposed ``to interpret established intensifiers as the `glue' that holds the whole set together: in stacks, established intensifiers prepare the language processor for more expressive, innovative intensifiers to follow''. The conjecture was that adding a frequent intensifier with little own information contribution smooths the information flow within a sentence by decreasing the overall change in $\mathrm{UID_{wordwise}}$. In this paper, we compute information values for all words in a sentence and can thus systematically test this conjecture, by comparing the attested version of a sentence with two intensifiers with two communicatively equivalent variants:
+\largerpage
+(i) the shortened sentence where the first intensifier is omitted (shortened), and (ii) the sentence where the two intensifiers are reversed in order (reversed).
+
+To give an example, in \figref{fig:flow}, the flow of information in a stack with the extremely common intensifier \textit{so} is depicted in \figref{fig:flow-complete}. \figref{fig:flow-short} shows how the flow of information changes when \textit{so} is omitted: the gap between the copula verb and the remaining second intensifier is somewhat larger, but the effect is not very pronounced. Finally, \figref{fig:flow-reverse} shows the flow of information when both intensifiers are reversed, which is much more bumpy and thus less optimal with respect to the UID hypothesis.
+
+
+
+We computed the wordwise information density for all original sentences in the corpus, as well as in the shortened and reversed variants. \figref{fig:infodensity} shows the information density distribution over all sentences in the blog subcorpus, compared to the shortened and reversed variants, for both the IC (top) and TCM (bottom) models. We use the blog data because it provides fully coherent texts which allow for better estimates of the information values. However, the Twitter data shows similar behavior and the corresponding graphs for the Twitter subset and the complete data set are shown in the Appendix. 
+
+We applied an ANOVA to compare the three types of outcomes.  For IC we obtained a significant result $(F(2,158)= 13.037, p<0.001)$ as \figref{fig:blog-ic-short-rev} illustrates.  Posthoc comparisons (Bonferroni) showed a significant difference between regular and reversed (higher scores) versus shortened (lower scores). For TCM we obtained a significant result as well $(F(2,158)= 34.712, p<0.001)$,  see \figref{fig:blog-tcm-short-rev}. Moreover, all posthoc comparisons (Bonferroni) were significant ($p <0.01$), going from regular (higher scores) via reversed to shortened (lower scores). The density plots for the Twitter data and the Twitter and blogs together (complete data) can be found as \figref{fig:twitter-tcm-short-rev} and \figref{fig:all-tcm-short-rev}, respectively, in the Appendix. The number of observations in the Twitter data is rather low $(n=24)$. The result is thus not significant for IC $(F(2,46) = 2.752, p=0.076)$. The  result for TCM is significant $(F(2,46) = 5.312, p=0.013)$. The only posthoc significant difference is between regular (higher scores) and shortened stacks (lower scores). The results for the complete data are similar to the results of the blog data. For IC we obtained a significant result $(F(2,206)= 16.074, p<0.001)$, with posthoc outcomes similar to the blog data. For TCM we obtained a significant result $(F(2,206)= 32.0293, p<0.001)$, as well, with the posthoc outcomes similar to the blog data.
+
+\begin{figure}[t]
+  \centering
+\begin{subfigure}[t]{.75\textwidth}
+%     \includesvg[inkscapelatex=false,width=\textwidth]{5_si_blog_stacks-tatjana_freq.svg}
+    \includegraphics[width=\textwidth]{5_si_blog_stacks-tatjana_freq.png}
+    \caption{Information Density of IC in the blog data, compared to shortened and reversed stacks}
+    \label{fig:blog-ic-short-rev}
+\end{subfigure}
+\begin{subfigure}[t]{.75\textwidth}
+%     \includesvg[inkscapelatex=false,width=\textwidth]{5_si_blog_stacks-tatjana_tcm.svg}
+    \includegraphics[width=\textwidth]{5_si_blog_stacks-tatjana_tcm.png}
+    \caption{Information Density of TCM in the blog data, compared to shortened and reversed stacks}
+    \label{fig:blog-tcm-short-rev}
+\end{subfigure}
+
+\caption{Average per-word information density in complete sentences compared to their shortened and reversed variants, in the blog subcorpus}
+\label{fig:infodensity}
+\end{figure}
+
+It can be seen that the average change in density is very small, since most words stay the same within all variants of each sentence, and the change by removing or reordering the frequent intensifier is divided by the number of words in the sentence. However, the observable small change is in the expected direction, at least for the shortened version: The alternative utterances show a  decrease in the smoothness of the information flow compared to the actually attested utterances. Note that the information values used here are based on the relatively small Twitter and blog corpus. This means that the context for semantic surprisal TCM is very limited. We expect thus a more precise estimate of the information values based on a larger corpus to lead to a clearer result.
+
+\subsection{A quick note on ad-DP intensifiers}
+
+An interesting observation about German intensifiers is that they can occur in a DP-external position when modifying an attributive adjective or a noun, as shown in the constructed examples in (\ref{ex:addp}), and discussed by \citet{Gutzmann2014Oct,politt2023talk}\footnote{We thank an anonymous reviewer for encouraging us to discuss this phenomenon.}. Note that the English translations exhibit the intensifiers in the expected, pre-adjectival DP-internal position.
+
+\ea\label{ex:addp}
+\ea
+\gll Das war voll das schöne Wochenende!\\
+That was \textsc{int} the beautiful weekend\\
+\glt `That was a super nice weekend!'
+\ex 
+\gll Ich habe voll das schöne Bild gemalt.\\
+I have \textsc{int} the beautiful picture drawn\\
+\glt `I have drawn such a nice picture.'
+\z
+\z
+
+In this construction, the intensifier \textit{voll} (`fully') precedes the determiner of the DP; this determiner is typically definite (but indefinites are also possible). In terms of meaning, the sentences in (\ref{ex:addp}) are denotationally equivalent to their canonical variants in (\ref{ex:addp2}) \citep{Gutzmann2014Oct}. \citet{Gutzmann2014Oct} make the important observation that the noun is interpreted as indefinite, even if a definite determiner is present.
+
+\ea\label{ex:addp2}
+\ea
+\gll Das war ein voll  schönes Wochenende!\\
+That was a \textsc{int}  beautiful weekend\\
+\glt `That was a super nice weekend!'
+\ex 
+\gll Ich habe ein voll  schönes Bild gemalt.\\
+I have a \textsc{int}  beautiful picture drawn\\
+\glt `I have drawn such a nice picture.'
+\z
+\z
+
+The DP-external  intensifier variant in (\ref{ex:addp}) is understood as more expressive and stronger than the canonical, DP-internal variant (\ref{ex:addp2}). We believe that the information theoretic measures introduced in this paper can explain this difference. Comparing the TCM-surprisals, that is, the information values derived from topic contexts, for the sentences in (\ref{ex:addp}) with their corresponding (\ref{ex:addp2}) variants, we observe that the canonical versions have a much smoother information profile (see \figref{fig:addp}). Thus, the speaker seems to be encoding additional surprisal by using the marked ad-DP intensifier construction. Our blog/tweets corpus contains no instances of this construction, but it would be very worthwhile to carry out a larger corpus study to corroborate this observation.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=.4\textwidth]{5_schoeneswe.png}\\
+    \includegraphics[height=.4\textwidth]{5_schoenesbild.png}
+    \caption{TCM information profiles for ad-DP and canonical sentences (\ref{ex:addp}--\ref{ex:addp2})}
+    \label{fig:addp}
+\end{figure}
+
+
+\section{Discussion}\label{sec:5_discussion}\largerpage
+
+In this paper, we apply information theoretic analyses to a new dataset of manually annotated intensifiers in two media, tweets and blog posts, to account for their expressive meaning and characterize the variability of available intensifying items. We confirm previous information theoretic predictions about the distribution of intensifiers in a new medium, blog posts. These results hold even though the data we report on here is no longer restricted to  intensification of predicative adjectives, but includes intensifiers of adjectives in other positions, as well as nominal and verbal intensification. We show that  the context-free information value IC and the context-dependent information measure TCM  are highly correlated for the entire dataset. Both measures can account for the distribution of intensifiers in our data, as well as their tendency to occur in order of increasing information in a phrase, giving credence to the notion that intensifiers form a common word class, even across syntactic and semantic differences. 
+
+Since both values measure the surprisal of a word, it is expected that they are related. However, they are not identical, since IC is a static value computed based on overall word frequency, while TCM is dependent on the context of a specific instance (here, dependent on the document and its topic distribution). The TCM values are more reliable for the blog posts than the tweets. This is most likely due to the size of the contexts, which for the tweets only include the single tweet, which means an extremely small context for topic detection. 
+We assume that the relationship between TCM and IC will change further when the context is increased again, i.e., larger than for the blogs and, for example, includes longer documents or encompasses an entire subcorpus. The prediction is that for large coherent contexts, TCM will yield a ``better'', that is more accurate, information value for words, which could manifest itself in a lower number of violations, i.e., deviations from the expected increase in information values in stacks of intensifiers. 
+
+We explicitly tested the conjecture from previous work, that stacked intensifiers tend to be ordered from least to most expressive within a phrase, on our entire corpus of sentences with intensifiers. We systematically compared sentences with stacked intensifiers with the communicatively equivalent alternatives (i) containing only the last, most expressive intensifier, or (ii) containing both intensifiers in reverse order. We computed information profiles for both variants and compared them to the actually attested variant. Our results show that the attested sentences exhibit a smoother information contour (higher uniformity of information density). This supports the Uniform Information Density hypothesis, which states that smoother information flow is preferred in communication, when keeping other factors equal. This analysis may serve to shed light on the puzzle why writers bother to add further, redundant intensifiers beyond the most expressive one: Their function is to introduce the phrase, alert the reader to the word class which follows, and smooth the information flow.
+
+\section*{Acknowledgements}
+We would like to thank the annotators, in particular Imge Yüzüncüoglu, for their assistance in preparing the data. We are grateful for the detailed comments from two anonymous reviewers, as well as the editors of this volume.
+
+%\section*{Contributions}
+%John Doe contributed to conceptualization, methodology, and validation.
+%Jane Doe contributed to the writing of the original draft, review, and editing.
+
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\newpage
+
+\begin{paperappendix}
+
+\section{Information density in shortened and reversed stacks}
+~
+\begin{figure}[h]
+  \centering
+\begin{subfigure}[t]{.66\textwidth}
+%     \includesvg[inkscapelatex=false,width=\textwidth]{5_si_twitter_stacks-tatjana_freq.svg}
+    \includegraphics[width=\textwidth]{5_si_twitter_stacks-tatjana_freq.png}
+    \caption{Information Density of IC in the Twitter data, compared to shortened and reversed stacks}
+\end{subfigure}\medskip\\
+\begin{subfigure}[t]{.66\textwidth}
+%     \includesvg[inkscapelatex=false,width=\textwidth]{5_si_twitter_stacks-tatjana_tcm.svg}
+    \includegraphics[width=\textwidth]{5_si_twitter_stacks-tatjana_tcm.png}
+    \caption{Information Density of TCM in the Twitter data, compared to shortened and reversed stacks}
+\end{subfigure}
+\caption{Average per-word information density in complete sentences compared to their shortened and reversed variants, in the Twitter subcorpus.} 
+\label{fig:twitter-tcm-short-rev}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+\begin{subfigure}[t]{.66\textwidth}
+%     \includesvg[inkscapelatex=false,width=\textwidth]{5_si_all_stacks-tatjana_freq.svg}
+    \includegraphics[width=\textwidth]{5_si_all_stacks-tatjana_freq.png}
+    \caption{Information Density of IC in the complete data, compared to shortened and reversed stacks}
+\end{subfigure}\medskip\\
+\begin{subfigure}[t]{.66\textwidth}
+%     \includesvg[inkscapelatex=false,width=\textwidth]{5_si_all_stacks-tatjana_tcm.svg}
+    \includegraphics[width=\textwidth]{5_si_all_stacks-tatjana_tcm.png}
+    \caption{Information Density of TCM in the complete data, compared to shortened and reversed stacks}
+\end{subfigure}
+\caption{Average per-word information density in complete sentences compared to their shortened and reversed variants, in the complete corpus (tweets and blogs)}
+\label{fig:all-tcm-short-rev}
+\end{figure}
+\end{paperappendix}
+
+\end{document}

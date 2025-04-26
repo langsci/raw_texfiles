@@ -1,0 +1,611 @@
+% !TeX spellcheck = en_US
+\chapter{The effect of paragraph structure on the choice of referring expressions}\label{chap6}
+
+\section{Introduction}
+
+The preceding chapters discussed the selection of corpora and features for the task of RFS. While the two studies in \chapref{chap5} have demonstrated the significance of a paragraph-based recency feature, the exact manner in which this feature influences the choice remains unclear. Moreover, those studies highlighted the relevance of only a single paragraph-related factor. It is uncertain whether additional aspects of paragraph structure contribute to its relevance for this task. This chapter will examine various paragraph-related factors that might be relevant to the choice of RF.
+
+To better understand the potential importance of including paragraph structure in \context, consider \REF{ex:walter}. This example demonstrates the paragraph structure in an excerpt about Walter White, a character from the television series ``Breaking Bad". \footnote{\url{https://breakingbad.fandom.com/wiki/Walter_White}} To illustrate the realization of the REs, the first paragraph is presented in full; the content of the subsequent paragraphs is summarized up to the point where the character Walter White is first mentioned in the subject position.
+
+\begin{exe}
+	\ex \label{ex:walter}
+	\begin{xlist}
+		\item \italunder{Walter Hartwell ``Walt" White Sr.}, also known by \italunder{his} clandestine pseudonym and business moniker Heisenberg, was an American drug kingpin. A former chemist and high school chemistry teacher in Albuquerque, New Mexico, \italunder{he} started manufacturing crystal methamphetamine after being diagnosed with terminal lung cancer. \italunder{He} initially does this in order to pay for \italunder{his} treatments and secure the financial future of \italunder{his} family: wife Skyler, son Walter Jr., and infant daughter Holly, but confesses before \italunder{his} death that \italunder{he} actually did it for \italunder{himself}, due to being good at it and feeling alive. \label{ex:par1}
+		\item In the 1980s, \italunder{Walt} co-founded the company Gray Matter Technologies ... \label{ex:par2}
+		\item After joining \italunder{his} brother-in-law and accomplished DEA agent Hank Schrader on a drug bust and hearing from Hank about the lucrative profits that drug manufacturing and dealing could produce, \italunder{Walt} decided to use \italunder{his} knowledge of chemistry to become involved in the drug trade ... \label{ex:par3}
+		\item While initially heavily reluctant to use violence, \italunder{Walt} gradually came to see it as a necessity ... \label{ex:par4}
+		\item After accumulating over \$80 million USD from \italunder{his} involvement in the drug trade, and following a resurgence in \italunder{his} cancer, \italunder{Walt} retired from the drug business permanently ... \label{ex:par5}
+		\item \italunder{Walt} returned home and attempted to escape with \italunder{his} family ... \label{ex:par6}
+		\item \italunder{Walt} went on to confront and then ... \label{ex:par7}
+	\end{xlist}
+\end{exe}
+
+As the first paragraph (\ref{ex:par1}) demonstrates, Walter White is introduced for the first time using his full name, \intext{Walter Hartwell ``Walt" White Sr}. It is noteworthy that in the following paragraphs, the initial mention of Walter White in the subject position is \emph{consistently} non-pronominal. Despite the proximity of just one sentence from its antecedent in the second paragraph (\ref{ex:par2}), Walter White is referred to in a non-pronominal form. Does this non-pronominal usage stem from the transition between paragraphs?
+
+Additionally, the excerpt features frequent use of pronominal REs within the first paragraph. If queried about the primary subject of the first paragraph, one would likely respond that it centers on Walter White. Is this pattern merely coincidental, or does the prominence of the character within the paragraph contribute to the exclusive use of pronouns?
+
+In all paragraphs except the third (\ref{ex:par3}), Walter White is first mentioned in the subject position. In the third paragraph, the possessive determiner \intext{his} serves as a cataphoric reference to reintroduce him. Does the grammatical role of the RE, being a possessive determiner, influence the preference for a pronominal form at the beginning of this paragraph?
+
+The primary objective of this chapter is to explore whether paragraph structure influences the choice of RF. The observations mentioned earlier hint at several aspects of paragraph structure that could affect this decision: (1) transitions between paragraphs, (2) the prominence of referents within a paragraph, and (3) the grammatical roles of REs that reintroduce a referent into a paragraph. This chapter comprises two studies, study \studD and study \studE, which respectively assess the impact of paragraph structure on the choice of RF in a corpus and through a feature-based \context analysis.
+
+In study \studD, I analyze various factors within the \wsj corpus, hypothesizing that (1) \term{paragraph-prominent} entities are substantially more likely to be pronominalized, (2) \term{paragraph-new} and \term{paragraph-initial} REs are substantially more likely to be non-pronominal, and (3) paragraph-new REs are more likely to be pronominal if the referent is prominent in the current ($P_{i}$) and the previous ($P_{i-1}$) paragraph.
+
+Study \studE integrates several paragraph-related features into a feature-based pronominalization model, hypothesizing that the inclusion of paragraph-related information substantially improves the performance of feature-based \context models. This study also aims to understand \textit{why} the inclusion of paragraph-related features is critical for the task. To augment the explainability of its findings, the study employs two methods: a \term{SHapley Additive exPlanations} (SHAP) analysis and an \term{error analysis}.
+
+
+The chapter is structured as follows:
+\sectref{sec:litpar} discusses the concept of a paragraph and reviews studies that (1) underscore the significance of paragraphs or episodic information more broadly, and (2) delve into the interactions between paragraph boundaries and RF choices.
+A corpus analysis of the \wsj corpus is conducted in Study \studD, as detailed in \sectref{sec:corpuspar}, to gain deeper insights into paragraph structure. Study \studE, described in \sectref{sec:mlstudy}, introduces various paragraph-related features. It then proceeds with a series of \context model evaluations and an error analysis to evaluate the contribution of paragraph-related information to feature-based \context models.
+
+\section{Paragraph boundary: Linguistic theories}\label{sec:litpar}
+
+In the process of writing, authors typically possess an intuitive sense about where to conclude a paragraph and where to initiate a new one. Moreover, poor paragraphing can hinder readers' comprehension of the text, as noted by \citet{Hofmann1989}. Despite this, there are no universally agreed-upon characteristics that define a paragraph \citep{Hofmann1989, filippova-strube-2006-using}. Linguistic theories offer limited insight about what paragraph breaks signify or on the criteria for dividing texts into paragraphs. Complicating matters further, there is often more than one acceptable method for structuring paragraphs.
+
+Notwithstanding the existence of various approaches to paragraph formation, \citet{Hofmann1989} points out that certain instances clearly warrant the start of a new paragraph, making any other choice incorrect. Similarly, there are circumstances where extending a current paragraph is inappropriate. Nonetheless, the focus of this section is not to critically analyze the definitions of paragraph boundaries. Instead, it concentrates on examining studies that have, in one form or another, incorporated the concept of paragraph boundaries.
+
+\subsection{Paragraph boundary: Its detection, importance, and applications}\label{subsec:parboundimportance}
+
+This subsection delves into various studies that have explored the significance of paragraph boundaries from diverse perspectives, such as their impact on information processing. In her research, \citet{Stark1988} investigated how paragraph boundaries influence reading time and perceived importance of ideas. Her findings suggest that the presence of a paragraph boundary can heighten the reader's attention to the opening sentence of the paragraph, leading to a higher perceived importance of that sentence.
+
+Moreover, \citet{Stark1988} conducted an experiment with 21 participants who were presented with three essays stripped of their paragraph markers. The participants were tasked with identifying where they believed the paragraph boundaries should be, denoting them with a slash between sentences. The aim was to determine the degree of consensus on the placement of paragraph boundaries. \citet{Stark1988} observed varying levels of agreement among participants (with a minimum agreement rate of 0.25 and a maximum of 0.47) and noted the highest accuracy in identifying paragraph boundaries as 0.6 for one of the texts. Participants, according to \citeauthor{Stark1988}, generally concurred with each other and with the original authors of the essays to a greater extent than would be expected by random chance. However, \citeauthor{Stark1988} did not specify the method used to calculate this ``chance level".
+
+One key finding of \citet{Stark1988}'s study is the influence of \term{over-reference} -- the use of full forms when a pronoun would suffice -- on the detection of paragraph boundaries in unparagraphed texts. For instance, Stark argues that the perception of a paragraph boundary in \REF{ex:springfull} ``is consistent with evidence that over-reference is used by speakers at episode boundaries" (\citeyear[291]{Stark1988}).
+
+
+\begin{exe}
+	\ex
+	\begin{xlist}
+		\ex \label{ex:springpro} \textbf{It} [spring] comes seeping in everywhere like one of those new poison gases which pass through all filters. 
+		\ex \textbf{The spring} is commonly referred to as ``a miracle" and during the past five or six years this worn-out figure of speech has taken on a new lease on life. (Orwell, 1945, p. 143) \label{ex:springfull} 
+	\end{xlist}
+	
+\end{exe}
+
+
+
+\citet{Stark1988} also discovered that individuals do not consistently divide texts into paragraphs of uniform length. If paragraph boundaries were merely aesthetic elements, one might expect paragraphs of similar lengths. However, \citet{Stark1988} found that paragraph lengths varied significantly. Interestingly, people demonstrated a notable ability to identify the boundaries of paragraphs, even when their lengths deviated considerably from the average.
+
+In summary, her experiments revealed a number of key insights: (1) paragraph boundaries are not arbitrarily placed, as evidenced by people's agreement on their detection exceeding chance levels; (2) paragraphs are not solely aesthetic constructs, as indicated by the successful identification of paragraphs of varying lengths; and (3) Over-reference is frequently employed by individuals to discern paragraph boundaries.
+
+From a computational standpoint, paragraph boundaries hold significant importance in various applications, including document summarization and the creation of layouts for generated texts. However, as \citet{Sporleder2006} notes, paragraph boundary detection has received less attention than the closely related task of topic segmentation. This is partly because paragraph boundaries are often explicitly marked in texts by a new line and additional space. Yet, in newly generated texts from text-to-text or speech-to-text applications, a clearly defined paragraph structure is usually absent \citep{Sporleder2006}. Only a handful of studies \citep{Bolshakov2001, sporleder-lapata-2004-automatic, Sporleder2006, filippova-strube-2006-using} have proposed models for detecting paragraph boundaries using linguistic cues.
+
+\citet{Bolshakov2001} employed text cohesion as an indicator for paragraph boundary detection, using collocation networks and semantic links between words to assess cohesion. They posited that the connection between the first sentence of a paragraph and its preceding sentence is generally weaker than the links between sentences within a paragraph. 
+
+Similarly, \citet{filippova-strube-2006-using} used cohesive features based on discourse cues, pronominalization, and information structure to identify paragraph boundaries. Their research, involving 970 texts from the German Wikipedia, demonstrated that pronominalization and information structure are pivotal in detecting paragraph boundaries. Echoing \citet{Stark1988}, they argued that over-reference is indicative of a new paragraph's onset. Hence, if a sentence employs a non-pronominal form where a pronominal reference would be suitable, it likely signals the start of a new paragraph.
+
+Contrasting with \citet{filippova-strube-2006-using}, who concentrated on using RF to identify paragraph boundaries, the studies in this chapter assess how paragraph boundaries influence the choice of RF. Before delving into the corpus- and machine learning feature-based experiments in \sectref{sec:corpuspar} and \sectref{sec:mlstudy}, \sectref{sec:ParRef} will explore studies that emphasize the impact of paragraph or episode boundaries on the choice of RF.
+
+\subsection{Paragraph boundaries as determinants of RF}\label{sec:ParRef}
+
+
+In the previously discussed Walter White example, it was observed that all subject REs at the beginning of each paragraph were non-pronominal. This pattern of using non-pronominal forms at paragraph openings is posited to be correlated with the presence of paragraph boundaries, as suggested in the works of \citet{Hinds_1977} and \citet{Hofmann1989}. Notably, \citet{Hofmann1989} views paragraph breaks as \emph{barriers} to anaphora, suggesting that these breaks significantly influence the choice of RF.
+
+ \begin{quote}
+ 	A pronoun or other anaphoric element cannot be used if its nearest ante-cedent is embedded in a preceding paragraph. Even in the cases that the pronouns are sufficient and a non-pronominal expression is redundant, when there is a paragraph break, a non-pronominal form is being used. Paragraph boundary can be seen as machinery that is deactivating most of what precedes (\citeyear[241]{Hofmann1989}). 
+ 	
+ \end{quote}
+
+\citeauthor{Hofmann1989} illustrates the inaccessibility of pronouns across paragraph boundaries with an analogy: Consider a teacher using a blackboard to present various pieces of information. As long as the information remains on the board, the teacher can refer to it using pronouns. However, once erased, the teacher must resort to more detailed expressions or rewrite the information to reference it again. Similarly, Hofmann argues, transitioning to a new paragraph necessitates the use of more elaborate REs \citep{Hofmann1989}. Despite taking a firm stance on the barrier to cross-paragraph anaphora, \citeauthor{Hofmann1989} acknowledges the occasional use of pronouns at the start of a paragraph. These instances act as a bridge between the preceding and current paragraphs, aiming to ``unite them into larger functional units" \citep[245]{Hofmann1989}.
+
+Ariel's Accessibility Theory \citeyearpar{ariel1990accessing,ariel2004accessibility} posits that the more accessible a referent is, the more likely it will be referred to by a reduced form, such as a pronoun. Accessibility is determined by two factors: (1) the intrinsic salience of the referent (e.g., being topical), and (2) its relational accessibility to its antecedent. Under this framework, \citeauthor{ariel1990accessing} introduced the \term{unity} criterion, which assesses whether the antecedent and its reference share the same frame, world, point of view, segment, or paragraph. References spanning different paragraphs are deemed not coherently close.
+
+In her analysis of the distribution of REs across various text positions in a corpus, \citet{ariel1990accessing} observed that over 80\% of definite descriptions were used either within the same paragraph but beyond the immediate preceding sentence, or across paragraph boundaries. Additionally, when examining REs from the perspective of textual positions, \citeauthor{ariel1990accessing} found that across paragraph boundaries, 58.9\% of REs were definite descriptions, and notably, 26.7\% were pronouns. However, a limitation of this study is its scope, encompassing only 775 REs, with 70\% being pronouns.
+
+\citet{vonk1992use}, expanding on \citeauthor{ariel1990accessing}'s work, investigated the distribution of pronouns and definite descriptions in text fragments. Their findings suggest that overspecified REs play a role in structuring discourse, whereas pronouns indicate continuity. In this context, a full NP serves as a marker for establishing a new informational chain within the discourse representation \citep{vonk1992use,Smith2003}.
+
+\citet{Tomlin1987cognitive} critiqued linear models of recency in discourse, highlighting their inadequacy in explaining two phenomena: (1) the use of a definite description when its antecedent is merely a single clause away without any ambiguity, and (2) the maintenance of pronominal expressions over extended distances. To address these inconsistencies, \citeauthor{Tomlin1987cognitive} proposed an episode/paragraph model. He theorized, ``the alternation between noun and pronoun to be a function of the limited capacity of working memory, which is manifested in the text artifact primarily through its paragraph, or episodic organization" (\citeyear[456]{Tomlin1987cognitive}). Each episode in this model contains a thematic macroproposition that remains the focus of attention until a shift occurs. In narrative discourse, paragraph boundaries signify such shifts in attention. \citeauthor{Tomlin1987cognitive} elucidates this relationship between episode or paragraph boundaries and attention allocation:
+
+\begin{quote}
+	The alternative use of a noun or pronoun in discourse production is a function of attention allocation by the speaker. During the online process of discourse production, the speaker uses a pronoun to maintain reference as long as attention is sustained on that referent. Whenever attention focus is disrupted, the speaker reinstates reference with a full noun, no matter how few clauses intervene between subsequent references (p. 458).
+\end{quote}
+
+This perspective links the hierarchical structural organization of discourse with the cognitive mechanism of attention, offering a more nuanced understanding of attention dynamics in discourse. According to \citet{Tomlin1987cognitive}, this episodic theory explains 84\% of referential expression choices in his study. The other 16\% are categorized as (1) \term{intra-episode nominals} (non-pronominal REs within an episode) and (2) \term{inter-event pronominals} (rare pronouns used at the start of a paragraph). Intra-episode nominals are often employed to resolve ambiguity, whereas no specific linguistic explanation is provided for inter-event pronominals due to their scarcity in the study. \citeauthor{Tomlin1987cognitive} supports an attention-driven episodic approach over a linear recency model, arguing that the latter fails to account for these exceptions.
+
+Similar to \citet{Tomlin1987cognitive}, \citet{fox1987anaphora} also challenged linear reference theories, questioning their implications on text structure and attention flow. She argued that if only the distance from the antecedent mattered, all clauses would contribute equally to this measurement, implying a linear model where discourse is perceived as ``an undifferentiated string of clauses which follow one another in time but do not form larger units that could perform communicative functions in relation to one another" (p. 158). In such a model, attention is treated as a uniform concept, disregarding the need to signal new developments about the same referent or interruptions of previous information.
+
+
+Contrarily, \citet{fox1987anaphora} posited that the use of a full NP where a pronoun would suffice marks the hierarchical structure of the narrative. A full NP signals the start of a new development unit within the text. This does not imply all new units begin with full NPs, but rather, full NPs are used where pronouns are typically admissible. While \citet{fox1987anaphora} does not explicitly define these development units, \citet{Huang2000} suggests they may manifest as turns, paragraphs, episodes, events, or themes in a hierarchical anaphora framework.
+
+\subsection{Interim summary}
+In \sectref{sec:litpar}, I discussed the detection and applications of paragraph boundaries from cognitive and computational perspectives. The focus then shifted to the relationship between paragraph boundaries and the choice of RF.
+The theories examined here offer insights into why full NPs often appear at the start of new paragraphs, attributing this pattern to factors like working memory constraints, the initiation of new informational chains, and the dynamics of attention allocation. 
+
+Furthermore, this section delineates a crucial distinction between linear and hierarchical models of reference. While linear models focus on the immediate proximity of antecedents, hierarchical models integrate larger textual units, such as paragraphs and episodes, into the analysis. This distinction underscores the limitations of linear models, particularly in explaining the complexities of cross-boundary transitions. The upcoming corpus analysis aims to delve deeper into this issue, exploring how paragraph structure intricately influences the choice of referential forms in a more empirical and data-driven manner.
+
+\section{Study D: A corpus analysis of the impact of paragraph structure on RF}\label{sec:corpuspar}
+
+Study \studD undertakes a thorough analysis of paragraph-related factors within the \wsj corpus, aiming to decipher how paragraph structure influences RF choices. This section is structured as follows: \sectref{subsec:parbasicstat} presents basic statistics of the \wsj corpus's paragraphs. Subsequently, paragraphs are examined from two perspectives in \sectref{subsubsec:promInPar} and \sectref{subsec:interpar}: (1) \term{intra-paragraph}, focusing on the internal structure of paragraphs, and (2) \term{inter-paragraph}, concerning transitions between paragraphs. Lastly, \sectref{subsec:studyDdiscussion} offers a concise summary and discussion.
+
+
+\subsection{Basic overview of paragraphs in \wsj}\label{subsec:parbasicstat}
+
+The \wsj corpus, known for its relatively lengthy newspaper articles (average 25 sentences per article), initially lacks explicit paragraph structure information. This information was later integrated from an external source and assigned to the articles, as detailed in \chapref{chap5}.\footnote{\url{https://github.com/WING-NUS/pdtb-parser/tree/master/external/aux_data/paragraphs}}
+
+Our analysis uses 5561 paragraphs from the \wsj corpus.\footnote{Two articles (\example{wsj-0591} and \example{wsj-1482}) are excluded from the analysis due to the absence of paragraph segmentation.} The corpus exhibits an average of 11.01 paragraphs per document (ranging from 1 to 53 paragraphs). \tabref{tab:inparstat} provides insights into the number of referents, REs, sentences, and words per paragraph.
+
+\input{figures_tex_snippets/06/inparstatistics}
+
+
+\subsection{Intra-paragraph factor: Paragraph-prominent referents}\label{subsubsec:promInPar}
+
+This section examines the hypothesis that referents prominent within a paragraph are more frequently referred to using pronominal REs. Consider \REF{ex:walterwhite}, which repeats the opening paragraph of \REF{ex:walter}. This example illustrates a pattern where, following the first explicit mention, subsequent references to the prominent character, Walter White, are predominantly pronominal. In this example, except for the initial explicit mention, Walter White is subsequently referred to via pronominal REs such as \intext{he} and \intext{his}. This pattern suggests a tendency towards pronominalization for a paragraph's prominent character.
+
+\begin{exe}
+	\ex\label{ex:walterwhite} \italunder{Walter Hartwell ``Walt" White Sr}., also known by \italunder{his} clandestine pseudo-nym and business moniker Heisenberg, was an American drug kingpin. A former chemist and high school chemistry teacher in Albuquerque, New Mexico, \italunder{he} started manufacturing crystal methamphetamine after being diagnosed with terminal lung cancer. \italunder{He} initially does this in order to pay for \italunder{his} treatments and secure the financial future of \italunder{his} family: wife Skyler, son Walter Jr., and infant daughter Holly, but confesses before \italunder{his} death that \italunder{he} actually did it for \italunder{himself}, due to being good at it and feeling alive.
+\end{exe}
+
+
+\paragraph*{Prominent referents in a paragraph}
+
+To investigate the impact of paragraph-prominence on RF, this study adopts the frequency of mention as a measure of referents' prominence within a paragraph. This concept, inspired by \citeauthor{siddharthan2011information}'s assertion that frequency features can effectively indicate a referent's global salience within a document \citeyearpar{siddharthan2011information}, is applied at the paragraph level to assess the prominence of entities within specific discourse segments.
+
+In this approach, referents that receive the most mentions within a paragraph are marked as prominent. When multiple referents share the highest frequency of mentions, each is considered equally prominent. For instance, in \REF{ex:volokh}, ``Anne Volokh" is identified as the prominent referent in the paragraph. Therefore, all references to her within this paragraph, which are shown in bold in \REF{ex:volokh}, are tagged as prominent.
+
+\begin{exe}
+	\ex\label{ex:volokh} \example{wsj-1367}
+	\begin{xlist}
+		\ex $[$Paragraph 1$]$ When \italunder{Anne Volokh} and \italunder{her} family immigrated to the U.S. 14 years ago, they started life in Los Angeles with only \$ 400. They 'd actually left the Soviet Union with \$ 480, but during a stop in Italy \italunder{Ms. Volokh} dropped \$ 80 on a black velvet suit. Not surprisingly, \italunder{she} quickly adapted to the American way. Three months after \italunder{she} arrived in L.A. \italunder{she} spent \$ 120 \italunder{she} did n't have for a hat. ``A turban," \italunder{she} specifies, ``though it was n't the time for that 14 years ago. But I loved turbans."
+		
+	\end{xlist}
+\end{exe}
+
+In the analyzed dataset, a total of 2,472 paragraphs feature only one prominent referent, while 3,089 paragraphs have multiple prominent referents. \tabref{tab:refInParForm} details the distribution of RFs, distinguishing between mentions of prominent and non-prominent referents. According to the table, there are 18,121 REs classified as \val{prominent} and 12,350 as \val{non-prominent}, as indicated in the \val{Total} row of \tabref{tab:refInParForm}.
+
+\input{figures_tex_snippets/06/refInParForm}
+
+
+Analysis of \tabref{tab:refInParForm} reveals that the distribution of non-pronominal forms (i.e., proper names and descriptions) is relatively similar for both prominent and non-prominent referents. For instance, descriptions account for 20.1\% of references to prominent entities and 19.3\% to non-prominent entities. However, the pattern diverges for pronominal REs: 19.3\% of pronominal references are made to prominent referents, compared to only 4.6\% for non-prominent referents. This discrepancy indicates a significantly higher likelihood of using pronominal REs for prominent referents than for non-prominent ones.
+
+\subsection{Inter-paragraph factors: Cross-boundary transitions}\label{subsec:interpar}
+
+Prior research, as discussed in \sectref{sec:ParRef}, indicates a propensity for referents to be expressed in non-pronominal forms when their antecedents are located in a preceding paragraph. This pattern may arise from stylistic choices, where authors prefer non-pronominal forms for the initial REs in a new paragraph due to their prominent position. Alternatively, it could be attributed to a decrease in the referents' prominence status due to paragraph transitions, necessitating their reintroduction via non-pronominal REs. The following sections, \ref{subsubsec:acrossboundaryinitialposition} and \ref{subsubsec:acrossboundarynewness}, explore these hypotheses, while \sectref{subsubsec:acrossboundary_pronoun} examines a distinct aspect: cross-boundary pronominalization.
+
+\subsubsection{Paragraph-initial position} \label{subsubsec:acrossboundaryinitialposition}
+
+This analysis focuses on the first RE in each paragraph, termed the \term{paragraph-initial} slot. Since the first mention of an entity in a text is usually non-pronominal, first-mention REs -- also known as \term{discourse-new} REs -- are excluded from this analysis. This approach helps to avoid conflating the effects of discourse-new REs with those of paragraph-initial references. Therefore, the criteria for selecting paragraph-initial referents are:
+
+\begin{enumerate}
+	\item Select only the first RE in each paragraph.
+	\item Exclude discourse-new REs.
+\end{enumerate}
+
+
+Following these criteria, a total of 3,257 discourse-old, paragraph-initial REs were identified. As \tabref{tab:interparFirstRE} shows, over 90\% of these REs are non-pronominal, aligning with findings from previous studies \citep{Tomlin1987cognitive, Pu2019}. This rate of non-pronominalization surpasses that reported by \citet{ariel1990accessing} and mirrors \citet{Pu2019}'s findings in a Chinese text corpus, where a similar percentage of cross-boundary REs were non-pronominal. A critical question remains: Is the tendency for non-pronominalization specific to paragraph-initial REs, or is it a broader phenomenon related to reintroducing referents across paragraph boundaries? The subsequent section, \sectref{subsubsec:acrossboundarynewness}, addresses this question by examining the reintroduction of REs within a paragraph.
+
+\input{figures_tex_snippets/06/interparFirstRE}
+
+
+
+
+\subsubsection{Reintroduction of entities at the paragraph level}\label{subsubsec:acrossboundarynewness}
+%Fafa: changed The newness of entities on the paragraph level to Reintroduction of entities at the paragraph level
+
+The focus here shifts from paragraph-initial REs (as discussed in \sectref{subsubsec:acrossboundaryinitialposition}) to the first reintroduction of each referent within a new paragraph, which I will refer to as \textit{paragraph-new REs}. Unlike the previous analysis, this does not solely concentrate on the first reference slot of each paragraph; instead, it focuses on the initial occurrence of a referent being \textit{reactivated} within the paragraph. This approach is similar to the blackboard analogy in \sectref{sec:ParRef}, where a teacher's use of pronouns is acceptable as long as the referential context remains visible on the board. Once erased, fuller forms are necessary for reactivation. A similar dynamic is expected here: Pronouns remain viable within the same paragraph, but the transition to a new paragraph necessitates fuller forms for referent reactivation, presumably due to a reduction in their prominence. The subset for this analysis adheres to the following criteria:
+
+\begin{enumerate}
+	\item Focus on the first mention of \emph{each referent} within each paragraph.
+	\item Exclude discourse-new REs in order to avoid conflating first mentions with paragraph-new reintroductions.
+\end{enumerate}
+
+
+Applying these criteria yields 9,784 discourse-old, paragraph-new REs. \tabref{tab:firstMentionParag} presents their distribution, revealing a striking pattern: Approximately 94\% of paragraph-new REs are realized in non-pronominal forms. This significant tendency strongly suggests that non-pronominal forms are preferred for reintroducing referents in new paragraphs.
+
+\input{figures_tex_snippets/06/firstMentionParag}
+
+
+\subsubsection{Cross-boundary pronominalization}\label{subsubsec:acrossboundary_pronoun}
+
+While a predominant portion of cross-boundary REs are non-pronominal (over 90\%), as noted in previous analyses, there remains a notable subset of pronominal instances. This section delves into three potential factors that might influence this occurrence of cross-boundary pronominalization: (1) the length of the preceding paragraph, (2) the grammatical role of the paragraph-initial RE, and (3) the prominence of the referents involved.
+
+\paragraph*{Length of the preceding paragraph}
+
+The hypothesis here is that pronominal REs at the start of a paragraph might be linked to stylistic choices, particularly following short, one-sentence paragraphs. To investigate this, we examine the 318 paragraph-initial pronominal REs identified in \tabref{tab:interparFirstRE}, focusing on the length of the preceding paragraph ($P_{i-1}$) in terms of sentences. \tabref{tab:firstrefpron} shows the sentence-wise length of paragraph $P_{i-1}$ that precedes paragraph $P_{i}$ containing a paragraph-initial pronominal RE.
+
+\input{figures_tex_snippets/06/first_ref_pron}
+
+\tabref{tab:firstrefpron} displays the sentence length of $P_{i-1}$. The data reveals a range from one to eight sentences, with 25\% of cases having only one sentence in the preceding paragraph. However, since the majority have two or more sentences, we can conclude that the length of $P_{i-1}$ is not a sole determinant for the use of pronominal REs at the beginning of a paragraph.
+
+The subsequent parts of this section will further explore paragraph-initial pronominal REs from two perspectives: examining the grammatical role of these REs and investigating their relation to the prominence status of the referents.
+
+\paragraph*{The impact of grammatical role}
+
+The example presented at the beginning of this chapter highlights a unique instance of a paragraph-initial pronominal RE, specifically a cataphoric possessive determiner (\ref{ex:par3}). This case is intriguing as the use of the possessive determiner \intext{his} is essential for sentence coherence, and alternative RFs would render the sentence structurally inappropriate.
+
+A broader examination of the \wsj dataset reveals that possessive modifiers constitute 14\% of the REs, distributed across different RFs as follows: 17.6\% \val{descriptions}, 25.7\% \val{proper names}, and a significant 56.7\% \val{pronouns}. This distribution pattern suggests that possessive modifiers in the dataset predominantly take pronominal forms. Consequently, it is reasonable to hypothesize that a significant proportion of paragraph-initial pronominal REs are possessive modifiers.
+
+The following example from the \wsj corpus illustrates the transition between paragraphs 17 and 18, where a pronominal possessive determiner is used as the first RE in paragraph 18. In this context, other methods of referring to Judge Ramirez, as shown in \REF{ex:ramirezposs}, are deemed unacceptable. The possessive pronominal form appears to be the only viable option.
+
+\begin{exe}
+	\ex \example{wsj-0049}
+	\begin{xlist}
+		\ex $[$Paragraph 17$]$ Judge Ramirez, 44, said it is unjust for judges to make what they do. ``Judges are not getting what they deserve. You look around at professional ballplayers or accountants... and nobody blinks an eye. When you become a federal judge, all of a sudden you are relegated to a paltry sum."
+		\ex\label{ex:ramirezposs} $[$Paragraph 18$]$ At \italunder{his} new job, as partner in charge of federal litigation in the Sacramento office of Orrick, Herrington \& Sutcliffe, he will make out much better.
+
+	\end{xlist}
+\end{exe}
+
+
+However, the notion of obligatoriness does not always dictate the choice of RFs, and in many instances, alternative RFs are equally appropriate. For example, consider the RE ``Mr. Greenspan's" in \REF{ex:greenspanposs}, which appears as the first RE of paragraph 4. While a pronominal form such as \intext{his} could have been used and would have been contextually acceptable, the text opts for a proper name instead.
+
+\begin{exe}
+	\ex \example{wsj-0598}
+	\begin{xlist}
+		\ex $[$Paragraph 3$]$ Such caution was evident after the recent Friday - the - 13th stock market plunge. Some Bush administration officials urged Mr. Greenspan to make an immediate public announcement of his plans to provide
+		ample credit to the markets. But he refused, claiming that he wanted to see what happened Monday morning before making any public statement.
+		\ex\label{ex:greenspanposs} $[$Paragraph 4$]$ \italunder{Mr. Greenspan's} decision to keep quiet also prompted a near-mutiny within the Fed's ranks. $[$...$]$
+		
+	\end{xlist}
+\end{exe}
+
+
+Given the substantial proportion of pronominal possessive modifiers in the dataset, which constitute 56.7\% of all possessive modifiers, and the instances where such forms are obligatory, I propose that paragraph-initial pronominal REs are substantially more likely to be possessive modifiers than other grammatical roles. This hypothesis is tested using the paragraph-initial pronominal REs from \tabref{tab:interparFirstRE}, although similar patterns are observable in the dataset represented in \tabref{tab:firstMentionParag}.
+
+\tabref{tab:crosstabParInitialRefexGM} details the distribution of these REs across different grammatical roles. In the first row, labeled \textit{count}, the raw frequency of each grammatical role is presented. Notably, the data indicates that out of the paragraph-initial pronominal REs, 231 are subjects, while 69 are possessive modifiers.
+
+\input{figures_tex_snippets/06/crosstabParInitialRefexGM}
+
+
+The row-wise distributions in \tabref{tab:crosstabParInitialRefexGM}, (\texttt{row\%}), offer valuable insights into the roles of paragraph-initial pronominal REs. These percentages reveal that a smaller proportion of paragraph-initial pronominal REs are objects (5.7\%) and possessive modifiers (21.7\%), while a significant majority, 72.6\%, function as subjects. This finding is intriguing as it challenges the initial hypothesis that possessive determiners would predominantly characterize paragraph-initial pronominal REs. \REF{ex:fieldsposs} shows a pronominal subject as the first RE at the beginning of paragraph 4.
+
+
+\begin{exe}
+	\ex \example{wsj-0121}
+	\begin{xlist}
+		\ex $[$Paragraph 3$]$ ``I think program trading is basically unfair to the individual investor," says Leo Fields, a Dallas investor. He notes that program traders have a commission cost advantage because of the quantity of their trades, that they have a smaller margin requirement than individual investors do and that they often can figure out earlier where the market is heading.
+		\ex\label{ex:fieldsposs} $[$Paragraph 4$]$ But \italunder{he} blames program trading for only some of the market's volatility.
+	\end{xlist}
+\end{exe}
+
+The third row (\texttt{col\%}) of \tabref{tab:crosstabParInitialRefexGM} shows the conditional relative frequency of paragraph-initial pronominal REs given the grammatical roles. According to the information in this row, only 18.6\% of the possessive modifiers appearing paragraph-initially are pronominal. Therefore, even in the case of possessive modifiers, non-pronominal REs are more common than pronominal ones in the initial-paragraph position. Regarding the REs in the paragraph-initial subject position, we see that 231 instances (11.5\% of all paragraph-initial subject REs) appear pronominally. 
+
+The third row (\texttt{col\%}) in \tabref{tab:crosstabParInitialRefexGM} details the conditional relative frequency of paragraph-initial pronominal REs based on grammatical roles. From this data, it is evident that only 18.6\% of possessive modifiers at the start of a paragraph are realized pronominally. This shows a predominant preference for non-pronominal forms over pronominal ones as paragraph-initial possessive modifiers. Additionally, the analysis of subject REs in paragraph-initial positions reveals that 231 instances, accounting for 11.5\% of all paragraph-initial subject REs, are expressed using pronominal forms. 
+
+In summary, \tabref{tab:crosstabParInitialRefexGM} provides information about the grammatical role and RF of discourse-old paragraph-initial pronominal REs. The table shows that these pronouns are not confined to possessives but frequently occur in subject positions. Furthermore, despite the general tendency for possessive modifiers to be pronominalized in the \wsj corpus, they are more likely to be realized as non-pronominal REs in paragraph-initial positions. In the next section, I will delve deeper into paragraph-initial pronominal instances, examining their occurrence in relation to the prominence of referents. 
+
+\paragraph*{The prominence status of referents}
+
+\sectref{subsubsec:promInPar} revealed that within paragraphs, prominent referents are more frequently pronominalized compared to their non-prominent counterparts. Additionally, we noted that cross-boundary pronominals extend beyond obligatory possessive determiners. These findings suggest a potential link between cross-boundary pronominalization and the prominence status of referents. Building on this, I propose the hypothesis that a referent newly introduced in a paragraph (paragraph-new referent) is significantly more likely to be pronominalized if it is considered prominent in both the current paragraph ($P_{i}$) and the preceding one ($P_{i-1}$). To investigate this hypothesis, I focus exclusively on REs that reference paragraph-prominent entities. Consequently, the criteria for selecting this subset are:
+
+
+
+\begin{enumerate}
+	\item The dataset is narrowed to include only those REs classified as prominent in \tabref{tab:refInParForm}.
+	\item Focus is placed on the initial mention of each referent within a paragraph.
+	\item Only discourse-old REs are considered.\footnote{The premise of the hypothesis says that the referent should be prominent in both the current and preceding paragraphs, thus these REs must have been introduced earlier in the text.}
+\end{enumerate}
+
+
+Out of the 4291 instances meeting these conditions, approximately 38\% are categorized under the \val{prominent} condition (the referent is prominent in both the current and preceding paragraph), and around 62\% under the \val{non-prominent} condition (the referent lacks prominence in both paragraphs). Interestingly, only 331 of these REs are pronominal, representing less than 8\% of this dataset. However, a noteworthy aspect is that 58\% of these pronominal REs are associated with the prominent condition, while 42\% are linked to the non-prominent condition. Another point of interest is that merely 5.3\% of the REs in the non-prominent condition are pronominal, as opposed to 11.7\% in the prominent condition. These findings suggest that (1) the likelihood of cross-boundary pronominalization remains low even when the referent is prominent in both paragraphs, and (2) although the limited data points inhibit definitive conclusions, it appears that cross-boundary pronominalization more frequently involves prominent referents. For example, in \REF{ex:raptopoulos}, paragraph 6 introduces the referent \intext{Betty Raptopoulos} and frequently mentions her within the paragraph. Paragraph 7 then re-introduces her with the pronoun \textit{She}. The conceptual proximity of these paragraphs and the use of a pronominal RE at the start of paragraph 7 might be interpreted as an attempt to weave them into larger, cohesive units, aligning with the perspectives of \citet{Hofmann1989}.
+
+\begin{exe}
+	\ex\label{ex:raptopoulos} \example{wsj-1203}
+	\begin{xlist}
+		\ex $[$Paragraph 6$]$ \italunder{Betty Raptopoulos, senior metals analyst at Prudential-Bache Securities in New York,} agreed that most of the selling was of a technical nature. \italunder{She} said the market hit the \$ 1.18 level at around 10 a.m. EDT where it encountered a large number of stop-loss orders. More stop-loss orders were touched off all the way down to below \$ 1.14, where modest buying was attracted. \italunder{Ms. Raptopoulos} said the settling of strikes in Canada and Mexico will have little effect on supplies of copper until early next year. \italunder{She} thinks the next area of support for copper is in the \$ 1.09 to \$ 1.10 range. ``I believe that as soon as the selling abates somewhat we could see a rally back to the \$ 1.20 region," \italunder{she} added.
+		\ex $[$Paragraph 7$]$ \italunder{She} thinks a recovery in the stock market would help copper rebound as well. \italunder{She} noted that the preliminary estimate of the third-quarter gross national product is due out tomorrow and is expected
+		to be up about 2.5\% to 3\%.
+	\end{xlist}
+\end{exe}
+
+
+The observations regarding cross-boundary pronominals offer a platform for more detailed investigations. However, before conducting a comprehensive analysis, a thorough preliminary study is needed to identify potentially challenging cases. For instance, in \REF{ex:insidequotation}, the initial RE of paragraph 9 occurs within a quotation. This indicates that the RE was expressed by an individual other than the document's author. Such instances represent a distinct usage of obligatory REs at the beginning of a paragraph, diverging from the assumptions discussed so far. Consequently, these cases necessitate separate consideration, as they operate under different dynamics from the ones outlined in the previous analyses.
+
+\begin{exe}
+	\ex\label{ex:insidequotation} \example{wsj-1474}
+	\begin{xlist}
+		\ex $[$Paragraph 9$]$ ``Unless \italunder{it} gets more help, the U.S. industry won't have a chance," says Peter Friedman, Photonics's executive vice president.
+	\end{xlist}
+\end{exe}
+
+
+\subsection{Summary and discussion of study \studD}\label{subsec:studyDdiscussion}
+
+The corpus study in this section investigated the influence of paragraph-related features on the selection of REs, focusing on both intra-paragraph and inter-paragraph effects. The key findings from this study are summarized below:
+
+\paragraph*{Intra-paragraph effects} The study revealed that entities that are prominent within a paragraph are significantly more likely to be referred to using pronominal forms. This observation aligns with the concept that the prominence of a referent within a discourse segment increases the likelihood of its pronominalization.
+
+\paragraph*{Inter-paragraph effects} Consistent with prior research, the study found that most REs crossing paragraph boundaries are non-pronominal. This supports the idea that paragraph transitions often require the use of fuller, non-pronominal forms to effectively reintroduce or reactivate referents.
+
+\paragraph*{Initial position vs. reintroduction of referents} The study distinguished between referents appearing in the initial position of a paragraph and those being reintroduced in a paragraph. Over 90\% of paragraph-initial REs are non-pronominal, indicating a preference for fuller forms in this position. However, this study alone could not fully clarify whether the initial position inherently favors non-pronominal REs or if the paragraph transition demotes the prominence status of referents, necessitating their reactivation with fuller forms.  Regardless, the analysis in \sectref{subsubsec:acrossboundarynewness} showed that when referents are reintroduced in a paragraph, whether in paragraph-initial position or elsewhere in the paragraph, they are usually realized as non-pronominal REs.
+
+\paragraph*{Grammatical role and pronominalization} The investigation into pronominal paragraph-initial cases revealed that these are not limited to possessive modifiers. Subject REs also appear in pronominal form, though pronominalization of object REs is rare.
+
+\paragraph*{Prominence and transition} Preliminary findings suggest that prominent referents are more likely to be pronominalized across paragraph boundaries. However, this conclusion requires further data and in-depth analysis for validation.
+
+In conclusion, this study contributes to a better understanding of how paragraph structure and transitions influence the choice of REs in text. In the next section, some of the findings of this corpus analysis will be put into practice in a \context task. 
+
+\section{Study E: \context models incorporating paragraph-related features}\label{sec:mlstudy}
+
+Study \studE is a computational analysis aimed at understanding the impact of paragraph structure on the selection of RFs in text. The primary hypothesis of this study is that incorporating paragraph-related information will significantly enhance the performance of feature-based \context models. Building on insights gained from previous studies, especially the positive contribution of the distance in the number of paragraphs highlighted in \chapref{chap5}, study \studE seeks to thoroughly investigate which paragraph-related features are most influential and how they improve model performance. Below are the key aspects of study~\studE:
+
+\paragraph*{Focus on pronominalization task} The literature review and corpus analysis in \sectref{sec:litpar} and \sectref{sec:corpuspar} primarily examined the pronominalization task, i.e., the choice between pronominal and non-pronominal REs. Study \studE continues this focus, specifically exploring how paragraph structure influences the choice between pronominal and non-pronominal REs.
+
+\paragraph*{Exclusion of first Mentions} The study recognizes that the initial mentions of entities in a text are typically non-pronominal. Therefore, to ensure a more precise analysis, first mentions are excluded from the study's scope. This exclusion allows for a clearer examination of the impact of paragraph transitions on subsequent mentions of entities.
+
+In summary, the studies in this section share two key characteristics: (1) they address a 2-way RFS task, specifically distinguishing between \val{pronominal} and \val{non-pronominal} forms, and (2) they consider only discourse-old REs. The structure of this section is as follows: In \sectref{subsec:featintro}, I explore various paragraph-related features to determine their appropriateness for the studies outlined in \sectref{subsec:models}. Subsequently, in \sectref{subsec:models}, I evaluate diverse feature-based models to ascertain the efficacy of paragraph-related features in addressing the \context RFS task. Finally, in \sectref{subsec:erroranalysis}, I conduct an error analysis of the models' results to identify where most mispredictions occur and to understand the conditions under which incorporating paragraph-related features enhances performance.
+
+\subsection{Introducing paragraph-related features for REG}\label{subsec:featintro}
+
+Drawing on insights from study \studC in \chapref{chap5}, I experimented with various numeric and categorical implementations of paragraph recency in the validation set. The selected paragraph-based recency metric is as follows:
+
+\begin{itemize}
+	\item \texttt{dist\_par}: This numeric metric measures the distance in the number of paragraphs between a target RE and its antecedent.
+\end{itemize}
+
+
+Previous research, such as the works of \citet{Tomlin1987cognitive} and \citet{fox1987anaphora}, has questioned linear models of recency, highlighting the significance of the hierarchical and organizational structure in narrative texts over mere linear order. Aligning with this perspective, the corpus studies in \sectref{sec:corpuspar} prioritized examining cross-boundary transitions. In this context, I hypothesize that the contribution of the paragraph distance metric to the \context task lies not just in quantifying the distance between mentions but in implicitly indicating whether the RE and its antecedent are within the same paragraph. To put it simply, a distance of zero suggests that both the RE and its antecedent are located in the same paragraph, while any distance greater than zero indicates a paragraph transition. To explore this hypothesis, I introduce an additional feature, \texttt{par\_givenness}, which categorizes the relationship between the RE and its antecedent into two states: (1) \texttt{new} -- the target RE and its antecedent are at least one paragraph away, that is, marking the first mention of the target RE following a paragraph transition, and (2) \texttt{given} -- indicating that the RE and its antecedent appear within the same paragraph.
+
+\begin{itemize}
+	\item \texttt{par\_givenness}: whether the RE is paragraph-new or paragraph-old. 
+\end{itemize}
+
+The recency feature, \texttt{dist\_par}, not only implicitly encodes the paragraph-givenness of referents but also provides insight into the linear distance between a target RE and its antecedent. In contrast, the \texttt{par\_givenness} feature focuses solely on identifying whether the target RE and its antecedent are situated within the same paragraph or are separated by a paragraph transition. This distinction raises a relevant question: Which aspect -- linear distance or paragraph givenness -- plays a more substantial role in influencing the performance of \context models?\footnote{The term \textit{paragraph givenness} is used here to indicate the referential status of referents at the paragraph level, which also implicitly signals the presence of paragraph transitions.}
+
+To address this query, two distinct models are constructed: one incorporating the \texttt{dist\_par} feature and the other employing the \texttt{par\_givenness} feature. Should these models exhibit similar performance levels, it would suggest that paragraph givenness is the primary factor influencing the choice of RF. Conversely, if the model featuring \texttt{dist\_par} demonstrates superior performance, it would imply that either both paragraph givenness and linear distance or solely the latter are influential in determining RF selection.
+
+
+I employed \method{XGBoost}, a technique from the Gradient Boosting Decision Trees family, to train the classifiers for this study \citep{xgboost2016}. The evaluation of the classifiers' performance, as indicated by the confusion matrices shown in \figref{fig:distpargivennessconfmat}, reveals that both models exhibit identical performance metrics. This finding underscores that paragraph givenness is the key factor in determining the choice of RF. Consequently, based on these insights, the feature \texttt{par\_givenness} is selected as the primary focus for the models discussed in \sectref{subsec:models}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures_tex_snippets/06/dist_par_givenness_confmat}
+	\caption{Confusion matrices of the \val{dist\_par} and \val{par\_givenness} models.}
+	\label{fig:distpargivennessconfmat}
+\end{figure}
+
+
+In the preceding discussions, we have explored paragraph-related factors that encode recency and givenness. In what follows, I  introduce two additional features: \texttt{par\_prom} and \texttt{par\_subj\_1}. These are defined as:
+
+\begin{itemize}
+	\item \texttt{par\_prom}: This feature assesses whether the target RE refer to a referent that is prominent within its paragraph. This is informed by the observation in \sectref{subsubsec:promInPar} that prominent referents within a paragraph are more likely to be referenced pronominally.
+	\item \texttt{par\_subj\_1}: This feature identifies whether the target RE is the first subject RE in the paragraph.
+\end{itemize}
+
+
+The aim of this section is to determine an effective set of paragraph-related features for the comprehensive study outlined in \sectref{subsec:models}. Building on the previously established significance of paragraph givenness, the forthcoming model will integrate \texttt{par\_givenness} along with \texttt{par\_prom} and \texttt{par\_subj\_1}. The study has the following specifications:
+
+\begin{enumerate}
+	\item Task: binary (pronominal vs. non-pronominal) classification
+	\item Features: \val{par\_givenness}, \val{par\_prom}, \val{par\_subj\_1}
+	\item Model: XGBoost with the parameters outlined in \tabref{tab:xgboostparam}.
+	\begin{table}
+		\begin{tabular}{lr}
+			\lsptoprule
+			parameters & value\\
+			\midrule
+			nrounds & 500 \\
+			max\_depth & 5 \\
+			eta & 0.05 \\
+			gamma & 0.01 \\
+			colsample\_bytree & 0.75 \\
+			min\_child\_weight & 0 \\
+			subsample & 0.5 \\
+			objective & multi:softprob \\ \lspbottomrule
+		\end{tabular}\caption{The parameters used in the XGBoost model.}\label{tab:xgboostparam}
+	\end{table}
+\end{enumerate}
+
+
+To assess the impact of the features \texttt{par\_givenness}, \texttt{par\_prom}, and \texttt{par\_subj\_1} on the \context task, a SHapley Additive exPlanations (SHAP) analysis is employed. This analysis, originating from coalitional game theory, effectively deconstructs the model's predictions into individual contributions attributable to various variables. As mentioned by \citet{molnar2019interpretable}, ``a prediction can be explained by assuming that each feature value of the instance is a `player' in a game where the prediction is the payout" (p. 177). In this context, SHAP values act as a fair means of allocating the ``payout'' – in this case, the prediction – amongst different feature values of the instance. 
+
+\figref{fig:parShapValue} demonstrates the outcomes of the SHAP analysis for this model, highlighting how each feature--value influences the model’s predictions. This approach allows for an understanding of the individual and collective impact of these paragraph-level features on the model's performance. The analysis is divided into two parts: one focusing on non-pronominal REs (top graph) and the other on pronominal REs (bottom graph). In this framework, green bars indicate a feature--value's positive contribution towards a particular prediction, while red bars signify a negative contribution.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures_tex_snippets/06/par_3Feat_shap}
+	\caption[Shapley values with box plots for ten random orderings of explanatory variables in the paragraph-related model.]{Shapley values with box plots for ten random orderings of explanatory variables in the paragraph-related model. The top graph shows the contribution of the factors to the prediction of non-pronominal REs, and the bottom graph shows the contributions to pronominal REs. The green and red bars represent positive and negative contributions, respectively.}
+	\label{fig:parShapValue}
+\end{figure}
+
+For the prediction of non-pronominal REs, the top graph reveals that two primary factors increase the likelihood of choosing non-pronominal forms and discourage the use of pronouns. These are: (1) the referent is newly introduced in the paragraph (\texttt{par\_givenness = par\_new}), and (2) the RE is the first subject to appear in the paragraph (\texttt{par\_subj\_1 = yes}). Conversely, if the referent is marked as prominent within the paragraph (\texttt{par\_prom = prominent}), there is a decreased likelihood of opting for non-pronominal forms. 
+
+Notably, the \texttt{par\_givenness} feature has a more substantial impact on the task than the other two features. Nonetheless, given that all these features contribute in varying degrees to the model's performance, they are all incorporated into the main study outlined in \sectref{subsec:models}.
+
+
+\subsection{A comparison of REG models with and without paragraph features}\label{subsec:models}
+
+In the study presented in this section, I investigate the impact of paragraph-related features on the performance of \context models. The goal is to assess whether incorporating these paragraph-level features significantly enhances the model's ability to choose between pronominal and non-pronominal referential forms. For this purpose, I compare the models with added paragraph features against three baseline models:
+ 
+\begin{itemize}
+	\item \textsc{random:} This baseline model assigns a pronominal or non-pronominal value to each instance in the test dataset randomly. This approach serves as a basic comparison point, representing a scenario where no specific features or logic are used in the decision-making process.
+	
+	\item \textsc{minimum:} The \textsc{minimum} baseline incorporates only the local features of a referent, excluding any features related to the antecedent. The features included in this model are: grammatical role (\val{gm}), animacy, and plurality.
+	
+	\item \textsc{informed:} The \textsc{informed} baseline builds upon the \textsc{minimum} baseline by adding a categorical measure of sentential distance (\val{dist\_s}). This feature classifies the distance between the referent and its antecedent into three categories: \val{same sentence} (the referent and its antecedent are in the same sentence), \val{one sentence away} (the referent and its antecedent are separated by one sentence), and 
+	\val{plus-one sentence away} (the referent and its antecedent are separated by more than one sentence).
+\end{itemize}
+
+The \textsc{experimental} model is constructed by combining features from both the \textsc{informed} model and the paragraph-related features previously introduced in \sectref{subsec:featintro}. The features included in the \textsc{experimental} model are as follows:
+
+\begin{itemize}
+	\item \textsc{experimental:} grammatical role (gm), animacy, plurality, sentence distance (\val{dist\_s}), paragraph givenness (\val{par\_givenness}), prominence in paragraph (\val{par\_prom}), paragraph subjecthood (\val{par\_subj\_1}).
+\end{itemize}
+
+
+The models are trained using the XGBoost algorithm, with the training process involving 5-fold cross-validation. The specific parameters used for training are detailed in \tabref{tab:xgboostparam}.
+
+The performance of the models is assessed using a variety of metrics. These include the overall accuracy of the models, as well as their macro-averaged precision, recall, and F1 scores. Accuracy provides a measure of overall correctness, while the macro-averaged precision, recall, and F1 scores address potential class imbalances. These macro-averaged scores are calculated by taking the arithmetic mean, also known as the unweighted mean, of the scores for each class. Precision assesses the model's accuracy in identifying relevant instances, recall evaluates its ability to capture all relevant cases, and the F1 score, being the harmonic mean of precision and recall, offers a balanced measure of the model's sensitivity and specificity. Table \ref{tab:overalStat} presents the overall performance statistics of the models.
+
+{\renewcommand\normalsize{\footnotesize}%
+	\normalsize
+	\input{figures_tex_snippets/06/overalStat}}
+
+
+All three models outperform the \textsc{random} baseline, as shown in \tabref{tab:overalStat}. The \textsc{minimum} and \textsc{informed} models differ in only one feature, yet their performance varies significantly (\textsc{minimum} macroF1 = 0.638 vs. \textsc{informed} macroF1 = 0.835). The \textsc{experimental} model shows improved performance over the \textsc{informed} model, although the margin of this improvement is not very large. \figref{fig:informedexperimentaconfmat} presents the confusion matrices for the \textsc{informed} and \textsc{experimental} models, illustrating their respective performances in terms of correct and incorrect predictions. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures_tex_snippets/06/informed_experimental_confmat}
+	\caption{Confusion matrices of the \textsc{informed} and \textsc{experimental} models.}
+	\label{fig:informedexperimentaconfmat}
+\end{figure}
+
+\paragraph*{Pronominal cases} Both models have very similar performance in correct and incorrect prediction of pronominal cases. Regarding the correct predictions, both models show comparable accuracy, with the \textsc{informed} model at 26\% and the \textsc{experimental} model slightly lower at 25.8\%. Regarding the incorrect predictions, again, the performance is similar, with the \textsc{informed} model at 6.4\% and the \textsc{experimental} model at 6.6\%. 
+
+\paragraph*{Non-pronominal cases} When comparing the non-pronominal cases, the difference between the two models is more pronounced. Regarding the correct predictions, the \textsc{experimental} model shows a marked improvement, correctly identifying 61.1\% of non-pronominal cases compared to 59.3\% for the \textsc{informed} model. Regarding the incorrect predictions, the \textsc{experimental} model also performs better in reducing incorrect predictions of non-pronominal cases, with a rate of 6.5\% compared to 8.3\% for the \textsc{informed} model. 
+These results suggest that the \textsc{experimental} model, with its additional paragraph-related features, is particularly more effective at identifying non-pronominal cases. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures_tex_snippets/06/minimum_shap}
+	\caption[Shapley values of the \textsc{minimum} model.]{Shapley values with box plots for ten random orderings of explanatory variables in the \textsc{minimum} model.}
+	\label{fig:minimumshap}
+\end{figure}
+
+The SHAP analysis, as depicted in figures \ref{fig:minimumshap}, \ref{fig:informedshap}, and \ref{fig:experimentalshap}, provides insights into how each model uses its features to arrive at predictions. These figures illustrate the average contribution of each feature across all observations, highlighting the importance and the order in which they impact the model's predictions. However, it is important to note that the specific contributions of features can vary for each individual observation within the data set.
+
+As shown in \figref{fig:minimumshap}, animacy contributes the most to the predictions of the \textsc{minimum} model, followed by grammatical role and plurality. The figure demonstrates that both animacy (value: \texttt{human}) and grammatical role (value: \texttt{subj}) negatively impact non-pronominalization. In other words, REs that are human and in subject position have a higher likelihood of being pronominal. Conversely, singular referents (plurality value: \texttt{singular}) tend to favor non-pronominalization.
+
+Transitioning to the \textsc{informed} model, as illustrated in \figref{fig:informedshap}, the significance of animacy decreases, making way for sentence distance (\val{dist\_s} = \val{plus\_one}) to become the dominant feature. This model demonstrates a tendency towards non-pronominalization when the distance between a referent and its antecedent spans more than one sentence. This shift in feature importance suggests a more nuanced approach by the \textsc{informed} model in predicting referential forms, taking into account the extended context beyond immediate sentence boundaries.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures_tex_snippets/06/informed_shap}
+	\caption[Shapley values of the \textsc{informed} model.]{Shapley values with box plots for ten random orderings of explanatory variables in the \textsc{informed} model.}
+	\label{fig:informedshap}
+\end{figure}
+
+\newpage
+The \textsc{experimental} model, as delineated in \figref{fig:experimentalshap}, continues to prioritize sentential recency, particularly when the value is \texttt{plus-one}, as a crucial factor in predicting non-pronominal forms. Additionally, paragraph givenness (\val{par\-givenness}), especially when the RE and its antecedent are in separate paragraphs (\texttt{par\_givenness = new}), emerges as the second most significant contributor to opting for non-pronominal forms. The feature \texttt{par\_subj\_1}, a composite metric reflecting both the first-mention status and subjecthood within a paragraph, also plays a key role in the model's decisions. Specifically, when \val{par\_subj\_1} equals \val{yes}, indicating the RE is the paragraph's initial subject mention, there is a tendency towards non-pronominal forms. The importance of the animacy feature, however, has dropped to the fourth place in the \textsc{experimental} model.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures_tex_snippets/06/experimental_shap}
+	\caption[Shapley values of the \textsc{experimental} model.]{Shapley values with box plots for ten random orderings of explanatory variables in the \textsc{experimental} model.}
+	\label{fig:experimentalshap}
+\end{figure}
+
+
+In evaluating the \textsc{experimental} model, which integrates paragraph-based information, it is noteworthy that it outperforms both the \textsc{random} and \textsc{minimum} baseline models in terms of assessment metrics. However, its performance is only marginally superior to that of the \textsc{informed} model, the most robust of the baseline models. This marginal difference in performance between the \textsc{experimental} and \textsc{informed} models necessitates a deeper error analysis to discern the specific areas and conditions under which paragraph-related features enhance model performance.
+
+\subsection{Error analysis of the \textsc{informed} and \textsc{experimental} models}\label{subsec:erroranalysis}
+
+The \textsc{informed} and \textsc{experimental} models cumulatively make 748 incorrect predictions. A notable observation is that 535 of these errors are shared between both models, while 213 are unique to either one. These errors manifest in two distinct forms: Firstly, \term{pronoun errors}, wherein a non-pronominal (\val{-p}) RE is inaccurately predicted as a pronoun; and secondly, \term{non-pronoun errors}, where a pronominal (\val{+p}) RE is predicted to be non-pronominal. To examine these inaccuracies more closely, sections \ref{subsubsec:bothModelErrors} and \ref{subsubsec:oneModelErrors} will investigate the shared errors across both models and the individual, model-specific errors, respectively.
+
+\subsubsection{Errors made by both models}\label{subsubsec:bothModelErrors}
+ 
+The 535 errors shared by both models comprise 282 pronoun errors (where a non-pronominal (\val{-p}) RE is predicted as a pronoun (\val{+p})) and 253 non-pronoun errors (where a pronominal (\val{+p}) RE is predicted as non-pronominal (\val{-p})). This breakdown reveals a tendency for pronoun errors to be slightly more prevalent than non-pronoun errors. When considering the entire spectrum of predictions, \tabref{tab:wrongCases} indicates that only 9\% of non-pronominals were incorrectly predicted by both models, while the error rate for pronominals predicted as non-pronominals stands at 17\%. Thus, it appears that these models demonstrate a more robust accuracy in predicting non-pronominal forms. A deeper look into each type of prediction error can be gained through tables \ref{tab:wrongPronCases} and \ref{tab:wrongNonPronCases}, which detail the most frequent feature combinations found in misclassified instances.
+
+{\renewcommand\normalsize{\footnotesize}%
+	\normalsize
+	\input{figures_tex_snippets/06/wrongCases}}
+
+\paragraph*{Non-pronoun errors}
+
+\tabref{tab:wrongPronCases} presents the features and their corresponding values for cases where REs are pronouns, but are incorrectly classified as non-pronominal. The \textsc{informed} model relies on the first four features for its predictions: grammatical role (gm), animacy, plurality, and sentence distance (distr\_s). The \textsc{experimental} model, on the other hand, uses all the listed features.
+
+{\renewcommand\normalsize{\footnotesize}%
+	\normalsize
+	\input{figures_tex_snippets/06/wrongPronCases}}
+
+
+
+For example, the most recurrent feature--value combination leading to 49 misclassifications in \tabref{tab:wrongPronCases} is:
+
+\[\left\{
+\begin{tabular}{@{\,}l@{\,}}
+	grammatical role (gm): \val{subject (subj)} \\
+	animacy: \val{not human (other)} \\
+	plurality: \val{singular} \\
+	sentence distance (dist\_s): \val{one}\\
+	paragraph givenness (par\_givenness): \val{given}\\
+	paragraph's first-mention subject RE (par\_subj\_1): \val{no}\\
+	within-paragraph prominence (par\_prom): \val{prominent}
+\end{tabular}
+\right\}\]
+
+
+This particular combination of features seems to create a conflict in the prediction process. While some factors, such as \texttt{gm:subj} and \texttt{dist\_s:one}, generally lean towards pronominalization, others like \texttt{animacy:other} tend to favor non-pronominal forms. Notably, the non-pronoun errors in \tabref{tab:wrongPronCases} do not include any human referents in the animacy column, suggesting that animacy plays a significant role in these misclassifications. The dominant presence of non-human referents in these errors, coupled with other feature combinations that typically support pronominalization, indicates that the models struggle particularly in cases where a non-human subject is mentioned just one sentence away from its antecedent.
+
+
+\paragraph*{Pronoun errors}
+
+\tabref{tab:wrongNonPronCases} illustrates the top three feature--value combinations of the non-pronominal REs that were incorrectly predicted to be pronominal by both models.
+
+{\renewcommand\normalsize{\footnotesize}%
+	\normalsize
+	\input{figures_tex_snippets/06/wrongNonPronCases}}
+
+
+The first row of \tabref{tab:wrongNonPronCases} details 66 instances where the REs in the corpus are non-pronominal but were predicted as pronominal by the models. The feature--value combinations in this row include paragraph-given and prominent human referents in the subject position. According to the SHAP analyses presented earlier, these feature--value combinations strongly favor pronominalization. Non-pronominal forms in such contexts may be used for clarity, to resolve ambiguity, or to avoid repetitive pronouns. For example, in the \wsj excerpt shown in \REF{ex:mrboren}, the RE \intext{Mr. Boren} is incorrectly predicted to be pronominal by the models. In this case, it seems that a non-pronominal form is employed to prevent excessive repetition of pronouns.
+
+\begin{exe}
+	\ex \example{wsj-0771}
+	\begin{xlist}
+		\ex \italunder{He} points to a letter on \italunder{his} desk, \italunder{his} second in a week from President Bush, saying that they ``do n't disagree." More broadly, \italunder{Mr. Boren} hopes that Panama will shock Washington out of its fear of using military power. \label{ex:mrboren}
+	\end{xlist} 
+\end{exe}
+
+
+The other two rows in \tabref{tab:wrongNonPronCases} reveal misclassifications mainly due to the RE and its antecedent being in the same sentence. In the \wsj corpus, 75\% of REs with their antecedent in the same sentence are typically realized as pronouns, contributing to this prediction error.
+
+
+\subsubsection{Errors made by individual models}\label{subsubsec:oneModelErrors}
+
+In the analysis of unique errors by each model, it was found that the \textsc{informed} model made 142 incorrect predictions, while the \textsc{experimental} model made 71.
+
+
+\tabref{tab:informedWrong} presents the incorrect predictions of the \textsc{informed} model. This model uses only the first four features for its predictions: grammatical role (gm), animacy, plurality, and sentence distance (dist\_s). Thus, in the \textsc{informed} model, the REs with the feature--value combinations in the first and third rows are treated identically. These REs refer to singular human referents that are only one sentence away from their antecedent. The \textsc{informed} model predicted the REs in these two rows to be pronominal, though they are actually non-pronominal cases.
+
+{\renewcommand\normalsize{\footnotesize}%
+	\normalsize
+	\input{figures_tex_snippets/06/informedWrong}}
+
+
+\figref{fig:plotshap2informed53breakdown} demonstrates a breakdown plot for a single observation from the \textsc{informed} model, with feature--value combinations as shown in the first row of \tabref{tab:informedWrong}. The breakdown plot decomposes the model's prediction into contributions from different variables, with green and red bars indicating positive and negative changes, respectively, in the model's mean predictions. This breakdown plot helps in understanding how different features contribute to a specific prediction, revealing insights into why certain predictions may be erroneous. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures_tex_snippets/06/plot_shap_2_informed_53_breakdown}
+	\caption{Breakdown plot for a single observation from the \textsc{informed} model.}
+	\label{fig:plotshap2informed53breakdown}
+\end{figure}
+
+
+\figref{fig:plotshap2informed53breakdown} demonstrates that for the \textsc{informed} model, the main factors influencing the prediction to be pronominal are the human referent and the subject position. The model relies on these two features to predict these cases as pronominal. However, this model lacks the critical feature of \val{par\_givenness}, which indicates whether an RE and its antecedent are in the same paragraph. This missing feature leads to inaccuracies, as the model predicts these cases to be pronominal when they are actually non-pronominal, as a result of being the first mention of the referent in the new paragraph.
+
+In contrast, the \textsc{experimental} model, which includes the \val{par\_givenness} feature, correctly predicts these cases. \figref{fig:plotshap2experimental53breakdown} shows that \val{par\_givenness} is the dominant feature in the prediction for the \textsc{experimental} model. Therefore, one of the occasions in which the \textsc{experimental} model performs better than the \textsc{informed} model is in predicting REs that are only one sentence away from their antecedent, but across a paragraph boundary. This indicates that the model effectively uses the paragraph structure information to improve its predictions.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures_tex_snippets/06/plot_shap_2_experimental_53_breakdown}
+	\caption{Breakdown plot for a single observation from the \textsc{experimental} model.}
+	\label{fig:plotshap2experimental53breakdown}
+\end{figure}
+
+
+The error analysis of the \textsc{experimental} model, as illustrated in \tabref{tab:experimentalWrong}, shows certain cases where the model diverges in its predictions from the actual data. Notably, these errors are fewer in number compared to those made by the \textsc{informed} model alone.
+
+{\renewcommand\normalsize{\footnotesize}%
+	\normalsize
+	\input{figures_tex_snippets/06/experimentalWrong}}
+
+The predominant type of misclassification involves paragraph-new human referents, which the model incorrectly predicts as non-pronominal, although they are represented as pronouns in the dataset. This discrepancy suggests that the model may not be adequately capturing the nuances of pronominalization across paragraph boundaries, for instance, in cases where pronominalization is used to unite two paragraphs and retain the continuity of the narrative. Here is an example from the corpus:
+
+
+\begin{exe}
+	\ex \example{wsj-1102}
+	\begin{xlist}
+		\ex Paragraph 9: $[$Tom Trettien$]$, a vice president with Banque Paribas in New York, sees a break in the dollar's long-term upward trend, a trend that began in January 1988.
+		\ex Paragraph 10: $[$\italunder{He}$]$ argues that the dollar is now ``moving sideways", adding that ``the next leg could be the beginning of a longerterm bearish phase."
+	\end{xlist} 
+\end{exe}
+
+
+The overall error analysis, encompassing both shared and model-specific errors, demonstrates that the inclusion of paragraph transition information in the \textsc{experimental} model particularly improves its performance in cases where there is a short linear distance but a paragraph boundary between the target RE and its antecedent.\footnote{As mentioned earlier, reference production is considered a non-deterministic task; therefore, misclassified cases are not necessarily incorrect or implausible.} While both the \textsc{experimental} and \textsc{informed} models show similar accuracy levels, the nuanced differences in performance, especially in handling paragraph transitions, become evident through this detailed error analysis. This insight underscores the importance of paragraph structure as a significant factor in referential form selection.
+
+\section{Discussion and final remarks}
+
+The chapter's meticulous exploration of paragraph-related features in the \wsj corpus, and their impact on the choice of referential form (RF), offers significant insights and contributions to both linguistic and computational fields. What follows is a summary of the key findings and their implications.
+
+\subsection{Comprehensive corpus analysis of paragraph attributes} 
+The chapter's corpus analysis (study \studD) delved into pronominalization and non-pronominalization in relation to paragraph structure, aligning with previous literature findings \citep{Tomlin1987,Fox1987,Hofmann1989}. The majority (over 90\%) of REs were found to be non-pronominal across paragraph boundaries. The study probed whether this is due to the initial position in a new paragraph or the transition itself. This distinction, while challenging to make due to overlapping concepts, revealed that over 90\% of the paragraph-initial REs and over 93\% of the discourse-old paragraph-new REs in \wsj are non-pronominal. This study also looked more closely at a few pronominal cases across paragraph boundaries, showing that pronominal paragraph-new REs were twice as frequent when referring to prominent referents than to non-prominent referents. However, since the data points were insufficient (only 331 cross-boundary pronominal cases), the results are inconclusive. In addition to examining the role of paragraph transitions, this study also examined the internal structure of paragraphs and showed that prominent referents within a paragraph have a greater likelihood of being pronominalized.
+
+
+\subsection{Impact of paragraph-related features on \context models} 
+With a few exceptions, including \citet{kibrik2016referential} and \citet{castro-ferreira-etal-2016-towards-variation}, the majority of machine learning feature-based \context models use local features of the referent or linear recency-based concepts. Study \studE presented in \sectref{sec:mlstudy} brought to light the role of paragraph transitions in \context models. It introduced three paragraph-related features based on corpus analysis, distinguishing between linear and hierarchical representations. This study highlighted that the transition to a new paragraph is a crucial factor, improving model performance, but only modestly compared to strong baselines. The limited improvement might be partly due to the specific characteristics of the \wsj corpus, where only 8\% of REs have an antecedent one sentence away, but in a different paragraph. The contribution of paragraph-related transitions might be more pronounced if applied, for example, to a Wikipedia corpus (e.g., \msrcor or \negcor mentioned earlier) in which the majority of sentences revolve around the main topic of the document.
+
+
+\subsection{Advocacy for model explainability} 
+Rather than focusing exclusively on improving the performance of the models, study \studE sought to offer explanations for the predictions made by the models in three ways: (1) the SHAP analysis provided information on the extent and direction of the contribution of each explanatory variable to the models' predictions, (2) the error analysis provided information on the cases where the models did not perform well, and (3) the breakdown method made it possible to compare the performance of two models by looking at the individual decisions each model makes. This approach is vital as it bridges the gap between computational predictions and linguistic theories, offering a pathway to refine models based on linguistic insights. 
+
+The findings presented in this chapter highlight the significance of paragraph structure in the linguistic analysis and computational modeling of reference. By emphasizing explainability and the nuanced roles that paragraph-related features play, this chapter contributes positively to both fields. It paves the way for future research that integrates linguistic theory with computational techniques.

@@ -1,0 +1,690 @@
+% !TeX spellcheck = en_US
+\chapter{A systematic evaluation of \context approaches}\label{chap7}
+
+\section{Introduction}
+
+As outlined in \chapref{chap3}, three aspects of \context warrant particular attention. The first two aspects, the choice of corpora and features, have been extensively covered in Chapters \4, \5, and \6. In this current chapter, we shift our focus to the third aspect: exploring the diverse approaches for addressing the \context task.\footnote{The studies presented in this chapter are based on two published articles: $[$study \studF$]$ \fullcite{same-etal-2022-non}. $[$study \studG$]$ \fullcite{chen-etal-2021-neural-referential}.}
+
+In study \studF (\sectref{sec:modelcomparison}), we aim to systematically compare three distinct methodologies: rule-based, feature-based, and E2E neural network approaches. This comparison is conducted across two significantly different datasets, \webnlg and \wsj, and involves evaluations based on both automated metrics and human judgments.
+
+Beyond performance metrics, it is also crucial to consider how transparently different models can explain their decision-making processes. Rule-based and feature-based models typically excel in this aspect, offering greater clarity in their operational mechanisms, in contrast to DL models, which tend to be more opaque or \term{black-box} in nature. To delve deeper into this disparity, study \studG in \sectref{sec:probingexplainability} conducts a series of probing experiments. These experiments are designed to enhance our understanding of neural \context RFS models.
+
+\section{Study F: A systematic comparison of \context approaches}\label{sec:modelcomparison}
+
+Historically, \context studies have often adopted a two-step approach to REG, as noted by \citet{henschel2000pronominalization} and \citet{krahmer2002efficient}. The initial step involves determining the form of an RE -- whether it should be a proper name (e.g., \intext{Marie Skłodowska-Curie}), a description (\intext{the physicist}), or a pronoun (\intext{she}). Subsequently, the focus shifts to content selection, where the REG system decides on the different ways in which an RF can be realized. For instance, in referencing Marie Curie, should the REG system opt for a simple description involving only her profession like \intext{the physicist} or include additional details like \intext{a Polish-French physicist}? This dichotomy of form and content selection has been a hallmark of most rule-based and feature-based models. In contrast, E2E models appear to integrate these steps, simultaneously addressing both aspects \citep{ferreira2018neuralreg, cao2019referring, cunha-etal-2020-referring}.
+
+In \chapref{chap3}, we discussed \citet{ferreira2018neuralreg}'s pioneering work in E2E \context. For their study, they derived the \webnlg dataset specifically for the \context task from the original \webnlg corpus \citep{gardent-etal-2017-creating}. They developed a neural REG system leveraging a sequence-to-sequence model with attention mechanisms. Despite automatic and human evaluations showing neural REG systems' superiority over rule-based and feature-based baselines, the strength of the baseline models used for comparison, notably \modname{OnlyName} and \modname{Ferreira}, was modest. \modname{OnlyName} is a rule-based system that always generates a proper name given an entity, and \modname{Ferreira} is a Naive Bayes model with only three simple features.\footnote{It is worth noting that \citet{cunha-etal-2020-referring}'s human evaluation presented mixed results, with the \modname{OnlyName} model performing comparably to neural REG models in terms of fluency, grammaticality, and adequacy. However, due to the limited number of evaluators, these findings should be approached cautiously.}
+
+This context sets the stage for study \studF in this chapter, which seeks to reassess the relative efficacy of state-of-the-art (SOTA) neural REG models, hypothesizing that neural REG models are not always better than rule-based and feature-based models. Our hypothesis challenges the prevailing notion, questioning whether these advanced neural models indeed outperform more traditional rule-based and feature-based systems in the \context task. This study aims to provide a more comprehensive comparison by employing stronger baselines than those previously used.
+
+The current study strategically introduces a variety of rule-based and feature-based models to assess how neural models compare against \textit{well-designed} non-neural counterparts. It is crucial to note that the efficacy of a model is not solely contingent on its complexity. In fact, a simple, yet well-formulated rule-based system with one or two rules can be highly effective. Given that neural E2E models are favored for their minimal need for feature engineering, our comparison incorporates two types of baselines: (1) models necessitating minimal expert effort, and (2) more resource-intensive models, which leverage linguistically well-established rules and features, as discussed in \chapref{chap3} (\sectref{subsubsec:rulebased}) and study \studB of \chapref{chap5}.
+
+Our analysis aims to not just compare the performance of these models but also to consider the amount of resources each requires. This holistic view is vital to fully comprehend the trade-offs involved. While neural models benefit from requiring less linguistic expertise and annotation effort, they demand significant computational resources and expertise in deep learning. In contrast, rule-based and feature-based models might necessitate more intensive linguistic input but are generally less demanding in terms of computational power. This study endeavors to shed light on these varying demands, offering a nuanced perspective on the practicalities of implementing different \context models.
+
+To align this study with previous E2E \context investigations, we use the \webnlg dataset.\footnote{We use version 1.5 of the \textsc{webnlg} dataset available at \url{https://github.com/ThiagoCF05/webnlg}.} A notable constraint of this corpus is its high rate of entity recurrence: approximately 99.34\% of entities in the test set also appear in the training set. This aspect limits the dataset’s ability to assess performance on unseen entities. Additionally, since many sentences in \webnlg are paraphrases of one another, evaluating neural models on this corpus alone may overestimate their performance. Recognizing these limitations, \citet{castro-ferreira-etal-2019-neural} expanded \webnlg to include unseen domains with numerous unseen entities. Similarly, \citet{cunha-etal-2020-referring} have developed models tailored to these new challenges, dividing their test set into two subsets: one comprising documents with 99.34\% {\em seen} entities, and the other with 92.81\% {\em unseen} entities. However, such composition could render the dataset somewhat unrealistic (for an in-depth discussion, see \sectref{sec:dataset}). To counter this, we create a dataset we consider more representative of real-world scenarios, derived from the \wsj corpus \citep{hovy-etal-2006-ontonotes,weischedel2013ontonotes}. 
+
+The structure of the study is as follows: \sectref{sec:dataset} and \sectref{sec:model} detail the datasets and REG models employed. In \sectref{sec:evaluation}, we elaborate on our methodologies for both human and automatic evaluations. Finally, \sectref{sec:discussion} will present a comparative analysis of the results, offering insights and recommendations for future research endeavors. This comprehensive approach aims to provide a more accurate assessment of REG models’ capabilities in handling diverse and realistic data scenarios.
+
+
+\subsection{Task and datasets} \label{sec:dataset}
+This section explains the \context task and describes the two English datasets used to conduct the experiments.
+
+\subsubsection{The \context task in study \studF}\label{sec:regtask}
+In study \studF, we define the task of \context as follows: given a text whose REs have not yet been generated, and given the intended referent for each of these REs, the \context task is to build an algorithm that generates all of these REs.
+
+The rule-based and feature-based models in this study adopt a two-step approach to this task, encompassing both RFS (Referential Form Selection) and RCS (Referential Content Selection). In contrast, the E2E models are designed to address both steps simultaneously. To illustrate, consider the delexicalized text in \tabref{tab:sample}, featuring the entity AWH\_Engineering\_College. Given the entity AWH\_Engineering\_College, REG selects an RE based on the \term{entity} and its \term{pre-context} (\intext{AWH\_Engineering\_College is in ``Kuttikkattoor'', India in the state of Kerala.}), and its \term{post-context} (\intext{has 250 employees and Kerala is ruled by Kochi. The Ganges River is also found in India.}).
+
+\input{figures_tex_snippets/07/tab/webnlg2}
+
+\subsubsection{The \webnlg dataset} \label{sec:webnlg}
+
+The \webnlg corpus, introduced by \citet{gardent-etal-2017-creating}, serves as a benchmark for evaluating NLG systems. This dataset originated from a crowd-sourcing experiment where participants were tasked to write textual descriptions for given Resource Description Framework (RDF) triples (as exemplified in \tabref{tab:sample}), with each entry comprising 1 to 7 triples. Later, \citet{ferreira2018neuralreg} and \citet{castro-ferreira-etal-2018-enriching} enriched and adapted the corpus, particularly delexicalizing it, to align with the \context task. \citet{castro-ferreira-etal-2019-neural} further extended \webnlg and divided the documents into the test sets \term{seen} (where all entities appear in the training data) and \term{unseen} (where none appear in the training data). This division was intended to help assess models' ability to handle seen and unseen entities. Since the maximum number of triples in the unseen set is five, we would expect the unseen data to be less complex than the seen data. In our study, we used version 1.5 of \webnlg, featuring 67,027, 8278, and 19,210 REs in the training, development, and test sets, respectively (see \tabref{tab:sample} for an example).
+
+Despite its utility, \webnlg exhibits certain limitations. Primarily, it consists of relatively formal texts with simplistic syntactic structures, which may not accurately represent the complexity and variability of everyday language use. Additionally, the texts in \webnlg are notably brief, averaging only 1.4 sentences each. There is also a significant imbalance in the types of REs used, with a predominance (71\%) of proper names, and a high proportion (85\%) of first-mention REs. Furthermore, in the test samples, entities are usually either entirely seen or unseen, lacking a realistic mix of both. Given these constraints, we decided to complement our analysis with a second corpus, aiming to provide a more robust and comprehensive evaluation of the algorithms across different linguistic contexts.
+
+
+\subsubsection{The \wsj dataset}\label{subsec:wsjdataset}
+
+In an effort to complement the \webnlg dataset and to introduce a more diverse linguistic environment, we followed the approach introduced by \citet{ferreira2018neuralreg} and developed a new English REG dataset based on the Wall Street Journal (\wsj). As in \chapref{chap4}, we use ONF format files of the OntoNotes corpus \citep{weischedel2013ontonotes} for the creation of this dataset. The dataset excludes first and second person REs and assumes a linear presentation order, thereby omitting complex cases like union REs. For instance, in \REF{ex:booster}, while individual REs ($[Mary]$, $[John]$, $[David]$ ) are included, their union form (\intext{Mary, John, and David}), is excluded.
+
+\begin{exe}
+	\ex\label{ex:booster} $[Mary]$, $[John]$ and $[David]$ got their booster shots yesterday.
+\end{exe}
+
+The resulting \wsj dataset includes 582 newspaper articles, containing 20,186, 2362, and 2781 REs across training, development, and test sets, respectively. Each document in this dataset is substantially longer than those in \webnlg, averaging about 25 sentences. Furthermore, this dataset exhibits a more balanced distribution of first mentions (23\%) and subsequent mentions.
+
+To prepare the dataset, we first delexicalize the REs. This dataset comprises nearly 8000 coreferential chains. In each chain, the REs are replaced with corresponding delexicalized expressions, similar to those illustrated in \tabref{tab:sample}. 
+
+The delexicalization process involves three key steps: (1) using the information contained within the content of each RE, (2) leveraging the fine-grained annotations of the RFs, and (3) considering the entity type of each referent. For instance, in the delexicalization of human REs, we start by identifying concise yet informative RFs, such as the combination of first and last names (e.g., \intext{Barack Obama}). When such an expression appears in a coreferential chain, its delexicalized form (with tokens separated by underscores, e.g., \intext{Barack\_Obama}) is assigned to all REs in that chain. This structured approach ensures that each referent is represented in a consistent and informative manner across the dataset. Below is the order in which the human referents are searched and delexicalized:
+
+\begin{itemize}
+	\setlength{\itemsep}{-0.5em} 
+	\renewcommand{\labelitemi}{--}
+	\item $[$firstname-lastname$]$
+	\item $[$title-firstname-lastname$]$
+	\item $[$modified firstname-lastname$]$
+	\item $[$title-lastname$]$
+	\item $[$lastname$]$
+	\item $[$modified-lastname$]$
+	\item $[$firstname$]$
+\end{itemize}
+
+
+After delexicalizing all REs across various entity categories, we then define the context for each RE. This includes not only its pre-context and post-context at the local sentence level but also an extended context comprising $K$ preceding and following sentences, where $K$ is referred to as the \term{context length}. This extended context provides a more comprehensive background for each RE. An example from the \wsj dataset, illustrating this approach with a context length of $K$=2, is presented in \tabref{tab:wsjsample2}.
+
+\input{figures_tex_snippets/07/tab/wsj_delex_2}
+
+
+\subsection{REG models}\label{sec:model}
+
+This section presents the rule-based, feature-based, and neural SOTA REG models used in this study.
+
+\subsubsection{Rule-based REG} 
+
+Rule-based models have been widely used for generating REs in context~\citep{mccoy1999generating, henschel2000pronominalization}. 
+Here, we build rule-based systems for binary classification of REs into two classes, namely \val{pronominal} and \val{non-pronominal}.
+
+\paragraph*{Simple rule-based model (\modname{RREG-S})}
+
+Our first rule-based algorithm, \modname{RREG-S}, is outlined in Algorithm \ref{alg:sreg}. This model operates under two primary rules:
+
+\begin{enumerate}
+	\item An entity $r$ is classified as a pronoun if it meets two conditions:
+	\begin{enumerate}
+		\item $r$ is \textit{discourse-old}, meaning it has been mentioned in the preceding context.
+		\item $r$ has no \textit{competitor} in the current or the previous sentence. A competitor is defined as another entity that could be referred to using the same pronoun as $r$.
+	\end{enumerate}
+	\item In all other cases, $r$ is realized as a non-pronominal RE.
+\end{enumerate}
+
+\begin{algorithm}
+	\caption{Simple rule-based system (\modname{RREG-S}).}
+	\label{alg:sreg}
+	{The target entity $r$ is realized as a pronominal RE if:\;}{
+		\hspace{0.5cm}{$r$ is \emph{discourse-old};}\;
+		\hspace{0.5cm}{$r$ has no \emph{competitor} in the current sentence and the previous sentence,}\;
+		\hspace{0cm} Otherwise, $r$ is realized as a non-pronominal RE.}
+	
+\end{algorithm}
+
+For the realization of pronouns, we have developed a dictionary that stores the pronouns associated with each entity. For entities already seen in the training data, their pronouns are extracted directly from this data. In cases where an entity has multiple pronominal forms, the most frequently occurring form is selected. For unseen entities, we determine the appropriate pronoun based on their meta-information (which is also used in E2E systems of \citealt{cunha-etal-2020-referring}). Assuming an entity in \webnlg has the meta-information \texttt{PERSON} and gender \texttt{FEMALE}, we assign the pronoun \intext{she} to that entity. Following \citet{castro-ferreira-etal-2016-towards-variation}, pronouns are further tailored to align with the grammatical role of the entity in a sentence. For example, in the object position, the pronoun \intext{he} is changed to \intext{him}. For non-pronominal REs, realization is achieved by converting underscores in the entity label to whitespaces. This process transforms \intext{Adenan\_Satem} to \intext{Adenan Satem}, as previously described by ~\citet{ferreira2018neuralreg}.
+
+
+
+
+
+
+
+
+\paragraph*{Linguistically-informed rule-based model (\modname{RREG-L})}
+
+This model draws from the pronominalization rules outlined by \citet{henschel2000pronominalization}.  This model is founded on the principles of \term{local focus}, a concept based on a simplified implementation of Centering Theory \citep{grosz1995centering}, and \term{parallelism}, which examines if the target entity $r$ and its antecedent share the same grammatical role \citep{henschel2000pronominalization}. Algorithm \ref{alg:rreg} details the process of generating REs using \modname{RREG-L}.
+
+\begin{algorithm}
+	\caption{Linguistically-informed rule-based algorithm (\modname{RREG-L}).}
+	\label{alg:rreg}
+	\textbf{Input} The target entity $r$, the sentence $u_2$ that $r$ is in, and its previous sentence $u_1$.\;
+	{\textbf{Output} The surface form of $r$.\;}{
+		\hspace{0.5cm}{\textbf{if} $r$ has an antecedent in $u_1$ \textbf{then}}\;
+		\hspace{1cm}{\textbf{if} $r$ occurs in parallel context \textbf{then}}\;
+		\hspace{1.5cm} \texttt{RealizeProRE}(r)\;
+		\hspace{1cm} \textbf{else}\;
+		\hspace{1.5cm}$\mathcal{F}$ $\texttt{:=}$ \texttt{FocusSetConst}($u_1$)\;
+		\hspace{1.5cm}{\textbf{if} $r$'s antecedent $\in \mathcal{F}$ \textbf{and} $r$ has no competitor $r' \in \mathcal{F}$ \textbf{then}}\;
+		\hspace{2cm} \texttt{RealizeProRE}(r)\;
+		\hspace{1.5cm} \textbf{else}\;
+		\hspace{2cm} \texttt{RealizeNONProRE}(r)\;
+		\hspace{0.5cm}{\textbf{else}}\;
+		\hspace{1cm} \texttt{RealizeNONProRE}(r)\;}
+	
+\end{algorithm}
+
+As input, the system takes the target entity $r$ together with the current sentence ($u_2$) and the previous sentence ($u_1$). The output is the surface form of $r$.
+
+The algorithm initiates by checking for the presence of an antecedent of $r$ in $u_1$ (line 3). In the absence of an antecedent, $r$ is realized non-pronominally (line 13). 
+
+If an antecedent exists, the model checks for parallelism (line 4), verifying if $r$ shares the same grammatical role (subject or object) with its antecedent. If parallelism is established, $r$ is realized as a pronoun (line 5). 
+
+In the absence of parallelism (line 6), the local focus theory of \citet{henschel2000pronominalization} is applied. Here, a referent becomes the local focus if it is either discourse-old or occupies the subject position. The \texttt{FocusSetConst} function (line 7) constructs a set $\mathcal{F}$ of local focus entities from $u_1$. If $r$'s antecedent is in $\mathcal{F}$ and $r$ has no competitor that is an element of $\mathcal{F}$ (line 8), it is then realized pronominally (lines 9). If not, $r$ is realized non-pronominally (line 11).
+
+The surface realization functions, \texttt{RealizeProRE} and \texttt{RealizeNONProRE}, are similar to those in \modname{RREG-S} and responsible for generating pronominal and non-pronominal REs, respectively.
+
+
+
+\subsubsection{Feature-based REG}
+
+For building our feature-based REG models, we use \method{CatBoost} \citep{Prokhorenkova2018}, a powerful machine learning algorithm known for handling categorical features effectively. These models are designed to predict whether a reference should be realized as a \val{pronoun}, a \val{proper name}, or a \val{description}. Once the RF is predicted, the model's next task is to select the specific content for the RE.
+
+In the content selection phase, the most frequent variant of RE in the training corpus is chosen, matching both the predicted RF class and the referent, considering the complete set of features. This approach ensures that the model's predictions are grounded in the most typical usage patterns observed in the training data.
+
+However, there may be instances where no exact match for the predicted RF and referent is found in the training corpus. In such cases, we employ a back-off method \citep{ferreira2018neuralreg}. This method progressively removes one feature at a time from the set, in order of increasing importance, until a matching RE is found. This means we start by removing the least important feature first and then proceed to remove features that are increasingly more important. The importance order of the features is determined using CatBoost's inherent feature importance evaluation method, which ranks features based on their contribution to the model's predictive power.
+
+To explore different dimensions of feature-based REG, we have developed two models: \modname{ml-s} and \modname{ml-l}. The \modname{ml-s} model is designed to be simpler, using a limited set of features, while \modname{ml-l} is more complex and incorporates a broader range of linguistic features. The distinction between these models allows us to assess how varying levels of feature complexity influence the effectiveness of REG in different contexts.
+
+\paragraph*{Simple feature-based model (\modname{ML-S})}
+
+In order to determine the upper-bound performance of a system that operates without requiring additional linguistic information or extensive annotation efforts, we have developed a model named \modname{ML-S}. To achieve this, \modname{ML-S} deliberately omits more complex linguistic features that would require external processing tools like a syntactic parser. Instead, it focuses on features that can be directly and automatically extracted from the text. Key features in this model include recency indicators, referential status, and positional information. \tabref{tab:ml-s-feat} shows the specific features employed in \modname{ml-s} and offers a brief description of each. 
+
+\input{figures_tex_snippets/07/tab/feat_ML_S}
+
+\paragraph*{Linguistically-informed feature-based model (\modname{ML-L})}
+
+\modname{ML-L} is constructed to explore the upper limits of performance achievable with a linguistically informed feature-based model. Drawing primarily from the findings of study \studB in \chapref{chap5}, \modname{ML-L} incorporates a set of carefully selected features that are expected to have significant effect on the generation of contextually appropriate REs. \tabref{tab:ml-l-feat} presents the features used in \modname{ml-l}.
+
+\input{figures_tex_snippets/07/tab/feat_ML_L} 
+
+One of the key adaptations in both feature-based models is the conversion of numeric features into categorical values, a decision made to facilitate their use in a back-off method for content selection of REs. Notably, the consensus set from study \studB does not include \emph{distance measured in number of words} as a feature. However, models trained on the \webnlg corpus demonstrate a marked preference for word recency over sentence recency. This preference is likely attributed to the brief length of \webnlg documents, underscoring the significant impact of corpus characteristics on feature selection. Below is a detailed breakdown of each recency feature, focusing on measuring the distance between the referent $r$ and its antecedent:
+
+\begin{description}
+	\item[Word distance:] This feature is categorized into five quantile groups. It is used in all feature-based models on both the \webnlg and \wsj datasets.
+	\item[Sentence distance:] This is measured by (1) two quantile groups in the \webnlg \modname{ML-R}, \modname{ML-S} and \wsj \modname{ML-S} models, and (2) three distinct bins that categorize if the antecedent (ANTE) is in the same sentence, one sentence away, or more than one sentence away, as used in the \wsj \modname{ML-L} model.
+	\item[Paragraph distance:] Here, the distance is segmented into four bins, depending on whether the referent ($r$) and its ANTE are in the same paragraph, one paragraph away, two paragraphs away, or more than two paragraphs away. This feature is specifically employed in the \wsj \modname{ML-L} model.
+\end{description}
+
+
+The \modname{ML-L} models are designed to fully leverage syntactic information. This syntactic data is sourced from the annotations available in the \onto corpus. For parsing the \webnlg documents, we use the Python library \term{spaCy}. In addition to syntactic features, these models also incorporate meta-information such as \term{plurality} (applicable only in the \wsj models), \term{gender}, and \term{person} as input features. It is worth noting that the rule-based and the E2E models also use this meta-information for RE realization.
+
+
+\subsubsection{Neural REG}
+
+One of the challenges with rule-based and feature-based models is their limited capacity to handle cases where an RF, such as a proper name, can have multiple realizations (for example, \intext{Lady Gaga} or \intext{Stefani Germanotta}). This is where End2End neural REG models demonstrate their strength. These models are adept at generating REs from scratch, accommodating various possible realizations of an entity. In this study, we focus on three distinct neural REG systems, all of which have been designed to deal with unseen entities. Each of these systems is built upon the foundation of the sequence-to-sequence model with attention, as introduced by \citet{bahdanau2014neural}. 
+
+\paragraph*{\modname{ATT+Copy}} 
+
+The \modname{ATT+Copy} model, proposed by \citet{cunha-etal-2020-referring}, employs three bidirectional Long Short-Term Memory networks (LSTMs) \citep{hochreiter1997long}. These LSTMs encode three key components: the pre-context, the post-context, and the proper name of an entity, where the entity labels are modified by replacing underscores with whitespaces. The outputs of these encoders are three distinct hidden vectors: $h^{\text{(pre)}}$, $h^{\text{(post)}}$, and $h^{(r)}$. During each step of decoding, designated as $t$, the model employs three separate attention mechanisms. These mechanisms focus on the encoded contexts and compute attention vectors, which are then merged into a unified context vector, denoted as $\mathbf{v}^{(c)}_t$. The model uses an autoregressive LSTM-based decoder that generates the REs relying on these context vectors. 
+
+To effectively address the challenge of unseen entities, \citet{cunha-etal-2020-referring} incorporated a copy mechanism within the decoder. This mechanism grants the decoder the ability to directly copy words from the given contexts into its output, enhancing the model's flexibility and adaptability in handling unseen entities.
+
+
+\paragraph*{\modname{ATT+Meta}} 
+
+The \modname{ATT+Meta} model, as developed by \citet{cunha-etal-2020-referring}, integrates meta-information about each entity to refine the generation of REs. During each decoding step, denoted as $t$, the model combines the context vector $\mathbf{v}^{(c)}_t$ with embeddings representing the meta-information, prior to inputting it into the decoder. In the case of the \webnlg dataset, this meta-information includes the type of the entity, represented as $\textbf{v}^{(type)}$, and gender, denoted as $\textbf{v}^{(gender)}$. For the \wsj dataset, the model additionally incorporates plurality, signified by $\textbf{v}^{(pl)}$, alongside the entity type and gender embeddings.
+
+\paragraph*{\modname{ProfileREG}}
+
+The \modname{ProfileREG} model, developed by \citet{cao2019referring}, leverage the content of entity profiles extracted from Wikipedia to generate REs. In a departure from the above-mentioned approaches that focus on the encoding of the proper names of entities, \modname{ProfileREG} instead asks the entity encoder to encode the entirety of an entity's profile to obtain the hidden vector $h^{(r)}$. However, it is important to note that this model is specifically tailored for the \webnlg dataset, as the complete profiles for entities in the \wsj dataset are not readily accessible. Consequently, our evaluation of \modname{ProfileREG} is exclusively focused on its performance with the \webnlg dataset.
+
+For the implementation of the models on the \webnlg dataset, we adhere to the original parameter settings as defined in their original implementations.\footnote{The original implementations for \modname{ATT+Copy} and \modname{ATT+Meta} can be found at \url{https://github.com/rossanacunha/NeuralREG}, and for \modname{ProfileREG} at \url{https://github.com/mcao610/ProfileREG}.} For the \wsj dataset, a key aspect of our training is to determine the optimal context length, denoted as $K$. To achieve this, we experiment with varying $K$, ranging from 1 to 5 sentences, both preceding and following the target sentence. These variations are tested using the \modname{ATT+Meta} model on the \wsj development set. Our findings indicate that the model achieves its peak performance when the context length $K$ is set to 2 sentences. This specific configuration of $K$ is therefore selected for the subsequent implementations on the \wsj dataset.
+
+
+\subsection{Evaluation}\label{sec:evaluation}
+
+In this section, we conduct a thorough evaluation of all systems outlined in \sectref{sec:model}, applying them to both the \webnlg and \wsj datasets. Our evaluation process contains both automatic and human assessments to ensure a comprehensive analysis of each system's performance. 
+
+\subsubsection{Automatic evaluation}
+
+\paragraph*{Metrics} 
+
+In our evaluation of REG systems, we use a comprehensive set of metrics, following the approach of \citet{cunha-etal-2020-referring}. The assessment is conducted from three distinct perspectives:
+
+\begin{itemize}
+	\item\textbf{RE Accuracy and String Edit Distance (SED)}: These metrics are employed to evaluate the quality of each generated RE. SED, as defined by \citet{Levenshtein_SPD66}, measures the minimum number of edits needed to transform one string into another, providing a clear indication of the similarity between the generated and the expected REs.
+	\item\textbf{BLEU and Text Accuracy}: Upon inserting the REs into the original documents, we use the BLEU score \citep{papineni2002bleu} and Text Accuracy as evaluative tools. The BLEU score measures the correspondence between the machine-generated text and the human-generated reference text, while Text Accuracy assesses the overall accuracy of the text after RE insertion.
+	\item\textbf{ Precision, Recall, and F1 score for pronominalization}: These standard metrics are used to evaluate the effectiveness of pronominalization within the generated texts. Precision assesses the accuracy of the pronominal REs, recall measures the ability to identify all relevant instances of pronominalization, and the F1 score provides a harmonic balance between precision and recall.
+\end{itemize}
+
+
+\paragraph*{Results for \webnlg}
+
+In the evaluation of the \webnlg dataset, as detailed in \tabref{tab:webnlg_result}, a notable pattern emerged: Both rule-based and feature-based models perform better than the neural models overall. However, it was observed that neural models perform better in pronominalization tasks. The feature-based model \modname{ML-L} demonstrated superior performance in generating REs, as evidenced by its highest scores in RE Accuracy and BLEU, along with the second best results in SED and Text Accuracy. On the other hand, \modname{ProfileREG} performs best in pronominalization, closely followed by the simpler rule-based system \modname{RREG-S}.
+
+\input{figures_tex_snippets/07/tab/webnlg_results}
+
+
+Interestingly, \modname{RREG-S}, the simplest of the rule-based models, exhibited exceptional performance. It not only surpassed its linguistically informed counterpart, \modname{RREG-L}, but also exceeded the neural models \modname{ATT+Copy} and \modname{ATT+Meta} in both RE generation and pronominalization. This outcome underscores the potential effectiveness of simpler, rule-based approaches in certain contexts. Additionally, \tabref{tab:seen_unseen_result} provides a breakdown of these results into seen and unseen subsets.
+
+\input{figures_tex_snippets/07/tab/seen_unseen}
+
+As shown in \tabref{tab:seen_unseen_result}, the neural models -- \modname{ATT+Copy}, \modname{ATT+Meta}, and \modname{ProfileREG} -- showed a distinct pattern in their performance. They ranked as the top three models for data they had seen before (seen data) but exhibited the weakest performance for unseen data, as evidenced by lower scores in RE Accuracy, SED, BLEU, and Text Accuracy. Conversely, the feature-based models, while performing slightly below their rankings for seen data (ranked fourth and fifth), displayed a modest decline in their effectiveness on unseen data, a drop less pronounced than that experienced by the neural models.
+
+This discrepancy in performance, particularly the marked drop in the neural models' effectiveness on unseen data, is likely attributable to their limitations in handling unseen entities, for instance, because the models fail to conduct domain transfer. This issue seems especially acute given that the unseen data in \webnlg comprises different domains than the seen data. It indicates a potential overfitting by the neural models to the training data, which compromises their ability to generalize and adapt to new domains. Consequently, this raises concerns about the neural models' reliance on extensive parameterization, which, while beneficial in certain contexts, may impede their ability to generalize effectively across diverse datasets and domains.
+
+The fact that the unseen entities come from different domains could also explain the minimal difference in RE accuracy between the \modname{ML-L} and \modname{ML-S} models (50.32\% vs. 50.06\%, respectively). As indicated in \tabref{tab:ml-l-feat}, the \modname{ML-L} model incorporates the entity type (analogous to the domain label in \webnlg) as one of its features. However, since the training and test sets have different domain labels, this feature does not contribute to the predictions. Consequently, the anticipated advantage of \modname{ML-L} over \modname{ML-S} in handling domain-specific information diminishes when encountering entities from previously unseen domains.
+
+Rule-based systems, which do not depend on training data, are not susceptible to the same performance variations as seen in feature-based models when encountering unseen data. This accounts for their relatively stable, and in some cases, enhanced performance in pronominalization tasks with unseen entities. As noted in \sectref{sec:dataset}, the unseen data in \webnlg comprises fewer triples, potentially contributing to this improved performance. 
+
+Conversely, feature-based models, such as \modname{ML-L} and \modname{ML-S}, demonstrate weaker results in pronominalizing unseen entities. This can be attributed to their complex task of making a three-way distinction between pronouns, proper names, and descriptions, as opposed to the simpler binary categorization of pronominal vs. non-pronominal forms employed by rule-based models. The complexity of distinguishing among these three referential forms in feature-based models may lead to their reduced effectiveness in handling unseen entities, particularly when such entities diverge significantly from those in the training set.
+
+The annotation practices employed in \webnlg may also undermine the performance of feature-based models. Given their reliance on the quality of data, the quality of annotations can significantly impact these models' efficacy. In \webnlg, a non-pronominal RE is marked as a \texttt{description} if it includes a determiner, and as a \texttt{proper name} otherwise. This approach leads to some inaccuracies: For instance, \intext{United States} is classified as a proper name, while \intext{The United States} is incorrectly labeled as a description. While we have retained these original annotations to maintain consistency with prior studies, it is important to recognize that these labeling practices may have inadvertently contributed to the suboptimal performance observed in feature-based models. This aspect should be considered when interpreting their results and in future modifications to the dataset.
+
+\paragraph*{Results for \wsj}
+
+
+The results for the \wsj dataset, as shown in \tabref{tab:wsj_filename}, reveal that the \modname{ML-L} model stands out as the best model in both RE generation and pronominalization, surpassing all other models by a significant margin. In the context of rule-based models, \modname{RREG-L} demonstrates better performance over \modname{RREG-S} across all evaluation metrics. This observation aligns with our earlier insights, suggesting that the \wsj dataset, unlike \webnlg, includes more varied and naturalistic texts, as discussed in \sectref{sec:webnlg}. This complexity in the \wsj texts appears to favor the more sophisticated, linguistically informed approach used in the \modname{RREG-L} model.
+
+\input{figures_tex_snippets/07/tab/wsj_filename}
+
+Turning to the neural models, the data shows that including meta-information significantly enhances RE prediction accuracy. A comparison of \modname{ATT+Meta} with \modname{ATT+Copy} reveals that meta-information substantially improves the recall in pronominalization tasks. 
+
+To illustrate the outputs produced by these models, \tabref{tab:generatedwsj} presents examples from one of the \wsj documents, showcasing the generated outputs by \modname{rreg-s}, \modname{ml-l}, and \modname{att-meta}.
+
+\subsubsection{Human evaluation on \webnlg}\label{subsubsec:webnlghum}
+
+\paragraph*{Materials} 
+
+From our test set of \webnlg seen entities, we drew a random sample of four instances from each group of triples, with sizes ranging from 2 to 7. For the unseen entities, we randomly selected six instances from groups ranging in size from 2 to 5. This resulted in a total of 48 original instances, evenly divided into 24 seen and 24 unseen instances. In addition to the original instances, we included seven different versions generated by the models, comprising three neural, two feature-based, and two rule-based models. Consequently, we compiled a total of 384 items (48 instances multiplied by 8 versions each).
+
+\paragraph*{Design} The 384 items were randomly allocated into 12 lists, each containing 32 items. Each list was rated by ten participants. The participants were instructed to evaluate each text on a 7-point Likert scale, where 1 represented \intext{very bad} and 7 represented \intext{very good}. The evaluation criteria included \term{fluency}, \term{grammaticality}, and \term{clarity}, defined according to \citet{ferreira2018neuralreg}.
+
+\begin{description}
+	\item[\textbf{Fluency:}] Does the text flow in a natural, easy-to-read manner?
+	\item[\textbf{Grammaticality:}] Is the text grammatical (no spelling or grammatical errors)?
+	\item[\textbf{Clarity:}] Does the text clearly express the data in the table?
+\end{description}
+
+
+\input{figures_tex_snippets/07/tab/wsj_output}
+
+
+\paragraph*{Participants} 
+
+To conduct the human evaluation, we used Amazon Mechanical Turk (MTurk). We restricted MTurk workers to U.S. residents who had an approval rate of at least 95\% and had completed over 1,000 HITs. We established specific criteria for rejecting a worker's contribution, which included: (1) assigning a score lower than two to human-produced (original) descriptions more than three times, and (2) providing scores with a standard deviation of less than 0.5.
+
+A total of 120 workers participated in the study, covering 12 lists with 10 workers each. This resulted in 11,520 judgments (384 items evaluated across 3 criteria by 10 participants each). The demographic breakdown of the participants was as follows: 80 men, 36 women, and four who identified as other or did not disclose their gender. The average age of the participants was 37 years.
+
+\paragraph*{Results} 
+
+\tabref{tab:human_webnlg} presents the results of the human evaluation for the \webnlg dataset. Notably, only a few differences reach significance.\footnote{We define a difference as significant only if $p < 0.01$. Interestingly, all differences that are not significant in tables \ref{tab:human_webnlg} and \ref{tab:human_wsj} have $p$-values greater than 0.1.} This was determined by Wilcoxon's signed-rank test with Bonferroni correction\footnote{This implies that $p$-values were adjusted by multiplying them with the number of comparisons.}. This suggests that \webnlg might not be the most suitable for distinguishing between different REG models. 
+
+The significant differences are observed when comparing \modname{RREG-S} with \modname{ATT+} \modname{Meta} and \modname{ProfileREG}, particularly in terms of grammaticality for unseen data. These results position \modname{RREG-S} as the top-performing model in generating REs on \webnlg, showing equivalent performance to neural models on seen data and surpassing them on unseen data. Interestingly, in contrast to the results from our automatic evaluation, \modname{ATT+Copy} slightly outperforms \modname{ATT+Meta} in the human evaluation, as indicated by their rankings.
+
+\input{figures_tex_snippets/07/tab/human_webnlg}
+
+
+\subsubsection{Human evaluation on \wsj}
+
+\subsubsubsection{Materials} 
+
+From the \wsj test set, we randomly selected 30 documents (\term{reference texts}). Additionally, we gathered the six versions of each reference text generated by each \wsj model, referred to as \term{target texts}. This process resulted in 180 reference-target pairs.
+
+\subsubsubsection{Design} 
+
+Given that the average length of \wsj documents is 25 sentences (as noted in \sectref{subsec:wsjdataset}) and there are no RDF input representations, we decided to use a \term{Magnitude} \term{Estimation} (ME) experiment \citep{bard1996magnitude} for our study design. This approach involved participants viewing both the reference and target texts side by side for comparison. To facilitate manageability, the texts were shortened to a maximum of 20 sentences each. These 180 reference-target pairs were then divided across 12 lists, with each list containing 15 items. In total, ten participants were assigned to rate each list, focusing on fluency, grammaticality, and clarity. For fluency and grammaticality, we adhered to the definitions established in the \webnlg task (\sectref{subsubsec:webnlghum}). The criterion for clarity was defined as follows:
+
+\begin{description}
+	\item[{Clarity:}] How clearly does the target text allow you to understand the situation described in the standard text?\footnote{In the experiment, we referred to the reference text as \term{standard text}.}
+\end{description}
+
+In the evaluation process, participants were presented with the following question for each of the three criteria: \intext{Assuming that standard text has a score of 100, how do you rate the fluency$|$grammaticality$|$clarity of target text?} This format allowed participants to assign any positive number as their rating, providing a flexible and intuitive way to quantify their assessment of the texts.
+
+\subsubsubsection{Participants} 
+
+In the experiment, a total of 120 individuals participated, comprising 65 men, 54 women, and one person who either responded as ``other'' or did not disclose their gender. The average age of the participants was 38 years. This resulted in a total of 5400 judgments, calculated from 180 items, each evaluated on 3 criteria by 10 different judges. For quality control, we rejected responses from crowdworkers whose scores were less than 5 standard deviations from the mean.
+
+\subsubsubsection{Results} 
+
+In the results analysis, we accounted for possible response errors in Magnitude Estimation, such as a worker entering 600 instead of 60. To manage this, outliers were excluded, defined as values falling below 3 standard deviations from the median or exceeding 3 standard deviations above the median for a given item. For significance testing, the scores were then down-sampled. The results, as illustrated in \tabref{tab:human_wsj}, show noticeable differences.
+
+\input{figures_tex_snippets/07/tab/human_wsj}
+
+Contrasting with the \webnlg outcomes, significant differences were more frequently observed in the \wsj dataset. Specifically, for fluency, \modname{ML-S} and \modname{ML-L} demonstrated the highest performance, while \modname{ATT+Meta} exhibited the worst performance. In terms of grammaticality, \modname{ML-L} emerged as the top-performing model, significantly outperforming \modname{RREG-L} and \modname{ATT+Meta}. Interestingly, \modname{RREG-L} was among the lower-scoring models for grammaticality, a finding that merits further investigation. Clarity did not show any significant differences, which might be attributed to the challenge participants faced in comparing longer documents. Overall, the \modname{ML-L} model exhibited the best performance, closely followed by the simpler \modname{ML-S} and \modname{RREG-S} models.
+
+
+
+\subsubsection{Ethical considerations}
+We collected our human evaluations using Amazon Mechanical Turk. The payment for each task was set at \$7.5/hour (slightly above the US minimum wage, i.e., \$7.25/hour). We expected the amount to be a fair remuneration, but given the actual time some participants needed, their remuneration turned out to be on the low side. In future crowd-sourcing experiments, we will base our remuneration on a more generous estimate of the duration per experimental task.
+
+During the study, we collected demographic data such as age, gender, and English proficiency level. We made it clear to participants that their information would be used solely for research purposes and assured them of anonymity. Moreover, these demographic fields were optional, not mandatory. It is important to note that this demographic data will be kept confidential and will not be publicly disclosed.
+
+
+
+
+\subsection{Summary and discussion of study \studF}\label{sec:discussion}
+
+
+
+\subsubsection{Why neural REG does not defeat classic REG}
+
+Received wisdom suggests that while neural-based models may fall short in interpretability, they excel in performance. Recent neural models, such as Large Language Models, might perform better than those presented here, but our results challenge this received wisdom.
+One plausible reason is that neural NLG systems typically show superior performance in surface realization tasks but struggle with tasks demanding deep semantic understanding. As noted by \citet{hallucination2018}, these systems sometimes generate hallucinated content in Data2Text generation tasks. Given that REG heavily relies on semantic content, this could be a critical factor affecting the performance of neural networks in this area.
+
+\subsubsection{Role of linguistically-informed features}
+In our study, rule-based models demonstrated remarkable effectiveness, particularly with the \webnlg dataset, outperforming other approaches. However, in the case of \wsj, the model equipped with linguistically informed features (\modname{ML-L}) surpassed all others. This suggests that the nature and complexity of the text greatly influence the success of different REG methods. While simpler texts appear to be well-handled by rule-based models, linguistically informed features become increasingly vital for processing more complex texts. Therefore, the choice of an appropriate REG method should be guided by the complexity and type of the text at hand.
+
+
+
+\subsubsection{Resources use}
+
+The acceptable performance of \modname{RREG-S} and \modname{ML-S} on \wsj and \webnlg becomes even more significant when considering resource efficiency. \modname{RREG-S} stands out for its minimal demands on human resources, context, and computing power, and its independence from training data.\footnote{The pronominal content (e.g., \intext{he} or \intext{she}) for an entity can be determined either from training data or using the entity's meta-information.} Unlike \modname{RREG-S}, \modname{ML-S} requires training data and possibly more human effort for feature engineering and model training. However, it does not rely on external tools or meta-information. When building any model, various types of resources should be factored into the decision-making process:
+
+
+\begin{enumerate}
+	
+	\item \textit{The amount of context}: The neural models in \webnlg access complete pre- and post-contexts, while in \wsj, they are limited to two sentences around the target entity. The feature-based models extract features based on the current sentence and its entire preceding context, whereas the rule-based models consider only the current and the preceding sentence.
+	
+	\item \textit{External tools}: The neural models do not require external tools, while the rule-based and \modname{ML-L} models require a syntactic parser.
+	
+	\item \textit{Meta-information}: Both rule-based models (\modname{RREG-S} and \modname{RREG-L}), the linguistically informed feature-based model (\modname{ML-L}), and the neural model (\modname{ATT+} \modname{Meta}) rely on entity meta-information. Furthermore, \modname{ProfileREG} requires the profile description of each entity, which is difficult to obtain for most REG tasks.
+	
+	
+	\item \textit{Computing resources}: Neural models typically need GPUs, while other models can be developed on standard personal computers.
+	\item \textit{Training data volume}: Rule-based models operate without the need for training data, whereas feature-based and neural models demand substantial training datasets, which are not always easily available for REG tasks.
+\end{enumerate}
+
+
+In conclusion, the ultimate choice between models is contingent upon a nuanced assessment of various resource-related considerations. This choice is crucial and should be made by weighing the specific characteristics and limitations of each approach, ensuring an optimal balance of efficiency and effectiveness.
+
+\subsubsection{Generalizability}
+While our study used neural REG to underscore the significance of incorporating non-neural baselines, it is important to recognize that our conclusions may not generalize to more complex E2E NLG systems. However, as indicated by \citet{dusek-etal-2018-findings}, well-designed template-based NLG systems can still demonstrate competitive performance. This suggests that our insights might be applicable to other components of the NLG pipeline, such as content determination, aggregation, and lexicalization. Notably, pipeline NLG systems, which handle these tasks sequentially, are occasionally deemed capable of outperforming comprehensive E2E NLG systems, as discussed by \citet{castro-ferreira-etal-2019-neural}.
+
+\section{Study G: Neural REG and explainability}\label{sec:probingexplainability}
+
+The outcomes of neural models, as demonstrated in study \studF and analogous research efforts \citep{ferreira2018neuralreg, cao2019referring, cunha-etal-2020-referring}, leave open questions about the extent to which these models learn to encode linguistic features. Addressing this gap, study \studG introduces a sequence of probing tasks aimed at inspecting the internal structure of neural models.\footnote{Refer to \citet{chen-etal-2023-probing} for an updated version of study \studG, which includes probing experiments on \webnlg and on \wsj, the latter being conducted in both English and Chinese.} This investigation seeks to discern which linguistic features are effectively encoded within neural models designed for the RFS task. Moreover, this study aims to explore whether models focused solely on pronominalization learn different contextual features compared to those trained for more fine-grained classification challenges. Additionally, we aim to understand how RFS performance is influenced by varying neural network architectures.
+
+An established method to determine the nature of information encoded in the latent representations of neural models is through probing tasks. This approach has been widely adopted in various fields, such as machine translation \citep{belinkov-etal-2017-neural}, language modeling \citep{giulianelli-etal-2018-hood}, and relation extraction \citep{alt-etal-2020-probing}. Additionally, probing studies have been conducted in areas closely related to our study's focus, like bridging anaphora and coreference resolution \citep{sorodoc-etal-2020-probing, pandit-hou-2021-probing}, which also seek to address the complexities of reference phenomena.
+
+In a typical probing task, a diagnostic classifier is trained using the representations generated by the neural models. The classifier's performance is indicative of the extent to which these representations encode the information pertinent to the probing task. In this study, we aim to understand the linguistic features that are encoded by neural models in the context of choosing the appropriate RF.
+
+As discussed in Chapters \2 and \5, the majority of research in the linguistic tradition on reference production primarily concentrates on the choice of the referring expression form, rather than on the detailed realization of its content. Consistently aligning with this tradition, study \studG focuses on the task of RFS. In this study, we use the REG model proposed by \citet{ferreira2018neuralreg} for addressing RFS. For a comprehensive analysis, we also incorporate: (1) a robust baseline model that uses a single encoder, in contrast to the multiple encoders used by \citet{ferreira2018neuralreg}, and (2) pre-trained word embeddings (such as GloVe) and language models (like BERT), to gauge their impact on model performance.
+
+We begin this section by outlining the task of RFS using the \webnlg corpus and proceed to develop several neural models tailored for this task. To understand the linguistic features influencing the choice of RF, we introduce eight probing tasks. These tasks are informed by the prominence-lending cues discussed in \chapref{chap2} and the features examined in \chapref{chap5}. Using these probing tasks, we aim to delve into the inner workings of our RFS models to interpret and explain their behavior.\footnote{The code for the RFS models and the probing classifier is accessible at: \url{github.com/a-quei/probe-neuralreg}.} As this study represents the first probing experiment focused on \context models, we conduct it using \webnlg, the de facto standard corpus in NLG research. Future works will broaden the scope of this study to include more complex corpora, such as \wsj.
+
+\subsection{Neural referential form selection} \label{sec:modelrfs}
+This section is dedicated to introducing the task of RFS within the context of the \webnlg dataset. Following this introduction, we will delve into the specifics of the \term{NeuralRFS} models.
+
+\subsubsection{The RFS task in study \studG (NeuralRFS)}
+
+In this study, the RFS task involves identifying the appropriate RF for a given context. This context comprises a pre-context $x^{\text{(pre)}} = \{w_1, w_2, ..., w_{i-1}\}$ (where $w$ denotes a word or a delexicalized entity label), the target referent $w^{(r)} = \{w_i\}$, and a post-context $w^{\text{(post)}} = \{w_{i+1}, ..., w_n\}$. The algorithm's objective is to select the most suitable RF $\hat{f}$ from a set of $K$ possible RFs $\mathcal{F} = \{f_k\}_{k=1}^K$.
+
+In the \webnlg dataset, RFs are categorized into four classes: \val{proper name}, \val{description}, \val{demonstrative}, and \val{pronoun}. However, due to the rarity of demonstrative NPs in the dataset, we also opt for a 3-way classification combining descriptions and demonstratives into a single category. Additionally, considering the focus of most linguistic studies on pronominalization, we also conduct a 2-way classification task. The classification categories used in our study are outlined in \tabref{tab:cls}.
+
+\input{figures_tex_snippets/07/probe/tab/class}
+
+The primary aim of study \studG is to uncover the specific linguistic features encoded by neural models in the RFS task. A key aspect of our investigation is to determine if neural models trained on less complex tasks (e.g., 2-way classification) capture different contextual features compared to those trained on more demanding tasks (e.g., 3-way and 4-way classification). Additionally, we are curious to explore whether models incorporating an attention mechanism encode a broader range of linguistic features in their latent representations compared to simpler neural architectures. As this is the first series of probing experiments for the NeuralRFS task, study \studG adopts an exploratory approach.
+
+\subsubsection{NeuralRFS models}
+
+In the context of our study, we have developed NeuralRFS models by employing two key strategies. First, we adopt the top-performing neural REG model from \citet{ferreira2018neuralreg}. This step allows us to build upon a proven foundation, leveraging the strengths of an existing, effective model. Secondly, we introduce an alternative model that is inherently simpler in design and more adaptable in incorporating pre-trained representations. 
+
+\paragraph*{\modname{Con-ATT}} 
+
+In our study, we use the CAtt model from \citet{ferreira2018neuralreg}, identified as the most effective for the \context task among the models they evaluated. To process the inputs, we first use a \term{Bidirectional} \term{GRU} (\term{BiGRU}), as detailed by \citet{cho-etal-2014-learning}, to encode both the pre-context $x^{\text{(pre)}}$ and the post-context $x^{\text{(post)}}$. Specifically, for each $k\in[pre, post]$, we transform $x^{(k)}$ into an encoded form $h^{(k)}$ using the BiGRU: $h^{(k)} = \mbox{BiGRU}(x^{(k)})$. 
+
+Differing from the approach of \citet{ferreira2018neuralreg}, we then apply self-attention, following the method by \citet{yang-etal-2016-hierarchical}, to encode $h^{(k)}$ into a context representation $c^{(k)}$. This process involves computing attention weights $\alpha^{(k)}j$ at each step $j$. The attention weight is computed by first determining 
+\ea$
+e_j^{(k)} = v_a^{(k)T}\mbox{tanh}(W_a^{(k)}h_j^{(k)})
+$\z
+and then normalizing these scores across all $N$ steps in $h^{(k)}$ using
+\ea$
+\alpha_j^{(k)} = \frac{\text{exp}(e_j^{(k)})}{\sum_{n=1}^N \text{exp}(e_n^{(k)})},
+$\z
+
+\ea$
+	e_j^{(k)} = v_a^{(k)T}\mbox{tanh}(W_a^{(k)}h_j^{(k)}),
+$\z
+\ea$
+	\alpha_j^{(k)} = \frac{\text{exp}(e_j^{(k)})}{\sum_{n=1}^N \text{exp}(e_n^{(k)})},
+$\z
+
+
+where $v_a$ is the attention vector and $W_a$ is the weight in the attention layer. 
+
+%The context representation of $x^{(k)}$ is then the weighted sum of $h^{(k)}$: 
+In this model, the context representation for each context $x^{(k)}$ is obtained through a weighted sum of its encoded form $h^{(k)}$. Specifically, we calculate the context representation $c^{(k)}$ as follows:
+
+\ea$
+	c^{(k)} = \sum_{j=1}^N \alpha_j^{(k)} h^{(k)}.
+$\z
+
+
+After acquiring the context representations $c^{\text{(pre)}}$ and $c^{\text{(post)}}$ for the pre-context and post-context, we concatenate these with the embedding of the target entity $x^{(r)}$. This concatenated vector is then fed into a feed-forward neural network layer. The output of this layer, denoted as $R$, is obtained using the ReLU activation function:
+
+\ea$
+	R = \mbox{ReLU}(W_f [c^{\text{(pre)}}, x^{(r)}, c^{\text{(post)}}]),
+$\z
+
+Here, $W_f$ represents the weights of the feed-forward layer. This process effectively combines the context information with the target entity information to produce a final representation, $R$. $R$, the input to the probing classifiers (discussed in \sectref{sec:prob}), provides a rich representation encapsulating the context and entity information, which is then used to make informed predictions:
+
+
+\ea$
+	P(f|x^{\text{(pre)}}, x^{(r)}, x^{\text{(post)}}) = \mbox{Softmax}(W_c R),
+$\z
+
+
+In this equation, $W_c$ represents the weights of the output layer, and the function \mbox{Softmax} is used to calculate the probability distribution over the possible referential forms ($f$) for the target entity $x^{(r)}$, given the pre-context $x^{\text{(pre)}}$ and post-context $x^{\text{(post)}}$. The Softmax function ensures that the predicted probabilities are normalized, meaning that they sum up to one. This makes it possible to interpret these probabilities in a meaningful way, with higher values indicating a greater likelihood of a particular referential form being the correct choice in the given context.
+
+\paragraph*{\modname{c-RNN}} 
+
+In addition to the \modname{Con-ATT} model, we explore a streamlined yet effective structure, termed \textit{centered recurrent neural networks} (\modname{c-RNN}). This model diverges from the \modname{Con-ATT} approach by employing a single BiGRU for encoding the context and the target entity. The process involves concatenating the pre-context $x^{\text{(pre)}}$, the target referent $x^{(r)}$, and the post-context $x^{\text{(post)}}$ into a single sequence, which is then collectively encoded:
+
+\ea$
+	h = \mbox{BiGRU}([x^{\text{(pre)}}, x^{(r)}, x^{\text{(post)}}]).
+$\z
+
+Here, $h$ represents the encoded sequence. For the target entity positioned at index $i$ within this sequence, we specifically extract the corresponding $i$-th encoded representation $h_i$. This representation is then processed through a ReLU activation function in the feed-forward layer to obtain the final representation, denoted as $R = \mbox{ReLU}(W_f h_i)$, where $W_f$ signifies the weights of the feed-forward layer.
+
+Once $R$ is obtained, the subsequent steps are similar to those of the \modname{Con-ATT} model. The final representation $R$ serves as the input for the same classification procedure, using the Softmax function to predict the probability distribution of the RFs.
+
+\paragraph*{Pre-training}
+In this study, we also aim to explore the potential benefits of pre-trained word embeddings and language models in the RFS task, a domain where their efficacy remains largely unexplored. While \citet{cao2019referring} have previously used pre-trained embeddings, the specific contributions of these embeddings have not been thoroughly examined through an ablation study. Consequently, we experiment with both the \modname{c-RNN} and \modname{Con-ATT} models, integrating them with GloVe embeddings \citep{pennington-etal-2014-glove} to determine whether these pre-trained embeddings significantly influence the choice of RF.
+
+Furthermore, we extend our exploration to the utilization of the pre-trained language model \bert \citep{devlin-etal-2019-bert}. To enhance \bert's effectiveness in encoding delexicalized entity labels, we first train it as a masked language model using the training data from \webnlg. Subsequently, we freeze \bert's parameters and employ the model for input encoding. This encoded input is then fed into \modname{c-RNN}.\footnote{Other approaches involving \bert were also tested, including the combination of \bert with a feed-forward layer for deriving $h$, as well as training scenarios where \bert's parameters were not frozen. However, these variations did not yield high-performance models.}
+
+\paragraph*{Feature-based model}
+
+In the construction of our feature-based RFS classifiers, we use the XGBoost algorithm \citep{xgboost2016}, employing a 5-fold cross-validation approach for training.\footnote{Although the CatBoost algorithm was also considered, as it was used in study \studF, the performance difference between CatBoost and XGBoost was marginal. We opted for XGBoost due to the ease of conducting SHAP analysis with this algorithm.} Initially, a comprehensive range of features, amounting to 16 in total, are extracted from the \webnlg corpus to train the classifiers. After conducting a variable importance analysis, we select a subset of the most significant features for inclusion in the final models. The chosen features, which are deemed to have the greatest impact on the performance of the classifiers, are detailed in \tabref{tab:feat}.
+\input{figures_tex_snippets/07/probe/tab/feat}
+
+\subsubsection{Evaluation}
+
+\subsubsubsection{Implementation details} 
+
+For the evaluation of our models, we fine-tune their hyper-parameters on the development set, selecting the configuration that yields the highest macro F1 score. In the case of the \bert model, to circumvent issues with tokenization, we use the cased version of \term{bert-base} and augment its vocabulary with all entity labels from our dataset.\footnote{\url{https://huggingface.co/bert-base-cased}} This specific \bert model is trained on the \webnlg corpus for 25 epochs, with a masking probability set at 0.15.
+
+As for the \modname{XGBoost} models, the learning rate is set at 0.05, and the minimum split loss is calibrated at 0.01. We limit the maximum depth of a tree to 5 and set the subsampling ratio for the training instances at 0.5.
+
+
+To assess the performance of each model, we focus on the macro-averaged precision, recall, and F1 score, calculated on the test set. We repeat each model's run five times to ensure consistency and report the averaged outcomes. It is important to note that the dataset used for this evaluation is composed exclusively of seen entities from the \webnlg corpus.
+
+\subsubsubsection{Results}
+
+The results of the various classification tasks are presented in \tabref{tab:cls_result}. Across the board, all neural model variants demonstrate superior performance compared to the feature-based baseline. In the binary classification task, the performance gap between the neural models and the feature-based model is relatively narrow. However, this gap is much larger in the more complex 3-way and 4-way classification tasks. It is noteworthy that the 2-way classification task is considerably less complex than its 3-way and 4-way counterparts, which is likely why the feature-based model achieves results nearly on par with the neural models in this scenario.
+
+\input{figures_tex_snippets/07/probe/tab/classifier}
+
+When examining the performance of the neural variants, it becomes apparent that the more straightforward \modname{c-RNN} model outperforms \modname{Con-ATT} in the 4-way classification task, while achieving comparable results in both the 3-way and 2-way classifications. A plausible reason for this could be the approach \modname{Con-ATT} adopts, which involves dividing the input into three distinct components -- the target entity, the pre-context, and the post-context, encoding these elements separately, and then merging the encoded representations back together before making predictions. This \emph{divide and merge} procedure might impede the model’s ability to learn certain useful information.
+
+In considering the impact of pre-trained models, we observe that the GloVe embeddings enhance the performance of \modname{c-RNN} exclusively in the context of 4-way classification tasks. However, for 2-way and 3-way classifications, GloVe embeddings do not demonstrate any significant contribution. Interestingly, the integration of GloVe embeddings into the \modname{Con-ATT} model seems to have a negative effect, as evidenced by a decrease in overall performance when GloVe is employed. Moreover, it is quite surprising to note that \bert, contrary to expectations, negatively impacts \modname{c-RNN} in both 4-way and 3-way predictions. The F1 scores show a decline from 64.86 to 62.15 and from 83.63 to 82.15, respectively, when \bert is used, indicating that its inclusion might not always be beneficial for certain classification complexities.
+
+Regarding pronominalization performance, the use of \bert demonstrates a marginal improvement, elevating the F1 score from 89.09 to 89.42. This increment, albeit slight, suggests some level of effectiveness of \bert in pronominalization tasks. However, this improvement is notably less pronounced compared to the substantial gains often observed in other NLP tasks when employing \bert. One plausible reason for this limited enhancement could be the nature of the \webnlg dataset. Although \bert was retrained using delexicalized sentences from \webnlg, it appears that the entity labels may introduce a form of noise that impedes optimal learning, thus restricting the full potential of \bert in this specific context.
+
+The confusion matrices depicted in \figref{fig:cm} for \modname{XGBoost} and the best performing neural model, \modname{c-RNN+GloVe}, provide a deeper understanding of how each model behaves in the 4-way classification scenario. It is notable that both models perform well in identifying pronouns and proper names, which explains the minor performance discrepancies observed in the 2-way classification task. However, they struggle with predicting demonstratives, likely due to the scarcity of such references in the \webnlg dataset.
+
+A critical distinction between the two models emerges in their ability to differentiate between proper names and descriptions. The \modname{XGBoost} model frequently misclassifies descriptions as proper names, doing so in 62.58\% of cases. In contrast, the \modname{c-RNN+GloVe} model shows a markedly improved distinction, with a misclassification rate of only 20.18\%. This disparity suggests that neural models like \modname{c-RNN+GloVe} may be capturing useful discourse-related features that are not readily captured through the feature engineering process employed in the \modname{XGBoost} model.
+
+\begin{figure*}
+	\includegraphics[scale=0.6]{figures_tex_snippets/07/probe/img/cm.png}
+	\caption[Confusion matrices for the 4-way classification results.]{Confusion matrices for the 4-way classification results of \modname{XGBoost} (left) and \modname{c-RNN+GloVe} (right), where \term{PRO}, \term{PN}, \term{DES}, and \term{DEM} stand for \val{pronoun}, \val{proper name}, \val{description}, and \val{demonstrative}, respectively. The $y$-axis shows the true labels and the $x$-axis shows the predicted labels.}
+	\label{fig:cm}
+\end{figure*}
+
+
+Furthermore, it is crucial to acknowledge certain annotation inconsistencies present in the \webnlg dataset, which may impact the performance of both the \modname{XGBoost} and \modname{c-RNN+GloVe} models. An example is the inconsistent annotation of the entity ``United States''. While ``United States'' is annotated as a \val{proper name}, the phrase ``the United States'' is labeled as a \val{description}. Such irregularities in the dataset can lead to confusion in the classification of proper names and descriptions by both models. This factor must be taken into account when interpreting their performance and the differences in their ability to distinguish between these two referential forms.
+
+\subsection{Probing NeuralRFS models} \label{sec:prob}
+
+In our approach, we use a logistic regression classifier for probing. This methodology involves generating the representation $R$ using the models outlined in \sectref{sec:modelrfs} for each input instance. As previously noted in \sectref{sec:modelrfs}, each model undergoes five runs, with their performance averages subsequently reported. When implementing the probing tasks, we specifically leverage the representations derived from those models which exhibited the most effective RFS performance during their evaluation on the development set.
+
+\subsubsection{Probing tasks} \label{sec:task}
+
+Drawing on the insights from Chapters \2 and \5, we have developed eight probing tasks pertaining to four classes of features, namely referential status (DisStat and SenStat), syntactic position (Syn), recency (DistAnt and IntRef), and discourse structure prominence (LocPro, GloPro, and MetaPro).
+
+\subsubsubsection{Referential status} 
+
+Referential status is a key factor influencing the choice of referential form, as explored from both linguistic and computational perspectives \citep{chafe1976givenness,gundel1993cognitive,castro-ferreira-etal-2016-towards-variation}. In this study, we define referential status at two distinct levels: discourse-level and sentence-level.
+
+\begin{description}
+	\item[DisStat.] This feature has two possible values: (a) \val{discourse-old} indicates that the entity has previously appeared in the discourse, and (b) \val{discourse-new} denotes that the entity is new to the discourse.
+	\item[SenStat.] Similarly, this feature also encompasses two values: (a) \val{sentence-new} means that the RE is the first mention of the entity in the sentence, and (b) \val{sentence-old} denotes that the RE is not the first mention of the entity within the sentence.
+\end{description}
+
+
+\subsubsubsection{Syntactic position} 
+The syntactic role of entities in sentences significantly influences their likelihood of being pronominalized. Research by \citet{Brennan1995} and \citet{Arnold2010} suggests a higher tendency for subjects to be pronominalized compared to objects. 
+
+\begin{description}
+	\item[Syn.] The syntax probing task focuses on this aspect through a binary classification: (a) \val{subject}: if the referent functions as a subject in the sentence, and (b) \val{other}: any non-subject referent in the sentence.
+\end{description}
+
+
+\subsubsubsection{Recency} The proximity of a referent to its antecedent is a crucial factor in determining the referential form. We introduce two probing tasks focusing on recency: 
+
+\begin{description}
+	\item[DistAnt.] This feature measures the distance between the target entity and its antecedent, which can contain four values: the entity and its antecedent are (a) in the \val{same} sentence, (b) \val{one} sentence apart, (c) \val{more than one} sentence apart, and (d) the referent is the \val{first mention} of its entity in the discourse. 
+	\item[IntRef.] This task assesses whether another referent intervenes between the target entity and its nearest antecedent, potentially indicating competitor referents. The values for this feature are: (a) the target entity is newly introduced in the discourse (\val{first-mention}), (b) the immediately preceding RE refers to the \val{same entity}, and (c) the immediately preceding RE refers to a \val{different entity}. The presence of intervening referents, especially those sharing animacy and gender with the target, can influence the referential form selection due to potential competition.
+\end{description}
+
+
+\subsubsubsection{Discourse structure prominence} %
+
+Discourse structure prominence is influenced by organizational elements within a discourse. Studies based on Centering Theory, such as those by \citet{grosz1995centering} and \citet{henschel2000pronominalization}, often account for pronominalization through the concept of local focus. \emph{Local focus} considers both the current and preceding utterance. In contrast, \emph{Global focus} identifies a referent within a broader context, encompassing either the entire text or a specific discourse segment \citep{hinterwimmer2019prominent}. This approach links concepts like the familiarity and importance of a referent to the global prominence status of entities \citep{siddharthan2011information}. Our work introduces three probing tasks, each designed to capture distinct properties of discourse.
+
+\begin{description}
+	
+	\item[LocPro.] The notion of local prominence originates from Centering Theory, which highlights the idea of local focus \citep{grosz1995centering}. The implementation of local prominence follows \citet{henschel2000pronominalization}: an entity is considered locally prominent if it is both \term{discourse-old} and \term{realized as a subject}. Local prominence is a binary feature, characterized by two distinct values:  (a) \val{locally prominent}, and (b) \val{not locally prominent}. This probing task is a hybrid function of the two previously-mentioned probing tasks, DisStat and Syn. 
+	
+	\item[GloPro.] The concept of \term{global prominence} draws upon the idea of \term{global salience}, as explored by \citet{siddharthan2011information}. This concept pertains to determining whether an entity is a major or minor referent within the text. \citet{siddharthan2011information} posits that ``the frequency features are likely to give a good indication of the global salience of a referent in the document" (p. 820). In the GloPro probing task, the entity that appears most frequently in a text is designated as globally prominent. This task allows for two outcomes: (a) \val{globally prominent}, and (b) \val{not globally prominent}.
+	
+	\item[MetaPro.] In line with the concept of global prominence, we aim to explore how \emph{prominence beyond a single text} -- for instance, at the level of a collection of texts -- affects RF. The underlying principle of this exploratory feature is that people tend to use fewer semantic details when referring to entities known outside the text.
+	To implement this probing task, each RE is categorized based on the frequency of mentions of the target entity within the entire \webnlg corpus, with four potential values representing different intervals: (a) \val{[1,50)}, (b) \val{[50,150)}, (c) \val{[150,290)}, and (d) \val{[290,\infty)}. For instance, the category $[1, 50)$ includes entities mentioned fewer than 50 times in the corpus.
+	
+\end{description}
+
+\subsubsection{Importance analysis} \label{sec:importance}
+
+To understand the relative importance of features used in the probing tasks for feature-based models, we conduct a feature importance analysis. This analysis acts as a validation step, ensuring that the learned representations significantly incorporate features that are crucial for the RFS task.
+
+We train an XGBoost model, employing only the features discussed in \sectref{sec:task}. To evaluate the importance of each feature, we compute the model-agnostic, permutation-based variable importance for each model \citep{Biecek2021}. This method assesses how the model's performance is impacted when a specific feature is excluded. Essentially, it measures the degree of change in performance resulting from the removal of each feature. The results, illustrated in \figref{fig:ablation}, display the change in performance associated with each feature in the context of the 4-way classification task. 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.30]{figures_tex_snippets/07/probe/img/4_way.png}
+	\caption[Feature importance of the \modname{XGBoost} 4-way predictions.]{Feature importance of the \modname{XGBoost} classifiers for 4-way predictions. A higher loss indicates greater importance of a feature.}
+	\label{fig:ablation}
+\end{figure}
+
+As depicted in \figref{fig:ablation}, the features DisStat (Discourse status) and Syn (Syntactic position) make the most substantial contributions to the predictions in the 4-way classification. An interesting observation is the lower importance of LocPro (Local Prominence), which can be attributed to its composition as a hybrid feature, combining aspects of both Syn and DisStat. Therefore, we also expect LocPro to exhibit a high performance in the probing experiment.
+
+In addition to the 4-way classification results, \figref{fig:varimp_2_3} presents the findings for the variable importance in the 2-way and 3-way classification tasks. Notably, there is a consistent pattern in the ranking of variables across all three classification models. This consistency indicates that certain linguistic features, particularly DisStat and Syn, consistently play a pivotal role, regardless of the complexity of the classification task.
+
+\begin{figure*}
+	\centering
+	\includegraphics[scale=0.4]{figures_tex_snippets/07/probe/img/2_3_way.png}
+	\caption[Feature Importance of the \modname{XGBoost} 2-way and 3-way predictions.]{Feature Importance of the \modname{XGBoost} 2-way (left figure) and 3-way (right figure) predictions.}
+	\label{fig:varimp_2_3}
+\end{figure*}
+
+\subsubsection{Probing results}
+
+We carry out a series of probing tasks in order to assess whether the latent representations of the NeuralRFS models effectively encode the linguistic features outlined in \sectref{sec:task}. These tasks aim to evaluate the extent to which these features are captured within the model's representations. We determine the performance of these tasks using accuracy and macro-averaged F1 scores, as depicted in \tabref{tab:prob}. To ensure reliability, each classifier is trained five times and the average score of these iterations is reported. Moreover, we employ two baseline methods for comparison: \modname{random}, which randomly assigns a label to each input, and
+\modname{majority}, where the most frequently occurring label in each probing task is assigned to all inputs.
+
+\input{figures_tex_snippets/07/probe/tab/prob}
+
+\paragraph*{Results of each probing task} 
+
+The performance of all probing classifiers surpasses the random baseline across all tasks. This indicates a notable degree of learning and encoding of specific linguistic features by the models. In what follows, we detail the probing results of different tasks:
+
+\begin{description}
+	\item[Referential status and syntactic position:] The high performance on DisStat, SenStat, and Syn tasks across all models suggests that they effectively learn referential status and syntactic position from the \webnlg corpus.
+	
+	\item[Recency (DistAnt and IntRef):] Compared to referential status and syntactic position, the models exhibit a lower performance in recency-related tasks. The F1 scores for DistAnt and IntRef are not only lower than those for DisStat, SenStat, and Syn but also closer to the baseline values. This aligns with the findings from \sectref{sec:importance} where DistAnt and IntRef were deemed less important. The lesser importance of recency in \webnlg could be attributed to a large portion of the documents being single-sentence, reducing the impact of long-distance dependencies. Alternatively, consistent with previous probing studies on coreference and bridging anaphora \citep{sorodoc-etal-2020-probing, pandit-hou-2021-probing}, the models might inherently struggle with capturing long-distance dependencies.
+	
+	\item[Discourse structure prominence:] The models handle LocPro effectively, likely due to its derivation from DisStat and Syn. However, they perform poorly on GloPro and MetaPro, as indicated by the low F1 scores in these tasks. This is contrary to the importance analysis results, which highlighted the relative importance of both GloPro and MetaPro (ranked three and four in \figref{fig:ablation}). This discrepancy suggests that neural models may lack a comprehensive understanding of the broader document or corpus context, a crucial aspect for accurately handling GloPro and MetaPro tasks.
+	
+\end{description}
+
+
+
+
+
+
+
+\paragraph*{Comparing \modname{c-RNN} and \modname{Con-ATT}}
+
+In \sectref{sec:modelrfs}, we established that the \modname{c-RNN} model outperformed \modname{Con-ATT} in the 4-way RF classification task. However, it is intriguing to note that \modname{Con-ATT} demonstrates superior performance in several probing tasks, particularly in DisStat, LocPro, GloPro, and MetaPro. This enhanced performance may stem from \modname{Con-ATT}'s use of self-attention, a feature that potentially improve the model's ability to grasp long-distance dependencies within text.
+
+It is crucial to note that the \webnlg corpus, upon which these models were evaluated, has distinct characteristics that might not align perfectly with more general or diverse text types. For instance, a notable majority (over 85\%) of REs in \webnlg are categorized as first-mentions, and a single entity (\intext{United\_States}) appears in 21\% of its documents. These specifics point to a usage of REs in \webnlg that could substantially differ from more varied and realistic text sources.
+
+Given these corpus-specific peculiarities, it is possible that the true capabilities of the more complex \modname{Con-ATT} model, particularly its proficiency in encoding a broader range of contextual features, are not entirely used within the limits of the RFS tasks conducted with the \webnlg corpus. This suggests a need for further exploration and testing of these models in more varied and representative text environments to fully leverage their respective strengths.
+
+\paragraph*{The effect of pre-training}
+
+As mentioned earlier, we are interested to know whether RFS benefits from different architectures such as pre-trained word embeddings and language models. Notably, the inclusion of GloVe embeddings does not yield a significant impact on either \modname{c-RNN} or \modname{Con-ATT}. 
+
+In contrast, the incorporation of \bert shows a more notable effect, particularly in improving the models' ability in learning about DisStat. This improvement is likely attributable to \bert's self-attention mechanism, which enhances its ability to discern and encode the discourse-old or discourse-new status of entities. However, it is important to consider the composition of the \webnlg corpus, where a large proportion of REs are first mentions. This characteristic of the corpus means that while accuracy in the DisStat task is improved with \bert, this does not translate into a corresponding substantial increase in the overall RFS performance. The specificity of \webnlg's content thus limits the extent to which the benefits of \bert can be observed and leveraged in the broader context of RFS.
+
+
+
+
+\paragraph*{Comparing different RF classifications}
+
+The probing results intriguingly suggest that the type and degree of information encoded in neural models' latent representations are influenced by the nature of the RF classification tasks they are trained on. Notably, the simpler 2-way classification task seems to enhance the ability of \modname{c-RNN} to effectively learn about referential status. 
+
+Conversely, in the context of more complex 4-way classification tasks, models equipped with attention mechanisms, namely \modname{Con-ATT+GloVe}, \modname{Con-ATT}, and \modname{c-RNN+BERT}, exhibit superior proficiency in encoding referential status. This enhanced ability can be attributed to the attention mechanism's capacity to focus on and integrate relevant contextual information more effectively. Moreover, in the case of \modname{Con-ATT+GloVe}, we see that more fine-grained classifications help the model learn more about meta-prominence (MetaPro).
+
+
+
+\subsection{Summary and discussion of study \studG}
+
+Study \studG was dedicated to exploring the capacity of neural models to encode features pertinent to referential form selection (RFS). This investigation was structured around eight probing tasks, each targeting critical linguistic aspects such as referential status, syntactic position, recency, and discourse structure prominence.
+
+Firstly, the performance of the probing classifiers consistently surpassed that of the \modname{random} and \modname{majority} baselines across all tasks. This outcome is indicative of the models' ability to learn and represent these linguistic features beyond mere chance or frequency-based guessing.
+
+Notably, the probing tasks associated with referential status, syntactic position, and local prominence yielded particularly strong performances. This suggests that neural models are especially proficient in understanding and encoding information related to these aspects. However, the models demonstrated weaker performance in tasks assessing recency-related features. This could be attributed to the inherent complexity of encoding long-distance dependencies and contextual relations in the neural architecture. Additionally, tasks probing global prominence and meta-prominence proved challenging for the models, indicating a potential area for further development in capturing more abstract, discourse-level features.
+
+While probing tasks in study \studG have provided valuable insights into the abilities of neural models in RFS, there are inherent limitations to this approach that warrant a cautious interpretation of the results.
+
+One of the key criticisms of probing is that low performance does not necessarily indicate a lack of encoding of a feature; rather, it could imply that the feature is not pivotal to RFS. This aspect was somewhat addressed by a complementary variable importance analysis, where discourse status and syntactic position were identified as important. These features showed good predictability in probing classifiers. However, it is important to note that this importance analysis was based on a feature-based model, not the neural models in question. Consequently, the same level of importance may not hold across different model types.
+
+Moreover, the overall validity of probing as a method has been debated in various studies, such as those by \citet{hewitt-liang-2019-designing} and \citet{kunz-kuhlmann-2020-classifier}. These critiques argue that it is challenging to discern whether probing classifiers are simply learning the probing task at hand or genuinely extracting encoded linguistic information. This ambiguity means that a probing classifier's high performance does not unequivocally indicate that a model has effectively encoded the linguistic information being tested. Consequently, we cannot directly quantify \emph{how well} the linguistic information was learned based on the performance of probing classifiers. Therefore, we must be careful in how we interpret the levels of linguistic understanding based solely on probing results. In essence, although probing offers valuable insights, its findings should be viewed as one part of a broader analysis, rather than definitive proof of a model's capabilities.
+
+Based on the results of our probing experiments, we draw several conclusions: 
+
+\begin{enumerate}
+	\item All neural models have indeed learned some information about the features pertinent to the probing tasks. However, the extent to which this information has been effectively learned remains uncertain.
+	\item The widespread usage of the \webnlg corpus in studying discourse REG is problematic for analyzing discourse-related aspects of RFS. The texts in this corpus are predominantly short, and the majority of REs are first mentions.
+	\item The choice of neural architecture and the specificity of the label set employed are crucial in determining how well a model can learn a particular feature. The implementation of an attention mechanism and a more granular label set appears to aid models in learning more information.
+	\item Models consistently struggle with features that derive from a broader contextual understanding, such as GloPro (global prominence) and MetaPro (meta prominence). This suggests a gap in the models' ability to interpret and use wider contextual cues, indicating an area for future improvement and research in neural model development.
+\end{enumerate}
+
+
+\section{Discussion and final remarks}\label{sec:conclusion}
+
+In studies \studF and \studG, we examined neural models, focusing on performance in the former and on interpretability in the latter.
+
+In study \studF, our approach involved reevaluating the latest neural REG systems using a combination of well-designed rule-based and feature-based models. This analysis led us to recognize that traditional REG models hold their ground quite effectively against neural models in terms of performance. 
+
+Recognizing the lack of interpretability inherent in neural models, study \studG introduced several probing tasks as a method to inspect the latent representations of these models. The objective of this study was to determine whether neural \context models could learn some of the linguistic features associated with the choice of referential form. The following sections outline the lessons learned regarding various facets of the \context task, along with suggestions for future research.
+
+\subsection{The choice of corpora} 
+
+\begin{description}[leftmargin=0cm]
+	\item[A need for corpus diversification.] The discussions in this chapter highlight the crucial role of selecting an appropriate corpus for each task. Study \studF demonstrated that model performance assessments vary significantly based on the training corpora. To make well-rounded generalizations about various approaches, it is essential to diversify the corpora used in NLG tasks. In pursuit of this, we created a new dataset for the \context task using the \wsj corpus, proposing that it might be more suitable for this particular task. Nevertheless, this dataset requires further refinement, including enhancements in delexicalization. 
+	
+	\item[Inclusion of more languages.] The \context task exhibits some degree of language specificity, as languages differ in their referring expression form inventories. Yet, if the impact of features hinges on their prominence in context, it is plausible that the core underlying referential mechanisms are consistent across languages. To develop a broader understanding of the generation of REs in various contexts, it is vital to extend these studies to include languages beyond English. Specifically, languages that predominantly use zero pronouns, like Chinese, pose unique challenges for the \context task and thus are of particular interest. Extending our research to include such languages will provide deeper insights into the nuances of REG in different linguistic contexts.
+	
+\end{description} 
+
+\subsection{The choice of \context approaches} 
+\subsubsection{The importance of classic REG models}
+Our findings in study \studF underscore the relevance of traditional \context methods. These approaches are still widely practiced, particularly in commercial applications \citep{reiter-2017-commercial}. Study \studF revealed that carefully crafted classic models are capable of competing with their neural counterparts in terms of efficacy and reliability.
+
+\subsubsection{Pre-trained language models}
+In study \studG, we took the initiative to integrate pre-trained language models into our NeuralRFS frameworks. However, it is premature to draw definitive conclusions about their effectiveness. This caution stems from two primary factors: First, these models were tailored specifically for the RFS task, which is notably less complex than the end-to-end \context challenge; second, their training was conducted using the \webnlg corpus. As indicated in our research, this corpus may not be the most appropriate for comprehensively evaluating the capabilities of these models in the \context domain.
+
+
+
+\subsection{The choice of features}
+\subsubsection{Varied efficacy of features}
+In study \studG, it was observed that probing classifiers did not perform optimally on certain tasks. This could be attributed to the models' challenges in effectively encoding the associated features. It raises the question of whether the difficulty lies in the feature itself or if a different model architecture might yield better results. Another consideration is the relevance of the feature to the task or to the specific corpus. For instance, the feature \textit{distance in number of sentences}, discussed in study \studC, was significant in feature-based models applied to the \wsj corpus, but less so in models trained on the \msrcor. This highlights the necessity of evaluating the feature's relevance to the corpus in question.
+	
+\subsubsection{Significance of feature-based models}
+The superior performance of the linguistically informed feature-based model on the \wsj corpus underlines the critical role of features in the \context task. An area for further exploration is understanding why certain features are so influential. It might be that some linguistic features represent bottlenecks for neural models, limiting their effectiveness.
+	
+\subsubsection{Bottleneck features in \context} 
+Features can be seen as tools for encoding characteristics not immediately discernible from text. One such feature is recency, which considers longer text spans. Study \studG highlighted that neural models struggle with capturing long-distance dependencies. Another intriguing feature is transitions, as suggested by the findings in studies \studC and \studE. These studies proposed that transitions, along with distance, significantly impact RF choice. Recognizing and understanding these bottleneck features is essential, as they are pivotal to the task but may not be adequately addressed by current end-to-end models. Enhanced comprehension of these features could lead to the development of more effective neural models.
+
+\subsection{Better human evaluation methods}
+The use of the Likert scale in evaluating \webnlg predictions seems to align well with the requirements of this task. However, our perspective on the Magnitude Estimation approach used for the \wsj data is more cautious. The human evaluation results did not reveal any significant distinctions in clarity among the models. This outcome suggests that either the evaluation task was not adequately defined or the experimental design was not suitable for discerning differences. It is noteworthy that most human evaluation experiments in this domain have been limited to shorter text segments. Even those performed on the \corpus{GREC} systems \citep{belz2010generating} involved narratives that were simpler and shorter than those in this study. Consequently, this signifies the need for further research and additional experiments to develop and refine methods for effectively evaluating longer texts in future studies.
+

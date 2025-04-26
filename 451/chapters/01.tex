@@ -1,0 +1,227 @@
+% !TeX spellcheck = en_US
+\chapter{Introduction}\label{chap1}
+
+\section{Goal of this book}
+
+
+An essential part of successful communication is referring to the things you want to talk about in a manner that is understandable and sounds natural to your reader or listener.
+
+\begin{exe}
+	\ex\label{ex:weird_abe} On Monday, \italunder{Shinzo Abe} set a record for being Japan's longest-serving prime minister since 1885. Just four days later, \italunder{Shinzo Abe} announced \italunder{Shinzo} \italunder{Abe} was retiring. \italunder{Shinzo Abe}'s term was scheduled to end in Septe-mber 2021, however, poor health forced an early departure. \italunder{Shinzo Abe} has suffered ...
+\end{exe}
+
+\REF{ex:weird_abe} is understandable to the reader, but the repeated use of the term \intext{Shinzo Abe} makes it sound unnatural in English, and the reader may find it difficult to follow the text.
+In fact, English offers various alternative expressions, the use of which can make the text more readable, as demonstrated in the original version of the above text in \REF{ex:abe}.\footnote{\url{https://www.dw.com/en/shinzo-abes-departure-signals-the-end-of-an-era-in-tokyo/a-54738816}}
+
+\begin{exe}
+	\ex\label{ex:abe} On Monday, \italunder{Shinzo Abe} set a record for being Japan's longest-serving prime minister since 1885. Just four days later, \italunder{the 65-year-old politician} announced \italunder{he} was retiring. \italunder{His} term was scheduled to end in September 2021, however, poor health forced an early departure. \italunder{Abe} has suffered ...
+\end{exe}
+
+As \REF{ex:abe} illustrates, people constantly make decisions about how to refer to different things. Research on the production of \term{Referring Expressions} (REs) delves into the choices individuals make and the factors influencing those choices. The topic of reference production also garners significant interest in Computational Linguistics (CL) and Natural Language Generation (NLG), where it is known as \term{Referring Expression Generation} (REG).
+
+This book aims to present linguistically informed solutions for the task of generating REs within a discourse context, henceforth referred to as \term{\context}. \citet{belz2007generation} described \context as: ``Given an intended referent and a discourse context, how do we generate appropriate referential [referring] expressions (REs) to refer to the referent at different points in the discourse?" (p.~9). The term \term{discourse context}, often abbreviated to \term{context}, can be interpreted in several ways. At its most basic, context implies that the RE is not generated in isolation. Alternatively, a text extending beyond a single sentence might be viewed as the baseline for defining context \citep{belz2010generating}. For instance, in example \REF{ex:abe}, an algorithm tasked with generating appropriate REs referring to Shinzo Abe can be considered as undertaking a \context task. Throughout this book, I conduct a systematic analysis of \context models, examining the approaches adopted, the corpora employed, and the features applied. Additionally, I provide explanations and enhancements to these models, drawing from linguistic insights.
+
+This chapter unfolds as follows: in \sectref{sec:terminology}, I introduce terminology frequently referenced throughout the book.  \sectref{sec:refchallenges} moves beyond the practical (and occasionally oversimplified) definitions of reference-related concepts to delve into the more intricate facets of the theory. Subsequent sections, \sectref{sec:lingtradition} and \sectref{sec:comptradition}, offer succinct overviews of studies that explore the choice of REs from linguistic and computational perspectives. I conclude this chapter in \sectref{sec:thisdiss}, outlining the overarching structure of the work and pinpointing the specific research questions this book pursues.
+
+\section{Setting the terminology}\label{sec:terminology}
+\REF{ex:abe} displays various REs, such as \intext{Shinzo Abe} and \intext{the 65-year-old politician}, which are employed to \term{refer} to the \term{referent} or \term{(discourse) entity} Shinzo Abe (hereafter \referent{shinzo abe}). Alternatively, we can say that these REs are different \term{mentions} of \referent{shinzo abe}.
+
+REs referring to the same referent are described as being \term{coreferential}, and collectively form a \term{coreferential chain}. For instance, in the context of \REF{ex:abe}, the coreferential chain consists of the REs: \{Shinzo Abe, the 65-year-old politician, he, His, Abe\}.
+
+\referent{shinzo abe} is, for the first time, introduced in the initial sentence of \REF{ex:abe}. This introductory RE is termed a \term{first mention}. Any mentions that follow are labeled \term{subsequent mentions}, \term{anaphors}, or \term{anaphoric expressions}. If an entity is mentioned only once in a text, that RE is termed a \term{singleton} \citep{jurafsky2021speech}. With the exception of first-mention referents and singletons, all REs have at least one coreferential antecedent within the text. In \REF{ex:abe}, if we consider the target expression to be \intext{he} from the second sentence, its immediate antecedent is \intext{the 65-year-old politician}, while its secondary antecedent is \intext{Shinzo Abe} from the first sentence. Henceforth, the immediate antecedent will be termed \term{antecedent}.
+
+As illustrated in \REF{ex:abe}, a variety of REs are used to denote the referent. The term \term{Referential Form} (RF) pertains to the different forms REs can take. For instance, the initial RE in \REF{ex:abe} combines the first (\intext{Shinzo}) and last name (\intext{Abe}) of Japan's former prime minister. This expression is categorized as a \term{proper name}, or simply \term{name}. The second RE is the definite noun phrase \intext{the 65-year-old politician}, which is called a \term{description}. Both definite and indefinite \term{Noun Phrases (NPs)} fall into this category.\footnote{Some scholars view proper names as instances of descriptions. For example, as highlighted in \citet{donnellan1972proper}, Russell argues that proper names are concealed definite descriptions, asserting that ``the name `Romulus' is not really a name [that is, in the `narrow logical sense'] but a sort of truncated description. It stands for a person who did such-and-such things, who killed Remus, and founded Rome, and so on." However, in the majority of experimental and computational studies, proper names are distinguished from descriptions. I also adhere to this tradition throughout this book.} The third RE in \REF{ex:abe} is the \term{pronoun} \intext{he}. These three RF classes (\val{name}, \val{description}, \val{pronoun}) are central to this book, though more fine-grained classifications are also feasible.\footnote{Another RE type to note is the zero or null REs \citep{scott_2019}, where REs are conveyed by inflection or implied pragmatically. This RE type is not covered in this book, given that one of the main corpora examined is not annotated for null instances.}
+
+
+\section{The study of reference: Definition and challenges}\label{sec:refchallenges}
+
+The preceding section laid the groundwork by introducing terminology that will be consistently used throughout this book.  The terms provided offer a simplified and practical understanding of concepts related to reference. The primary focus of this work will be on the core types of reference that are frequently observed in corpora. This means that I will bypass a number of lively debates and intricate questions about reference, especially those posed by logicians and philosophers of language \citep{frege1960,russell1905denoting,strawson1950referring,donnellan1966reference,searle1969speech,Recanati1993}.\footnote{It is worth noting that Frege's original article dates back to 1892.}
+
+To illustrate, Frege, one of the pioneering figures in the contemporary discourse on reference, differentiated between \term{sense} (in German: Sinn) and \term{reference} (Bedeutung) of an RE. The former can be understood as the meaning or mode of presentation of an RE, while the latter pertains to the actual referent of the expression. With this distinction, he elucidated why the statement \intext{The Morning Star is The Evening Star} is informative, whereas \intext{The Morning Star is The Morning Star} is not.
+These two REs share the same reference but possess distinct senses. Similarly, this distinction was used to account for the difference in the use of REs in \term{extensional} and \term{intensional} contexts \citep{van2016computational}. In extensional contexts, the truth-value of a sentence depends only on the references of its REs, not their senses. Hence, the statement \intext{The Morning Star is a planet} also implies \intext{The Evening Star is a planet.} Conversely, in intensional contexts, the truth-value of a proposition depends on both the references and senses of its REs. A case of intensional context is when we use verbs such as ``believe'', ``know'' or ``think''. For instance, if it is true that \intext{John believes that the Morning Star is a planet}, the sentence \intext{John believes that the Evening Star is a planet} may or may not hold true. The truth-value of the former does not necessarily guarantee the truth-value of the latter. While the distinction between intensional and extensional contexts is pivotal in theories of reference, a discernible knowledge gap exists between theory-oriented accounts of reference and its computational modeling \citep{van2016computational}.
+
+\citet{searle1969speech} offered a definition of reference that aligns with our needs in most scenarios. Based on this definition, the referent of an expression is ultimately determined by what the speaker has in mind on a given occasion. He characterized REs as follows:
+
+\begin{quote}
+	Any expression which serves to identify any thing, process, event, action, or any other kind of individual or particular I shall call a referring expression. Referring expressions point to particular things; they answer the questions Who?, What?, Which? \citep[27]{searle1969speech}.
+\end{quote}
+
+While many prior works have primarily presented complicated referential cases, the definition provided by \citeauthor{searle1969speech} offers practical appeal. Nonetheless, it is not without its shortcomings. To illustrate, let us consider the last part of the above definition, viz. \intext{they [REs] answer the questions Who?, What?, Which?} [hereafter \term{3W}] as a test of referentiality. The bold expressions in the following examples indeed respond to 3W, yet none picks up an individual referent.
+
+\begin{exe}
+	\ex
+	\begin{xlist}
+		\ex Who is going to the office tomorrow? \italunder{No one}. It's a bank holiday.
+		\ex What should we bring to the party? \italunder{Nothing}.
+		\ex (pointing at two artworks) Which one should I buy? \italunder{None of them}. 
+	\end{xlist}
+\end{exe} 
+
+Another challenging distinction arises between the \term{attributive} and \term{referential} readings of REs \citep{donnellan1966reference,van2016computational}. Consider the following sentence: \intext{Smith's murderer must be insane.} Under an attributive reading, someone might utter this upon witnessing Smith's monstrous and disturbing crime scene, without having a specific individual in mind as the murderer. While the attributive cases do not refer to an individual per se, a question like \intext{Who is insane?} can still elicit \intext{Smith's murderer} as a response. Conversely, under a referential reading, someone might utter the phrase during Smith's murder trial, referring to the alleged killer's unusual behavior on the stand. 
+
+As outlined above, various scenarios present challenges in the study of reference. To address the generation of REs within a discourse context, I use several \emph{real-life} corpora, notably the Wall Street Journal (\wsj) portion of the OntoNotes corpus \citep[hereafter referred to as \onto,][]{weischedel2013ontonotes}.\footnote{For the studies discussed in this book, OntoNotes 5.0 is utilized. OntoNotes 5.0 is licensed by the Linguistic Data Consortium (LDC): \url{https://catalog.ldc.upenn.edu/LDC2013T19}.} This corpus encompasses news articles as well as the insights of the respective authors. Given this composition, one can anticipate encountering more complex cases of reference. For instance, the pronoun \intext{it} in \REF{ex:somalia} illustrates an attributive instance which is annotated as a coreferential RE.
+
+
+\begin{exe}
+	\ex\label{ex:somalia} [\example{wsj-1424}] Nobody is sure what will come next in Somalia or whom the successor might be. But as one expert tells me : ``Whoever \italunder{it} is will
+	have to work pretty damn hard to be worse than Barre."
+\end{exe}
+
+The attributive example mentioned above and many other theoretical challenges have not yet found their way into computational modeling, as these models require concrete plans to implement a concept. To date, computational models have not fully considered non-literal, attributive, and intensional cases. As \citet{van2016computational} points out regarding intensional contexts, ``theories have interesting things to say about these contexts, but they do not yet offer the detail and precision required by computational REG models". He further continues that ``computational models tend to lag behind pure theory, with theories exploring issues long before they are addressed by means of algorithms and computer programs" (p. 36). Given the intricate nature of defining reference and identifying REs, this book will lean on the existing annotations of REs in the corpora under discussion, without delving deeply into complex edge cases. Nonetheless, future studies should take into account the prevalence and characteristics of these cases, recognizing the potential impact of these phenomena on research outcomes.
+
+\section{The linguistic tradition and the choice of RE}\label{sec:lingtradition}
+The study of reference involves two distinct processes: \term{production} and \term{comprehension} \citep{hendriks2016cognitive}. This book primarily focuses on the production of referring expressions. The comprehension of REs will be addressed only when deemed essential.
+
+Theoretical studies examining the production of REs offer diverse explanations for the referential choices individuals make when talking about a referent. According to the \term{Accessibility Theory} \citep{ariel2001accessibility}, a leading theory in reference production, the more accessible a referent becomes, the more attenuated its corresponding RE is. This theory also delineates a detailed hierarchy of RFs, categorizing them from the least to the most accessible. Other theoretical approaches tread a similar path, associating this choice with the referent's salience, givenness, centrality, and prominence \citep{gundel1993cognitive,grosz1995centering,chiarcos2011mental,Heusinger2019}.
+
+Empirical studies put these theories to the test to discern which factors influence the status of referents (e.g., increasing their prominence) and, in turn, influence the choice of REs. Linguistic studies have pinpointed factors such as grammatical role, recency, competition, animacy, thematic role, coherence, and order of mention as influential determinants \citep{Stevenson1994,Brennan1995, Arnold2001,arnold2007effect,kehler2008coherence, Kaiser2011, fukumura2011effect}. 
+Take the recency factor as an example: it posits that the closer a referent is to its antecedent, the more likely it is to be realized as a pronoun \citep{givon1992grammar}. Similarly, the animacy factor suggests that animate referents have a higher likelihood of being realized as pronouns \citep{fukumura2011effect}. To validate these factors, researchers can employ a variety of methods. These include analyzing corpora of written and spoken language, conducting offline experiments like surveys, and utilizing real-time measurement techniques such as eye-tracking.
+
+
+As illustrated in the preceding paragraphs, studies within the \term{linguistic tradition} seek to elucidate why speakers choose different RFs when invoking a referent. They also try to identify and explain the factors that cause these RF alternations. While there are distinctions between theoretical, corpus-based, and experimental approaches to studying reference production, I will not delve deeply into these differences. This is because the primary focus of this book lies on algorithmic solutions. Throughout the book, I will use the term ``linguistic tradition" to encompass these approaches and will draw from their findings to enrich the \context algorithms, aiming to develop more accurate and informed models.
+
+\section{The computational tradition and the choice of RE}\label{sec:comptradition}
+
+Reference production, often termed REG in computational terms, has also attracted much attention in the field of NLG. NLG is concerned with the generation of natural language text from non-linguistic input \citep{krahmer2012computational, gatt2018survey}. Its practical applications span a broad spectrum \citep{mei-etal-2016-talk,reiter-2017-commercial}, including the generation of financial and medical reports \citep{gatt2009data}, weather forecasts \citep{Reiter2005}, and sports predictions \citep{van-der-lee-etal-2017-pass}. 
+
+REG encompasses two distinct yet related tasks \citep{krahmer2012computational,gatt2018survey}: (1) \term{\shot}, and (2) \context. One-shot REG focuses on conceptualization or the selection of properties of a referent to produce a unique description of it. An example of this task is to single out a referent from a set of competing referents in a visual scene. \context, which is the main focus of this book, is concerned with the choice of (anaphoric) referring expressions within a discourse context. 
+
+\context is the task of determining the form and semantic content of REs within a given context \citep{reiter2000building}. \term{Referential Form Selection} (RFS) is the task of determining the form, and \term{Referential Content Selection} (RCS) is the task of determining the semantic content of each RE. Suppose we want to generate REs for the referent \referent{shinzo abe} of \REF{ex:abe} repeated below:
+
+\begin{exe}
+	\exr{ex:abe}
+	 On Monday, \italunder{\textsc{shinzo abe}} set a record for being Japan's longest-serving prime minister since 1885. Just four days later, \italunder{\textsc{shinzo abe}} announced \italunder{\textsc{shinzo abe}} was retiring. \italunder{\textsc{shinzo abe}}'s term was scheduled to end in September 2021, however, poor health forced an early departure. \italunder{\textsc{shinzo abe}} has suffered ...
+\end{exe}
+
+In RFS, the algorithm's goal is to predict the class of RF from a set of forms for a specific reference slot in the text. For instance, it determines whether a referent should be realized as a \val{proper} \val{name}, a \val{description}, or a \val{pronoun}.\footnote{Both RFS and RCS are not strictly \emph{deterministic}. Multiple forms or expressions might be suitable in various parts of a text. Research that examines the non-deterministic generation of referring expressions includes \citet{castro-ferreira-etal-2016-towards-variation} and \citet{Gompel2019}. While the non-deterministic generation of referring expressions is important, this book primarily focuses on the deterministic generation of REs and evaluates the models' performance against gold-standard corpora. Given that this book examines three different facets of the task -- choice of corpora, feature sets, and REG approaches -- adding another dimension could reduce the transparency of the comparisons.} In RCS, the task is to generate the actual content of an RE. For example, deciding whether to refer to Shinzo Abe by his full name (\intext{Shinzo Abe}), his modified full name (\intext{Shinzo Abe, the former president of Japan}), or his last name (\intext{Abe}). 
+
+Classic \context models primarily employ \term{rule-based} and \term{feature-based machine learning (ML)} methods. They typically approach REG in two steps: (1) deciding on the form, and (2) populating it with content. In contrast, the more recent \term{neural end-to-end (E2E)} models tackle both steps at once. 
+
+As implied by their name, rule-based models generate content based on a predefined set of rules \citep{mccoy1999generating,henschel2000pronominalization,poesio2004discourse}. As such, crafting precise rules is crucial. These models draw heavily from insights gained in linguistic studies. In feature-based models \citep{belz2010generating,greenbacker2009udel,kibrik2016referential}, each data point is represented as a set of feature--value pairs taken from a dataset.  A machine learning algorithm then uses these pairs to determine the prediction rules. Consequently, these data-driven models need feature engineering and the choice of corpus, features, and machine learning algorithm plays a pivotal role in determining the efficacy of these models. E2E models \citep{ferreira2018neuralreg,cao2019referring}, another subset of data-driven models, stand out as they bypass the need for feature engineering. They map directly from input to output. Therefore, the architecture of the model and the quality of training data become paramount for these models. 
+
+In the preceding sections, I provided a concise summary of both linguistic and computational studies related to the choice of RE. Moving forward, I will outline the framework of this book and offer an overview of its chapters, detailing the research questions and hypotheses presented in each.
+
+\section{Outline of the book}\label{sec:thisdiss}
+This book comprises eight chapters, each largely self-contained with its own introduction and discussion. As a result, some overlap between chapters is inevitable. All the analyses presented are based on English language corpora. In this work, I present seven distinct studies in Chapters \4 through \7, labeled alphabetically from study \studA to study \studG. The research questions and hypotheses for each study are numbered according to its respective label.
+
+\chapref{chap2} delves deeply into reference from a linguistic viewpoint. It introduces several theories of reference production, connecting the choice of RF to factors like a referent's cognitive accessibility, text coherence, the dynamicity of a referent, and the relational properties of referents. This chapter further elaborates on the diverse factors influencing this choice. These factors are notably diverse; while some factors emphasize the inherent traits of referents, others establish a relation to the preceding context.
+
+\chapref{chap3} looks into computational theories of REG. Following a brief introduction to \shot, the chapter addresses issues associated with \context. It distinguishes the methodological variances among \context models, offering a chronological review of rule-based, feature-based, and E2E neural models. The chapter also underscores the significance of choosing the right corpora for the task and establishing robust baselines for fair comparisons. By the chapter's conclusion, readers should gain a comprehensive understanding of several aspects of the \context task warranting further reconsideration. These aspects encompass the choice of (1) corpora, (2) features, and (3) REG approaches. In conjunction with \chapref{chap2}, this chapter lays the groundwork for the discussions in subsequent chapters.
+
+\chapref{chap4} introduces the initial study of the work, denoted as study \studA. It tackles the primary \context consideration: the selection of a corpus. Given the diverse corpora employed in \context models to date, the overarching question this study poses is: 
+
+\begin{quote}
+	\textbf{QA.} Does the choice of corpus matter for \context studies?
+\end{quote}
+
+I posit that the choice of corpus matters for \context studies, leading to the following hypotheses:
+
+\begin{quote}
+	\textbf{HA1.} The corpora used in the previous \context studies are not adequate for the task.
+\end{quote}
+
+\begin{quote}
+	\textbf{HA2.} The lessons learned in previous \context studies are not generally valid.
+\end{quote}
+	
+The term \emph{previous \context studies} specifically refers to the \term{GREC (Generating Referring Expressions in Context)} shared tasks \citep{belz2010generating}, a series of shared tasks dedicated to generating REs in context. To test HA1, I analyze the two corpora used in \grec, assessing their adequacy for the RFS task. To put the findings into a broader perspective and address HA2, I curate a new dataset derived from the \wsj portion of \onto. Study \studA reconstructs the systems submitted to the \grec shared tasks across the three corpora. The performance of the models is evaluated using \method{Bayes Factor} (BF) analysis and \method{per-class evaluation}. Furthermore, study \studA emphasizes the significance of employing metrics beyond mere accuracy to assess the performance of computational models.
+
+\chapref{chap5} presents the second and third studies of this work, denoted as \studB and \studC. These studies investigate the choice of features, an essential aspect of feature-based \context models, providing a macro and micro overview of this choice, respectively. Given that these studies draw from two co-authored published articles \citep{same-van-deemter-2020-linguistic,same-van-deemter-2020-computational}, they adopt a first-person plural narrative.
+
+Study \studB  conducts a systematic evaluation of the features employed in prior feature-based \context models. Given the labor-intensive nature of feature engineering, a systematic assessment of features becomes imperative to craft simple yet effective feature-based models. Therefore, the study addresses the following question:
+
+\begin{quote}
+	\textbf{QB.} In previous feature-based \context studies, do all features used in their feature sets contribute equally to the success of the models?
+\end{quote} 
+
+We posit that certain features, previously employed in feature-based \context studies, do not make a substantial contribution to the task. 
+
+\begin{quote}
+	\textbf{HB1.} A reduced subset of features from each set can perform comparably to the full feature set.
+\end{quote} 
+
+To validate this hypothesis, we undertake a structured evaluation of earlier feature-based \context models, aiming to determine which features contribute most to the task. We create models with varying subsets from each feature set, employing techniques such as \method{variable importance}, \method{sequential forward search} (SFS), and an array of subsetting rules. The subsequent hypothesis we aim to examine in this study is:
+
+\begin{quote}
+	\textbf{HB2.} A small set of features drawn from previously published datasets can form a model that is substantially as accurate as the best-performing existing model.
+\end{quote} 
+
+To assess this hypothesis, we combine and examine various subsets of the most important features from different feature sets. A BF analysis is subsequently carried out to contrast the performance of the newly developed model, which uses the optimal subset of features, with the top-performing model from prior \context studies.
+
+In study \studC of this chapter, we delve deeper into the concept of recency, which is characterized as the distance between a target referent and its preceding antecedent. Among the motivations for a more in-depth exploration of recency are its diverse measurement methods and the significant attention it has garnered in both theoretical and computational research. Our study seeks to answer the following question:
+
+\begin{quote}
+	\textbf{QC.} What is the best notion of recency for the RFS task?
+\end{quote}
+
+To address this question, we first introduce a taxonomy of recency metrics employed in previous ML studies, emphasizing the varied implementations of this concept. We then put forward the following hypothesis:
+
+\begin{quote}
+	\textbf{HC1.} Recency metrics that encode \term{higher-level} distances contribute more to RFS than those based on \term{lower-level} distances.
+\end{quote}
+
+To assess HC1, we carry out a series of experiments employing the \term{Multilayer Perceptron} (MLP) algorithm, as well as an SFS experiment. This is followed by a BF analysis of the results. These analyses aim to ascertain which recency metrics have the most significant contribution to the RFS task.
+
+\begin{quote}
+	\textbf{HC2.} The effectiveness of recency metrics can vary depending on corpus-specific characteristics, such as the genre and structure of texts.
+\end{quote}
+
+To evaluate HC2, we apply the previously mentioned analyses to two corpora that exhibit distinctly different characteristics.
+
+\chapref{chap6} introduces studies \studD and \studE, which explore the importance of paragraph structure -- a broader contextual factor-- for \context. The central question posed by the studies in this chapter is:
+
+\begin{quote}
+	\textbf{QDE.} Does paragraph structure have an impact on the the choice of RF?
+\end{quote}
+
+Study \studD presents an exhaustive corpus analysis of paragraph structure, thoroughly examining both \term{intra-paragraph} and \term{inter-paragraph} factors. The term ``Intra-paragraph" pertains to factors that affect the internal structure of paragraphs, whereas ``inter-paragraph" denotes factors signaling transitions between paragraphs. This study will test the subsequent hypotheses:
+
+\begin{quote}
+	\textbf{HD1.} \term{Paragraph-prominent} entities are substantially more likely to become pronominalized.
+\end{quote}
+
+\begin{quote}
+	\textbf{HD2.} \term{Paragraph-new} and \term{paragraph-initial} referring expressions are substantially more likely to be non-pronominal.
+\end{quote}
+
+\begin{quote}
+	\textbf{HD3.} Paragraph-new REs are more likely to be pronominal if the referent is prominent in the current ($P_{i}$) and the previous ($P_{i-1}$) paragraph.
+\end{quote}
+
+
+Subsequently, study \studE addresses question QDE from a computational standpoint. The hypothesis tested in this study is:
+
+\begin{quote}
+	\textbf{HE1.} The incorporation of paragraph-related information substantially improves the performance of feature-based \context models.
+\end{quote}
+
+To assess this hypothesis, I conduct a feature-based RFS study, incorporating various paragraph-related features. Beyond evaluating the performance of models with and without paragraph-related information, study \studE also seeks to increase the explainability of the referential form predictions by offering an in-depth \term{error analysis}.
+
+\chapref{chap7} introduces two studies, \studF and \studG. The former offers a systematic evaluation of different \context approaches, while the latter delves into an interpretability experiment concerning neural RFS models. Both studies draw from two coauthored published articles \citep{same-etal-2022-non,chen-etal-2021-neural-referential} and are thus written in first-person plural.
+
+Neural models have often replaced classic rule-based and feature-based approaches in recent years. Study \studF poses the following question:
+
+\begin{quote}
+	\textbf{QF.} Do neural REG models live up to the hype?
+\end{quote}
+
+This study argues that well-designed classic models should not be overlooked, hypothesizing: 
+
+\begin{quote}
+	\textbf{HF1.} Neural REG models are not always better than rule-based and feature-based models.
+\end{quote}
+
+To systematically contrast different \context approaches, we examine two very different English-language datasets, assessing each algorithm through both \term{automatic} and \term{human evaluations}. Consequently, this study not only discusses the REG approaches employed, but also emphasizes the choice of corpus.
+
+A widely recognized challenge with neural models is their ``black box" nature, which inherently lacks \term{explainability}. Study \studG in this chapter is one of the first attempts to bring explainability to Deep Learning (DL) \context models. 
+A well-established method to determine if a neural model's latent representations encode certain information is \term{probing}. Consequently, we introduce a suite of probing tasks to inspect neural \context models. The central question we pose is:
+
+\begin{quote}
+	\textbf{QG.} Which linguistic features are encoded by neural models?
+\end{quote}
+
+The question we pose is inherently exploratory. In our investigation, we focus on various (1) probing tasks, (2) RF classifications, and (3) neural model architectures. We construct eight probing classifiers to discern which linguistic features, influential in RF determination, are learned and captured by neural RFS models. Our neural RFS models are designed to handle three different RFS classification tasks: 2-way (\val{pronoun}, \val{non-pronoun}), 3-way (\val{pronoun}, \val{description}, \val{proper} \val{name}), and 4-way (\val{pronoun}, \val{description}, \val{demonstrative}, \val{proper} \val{name}). Given the varying complexity of these tasks (for instance, a 2-way classification might be more straightforward than a 4-way classification), we aim to determine if these models capture different contextual features.
+We are also interested to know how RFS benefits from different neural architectures.
+
+
+In \chapref{chap8}, I summarize the principal findings of this book and delve into various facets of the \context task. This includes the significance of selecting appropriate corpora, linguistic features, computational methodologies, and evaluation methods. I also offer a detailed comparison between the \shot and \context tasks, shedding lights on their commonalities and distinctions. Furthermore, this chapter underscores insights from the linguistic perspective that can be helpful for the computational generation of REs, and vice versa. The chapter concludes by discussing the primary contributions of this work to the study of reference.

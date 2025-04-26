@@ -1,0 +1,1377 @@
+\chapter{Searching}
+\label{ch:searching}
+
+\section{Introduction}
+\label{sec:search-intro}
+
+\subsection{Finding an old friend}
+
+One day, you happen to remember a childhood friend of yours, Katie Smith from Denver, Colorado, whom you haven't thought about in  years.  You were best friends in second grade, before she moved to a different school.  What is she up to now?  You type \exword{Katie Smith} into a search engine.  On the right side of the page, you see a panel about a basketball coach with the same name, linking to her Wikipedia page -- but she is a different, more famous Katie Smith.  On the left, you see a list of links to web pages, mostly about the basketball coach, and a few other individuals with the same name, but still nothing about your childhood friend.
+
+What is the problem here?  You know the name of your friend; you know she is probably on the internet somewhere; so why is it so hard to find what you want? 
+
+Unfortunately, Katie Smith has a very common name, so results about your childhood friend are overwhelmed by results about other people with the same name.  And anyway, Katie may have changed her name (maybe she got married, maybe she started going by Kathryn  as an adult; you haven't seen Katie in a decade, so who knows?)
+
+Although this example may seem trivial, it is genuine, 
+it corresponds to a real information need, and it reveals some of the problems that can
+arise when we search the internet.
+
+Consider what the options are for finding the information we want:
+\begin{itemize}
+\item Keep querying the search engine: Try further queries such as \exword{Kathryn Smith}, \exword{Katie Smith Colorado}, \exword{Katie Smith Denver}, \exword{Katie Smith} plus the name of your elementary school.
+
+\item Leave the search engine to visit a social site with search functionality, such as LinkedIn, Instagram, or Facebook; maybe you'll have some connections in common with her, which could help you find her.
+
+\item Call your parents, who were friends with Katie Smith's parents and might know something.
+
+\end{itemize}
+
+There is no single right answer. If you can find the right search query, maybe the search engine will work; if your online social connections include other people from second grade, then a social site might work.  
+
+But to find this information online, you have to know what resources are available, and how to search through them.  This chapter provides an overview of how people use computers to retrieve information that they want (\keyword{search}, also known as \keyword{information retrieval}),  to  find answers to questions (\keyword{question answering}), and to browse for things  -- music, movies, friends, web posts -- that they didn't even know they wanted (\keyword{recommendation systems}, also known as \keyword{recommender systems}).  
+
+
+%We will focus on searching in \keywordAs{written texts}{written text}, but one might also wonder about the possibility of searching through \keyword{speech}.  After all, it would be extremely useful and time-saving to be able to find a particular sentence spoken in a podcast, especially if no transcript exists, but only an audio file.  This type of searching is  not readily available yet.  But it is now possible to request information in a spoken medium (\exsent{Okay, Google, what's the weather today?}) -- where the query is mapped from speech to text, the answer is found in a textual database, and then mapped from text to speech --   and receive a spoken answer.
+
+
+
+\subsection{Information need}
+
+\label{sec:information-need}
+
+The task of information retrieval begins with an \keyword{information need} -- the information that the searcher is searching for.  An information need is a type of \keyword{intent} -- something that a user wants.  In the case of an information need, the searcher  wants to \emph{know} some information, like \exsent{What happened to my old friend Katie Smith}? or \exsent{When did Mandarin and Cantonese diverge}?    Sometimes, they may want information that is not textual, such as images, videos, the score of an ongoing sports game, or directions on a map.  Other times, they may intend to \emph{do} something, like set a timer, book a flight, or purchase some shoes.  (Or they may want a blend of information and action -- they want to know how much a flight to Guatemala costs, while considering whether to buy one.)   
+
+Once a user has formulated an intent in their mind, they must translate it into a text \keyword{query} to enter into a search engine.  The query may reflect the user's intent with more or less clarity.  If a user types \exword{Chinese history} as their query, maybe they may want the Chinese translation of the word \exword{history}, or maybe they want to read about the history of China or of  Chinese languages.  A well-practiced searcher may know how to clearly formulate their query given their intent, but an inexperienced searcher may be frustrated by results of an ambiguous query.  (A user-friendly search engine may suggest followup queries to help the user clarify their intent -- perhaps based on the search histories of other people who have entered similar queries.)
+
+For many modern search engines, one of the first steps in processing a query is to map it to an \keyword{intent} (\keyword{intent recognition}, also known as \keyword{intent classification}; see \chapref{ch:text-classification} on text classification) -- does the searcher want to shop, to look at maps or images, to translate from one language to another, to use a calculator, or to just read text?  Then the query can be fed to a system specialized for that type of task.  If the searcher wants to \emph{know} something rather than to \emph{do} something, then their intent can be considered an \keyword{information need},  fed to a question-answering system or a search engine built for text documents.
+
+
+\ea   \ea \label{ex:chinese-history} Information need:    Want to read a short, accessible overview of the history of  Chinese languages.
+      \ex Possible queries: 
+      \exword{Chinese history, Chinese history language, Chinese historical linguistics, Mandarin Cantonese history}.
+      \z
+      \z 
+
+
+
+
+\subsection{Evaluating results} \label{sec:evaluating-search-results}
+
+A search begins with an information need and ends when the user has succeeded in filling it.  How do we measure success?
+
+Of course, we could just ask the user if they are happy, or survey several hundred users in a user-experience study.  We could also use implicit behavioral measures of satisfaction, like whether the user clicks on a page and stays there for a while before ending their search session (suggesting that they found what they wanted), or how many people choose to use the search engine (suggesting that they like it).    But it is also valuable to have an explicit, quantifiable evaluation metric that can be computed automatically without conducting a new round of user testing each time.
+
+The simplest, most widely used automatic evaluation metrics for information retrieval are \keyword{precision} and \keyword{recall}.  Precision can be defined as \exsent{the percentage of the documents returned that are relevant}: For example, imagine that a search engine returns 400 pages for a query, 200 of which are actually relevant to the query (and thus, ideally, to the information need that underlies it).  In this case, precision is 50 percent, or 200 out of 400.   
+\begin{equation}
+\mbox{Precision} = \frac{\mbox{Relevant documents that are returned}}{\mbox{All documents that are returned}} 
+\end{equation}
+
+In contrast, recall can be defined as \exsent{the percentage of relevant documents that are returned}:  If a search engine returns 200 relevant pages, but there were actually 1000 pages on that topic out there on the
+web (we missed 800 of them), the recall is 20 percent (200/1000).  Note that the numerator (200 -- the number of relevant documents that are returned) is the same for both precision and recall.  
+\begin{equation}
+\mbox{Recall} = \frac{\mbox{Relevant documents that are returned}}{\mbox{All relevant documents}} 
+\end{equation}
+
+But how can we know that there are 1000 pages out there, if we can't find them?  Sometimes, information retrieval systems are evaluated on constrained, human-labeled datasets where researchers can be omniscient.   One historically important dataset comes from the Text REtrieval Conference (TREC), a series of queries, documents, and human judgments of whether each document is relevant to each query.  In this toy context, we can calculate the precision and recall for any search engine that runs over these data.  But in real life, it is often impossible to know how many relevant documents are \emph{not} being returned in your search.  So, in practice, while recall is a useful concept, it cannot always be calculated with   certainty.  In contrast, precision can be easily estimated just by looking at the documents that \emph{are} returned.
+
+
+
+What would happen if a search engine prioritized \emph{only} precision, and ignored recall?  A search engine could achieve perfect precision by returning only one or two pages that are definitely relevant, while leaving out hundreds of other relevant pages.  But the user may have wanted to see those pages too.
+
+What would happen if a search engine prioritized \emph{only} recall, and ignored precision?  A search engine could achieve perfect recall by returning every single page on the web for every single search: The relevant pages are in there somewhere.  The user will be overwhelmed by irrelevant pages in their search for relevant ones.
+
+Thus, a successful search engine must balance both precision and recall.  Sometimes, researchers use a combined score known as the \keyword{F-measure} to reflect both components at once:  The F-measure is defined as $(2 * p * r)/(p + r)$, where $p$ is precision and $r$ is recall.  In our example from above, our precision was 50 percent (200 of the 400 returned documents were relevant) and our recall was 20 percent (200 of 1000 total relevant documents were returned), so the F-measure would be $({2 * 0.5 * 0.2})/({0.5 + 0.2})$, or 28.5 percent -- indicating that these search results are far from the optimal F-measure of 100 percent.  
+
+But the search engine with the best F-measure is not necessarily the best search engine. In reality, users often do not want to look at the 400 documents returned in our imaginary search, nor even at the 200 relevant ones.  They usually want to glance at the first display page of ten or so results, and then click on  one or two that looks most interesting from a title or snippet that the search engine displays.  In this reality, the results also have to be \keyword{ranked}, so that the ``best'' results show up on the first page.   How do we decide which results are the best?  Perhaps we should recast relevance as a gradient notion rather than a binary one, and give higher rankings to documents that are \emph{most} relevant.  Or perhaps we want to give higher rankings to pages that come from better sources -- perhaps pages from vetted sources; or perhaps those with more traffic, those that were updated recently, or those that a lot of other pages link to.  Perhaps we want to give higher rankings to pages that are most relevant to \emph{this specific user} -- pages that they have visited before, or pages that are popular in their location.  We come back to this idea of \keyword{personalized search} later in the chapter.
+
+However we rank the pages, users  care much more about the top page of results than the rest.  And on the top results page, precision is much more important than recall.  If some of the top-ranked pages are not relevant, the user may become annoyed; however, if some relevant pages are not among the top-ranked pages, the user may not care.  To capture these priorities, search engines can also be evaluated using the \keyword{precision-at-k} metric: Starting at the top and looking at some number $k$ of results, what is the precision of these results?  For $k=1$, we look at the first, top-ranked result.  If it's relevant, then the precision at $k=1$ is 100 percent.  For $k=2$, we look at the second-ranked result.  If it's relevant, the precision at $k=2$ is 100 percent: Two of the top-two results are relevant.  If it's irrelevant, then the precision at $k=2$ is 50 percent: One of the top-two results is relevant.  This metric reflects the fact that precision is more important than recall among the top-ranked results.
+
+
+\section{Structured data, knowledge graphs, and ontologies}
+\label{sec:structured-data}
+
+We begin our tour of information retrieval with  \keyword{structured data}.  For example, the Internet Movie Database (IMDB) is a structured database of the film industry, in which each movie is associated with various \keywordAs{fields}{field} such as title, actors, director, plot summary, and date; and each person is associated with their works, a birth date (perhaps also a death date), and a brief biography.  
+
+Structured data are extremely useful.  If you want to see a list of all the movies by your favorite director, it is probably most efficient to look at the structured list linked from their IMDB profile (or their filmography listed on Wikipedia) rather than just read free-text webpages containing their name.  As another example of structured data, you can find scholarly articles on Google Scholar, which uses a structured representation for authors, dates, papers, and citations, along with the unstructured text of each article. Authors are associated with universities, coauthors, and papers that they wrote; papers are associated with authors, titles, dates, and the papers that they cite and those that cite them.
+
+Outside constrained domains such as IMDB and Google Scholar, web search in general now makes use of structured data in the form of a \keyword{knowledge graph} (also known as an \keyword{ontology}) -- a representation that includes:
+
+\begin{itemize}
+  \item \keywordAs{Named entities}{named entities} (people such as \exword{Queen Elizabeth II}, countries such as \exword{Guatemala}, companies such as \exword{Apple}, sports teams such as \exword{The Lakers}, books such as \exword{Anna Karenina}).
+  \item Kinds of things, such as those named by nouns (diseases such as \exword{flu}, species such as \exword{dog}, foods such as \exword{potato}).
+  \item Events (such as \exword{the Second World War} and \exword{the 2024 Olympics}).
+  \item Times (years such as \exword{2024}, dates such as \exword{December 1, 1990}, and intervals of time such as \exword{1900-2000}).
+  \item The properties of these entities (people are associated with birthdates, death-dates, and occupations; events are associated with dates as well as key participants; companies are associated with stock prices, CEOs, and the date of  their founding; diseases are associated with prevalence and treatments; foods are associated with their macronutrients).
+  \item Relations between entities and events (between a person and their nation of residence; a book and its author;  a person and their spouse;  a person and the schools they attended;  a company and its founder;  a country and its continent; a war and its battles).
+  \item And so on.
+\end{itemize}
+
+When you search for \exword{Barack Obama} and see a panel containing his picture, birthdate, height, spouse, schools he attended, and the dates of his presidency, plus a link to his Wikipedia page, you have found him in the search engine's knowledge graph.  You also found the basketball coach Katie Smith in the knowledge graph while searching for your friend with the same name.  Note, too, that on Google's search engine, the bottom of the knowledge graph panel also offers a list of other related knowledge graph entries that are often searched (perhaps in the same search session) by people who  searched for the current entry: For Barack Obama, it suggests other American presidents as well as his wife, Michelle Obama -- because the searcher may already be interested in these people, or because they may become interested in them after the search engine recommends them.  
+
+The knowledge graph is built in part by hand-creating \keyword{templates} of the properties that can be associated with various types of individuals (for example, a person has the property of a birthdate), and in part by using Wikipedia information panels to automatically populate these templates.  
+
+Google released their knowledge graph in 2012 with the tagline \exsent{things, not strings} -- aiming to augment web search with structure rather than free text.  The knowledge graph is extremely useful for finding reliable factoids about various well-known entities.  
+
+
+As explained by \citet{Peng-etal:2023}, it is often difficult to keep the knowledge graph up-to-date, for example when someone dies, when two companies merge, when a disease is renamed, or when the knowledge graph itself is updated with a new category (for example, can e-sports be added to the knowledge graph's sports category without incompatibilities?).  If the knowledge graph is to be updated automatically by extracting information from text, it's important not just that the text is deemed reliable but also that the named entities mentioned therein are correctly identified and disambiguated. Does \exword{the Olympics} refer to the recurring event or its instantiation in a specific year?  Does \exword{Martin Luther King} refer to the famous civil rights activist, his father who had the same name, or the holiday named after him? Is the abbreviation \exword{MLK} also correctly linked to these referents?  Should companies or individuals be allowed to update their own information in the knowledge graph, or would that policy risk polluting the knowledge graph with questionable information?  For all these reasons, it requires a lot of human labor to keep the knowledge graph reliable and up-to-date.
+
+
+You can explore openly available machine-readable knowledge graphs such as  \keyword{WordNet} \citep{fellbaum:98}, which reflects subset and superset relations between common nouns, such as the fact that poodles are dogs and dogs are mammals; and \keyword{ConceptNet} \citep{Speer-etal:2017}, which reflects not just that dogs are mammals but also that dogs bark, have four legs, don't like being left alone, and are kept for companionship.  These knowledge grahps illustrate the challenges mentioned above, as when the same word corresponds to multiple entries in the graph: Does \exword{fan} refer to a mechanical cooling device or a human admirer? Both senses are defined in WordNet, but it is not obvious which sense is evoked by a given token of \exword{fan}.  As another example, WordNet does not contain the social media sense of the abbreviation \exword{DM} (direct message), showing that it is difficult to keep knowledge graphs up-to-date.
+ 
+
+Your friend Katie Smith may not be famous enough to appear in Google's knowledge graph, but she may be in the knowledge graph of a social media site, which associates people with their social connections. Further information about her  may also lie within the \keyword{unstructured data} consisting of billions of free-text webpages on the internet. 
+
+
+\section{Question answering}
+
+Some information needs have a single correct answer that can ideally
+be found automatically: \exsent{How many centimeters are in an inch?
+  When was Barack Obama born?  Where was Barack Obama born?}, and so
+on.  Here, it would be most efficient for the search engine to return
+an actual answer, rather than some relevant web pages that might
+contain the answer somewhere -- especially if the user is on a mobile
+phone (where it's hard to read a lot of documents) or if the user is
+requesting spoken information from a \keyword{dialog system} (where
+the user does not have the patience to listen to entire documents read
+aloud -- see \chapref{ch:dialog-systems}).  This task is known as (automatic) 
+\keyword{question answering}.
+
+For many such \keyword{factoid questions} (\exsent{Where was Barack
+  Obama born?}), the answer is already somewhere in the knowledge
+graph and the task is to match the question to the right part of the
+graph.  For other factoid questions (\exsent{How prevalent is
+  diabetes?}), the answer may appear somewhere in a respected webpage
+such as Wikipedia or the Centers for Disease Control, and the task is
+to find the most relevant paragraph and extract the correct answer.
+Such a task falls under the umbrella of (automatic) \keyword{reading
+  comprehension} -- an automated attempt to ``read'' a paragraph and
+answer questions about the information that it contains.
+
+Historically, question-answering systems involved a large number of separate, human-built pieces -- classifying the desired answer type (person, date), trying to match the syntax of the question to the syntax of sentences in a relevant paragraph using various matching rules, and so on.  IBM's Jeopardy-winning Watson system involved many such pieces.  More recently, the complexity of question-answering systems has morphed into the complex representations learned in a  bottom-up format (using human-designed architectures, trained on  human-curated data) by neural networks, introduced in Chapter  \ref{ch:text-classification}.  
+
+Recall that a neural network is a system trained to predict an output from some inputs.  Usually, the input is formatted as a vector or matrix of numbers, and it is passed through a series of layers of nodes, finally ending with an output  (usually a number or vector).  Along the way, each node does some simple addition and multiplication to turn its input into an output, which it then passes along to the next layer of nodes.  For supervised tasks with a  correct answer, the network is trained on some data that have already been labeled with correct answers; the data are passed through the network, then the network's actual output is compared to the correct output; and then all of the nodes' calculations are updated in order to do slightly better next time.  (The number of nodes and layers in the network, and the way the input is  mapped into a vector/matrix, are  up to the human researcher to decide). With enough data and training, such networks can ``learn'' to do very well on a variety of tasks.  After the network has been trained on some labeled training data, it can be tested on some test data (also labeled) that it has not seen before, and finally it can be used on unlabeled data more or less similar to what it was trained on.
+
+In the context of question-answering, researchers often use \keyword{SQuAD} (the Stanford Question Answering Dataset) created by \citet{Rajpurkar-etal:2016}.  SQuAD is a set of 150,000 passage/question/answer triplets, where the passage is a paragraph from Wikipedia; the question is a factoid question related to the topic of the passage; and the answer is either a string of words contained within the passage, or (for 30 percent of the data) ``No Answer'' if the question is not actually answered by the passage.  The questions and answers were written by gig workers on Amazon's Mechanical Turk.
+
+For example, the following passage about Fresno appears in SQuAD:
+
+\begin{quote}
+
+\emph{Passage:} Fresno (FREZ-noh), the county seat of Fresno County, is a city in the U.S. state of California. As of 2015, the city's population was 520,159, making it the fifth-largest city in California, the largest inland city in California and the 34th-largest in the nation. Fresno is in the center of the San Joaquin Valley and is the largest city in the Central Valley, which contains the San Joaquin Valley. It is approximately 220 miles (350 km) northwest of Los Angeles, 170 miles (270 km) south of the state capital, Sacramento, or 185 miles (300 km) south of San Francisco. The name Fresno means ``ash tree'' in Spanish, and an ash leaf is featured on the city's flag.
+
+\end{quote}
+
+Here are some of the questions and answers associated with this passage in SQuAD:
+
+\begin{itemize}
+
+\item \emph{Question:} What is featured on the city of Fresno's city flag?
+
+\begin{itemize}
+
+\item \emph{Correct Answer:}  (An) ash leaf.
+
+\end{itemize}
+
+\item  \emph{Question:} What does Sacramento mean in Spanish?
+
+\begin{itemize}
+
+\item  \emph{Correct Answer:} \exword{No answer.}
+ 
+ \end{itemize}
+ 
+ \end{itemize}
+ 
+ Using such a dataset with labeled correct answers, researchers can build a neural network that takes the passage and the question as input, and tries to output the correct answer (``No Answer'' or the substring of the passage containing the answer).  The most successful such neural networks use a tool known as \keyword{attention} -- a layer of the network that is specifically trained to give the highest weight to the words in the query and/or the passage that most strongly predict the right answer.  Using attention and other complex techniques, various research teams have performed as well or better than a human at this specific task.
+ 
+ These advances are extremely impressive, and similar techniques are used to answer factoid questions on various search engines. Of course, in the real world, the system may not be given a single relevant passage along with a given query; it may have to find such a passage, in Wikipedia or elsewhere, using the same process that you use yourself when you search for relevant documents online.  But some information needs do not have a factoid answer that can be found on Wikipedia or in a knowledge graph (\exsent{What happened to my old friend Katie Smith?, Should I quit my job?}, and so on).   In these cases, the user may use the search engine to find relevant documents, and then review those documents by hand.
+   
+
+\section{Search engines for specialist professionals}
+\label{sec:search-engine-indexing}
+
+Today, search engines are used by everyone with an internet connection.  But historically, search engines were the domain of specialists, such as librarians, who had access to certain digital  collections.  Today, some search engines (Google Search, Bing) are designed for general use; some (Google Scholar, used by  researchers) are publicly available but designed for the  needs of a specific population; and some  (Westlaw and LexisNexus, used by attorneys) require a paid subscription and are used only by specialists.   Because it is informative to consider how the design of a search engine depends on the intended user and their information needs,  our tour stops next at the Westlaw Edge search engine owned by Thomson Reuters.  
+
+Westlaw holds a database of court opinions, laws, legal academic articles, briefs filed by the parties in a given case, and other material.  The data are \emph{semi-structured}, combining free text documents with metadata about the document type (opinion, brief, statute, etc), the judge, law firm, jurisdiction (federal laws, federal judicial districts, or states), date, citations to and from each document, and information about whether various rulings have been upheld or overturned by higher courts.
+
+A  professional in the United States legal system might have an information need such as:
+
+\begin{itemize}
+
+\item I want to find and cite (current, not overruled) precedent, within my specific legal jurisdiction, for my preferred interpretation of a statute. 
+
+\item I'm arguing an immigration case before Judge Chang.  How sympathetic is Judge Chang likely to be to my case?  What has Judge Chang previously ruled or written on the topic of immigration?
+
+\item I'm trying to show that the plaintiff in this case was illegally fired as retaliation for blowing a whistle on wrongdoing within a company.  What are the elements of illegal whistle-blower retaliation that have to be demonstrated?  What is the statutory definition of illegal whistle-blower retaliation?  How have previous opinions applied this definition in cases with similar facts?
+
+
+\end{itemize}
+
+These are complex information needs, so the search functionality of Westlaw is equally complex, involving a specialized syntax:
+
+\begin{itemize}
+
+\item \emph{JU(Chang) immigration}, restricted to Judge Chang's specific jurisdiction by checking a filter box, yields immigration cases argued before Judge Chang, and opinions that she has written.
+
+\item \emph{(whistleblow! ``whistle blow!'') /p (retaliat! fir!)}, again restricted to a desired jurisdiction by checking a filter box, yields documents containing \emph{whistleblower, whistleblowing, whistleblowers, whistle blower}, and so on (in \exword{whistleblow!}, the exclamation mark ! is a \keyword{wildcard}, matching any sequence of letters at the end of a word beginning with  \exword{whistleblow}), in the same paragraph (\exword{/p}) as any form of the words \exword{retaliate, retaliation, retaliated} or \exword{fired, firing, fire}.  The space acts as a boolean \exword{OR}, so we can match \exword{whistleblow!} \emph{OR} \exword{``whistle blow!''}.  (The ampersand \&, not used in this query, is a boolean \emph{AND}).  In contrast, the quotation marks around \exword{``whistle blow!''} ensure that the space between these two words is \emph{not} interpreted as disjunction, instead requiring that an \keyword{exact match} (plus any word ending on \exword{blow}) must appear in the relevant documents.
+
+\end{itemize}
+
+These search queries are opaque to a non-specialist, using many \keyword{advanced features}, which a general-use searcher may find intimidating.  
+
+The queries take advantage of Westlaw's structured metadata: \exword{JU(Chang)} restricts the search to documents related to judges named Chang; clicking on various checkboxes can filter one's results to specific dates and jurisdictions.  In contrast, the words and strings in the queries look for matches with unstructured free text.
+
+The \exword{wildcard} feature (\exword{whistleblow!}) illustrates the idea of \keyword{regular expressions} -- patterns that can be matched in text strings, such as \exsent{the string} \emph{whistleblow} \exsent{followed by any number of alphabetical characters before a space}.  (Please see Under the Hood: \ref{regex} for more detail).  Here, the wildcard is used to isolate the \keyword{stem} of the words \exword{whistleblower, whistleblowing,} and so on -- the part that is consistent across different grammatical contexts.  A single stem (\exword{whisteblow-}) may be associated with several different  \keyword{lemmas} (the form of a word that would appear in a dictionary, such as \exword{whistleblow} and \exword{whistleblower}), and many different grammatically inflected forms (\exword{whistleblowers, whistleblowing}, and so on).  Stemming and lemmatizing words is especially important in \keyword{morphologically rich} languages, where words are inflected for all sorts of grammatical properties -- nouns may be inflected for their gender, number, or their syntactic role in a sentence; verbs may be marked for their tense/aspect, and so on.  
+
+Westlaw allows searchers to request combinations of terms based on their proximity to one another: \exword{/s} makes sure that the words on either side appear within the same sentence, \exword{/p} within the same paragraph, \exword{/3} within three words, and so on.  \keywordAs{Proximity search}{proximity search} is especially important for long documents such as legal filings, where it's much more meaningful, when searching for documents about retaliation against whistleblowers, to find \exword{whisteblow!} and \exword{retaliat!} in close proximity than to find them pages apart.
+
+Westlaw also illustrates \keyword{boolean search} -- finding combinations of terms in a document using the logical operators \exword{OR, AND,} and \exword{NOT}.  In Westlaw, the space (the default way of conjoining terms) works as \exword{OR}, the ampersand \& means \exword{AND}, and the percent sign \% means \exword{NOT}.  Combined with parentheses, these operators can express quite complex queries -- with the risk of typos increasing alongside complexity: 
+
+\ea    \ea  fir! \& retaliat!
+	\ex fir! retaliat!
+	\ex retaliat! \& (\% fir!)
+\z 
+\z 
+
+\subsection{Boolean search}
+
+How are boolean searches carried out?  First, basing our discussion on  \citet{manning-et-al:08}, the search engine crawls through all the documents to build a 
+\keyword{term-by-document matrix}.  The term-by-document matrix
+shows which terms (i.e., words) appear in which documents.  Leaving the legal domain for simplicity, we can get a sense of what happens by looking at
+part of a term-by-document matrix for a few 19th-century British novels in
+Table~\ref{fig:term-by-document} -- \textit{Emma} and \textit{Pride and Prejudice}, by Jane Austen; and \textit{Wuthering Heights}, by Emily Bront\"e.  We  use words here, but lemmas or stems may also be used (see above).  A 1 means that the term appears somewhere in the document (regardless of whether it occurs once or many times), and a 0 means that it appears nowhere.  (We could also use the number of times that each word occurs in each document, rather than a binary representation of whether it occurs or not; both strategies are useful.)
+
+\begin{table}
+\begin{tabular}{lccc}
+\lsptoprule
+           & Emma & P \& P & W. Heights \\ \midrule
+computer & 0 & 0 & 0 \\
+curtsey & 1 & 1 & 0 \\
+dogs & 0 & 0 & 1 \\
+farmer & 1 & 0 & 1 \\ 
+ghost & 0 & 0 & 1 \\
+heath & 0 & 0 & 1 \\ 
+house & 1 & 1 & 1 \\
+love & 1 & 1 & 1 \\
+monster & 0 & 0 & 1 \\
+phone & 0 & 0 & 0 \\
+the & 1 & 1 & 1 \\
+whist & 1 & 1 & 0 \\
+\lspbottomrule
+\end{tabular}
+\caption{Excerpt from term-by-document matrix for 19th-century British novels.}
+\label{fig:term-by-document}
+\end{table}
+
+Here, the terms are rows, the documents (novels) are columns.  For example, the second row indicates that \emph{curtsey} (an old-fashioned ladies' bow) appears in \textit{Emma} and \textit{Pride and Prejudice} but not in \textit{Wuthering Heights}.  If you are a student of 19th-century British literature, you may know that \textit{Emma} and \textit{Pride and Prejudice} are light-hearted romantic stories about aristocrats who \emph{curtsey} and play card games such as \emph{whist} (in \textit{Emma}, one character works as a \emph{farmer}; in \textit{Pride and Prejudice}, all of the main characters are professional aristocrats), while \textit{Wuthering Heights} is a gothic tragedy about isolated rural people who live on a \emph{heath} (a shrub-covered land) with \emph{farmers} and \emph{dogs} and believe in fantastical creatures such as \emph{ghosts}.  (All three novels were written before the invention of the \emph{computer} or the \emph{phone}).  You may notice that this term-by-document matrix reveals  that (the columns representing) Jane Austen's two novels are more similar to one another than to (the column representing) Emily Bront\"e's  \textit{Wuthering Heights}.  (We could demonstrate this mathematically by doing some calculations that determine the similarity between two vectors, but you can already see it intuitively).   In our discussions of words as vectors in \chapref{ch:textasdata} and documents as vectors in \chapref{ch:text-classification}, we already saw that the column (vector) associated with a document reveals its similarity to other documents; the same powerful idea extends to information retrieval.
+
+In building a term-by-document matrix, you might decide to leave out very common  \keywordAs{stop words}{stop word} such as \exword{I}, \exword{the}, and \exword{of} -- words that appear in practically every English-language document, and thus might  take up a lot of storage space while not distinguishing any one document as relevant.  On the other hand, some searches require stop words, such as the band called \exword{The Who}.  As information storage gets cheaper every day, modern systems usually keep stop words.
+
+Even if information storage is getting cheaper, our term-by-document matrix is somewhat inefficient in that it is very \keyword{sparse}.  Most words don't occur in most documents, so most values in the matrix are 0.  
+
+But there is another way to structure these data without all the inefficient zeroes, namely what is called an \keyword{inverted index} -- also known as a \keyword{postings list}.  Here, each document is associated with a unique ID (\textit{Emma} is Document1, \textit{Pride and Prejudice} is Doc2, \textit{Wuthering Heights} is Doc3), and each term is associated with a (sorted) list of the document IDs where it appears. 
+
+
+\begin{figure}[htb!]
+\begin{tabular}{l@{\quad$\to$\quad}l}
+computer & Doc5, Doc6, Doc8, Doc10, \ldots\\
+curtsey & Doc1, Doc2, Doc10, Doc15, \ldots \\
+dogs & Doc3, Doc6, Doc7, Doc8, \ldots \\
+farmer & Doc1, Doc3, Doc11, Doc12, \ldots \\
+ghost & Doc3, Doc15, Doc18, \ldots \\ 
+heath & Doc3, Doc200, \ldots \\
+house      &  Doc1, Doc2, Doc3, Doc5, \ldots  \\
+love      &  Doc1, Doc2, Doc3, Doc7, \ldots  \\
+monster & Doc3, Doc18, Doc20, \ldots \\
+phone & Doc5, Doc6, Doc10, Doc11, \ldots \\
+the & Doc1, Doc2, Doc3, Doc4, \ldots \\
+whist & Doc1, Doc2, Doc180, \ldots \\
+\end{tabular}
+\caption{Excerpt from inverted index.}
+\label{fig:inverted-index}
+\end{figure}
+
+This is a very efficient structure:  If the query contains the word \exword{farmer},  for example,  a single access to the inverted index gives us   a list of all the documents that  word appears in.    For small documents such as novels, you may wonder why we won't just write code to read through the entire text file any time we want to find something in it; but for data as massive as the internet, an index can make searching much faster.
+
+  
+In a boolean search such as \exsent{farmer AND love}, we need to
+combine information from two different lines of the
+inverted index.  This is quite straightforward: Simply take the
+\keyword{intersection} of the two document lists that
+\exsent{farmer} and \exsent{love} point to.  In this case,
+the intersection will certainly contain \textit{Emma} (Doc1) and \textit{Wuthering Heights} (Doc3), and probably other documents not shown in Table~\ref{fig:inverted-index}.
+
+For even more complex queries, there are steps that can be taken to
+ensure that query processing is efficient.  Consider if someone
+searches for \exword{farmer AND love AND house}.  In this
+case we have to intersect three lists.  
+We know that the result of intersecting three lists is the same as
+first intersecting two lists, then intersecting the result with
+the third list.
+It is up to us to decide which two lists should be handled first,
+and which list should be left until last.
+This choice is not going to affect the final result, but  it \emph{can} affect
+the efficiency of the process of getting to the result.  
+  Intersecting
+lists takes longer the longer the lists are.  For example,
+\exsent{love} has a long list of documents, because novels often involve love.  If we take another frequent
+word, such as \exsent{house}, the result will be another long list,
+and it is likely that their intersection is lengthy, too.  But \exsent{farmer} is less common,  so
+this list is shorter.  
+For efficiency, we can intersect the shortest lists first.
+This is likely to be effective, because the intersection of
+two short lists is likely to be short.
+Thus, internally, the search engine looks at the query
+words, finds the length of their document lists, and reworks the query
+to specify the order of operations.  In this case,  \exword{(farmer
+  AND house) AND love} is more efficient than \exword{farmer AND (house AND love)}.
+  
+Strictly speaking, this strategy does not guarantee optimal efficiency, because, 
+for example, it could turn out that the intersection of two lists that
+are short but very similar will be longer than the intersection of two 
+other lists that are long but very dissimilar. But, in practice, the
+strategy of doing the shortest lists first is a very good one, and saves
+a lot of time and effort.  It's also meaningful that the documents are sorted in order of their DocID; this way, we don't have to compare every single document on the postings list for \exword{farmer} to every single document on the postings list for \exword{house}, but instead can go through the lists in order, inferring that Doc2 is not in the intersection of \exword{farmer} and \exword{house} because the postings list for \exword{farmer} skips from Doc1 to Doc3. 
+
+Of course, the basic methods described so far cannot handle proximity search (\exsent{farmer} in the same sentence as \exsent{love}, \exsent{whistleblower} within three words of \exsent{retaliation}) or exact-match for multi-word strings (\exsent{``Mr. Weston,''} \exsent{``life insurance''}).   To keep track of the positions of words in a document, we may want to use a \keyword{positional index} instead of just a simple inverted index.   An inverted index maps each term to a list of the DocIDs where it appears; a positional index maps a term to the DocIDs where it appears, and further records, for each such DocID, a list of the positions in the document where it appears (perhaps splitting the document at every space, labeling the first string-between-spaces as Position1, and so on).  We can illustrate with three short toy documents, excerpts from the Austen and Bront\"e novels discussed above:
+
+\begin{itemize}
+
+\item Doc1: \exsent{It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.}
+
+\item Doc2: \exsent{Mr. Weston was a man of unexceptionable character, easy fortune, suitable age, and pleasant manners.}
+
+\item Doc3: \exsent{Instead of leaving Catherine's fortune at her own disposal, he determined to put it in the hands of trustees for her use during life.}
+
+\end{itemize}
+
+
+\begin{figure}[htb!]
+\begin{tabular}{p{2cm} @{\quad$\to$\quad}p{7cm}}
+Catherine's & Doc3: position4, \ldots \\
+fortune & Doc1: position16; Doc2: position10; Doc3: position5, \ldots \\
+it & Doc1: position1; Doc3: position14, \ldots \\
+man & Doc1: position10, Doc2: position5, \ldots  \\
+of & Doc1: position13; Doc2: position5; Doc3: position2, position18, \ldots \\
+Weston & Doc2: position2, \ldots \\
+\end{tabular}
+\caption{Excerpt from positional index.}
+\label{fig:pos-index}
+\end{figure}
+
+
+With a positional index, we can find bigrams such as \exsent{Mr. Weston}, and cases where \exword{fortune} appears within ten words of \exword{man}; but we would still need a richer structure to find instances of two words within the same sentence or the same paragraph.  You may notice that the positional index now also records information about how often each word occurs in each document, rather than just recording whether it occurs at all; such count data can reveal further important similarities and differences between documents.
+
+In sum, this section has introduced various ways that terms and documents can be indexed, and how we can apply set operations to an inverted index to carry out boolean searches.  These ideas are important in the history of information retrieval, and are still used in tools such as Westlaw to this day. But it is also important to consider why boolean search is \emph{not} widely used in modern search engines.   
+
+For one thing, non-specialist users may find the complex syntax of boolean queries (and other advanced features offered on Westlaw) to be counter-intuitive.  Interestingly, trained Westlaw users seem to  enjoy using Westlaw's complicated query syntax, and even prefer to use it when a free-text query might give equally good results.  Like stick-shift drivers, perhaps Westlaw users feel that they have more control over the search when they design their queries by hand.
+
+A bigger problem with boolean search is that searches using \emph{OR} have very high recall but low precision (relevant documents are returned, but they are overwhelmed by an even greater number of irrelevant documents), while boolean searches using \emph{AND} have high precision but low recall (a lot of the documents that are returned are relevant, but a lot of relevant documents are not returned).  These logical operators are too rigid to find a middle ground.  
+
+On the other hand, the problem with \emph{OR} searches (low precision, high recall) can be partly addressed with a good ranking system that puts the most relevant results at the top of the page; that way, at least the top few results have good precision, which are the most important results for users anyway.  The problem with \emph{AND} searches (high precision, low recall) cannot be so easily addressed with a ranking system, and perhaps this is why the space -- the default way of combining words -- is interpreted as \emph{OR}  in Westlaw.
+
+
+\begin{tblsfilledsymbol}{\underthehoodsubsection{Regular expressions}}{glass} \label{regex}
+\begin{underthehood} 
+\newcommand{\A}{\texttt{\ensuremath{\,\hat{ }\,}}}
+
+Any time we have to match a complex pattern, \keywordAs{regular
+  expressions}{regular expression} are useful.  A regular expression is a compact
+description of a set of strings.  So, a regular expression can
+compactly describe the set of strings containing all zip codes
+starting with 911 (in this case, the regular expression is
+/\texttt{911[0-9][0-9]}/, which is explained below).
+
+ In \keyword{formal
+  language theory}, language is treated mathematically, and a set of
+strings defines a language.  For instance, English is defined as the
+set of all legitimate English sentences.  As in other formalisms,
+regular expressions as such have no linguistic contents; they are
+simply descriptions of some set of strings encoding a \keyword{natural
+  language} text.
+While some patterns cannot be specified using regular expressions (see
+Under the Hood~\ref{sec:complexity-of-languages} on grammar
+complexity), regular expressions are quite suitable for our purposes.
+
+
+Regular expressions can consist of a variety of different
+types of special characters, but there is a very small set of them.
+In their most basic form, regular expressions have strings of literal
+characters: Some examples include /\texttt{c}/, /\texttt{A100}/,
+/\texttt{natural language}/, and /\texttt{30 years!}/.  In other
+words, we can search for ordinary strings just as we would expect, by
+writing them out.  One note on the representation of putting regular
+expressions between forward slashes: This is a common
+representation, but in the next section we will see that each
+application has its own way of referring to regular expressions.
+
+To allow for different possibilities, we can add
+\keyword{disjunction}.  There is ordinary disjunction, as in
+/\texttt{devoured|ate}/ and /\texttt{famil(y|ies)}/, which allows us
+to find variants of words -- in this case, \exsent{devoured} and
+\exsent{ate}, in the former case, and \exsent{family} and
+\exsent{families}, in the latter -- and there are character classes,
+defined in brackets, to specify different possibilities.
+/\texttt{[Tt]he}/, for example, matches either \exsent{The} or
+\exsent{the}; likewise, /\texttt{bec[oa]me}/ matches \exsent{become}
+or \exsent{became}.  Finally, we can specify ranges, as in
+/\texttt{[A-Z]}/, which matches any capital letter.  For our earlier
+problem of finding all zip codes starting with \exsent{911}, then, we
+can specify / \texttt{911[0-9][0-9]} /, which nicely excludes
+\exsent{911} when followed by a space.
+
+In addition to disjunction, we can use \keyword{negation} to specify
+characters that we do not want to see.  We use the character class
+notation (\texttt{[...]}), with {\A} denoting that it is not this class.  For example,
+/\texttt{[{\A}a]}/ refers to any symbol but \texttt{a}, and
+/\texttt{[{\A}A-Z0-9]}/ indicates something which is not an uppercase
+letter or number.
+
+Regular expressions begin to display their full range of power in the
+different \keywordAs{counters}{counter} which are available.  These counters
+allow us to specify how often an item should appear.  First, we can
+specify optionality through the \texttt{?} operator; \texttt{?} means
+that we can have zero or one of the previously occurring item.  For
+example, /\texttt{colou?r}/ matches either \exsent{color} or
+\exsent{colour}.  Secondly, we have what is called the Kleene star
+(\texttt{*}), which allows for any number of occurrences of the
+previous item (including zero occurrences) -- e.g., /\texttt{[0-9]*
+  years}/.  The third and final counter is very similar, but it stands
+for one or more occurrences of the previous element and is represented
+by \texttt{+}.  So /\texttt{[0-9]+ dollars}/ requires there to be at
+least one digit, but possibly more.
+
+Another operator which allows us to specify different possibilities is
+the period (\texttt{.}), a wildcard standing for any character.  Thus,
+the query /\texttt{beg.n}/ designates that there can be any (single)
+character between \exsent{beg} and \exsent{n} (\exword{begin},
+\exword{began}, \exword{beg!n}, etc.).
+
+Because we have defined special uses for a variety of characters, we
+also want a way to search for those actual characters.  For example,
+how can we search for a question mark (\exword{?}) when it has a
+special meaning?  To do this, we use \keywordAs{escaped characters}{escaped character},
+which allow us to specify a character which otherwise has a special
+meaning, and we notate this with a backslash: \verb#\*#, \verb#\+#,
+\verb#\?#, \verb#\(#, \verb#\)#, \verb#\|#, \verb#\[#, \verb#\]#.
+
+With a variety of different operators, it can sometimes be confusing
+as to which applies first.  But there are rules of
+\keyword{operator precedence}, just
+as in arithmetic, where, for example, in evaluating $4+5*6$, we obtain
+$34$ because multiplication has higher precedence than addition.
+Likewise, there is an order of precedence for regular expressions, as summarized
+in the table.  From highest to lowest, this precedence is:
+parentheses, counters (\texttt{* + ?}), character sequences, and
+finally disjunction (\texttt{|}).  So, if we see 
+/\texttt{ab|cd}/, this matches either \exword{ab} or \exword{cd}
+because character sequences have higher precedence than disjunction.
+(If disjunction had higher precedence, we would match \exword{abd} or
+\exword{acd}.)
+
+\begin{table}[H]
+\begin{tabular}{ll}
+\lsptoprule
+Operator & Notation \\\midrule
+1. Parentheses & (...) \\
+2. Counters & ?, *, + \\
+3. Literals & a, b, c, ... \\
+\quad Escaped characters & \verb.\?., \verb.\*., \verb.\[., ... \\
+\quad Wildcard & . \\
+4. Disjunction & $|$, [...] \\
+\quad Negation & [\A...]\\
+\lspbottomrule
+\end{tabular}
+\end{table}
+
+
+To fully illustrate how regular expressions work, we are going to walk
+through a tool used on a variety of platforms to find sequences in
+text.  This tool is called \emph{grep}, and it is a powerful and
+efficient program for searching in text files using regular
+expressions.  It is standard on Unix, Linux, and Mac OSX, and there
+ are also various ports for Windows.  The version of \texttt{grep} that
+supports the full set of operators mentioned above is generally called
+\texttt{egrep} (for extended \texttt{grep}).  By the way,
+\texttt{grep} stands for ``grab regular expressions and print''.
+
+  
+We list a variety of examples below and, for each, we assume a text
+file \texttt{f.txt} containing, among other strings, the ones that we
+mention as matching.  The purpose of \texttt{grep} or \texttt{egrep}
+is to return the lines which contain a string matching the regular
+expression.
+
+\begin{itemize}
+  \item \emph{Strings of literal characters:}
+    
+  \texttt{egrep 'and' f.txt}\\[1ex]
+  matches lines with:
+  \texttt{\uline{and}}, \texttt{Ayn R\uline{and}},
+  \texttt{C\uline{and}y}, \texttt{st\uline{and}alone}, \ldots
+
+\item \emph{Character classes:}    
+
+    \texttt{egrep 'the year [0-9][0-9][0-9][0-9]' f.txt}\\[1ex]
+    matches lines with:
+    \texttt{the year 1776}, \texttt{the year 1812a.d.},
+    \texttt{the year 21112}, \ldots
+
+  \item \emph{Escaped characters:} 
+    
+    \texttt{egrep 'why$\backslash$?' f.txt}\\[1ex]
+    matches lines with:
+    \texttt{why?}, \ldots
+
+    but does not match lines with:
+    \texttt{why so serious}, \ldots
+
+  \item {Disjunction (\texttt{|}):}  
+
+     \texttt{egrep 'couch|sofa' f.txt} \\[1ex]
+     matches lines with:
+     \texttt{couch}, \texttt{sofa}, \texttt{couched}, \ldots
+
+   \item \emph{Grouping with parentheses:} 
+  
+  \texttt{egrep 'un(interest|excit)ing' f.txt}\\[1ex]
+  matches lines with:
+  \texttt{uninteresting}, \texttt{unexciting}
+
+  but does not match lines with:\\[1ex]
+  \texttt{uninterested}, \texttt{super-exciting}
+
+\item    
+\emph{Any character (.):}
+    
+  \texttt{egrep 'o.e' f.txt}\\[1ex]
+  matches lines with:
+  \texttt{ore}, \texttt{one},
+  \texttt{sole}, \texttt{project}, \ldots
+
+\item \emph{Kleene star (*):}
+    
+    \texttt{egrep 'sha(la)*' f.txt}\\[1ex]
+    matches lines with:
+    \texttt{sha}, \texttt{shala}, \texttt{shalala}, \ldots
+
+    but does not match lines with:\\[1ex]
+    \texttt{shalaaa}, \texttt{shalashala}, \ldots
+
+  \item \emph{One or more (+):}
+    
+    \texttt{egrep 'john+y' f.txt}\\[1ex]
+    matches lines with:
+    \texttt{johny}, \texttt{johnny}, \texttt{johnnny}, ...
+
+    but does not match lines with:\\[1ex]
+    \texttt{johy}
+
+  \item \emph{Optionality (?):}
+    
+    \texttt{egrep 'joh?n' f.txt}\\[1ex]
+    matches lines with:
+    \texttt{jon}, \texttt{john}, \texttt{jones}, \ldots
+
+  \end{itemize}
+  
+You can practice regular expressions online using tools such as Regex101. They can be fiddly, so don't get discouraged if you have to practice for a while before you feel comfortable!
+
+\end{underthehood}
+\end{tblsfilledsymbol}
+
+
+
+\section{Search engines for general use}
+
+Since the late 1990s, search engines have become widely accessible to non-specialist users.  Practically every website or app offers a search functionality of some kind, even if it only allows you to search within that specific website (to find an old email in your inbox, or to look for Reddit posts about your favorite movie).  But most prototypically, you enter a  simple text query into a dedicated search engine such as Google or Bing and get back thousands of open-domain documents from all over the web, ranked by relevance and quality.  Often these search results give you what you want on the first page of top-ranked results.
+
+We just saw that Westlaw allows users to filter results based on structured metadata about judges, jurisdiction, and so on.  In contrast, regular open-domain webpages are relatively unstructured, so open-domain web search usually does not allow such  filtering.  But  the word \exword{unstructured}  may be misleading, because most documents have some sort of structure, even if it is not explicitly labeled.  A webpage probably has a title and  some sub-headers or \keyword{meta tags} (\texttt{<META} \texttt{name = "keywords"} \texttt{content = "travel,Malta">}) that can be identified from its HTML.  It is probably also  associated with the date on which it was created or updated.  A search engine can use such metadata to give higher rankings to pages that mention query terms in the title rather than just the body, or to favor more recently-updated pages.  
+
+We also saw that Westlaw users can specify complex queries using a specialized syntax.  In contrast,  users of open-domain web search often do not have the patience for such opaque options; ``double quotes'' for exactly-matching strings is the only  popular advanced feature in the realm of text.  In many cases, it is not clear if one's results would be meaningfully improved by a more complex query anyway.
+
+Finally, we saw that Westlaw only indexes documents from the legal domain, which is finite in size and relatively high quality (it's unlikely to find spam).  In contrast, the open-domain internet is massive (at a recent estimate, there are over 1.5 billion webpages, of which 200 million are active), and all levels of quality are represented.  Because the web is so vast and the quality so variable, it is especially important for results to be ranked in such a way that the top page of results best address the user's information need.  The \keyword{ranking} of results should consider (i) the \keyword{relevance} of each document to the query and the information need that it represents, viewing relevance as a gradient rather than a binary concept; and (ii) the \keyword{quality} of each document -- the degree to which it can be considered trustworthy.  
+
+ 
+% relevance
+% tf-idf vector similarity between a document and a query. show this, this is important.
+% use this to rank most relevant documents.
+% vector similarity
+
+
+% quality
+% pageRank
+
+
+
+
+% similarity
+% vector similarity - similarity of query to pages.
+% tf-idf similarity
+% similarity using word2vec or whatever
+% right.
+
+
+
+% 
+
+
+\begin{tblsfilledsymbol}{\underthehoodsubsection{Finite-state automata}}{glass} \label{ufsa}
+\begin{underthehood} 
+
+Regular expressions are closely related to finite-state automata (FSAs), which are abstract mathematical models of computation. A finite-state automaton is a hypothetical machine that can be in exactly one of a finite number of states at a given time.  We can use a graph to visualize its potential states and sequences thereof.
+
+Imagine a finite-state automaton that matches a single letter \exword{a}. It has two states, 1 and 2, and one edge to link them. This edge is labeled with \exword{a}. There is a start arrow marking state 1 as the initial state, and special formatting (a double circle) marking state 2 as final. The idea of a finite-state automaton is that it matches all the paths that can go from the initial state to the final state. This automaton is boring: It has only one path and the only sequence it can match is the single letter \exword{a}. 
+
+\begin{figure}[H]
+\begin{tikzpicture}
+\node[state, initial] (q1) {1};
+\node[state, accepting, right of=q1, xshift=1cm] (q2) {2};
+\draw (q1) edge[above] node{a} (q2);
+\end{tikzpicture}
+\end{figure}
+
+We say that the automaton generates the ``language'' (set of strings) corresponding to the paths in the graph. The language generated by our simple automaton is just the sequence containing the single letter \exword{a}.  Defining the automation in terms of the strings it accepts, this automaton accepts \{a\}.
+
+An even simpler automaton has one state, which is both initial and final, and no loops at all; the set of strings accepted by this automaton is the empty set \{\}.
+
+\begin{figure}[H]
+\begin{tikzpicture}
+\node[state, initial, accepting] (q1) {1};
+\end{tikzpicture}
+\end{figure}
+
+On the other hand, we can make our system more complicated, by allowing \exword{b} and \exword{c} as well as \exword{a}.  Now our language generates three different one-letter strings -- \{a, b, c\}.
+
+\begin{figure}[H]
+\begin{tikzpicture}
+\node[state, initial] (q1) {1};
+\node[state, accepting, right of=q1, xshift=1cm] (q2) {2};
+\draw (q1) edge[bend left, above] node{a} (q2);
+\draw (q1) edge[above] node{b} (q2);
+\draw (q1) edge[bend right, below] node{c} (q2);
+\end{tikzpicture}
+\end{figure}
+
+Our next automation is more interesting:
+
+\begin{figure}[H]
+\begin{tikzpicture}
+\node[state, initial] (q1) {1};
+\node[state, accepting, right of=q1, xshift=1cm] (q2) {2};
+\draw (q1) edge[loop above] node{a} (q1);
+\draw (q1) edge[bend left, above] node{a} (q2);
+\draw (q1) edge[above] node{b} (q2);
+\draw (q1) edge[bend right, below] node{c} (q2);
+\end{tikzpicture}
+\end{figure}
+
+Here, we have made an edge called \exword{a} which loops around as many times as necessary, then finishes off with a choice of \exword{a, b,} or \exword{c}.  This formulation is powerful, because it describes an infinite language consisting of all the strings that start off with a sequence of (any number of) \exword{a}'s and finishes with \exword{a, b,} or \exword{c}. This pattern can also be described by the regular expression /a*(a|b|c|)/.  This automaton accepts an infinite set of strings -- \{aa, ab, ac, aab, aac, aaab, aaac, \ldots\} and so on: There is no upper limit on the number of \exword{a}'s.
+
+It turns out to be useful to think of regular expressions as a notation for finite-state automata. That is, when we write down a regular expression, it is a precise description of some finite-state automaton. Going the other way, if you have a finite-state automaton, you can write it down as a corresponding regular expression. We say that finite-state automata provide the semantics for regular expressions. By \exword{semantics}, we mean a mathematically precise meaning. 
+
+More generally, finite-state automata are important in formal language theory, the study of which patterns can be generated by which sets of rules.
+
+\end{underthehood}
+\end{tblsfilledsymbol}
+
+
+\subsection{Ranking results by relevance}
+
+First, how do we automatically quantify the relevance of a document to a query?  When you search for \exsent{Do dogs need raincoats?}, a relevant document is likely to  include words from your query -- especially the more distinctive words or lemmas, \exword{dog, raincoat,} and perhaps \exword{need}, more than the extremely common word \exword{do}.  A relevant document probably also uses these words frequently, at the beginning of the document or in the title, and in close proximity to one another.  Most intuitively, a relevant document is probably \emph{similar} to the query, in the sense that they probably contain similar words.
+
+\newpage
+We saw above that a term-by-document matrix can quantify some intuitions about the similarity between two documents: Two documents are more similar if their columns (vectors) in the term-by-document matrix are more similar.  Let's make that idea more mathematically precise using a  query and three short documents:
+
+
+\begin{itemize}
+
+\item \emph{Query:} Do dogs need raincoats?
+
+\item \emph{Doc1:} Raincoats for dogs?  Dogs dislike raincoats!
+
+\item \emph{Doc2:} Shop fashion for pets
+
+\item \emph{Doc3:} Need raincoats for fashion
+
+\end{itemize}
+
+
+Now, let's make a term-by-document matrix (\tabref{termdocdog}).  
+
+\begin{table}
+\begin{tabular}{l c c c c } % 
+\lsptoprule
+  & Query & Doc1 & Doc2 & Doc3  \\ \midrule
+  do & 1 	& 0 		& 0 	& 0  \\
+  dogs & 1 & 2 & 0 & 0 \\
+  need & 1 & 0 & 0  & 1 \\
+  raincoats & 1 & 2 & 0 & 1 \\
+  for & 0 & 1 & 1 & 1 \\
+  dislike & 0 & 1 & 0 & 0 \\
+  shop & 0 & 0 & 1 & 0 \\
+  fashion & 0 & 0 & 1 & 1 \\
+  pets & 0 & 0 & 1 & 0 \\ 
+\lspbottomrule
+  \end{tabular}
+  \caption{Term-by-document matrix for the query \exword{Do dogs need raincoats?} and three documents that may be relevant to this query.}
+  \label{termdocdog}
+  \end{table}
+
+  We mentioned above that such a matrix could use a 0 when a term doesn't occur at all, and a 1 when it appears at least once (which is all we need for a boolean search), but that we could also choose to use the actual number of times that the term appears in each document.  Here, we take the latter strategy, so that our term-by-document matrix counts the number of times that each term appears in each document; \exword{dogs} appears twice in Doc2, so there is a 2 in that column.
+
+Eventually, we will want to use some vector math to quantify the similarity between documents, or between a document and a query.  But before things get too complicated, just look at the query and the documents, look at the term-by-document matrix, and use your intuition to decide which document you think is most similar to (and thus most relevant to) the query.
+
+Now for the mathematical details.  In order to quantify the intuitive notion of similarity between documents (or between a document and a query), we first need to calculate the length of each vector.  We begin with a vector $x$, with $n$ elements $[x_{1}, x_{2}, x_{3}, \ldots x_{n}]$.  The \keyword{vector length} of $x$, written as $|x|$, is defined as:
+\begin{equation}
+ |x| = \sqrt{x_{1}^{2} + x_{2}^{2} +  x_{3}^{2} + \ldots x_{n}^{2}}
+\end{equation}
+
+The first document (column vector) in our term-by-document matrix is the query, \exsent{Do dogs need raincoats}, represented as the vector [1, 1, 1, 1, 0, 0, 0, 0, 0].  Its length is defined as:
+\begin{equation}
+  \sqrt{1^{2} + 1^{2} + 1^{2} + 1^{2} + 0^{2} + 0^{2} + 0^{2} + 0^{2} + 0^{2}} = \sqrt{4} = 2
+\end{equation}
+
+The next column vector in our matrix is Doc1, \exsent{Raincoats for dogs?  Dogs dislike raincoats}, represented as the vector [0, 2, 0, 2, 1, 1, 0, 0, 0].  Its length is thus:
+\begin{equation}
+   \sqrt{0^{2} + 2^{2} + 0^{2} + 2^{2} + 1^{2} + 1^{2} + 0^{2} + 0^{2} + 0^{2}} = \sqrt{10} = 3.16 
+\end{equation}
+
+Calculated as described, the final row of our term-by-document matrix now records the length of each vector.
+
+
+\begin{table}
+\begin{tabular}{c c c c c } 
+\lsptoprule
+  & Query & Doc1 & Doc2 & Doc3  \\ \midrule
+  do & 1 	& 0 		& 0 	& 0  \\
+  dogs & 1 & 2 & 0 & 0 \\
+  need & 1 & 0 & 0  & 1 \\
+  raincoats & 1 & 2 & 0 & 1 \\
+  for & 0 & 1 & 1 & 1 \\
+  dislike & 0 & 1 & 0 & 0 \\
+  shop & 0 & 0 & 1 & 0 \\
+  fashion & 0 & 0 & 1 & 1 \\
+  pets & 0 & 0 & 1 & 0 \\ \addlinespace
+  \emph{length} & 2 & $\sqrt{10}$ & 2 & 2 \\
+\lspbottomrule
+\end{tabular}
+\caption{Term-by-document matrix with vector lengths.}
+\label{termdocdog2}
+\end{table}
+
+Now that we have a vector and a length for the query as well as each document, we want to calculate the similarity between the query vector and each document vector.  We do this using \keyword{cosine similarity}, which measures the angle between two vectors in an abstract vector space.  Intuitively, two vectors are more similar if each of their elements are similar: Our query is similar to Doc1 in that they both contain the words \exword{dogs} and \exword{raincoats}.
+
+Before we can define cosine similarity, we have to define the \keyword{dot product} between two vectors, $x1$ and $x2$, which must have the same number of elements. $x1_{1}$ is the first element of $x1$, $x2_{1}$ is the first element of $x2$, $x1_{2}$ is the second element of $x1$, and so on. 
+\begin{equation}
+  x1 \bullet x2 = (x1_{1} * x2_{1}) + (x1_{2} * x2_{2}) + (x1_{3} * x2_{3}) + \ldots (x1_{n} * x2_{n})
+\end{equation}
+
+Let's illustrate by calculating the dot product of our query [1, 1, 1, 1, 0, 0, 0, 0, 0] and Doc1 [0, 2, 0, 2, 1, 1, 0, 0, 0].
+\begin{equation}
+ q \bullet Doc1 = (1 * 0) + (1 * 2) + (1 * 0) + (1 * 2) + (0 * 1) + (0 * 1) + (0 * 0) +( 0 * 0) = 4 
+\end{equation}
+
+
+Finally, we can calculate the cosine similarity between two vectors (between documents, or between a query and a document).  The cosine similarity between $x1$ and $x2$ is defined as their dot product divided by the product of their lengths:
+\begin{equation}
+ \frac{x1 \bullet x2}{|x1| * |x2|}
+\end{equation}
+
+
+We already saw that the dot product of our query and Doc1 is 4, the length of the query is 2, and the length of Doc1 is $\sqrt{10}$.  Thus, their cosine similarity is:
+\begin{equation}
+ \frac{4}{2 * \sqrt{10}} = 0.63
+\end{equation}
+
+
+A maximal cosine similarity of 1 means that the documents are identical, so a cosine similarity of 0.63 indicates that these two documents are pretty similar.
+
+Using the same method, we can calculate the cosine similarity between our query and every other document -- and between every document and every other document.
+
+\begin{itemize}
+\item \emph{Query:} Do dogs need raincoats?
+\item \emph{Doc1:} Raincoats for dogs?  Dogs dislike raincoats!
+\item \emph{Doc2:} Shop fashion for pets
+\item \emph{Doc3:} Need raincoats for fashion
+\end{itemize}
+
+For example, the top-left corner of this matrix indicates that the query is identical to itself.  The top row, second column (0.63) indicates that the query and Doc1 have a cosine similarity of 0.63.  And so on. 
+
+\begin{table}
+\begin{tabular}{l c c c c } % 
+\lsptoprule
+  & Query & Doc1 & Doc2 & Doc3  \\ \midrule
+Query & 1 & 0.63 & 0 & 0.50 \\
+Doc1 & 0.63 & 1 & 0.16 & 0.47 \\
+Doc2 & 0 & 0.16 & 1 & 0.50 \\
+Doc3 & 0.50 & 0.47 & 0.50 & 1 \\
+\lspbottomrule
+\end{tabular}
+\caption{Cosine similarities of each document to each other document.}
+\end{table}
+
+This matrix quantifies some intuitive results.  As expected, the document most similar to our query is Doc1, because they both mention raincoats and dogs.  The document least similar to the query is Doc2, because none of the words overlap.  The document most similar to Doc2 (\exsent{shop fashion for pets}) is Doc3 (\exsent{need raincoats for fashion}), because they both contain the words \exword{for} and \exword{fashion}.  The math may seem complicated, but the results are exactly what we would want.  Cosine similarity is used to quantify the similarity between columns (vectors) in a term-by-document matrix.
+
+This basic idea can be made fancier in all sorts of ways, for example to take advantage of the fact that a word like \exword{pets} should be considered similar to a word like \exword{dogs} even if they are different words.
+  To keep this discussion accessible, we will limit ourselves to one historically important refinement of the document-similarity calculation, which gives greater weight to distinctive words such as \exword{dogs} and \exword{raincoats} over more common words such as \exword{of}.  This refinement is known as \keyword{TFIDF weighting} -- weighting by \keyword{term frequency} (tf) and \keyword{inverse document frequency} (idf).
+  
+We've already been weighting words by their term frequency.  We have just been using the raw count of each word in each document, which makes sense because all our documents are about the same length, but if the documents vary in length then one could also divide by the total number of words in each document.
+
+\newpage
+The inverse document frequency of a term $t$ is calculated with respect to the entire collection of documents, $D$.   It is defined as the log of (the total number of documents) divided by (the number of documents containing the term $d$).
+\begin{equation}
+ \log\left(\frac{N}{|\{d \in D : t \in d\}|}\right)
+\end{equation}
+
+For example, our collection contains three documents (Doc1, Doc2, and Doc3 -- ignoring the query for now), so $N = 3$.  There are two documents that contain the word \exword{dogs}.  So the inverse document frequency of \exword{dogs} is $\log(3/2) = 0.17$.  In the same collection of documents, there are three documents that contain the word \exword{for} -- all three of them use this common word.  So the inverse document frequency of \exword{for} is $\log(3/3) = 0$.
+
+The math may seem complicated, but the idea is that a higher inverse document frequency means that a term is more distinctive among a collection of documents.  If the term appears in every document, it is not distinctive at all, and thus doesn't tell us much about the relevance of any one document.  But if the term appears only in a few documents, then it is quite distinctive, and maybe meaningful for relevance.  Inverse document frequency was proposed by the British computer scientist Karen \citet{SparckJones:1972}. 
+
+TFIDF is the product of term frequency and inverse document frequency.  The TFIDF of \exword{dogs} in Doc1, among our collection \{Doc1, Doc2, Doc3\}, is its term frequency (which is 2) times its inverse document frequency (which is 0.17), which comes to 0.34.  The TDIDF of \exword{for} in Doc1 among our collection \{Doc1, Doc2, Doc3\} is  its term frequency (which is 1) times its inverse document frequency (which is 0), which comes to 0.  Therefore, TFIDF weighting means that the word \exword{dogs} says more about the relevance of Doc1 to a query than the word \exword{for}.
+
+We could remake our term-by-document matrix using TFIDF weightings instead of just count data, and rerun our calculations of cosine similarity.  (You can try it out on your own -- with a pen and paper or some code.)  But what's even more important than the calculation is the intuition.  Using TFIDF weightings would lower the similarity between Doc2 and Doc3, since their similarity was based only on the fact that they both share the extremely common and non-distinctive word \exword{for}.  TFIDF weighting also means that we don't necessarily need to remove stop words from our data, because there are other ways of capturing the fact that these words do not tell us much about a document's relevance. 
+
+In sum, vector similarity is a powerful and intuitive idea that can be quantified using cosine similarity (defined using vector length and dot products).  It allows us to quantify the similarity (thus, relevance) of a document to a query, which can in turn be used to rank documents based on their relevance to that query.  Moreover, we can also use the similarity between different documents to group them into meaningful clusters that are more similar to one another than to other documents outside the cluster -- for example, a cluster of articles about shopping, and another cluster of articles debating whether dogs enjoy wearing raincoats or not.
+
+So far, we have explored the conceptual foundations of identifying the documents that are relevant to a query.  But of course, the representation of a text can be made far richer than a simple term-by-document matrix.  We saw in \chapref{ch:textasdata} that we can identify words with similar meanings based on their distribution, capturing the idea that \exword{dogs} is similar to \exword{pets}.  We also saw in \chapref{ch:text-classification} that pre-trained tools such as BERT can distill the information contained in massive amounts of text, which can in turn be used to turn a query and some documents into vectors, from which we can then find the document vector that is most similar to the query.  Modern systems combine all of these tools.
+
+%Now that we know a little bit more about what goes on in the background, we can begin to look at how search engines are able to match queries to content on webpages with a high degree of precision.  And we have the tools to understand how search engines can group pages into meaningful clusters.
+
+
+\subsection{Ranking results by quality}
+
+Next, how do we automatically determine the quality of a document/webpage?  A document is likely to be of a high quality if it is highly trafficked, clicked on frequently by other users (known as the \keyword{click-through measurement}), information-dense (not too repetitive), updated relatively recently (because some information changes over time), and linked to by other (high-quality) webpages.  This last metric of quality -- incoming links from other high-quality documents -- was formalized by the computer science graduate students Larry Page and Sergey Brin and colleagues in the late 1990s, and the resulting \keyword{PageRank} algorithm \citep{pagerank:99} served as the basis of their search engine startup company: Google. 
+
+PageRank begins from the intuition that when someone decides to include a link on their webpage, they are signaling that they find the linked page somehow noteworthy or useful.   (As a side note, PageRank is used to rank webpages by their quality, but was also spearheaded by Larry Page, so the word \exword{Page} does double duty as a name and a noun.)   Thus, a page with a lot of in-links is likely to be of a high quality -- especially if those in-links come from other high-quality pages.
+
+
+To formalize this intuition, consider Figure~\ref{fig:link1}, where each circle represents a webpage.  In this case, pages X, Y, and
+Z all link to page A.   The question is whether these links are any
+better or worse than those that link to page B, shown in
+Figure~\ref{fig:link3}.
+
+\begin{figure}
+\captionsetup{margin=.05\linewidth}
+\begin{floatrow}
+\ffigbox{%
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node
+      distance=2.8cm, semithick]
+
+      \node[state, rectangle, rounded corners] (A)              {$A$};
+      \node[state, rectangle, rounded corners] (B) [right of=A] {$X$};
+      \node[state, rectangle, rounded corners] (C) [below of=B] {$Y$};
+      \node[state, rectangle, rounded corners] (D) [below of=A] {$Z$};
+      \path (B) edge node {} (A);
+      \path (C) edge node {} (A);
+      \path (D) edge node {} (A);
+    \end{tikzpicture}}
+    {\caption{Weblinking: X, Y, and Z all link to A.}\label{fig:link1}}
+    \ffigbox{\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node
+      distance=2.8cm, semithick]
+
+      \node[state, rectangle, rounded corners] (A)              {$B$};
+      \node[state, rectangle, rounded corners] (B) [right of=A] {$X$};
+      \node[state, rectangle, rounded corners] (C) [below of=B] {$W$};
+      \node[state, rectangle, rounded corners] (D) [below of=A] {$V$};
+      \path (B) edge node {} (A);
+      \path (C) edge node {} (A);
+      \path (D) edge node {} (A);
+    \end{tikzpicture}}
+    {\caption{Weblinking: V, W, and X all link to B.}\label{fig:link3}}
+    \end{floatrow}
+\end{figure}
+
+
+Thus, we calculate importance based on popularity, where popularity is estimated based on how many sites link to a website and how popular each one of those is.  In order to compare how popular website A is as compared to website B, we can add up how popular each incoming site is.  It might help to think of the situation like this: Each site that links to A gets to vote for A, and they each get a different number of votes based on how popular each one of them is.   Every page has a score, and that the score of a page is related to the score of the pages that provide its incoming links.
+
+In this sense, PageRank does not (and does not claim to) measure quality, but rather measures popularity.  It is an empirical question to what extent a page's popularity really reflects its quality. 
+
+To see how the calculations are done, consider Figure~\ref{fig:link4}.  
+
+\begin{figure}
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node
+      distance=2.8cm, semithick]
+
+      \node[state, rectangle, rounded corners] (A)              {$A$};
+      \node[state, rectangle, rounded corners] (B) [right of=A] {$X:15$};
+      \node[state, rectangle, rounded corners] (C) [below of=B] {$Y:10$};
+      \node[state, rectangle, rounded corners] (D) [below of=A] {$Z:20$};
+      \path (B) edge node {} (A);
+      \path (C) edge node {} (A);
+      \path (D) edge node {} (A);
+    \end{tikzpicture}
+
+\caption{Pages with weights.}
+\label{fig:link4}
+\end{figure}
+
+Here, X casts 15 votes for A, Y casts 10, and Z casts 20.  This may
+make intuitive sense, but we are stuck with an immediate problem: The
+website A now has 45 votes, and that is clearly too many.  After all,
+the most popular incoming site had only a score of 20.  This way of
+adding will lead to ever-increasing popularity scores.
+
+We want a solution that distributes votes from pages in a sensible
+way.
+The solution PageRank uses is to spread out each page's votes through
+all the pages it links to.  Viewing this as a voting process, it means
+that each webpage must split its votes among all the pages it links
+to.  In Figure~\ref{fig:link2}, for example, the webpage X has 15
+votes, and it links to 3 pages.  Thus, it casts 5 votes for each of
+those pages.
+
+\begin{figure}
+    \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node
+      distance=2.8cm, semithick]
+
+      \node[state, rectangle, rounded corners] (A)              {$A$};
+      \node[state, rectangle, rounded corners] (B) [right of=A] {$X:15$};
+      \node[state, rectangle, rounded corners] (C) [right of=B] {$B$};
+      \node[state, rectangle, rounded corners] (D) [below of=C] {$C$};
+      \path (B) edge node {5} (A);
+      \path (B) edge node {5} (C);
+      \path (B) edge node {5} (D);
+    \end{tikzpicture}
+
+\caption{Dividing the weights.}
+\label{fig:link2}
+\end{figure}
+
+Let's assume, then, that after spreading votes out among their
+different webpages, the final score of A is 12.  Which leads us to
+ask: 12 of what?  What does it mean to have a score of 12?  Is that
+good or bad?
+
+Truth be told, scores on their own do not mean much.  We need to
+compare the score to other websites to determine a relative rank.  If
+website B's score is 10 and A's is 12, we can say that A outranks B.  If, when the search engine analyzes the words on the pages,
+two pages seem to be equally relevant in their
+content, then the page rank score can be used to determine which webpage is 
+placed nearer to the top of the results list.
+
+In sum, there are two main things to consider when calculating
+a ranking for a website based on its weblinks -- links coming into a
+website, and links going out of a website.  The formula (at least for
+Google) captures these properties.  It can be seen in
+\REF{ex:pagerank} for a webpage $A$ with 3 pages linking to it: We
+use $R(X)$ to mean the \emph{rank of page X} and $C(X)$ to refer to
+the \emph{number of pages going out of page X}.
+\begin{equation} 
+\label{ex:pagerank} 
+R(A) = \frac{R(X)}{C(X)} + \frac{R(Y)}{C(Y)} + \frac{R(Z)}{C(Z)}
+\end{equation}
+
+Let's make sure this formula represents what we want it to.  Firstly,
+we add up the scores of the different pages coming into A (e.g.,
+$R(X)$) because, in order to know how popular A is, we need to know
+how popular everyone else thinks it is.  Secondly, we divide each
+score by the number of pages going out of X, Y, and Z (e.g., $C(X)$)
+because we are spreading out their weights among all the pages they
+link to.  The result of this calculation -- whether we want to interpret it as a signal of quality or just popularity -- is then used to rank results.
+
+The ideas behind PageRank are still used in web search to this day, combined with a number of other indirect metrics of a page's quality.  As one other example, Google has also patented a technique \citep{Hajaj:2015} to measure the distance between one page and another page -- how many links you would have to follow to navigate from one page to another by link-hopping.  Beginning with a number of \keyword{seed} pages that are already known to be of high quality, one can measure the distance in the \keyword{link graph} between each page and these high-quality pages,  and give higher rankings to pages that are closer to the high-quality ones.  For example, imagine that a university's website is listed among the high-quality seed pages.  Then, if a professor's personal website is directly linked from the university site, that link structure can help boost the ranking of the professor's site, both through PageRank (because the university's site ``votes'' for this page) and through its distance in the link graph.
+
+
+
+\begin{tblsfilledsymbol}{\underthehoodsubsection{A brief tour of HTML}}{glass} 
+\begin{underthehood}
+\label{uth:html}
+
+HTML stands for \emph{Hyper-Text Mark-up Language}, and it is what
+webpages have often been written in.    If you go to a webpage
+and select \emph{View Page Source}, you will see the raw HTML.
+It resembles English, but has extra features.
+For example, looking at the
+English Wikipedia page (\url{https://en.wikipedia.org/wiki/Main_Page}),
+we find an excerpt of the source code shown.  This code corresponds to a list of recently featured articles, each formatted as a clickable link. 
+
+\begin{lstlisting}[language=HTML]
+<div class="tfa-recent" style="text-align: right;">Recently featured: <div class="hlist hlist-separated inline">
+<ul><li><a href="/wiki/Truce_of_Calais" title="Truce of Calais">Truce of Calais</a></li>
+<li><a href="/wiki/Boroughitis" title="Boroughitis">Boroughitis</a></li>
+<li><a href="/wiki/1940_Mandatory_Palestine_v_Lebanon_football_match" title="1940 Mandatory Palestine v Lebanon football match">1940 Mandatory Palestine v Lebanon football match</a></li></ul>
+</div>
+\end{lstlisting}
+
+
+As can be seen, the code is composed of different \keywordAs{HTML tags}{HTML tag},
+which are found between angled brackets, for example, \verb#<li>#,
+which marks a list item.  For every opening bracket (e.g.,
+\verb#<li>#), there is a closing bracket (e.g., \verb#</li>#).  You
+can see how to alter text: 
+
+
+\ea \ea \begin{verbatim}
+<p>We'll throw in some <b>bold</b>, <i>italicized</i>,
+   and <u>underlined</u> text.</p>
+    \end{verbatim}
+    \ex We'll throw in some \textbf{bold}, \textit{italicized}, and
+\uline{underlined} text.
+\z 
+\z 
+
+
+
+Many HTML tags have obvious effects on the display of the
+page. But some have more subtle effects. Most browsers display the
+content of the \verb#<TITLE># tag not on the page itself, but rather
+in the title bar of the window within which the page appears.
+
+HTML also gives you the tools to create links to other webpages.  The
+\verb#<A># tag (short for \emph{anchor}) does this, and so you can
+find HTML code such as \verb#<a href="https://ling.osu.edu">#
+\verb#Click here</a>#.  Any person or program that understands HTML
+will be able, by finding all the \verb#<a># tags, to trace the links
+that lead away from this page, which can be used to compute its
+PageRank.
+
+\end{underthehood}
+\end{tblsfilledsymbol}
+
+
+
+\subsection{Design choices for search engines}
+
+All search engines find documents relevant to a query, and rank them in terms of relevance and quality.  But each search engine also uses a blend of unique design choices, based on considerations about user experience, social impact, and ethics:
+
+\begin{itemize}
+
+\item Are words stemmed or lemmatized?   Is \exword{dogs} lemmatized to \exword{dog}, is \exword{whistleblower} stemmed to \exword{whistleblow}?
+
+\item Are searches case-sensitive?  Does a search for \exword{Apple} yield the same results as one for \exword{apple}?
+
+\item What happens to punctuation?  Does a search for \exword{USA} yield the same results as one for \exword{U.S.A.}?  Does a search for \exword{big} yield the same results as one for \exword{B.I.G.} (the musician)?
+
+\item What about spelling variations?  Does a search for \exword{color} (American spelling) yield the same results as one for \exword{colour} (British)?
+
+\item What about different words for the same thing?  Does a search for \exword{Burma} yield the same results as a search for \exword{Myanmar}? 
+
+\item Are results spell-checked (automatically)?  What happens if you search for \exword{Katie Smih}?  (What if you actually want to find someone named \exword{Katie Smih}?)
+
+\item Does the search engine auto-complete a query as you type it?  Does it suggest helpful further queries?
+
+\item What languages are results displayed in?  When you search for \exword{roi}, do you get results in English (return on investment) or French (where it means \exword{king})?
+
+\item How does the search engine deal with government censorship in certain countries?
+
+\item How does the search engine deal with searches for adult topics, such as nudity?
+
+\item How does the search engine deal with searches for controversial or sensitive topics, such as conspiracy theories, hate groups, or self-harm?  Perhaps a company doesn't want to  leave these results entirely up to an algorithm.
+
+\item What advanced search options are available?  How easy is it to find them?  (How much do they improve results?)
+
+\item How are results displayed?  What \keyword{snippets} are shown with each result?  Are the query words highlighted?
+
+\item What blend of relevance and quality is used to rank results, and how are they calculated?  For example, to what extent does the ranking algorithm also consider recency? 
+
+\item To what extent do search results respect the privacy of private individuals?  Can you search for someone and find their address, criminal record, and phone number on the first page of results?  
+
+\item Are results (for ambiguous queries) clustered into groups?  Does a search for \exword{apple} yield a cluster about the company and a cluster about the fruit, or are the results all presented together?
+
+\item To what extent are your results \keyword{personalized} -- to give higher rankings to pages you've visited previously, pages that are highly trafficked in your specific location, or pages similar to your prior search history?  If so, is the personalization \keyword{transparent} -- are you aware of how it works?
+
+\item What advertisements are shown to users, and how are they distinguished from other content?
+
+\end{itemize}
+
+Some of these design choices are technical, but some are fundamentally humanistic, asking us to weigh ethical imperatives -- to what extent should information be freely available, versus to what extent should it be restricted (or algorithmically down-ranked) to protect people from various types of harm?
+
+\subsection{The future of search}
+ 
+So far, we have seen that modern search engines answer certain factoid questions directly   (\exsent{How many centimeters are in an inch?}), while answering other questions indirectly  (\exsent{What happened to my friend Katie Smith?}) by returning a set of relevant documents in which the user can dig for an answer themselves.  Given the recent success of tools such as ChatGPT, one wonders if future information retrieval systems will answer more and more questions directly, handling fewer information needs with ranked documents that the user has to dig through.  
+
+For example, consider a user who asks, \exsent{Should I quit my job?} A document-ranking information retrieval system would curate webpages where this topic is discussed, while a dialog-based system would generate its own reply.  The following reply from ChatGPT is sensible enough: 
+
+\begin{quote}
+
+As an AI language model, I cannot make decisions for you, but I can provide some guidance to help you make an informed decision.
+
+Before deciding whether to quit your job, it may be helpful to evaluate the reasons why you are considering leaving. Are you feeling unfulfilled or unhappy with your work, or are there external factors such as a difficult boss or toxic work environment that are causing you to feel this way?
+
+You may also want to consider your financial situation and whether you have a backup plan or other job prospects lined up if you do decide to quit. Additionally, it may be helpful to talk to trusted friends or family members, a career counselor, or a mental health professional to discuss your options and explore potential solutions to any issues you are facing at work.
+
+Ultimately, the decision to quit your job is a personal one and depends on your individual circumstances. If you are feeling unhappy or unfulfilled in your current job and have exhausted all other options, then it may be time to consider moving on. However, if you are able to work through any issues you are experiencing or find ways to improve your current situation, then quitting may not be necessary.
+
+\hfill (elicited from ChatGPT in 2024)
+
+\end{quote}
+
+Which type of system would you prefer?   In some sense, generative LLMs aspire to the vision evoked by the AskJeeves search engine from 1996 -- named for the famous butler in P.G. Wodehouse's stories, who was known for his encyclopedic knowledge and nimble competence (creating a humorous contrast with the rich buffoon who employed him).  Like Jeeves, generative LLMs offer a lucid response to the user's query in an authoritative voice, which -- if you trust it -- may be exactly what you want.
+
+On the other hand, these responses may not actually be trustworthy.  For example, generative LLMs are not updated daily, so they might contain outdated information about current events.  Such models also certainly do not know what happened to your elementary school friend Katie Smith.  If the model spouts nonsense with the same authoritative tone as true information, then the user may be misled, and the company may embarrass itself.  Moreover, a system that gives an answer itself performs a qualitatively different action than one which retrieves webpages that may contain such an answer.  By offering relevant webpages, a system signals that the human must still use their judgment to evaluate them, whereas  in giving a single answer, it seems to assert confident correctness -- which might or might not be justified.
+
+It is also interesting to consider how technology companies will allocate resources to maintaining a knowledge graph (based on a human-written top-down structure) versus using the bottom-up information distilled by generative language models.  How do you predict that these two tools will compete with one another or with free-text search?
+
+% only as good as its training data, may be wrong which is bad for you AND for the company who put their weight behind it 
+
+% question answering for factoid questions - just give you the answer
+% here, searching for documents 
+% but - will search become more like question answering?
+% will it be up to date? will it be true, what if it's not true, what is the difference between referring you to a page versus saying something in the system's own "voice"?
+% AskJeeves - maybe that idea is back! founded 1996 
+
+\section{Recommendation systems}
+
+
+So far, we have explored search engines that help people answer an information need that they formed on their own.  But sometimes, you may want a computer to recommend things to you that you didn't even know you wanted.
+
+A \keyword{recom\-menda\-tion system} bypasses the query and goes straight to the ranking.  It ranks items -- documents, web posts to read, things to buy, people to friend or follow, books, movies, music -- based on their overall popularity and/or their relevance to a particular user.  Some of these items  do not centrally involve  language (music, people, products), while some are built on text (web posts, books), but they can all be handled similarly.   
+
+A recommendation system does not inherently need to be personalized; a movie library could keep a static list of the current most-popular or most-streamed movies, or  hand-curate a list of ``staff picks,'' and then recommend these movies to all users.  But in practice, most recommendation systems try to tailor their recommendations to the taste of each user.  Personalized recommendation systems are used by companies like Amazon (recommending products), Netflix (movies), YouTube (videos), Facebook (recommending friends to add, and ranking the posts you see in your news feed), X/Twitter (similar to Facebook), and so on.
+
+Imagine that you want to offer personalized movie recommendations  to the people who subscribe to your movie library.  You have four users and five movies, represented in a \keyword{utility matrix} that shows each user's preference (utility) for each movie.  For some users, you have data about what they like and dislike -- perhaps they rate a movie after watching it, or perhaps you infer that they like movies that they watch to the end, and dislike movies that they stop watching halfway through.  But most users have not watched most movies; in our matrix, the question mark indicates that you do not know whether a user would like or dislike a given movie, because they have not seen it.  Perhaps a new movie has just been added to your library (\exword{SpiderVerse}), so you have no data on whether anyone likes it; or perhaps a new user (Dell) has just subscribed to your service, so you have no data on what movies they like.  
+
+The goal of a recommendation system is to fill in the question marks in this user-by-movie matrix to identify and suggest new movies that each user would like.  (It's a lot less important to identify new movies that a user would \emph{dislike}, except to distinguish them from the movies that they \emph{would} like).   
+A \keyword{collaborative recommendation system} will use the similarities between users reflected in the utility matrix.  Here, Alex and Cory both like \exword{Amadeus} and Cory also likes \exword{Little Women}, so maybe you will recommend \exword{Little Women} to Alex on the grounds that Cory -- who is somewhat similar to Alex -- also likes it.
+
+Of course, the problem here is that no one has seen \exword{SpiderVerse} and Dell hasn't rated any movies, so it's harder to make recommendations for these new movies and users.  (Would it help to find out Dell's gender, age, location, or favorite movies?) The other problem is that users may have eclectic tastes; Alex likes both historical dramas and the action film \exword{Black Panther}, while other users may like only one of these types of films, so they may not like all the recommendations they get based on their similarity to Alex.
+
+\begin{table}
+\begin{tabular}{l c c c c  c} 
+\lsptoprule
+  &  Amadeus & Lion King & Blk Panther  & L. Women & SpiderVerse  \\\midrule
+Alex & like & dislike & like & ? & ? \\ 
+Bo & ? & like & like & ? & ? \\ 
+Cory  & like & ? & dislike & like & ? \\ 
+Dell & ? & ? & ? & ? & ? \\ 
+\lspbottomrule
+\end{tabular}
+\caption{Utility matrix for users and movies.}
+\end{table}
+   
+  
+   
+ You may also want to represent similarities and differences between movies.  Here, we've represented each movie as a vector of features including its genre(s), studio, year, style, and Motion Picture Association of America rating of the maturity level of its audience (PG = some material may not be suitable for children, PG-13 = some material may be inappropriate for pre-teens).    For example, this matrix shows that \exword{Amadeus} is similar to \exword{Little Women} in that they are both PG-rated live-action historical dramas.  So a \keyword{content-based recommendation system} may recommend \exword{Little Women} to Alex because Alex also liked \exword{Amadeus}.  Using this information, we can also recommend the unseen, un-rated \exword{SpiderVerse} movie to Bo, because Bo  likes other animated movies (\exword{Lion King}) and action movies  (\exword{Black Panther}).  
+
+
+\begin{table}
+\fittable{
+\begin{tabular}{p{1cm} p{1.8cm} p{1.6cm} p{2cm} p{1.9cm} p{1.9cm}} % 
+\lsptoprule
+  & Amadeus & Lion King & Blk Panther  & L. Women & SpiderVerse  \\ \hline
+\emph{Genre} & historical, drama & musical & action & historical, drama & action \\ \hline
+\emph{Studio} & Orion & Disney & Marvel, \newline Disney & Columbia, Regency, Pascal & Columbia, Sony,\newline  Marvel  \\ \hline
+\emph{Year} & 1984 & 1994 & 2018 & 2019 & 2018 \\ \hline
+\emph{Style} & Live action & Animated & Live action & Live action & Animated \\ \hline
+\emph{Rating} & PG & PG & PG-13 & PG & PG \\
+\lspbottomrule
+    \end{tabular}
+    }
+    \caption{Feature matrix for movies.}
+\end{table}
+
+From a machine learning standpoint, we could hide a random part of the utility matrix, pretending that we don't know the users' ratings when we do, and then train a neural network to try to predict the missing ratings based on both the users' utility matrix and the movie similarity matrix (perhaps using a \keyword{hybrid recommendation system} that references both user-based and content-based information).  We can compare the neural network's predictions to the users' actual ratings and train it to get these predictions right.  We could also try to optimize recommendations for other metrics of success, such as the total time that the user spends on the platform, perhaps using A/B testing (studying the outcomes of users randomly assigned to various conditions) as discussed in \chapref{ch:call}.
+
+In sum, recommendation systems have a lot in common with search: They use vector representations of individuals or items to identify their similarity to one another; they rank items by their relevance to various users.  But while search helps people satisfy an information need that they already have, recommendation systems try to suggest things that people don't even know they want.  Recommendation systems thus shape what people want, what they pay attention to, and what options they see as available.  Users get things that they like, which is good.  But other times,  users may only see content that reinforces their views, meaning that they only press ``like'' on such content, giving them even more content consistent with those views -- such that they may not realize that they live in an \keyword{echo chamber} far away from the mainstream.
+
+
+\section{Consequences}
+
+Today, we are all lucky to have an ocean of information at our fingertips.  Search engines help us to find what we want in that ocean, and recommendation systems suggest what we might like.  Researchers all over the world can access articles in seconds that used to be housed only in a few physical libraries.  All of these developments make the world a better place. 
+
+But we have also seen some challenges and potential downsides of such technology.  As products, companies, and people compete for limited attention, they may use \keyword{search engine optimization} techniques to make sure that they are ranked highly, sometimes trying to game the system.  For example, once Instagram started promoting posts with a lot of ``likes'', influencers and companies started buying likes from fake accounts to improve their rankings -- starting an arms race between engineers who want to promote truly high-quality content, and people who want their content to be promoted whether it's high-quality or not.
+
+When a powerful company's algorithm gives a high ranking to a given post, that post may be imbued with a sense of legitimacy -- which may or may not be justified.  YouTube had to revise its ranking algorithm after a top-ranked result for a search about a mass shooting promoted an unsupported theory that the shooting was fake; Google has demoted pages falsely denying the 1940s-era genocide of European Jews; Facebook has tried to limit the spread of false news on its platform; and Twitter/X has limited the sharing of posts deemed to constitute misinformation about the coronavirus (raising questions about who gets to decide what constitutes ``misinformation'' on a topic with rapidly evolving science and contested political implications).  Technology companies have also tried to recommend more trustworthy information to users who have fallen into an echo chamber of hateful or false fringe beliefs.  As people's lives increasingly take place online, algorithmic rankings increasingly shape our beliefs and experiences, with increasing consequences.
+
+
+\begin{tblsfilledsymbol}{Checklist}{test}
+    
+\begin{itemize}
+\item Give examples of various types of information needs and discuss how each one can be handled by modern technology.
+\item Give examples of structured, semi-structured, and unstructured data.
+\item Explain why it is difficult to keep a knowledge graph up-to-date.
+\item Form well-thought-out boolean queries.
+\item Compare and contrast Westlaw to an open-domain search engine.
+\item Describe how search engines rank results by their relevance to a query.
+\item Describe how search engines rank results by the quality of each page. 
+\item Give examples of the design choices that must be made by those in charge of a search engine.
+\item Understand and use regular expressions.
+\item Represent documents as vectors and use these vectors to estimate their similarity to one another.
+\item Calculate the TFIDF of a term in a document (among a collection of documents) and explain what it means.
+\item Discuss the affordances and limitations of generative language models, knowledge graphs, and free-text search for different information needs.
+\item Compare and contrast searching to recommendation systems.
+\end{itemize}
+\end{tblsfilledsymbol}
+
+
+\begin{tblsfilledsymbol}{Exercises}{pencil}
+
+\begin{enumerate}
+\item For each of the following, describe how you would
+  approach the search problem.  How difficult is each problem? What resources would you use and why?
+  \begin{enumerate}
+  \item Finding general information on what the Lincoln-Douglas
+    debates were.
+  \item Finding a general quote, or quotes, from the Lincoln-Douglas
+    debates which will support a theory that Abraham Lincoln was not
+    completely anti-slavery.
+  \item Finding a particular quote from the Lincoln-Douglas debates
+    that you can only partially remember.
+  \item Finding quotes from the Lincoln-Douglas debates which have
+    their origin in the Bible.
+  \end{enumerate}
+
+\item  What do you think the relationship is between how
+  much \emph{prior knowledge} you have about a topic and the amount
+  of \emph{structure} you require in the database you search
+  through?
+\item  Imagine that we have 11 books in a library with
+  the following subject fields:
+  \begin{center}
+    \begin{tabular}{ll}
+      1) rock paper & 7) rock paper scissors\\
+      2) rock scissors & 8) rock paper bomb\\
+      3) rock bomb & 9) rock scissors bomb\\
+      4) paper scissors & 10) paper scissors bomb\\
+      5) paper bomb & 11) rock paper scissors bomb\\
+      6) scissors bomb
+    \end{tabular}
+  \end{center}
+
+  Looking at the list of queries below, which of the subject numbers
+  do they match?  For example, \texttt{rock AND bomb} matches 3, 8, 9,
+  and 11.
+
+  \begin{enumerate}
+    \renewcommand{\labelenumi}{\alph{enumi})}
+  \item rock OR paper OR scissors
+  \item rock AND (paper OR scissors)
+  \item (rock AND paper) OR (scissors AND bomb)
+  \item (rock OR paper) AND (scissors OR bomb)
+  \item rock AND (paper OR (scissors AND bomb))
+  \item ((rock AND paper) OR scissors) AND bomb
+  \end{enumerate}
+
+\item  Check out the Advanced search options available on your favorite search engine.  Were you aware of these options?  Now that you are aware of them, do you think they will be useful to you?  Why or why not?
+
+\item  Try the same search in several different search engines (Google, Bing, Baidu, DuckDuckGo, Ecosia, or others).  What similarities or differences do you observe -- in the results and their ranking, as well as in the user experience, design, and advertisements?
+
+\item  Search for your name, in quotes.  What is the precision of your search?  What is the recall?  (Why is recall hard to estimate?) What are the pros and cons of being easy or hard to find online?
+
+\item  Check out Google Trends\footnote{\url{www.trends.google.com}, accessed 2024-04-26.}, which keeps track of searches by volume and location.  Can you find a search that has increased in volume over time?  A search that has decreased in volume over time?  A search that is popular every year at around the same time?   A search that is far more popular in one part of the world/country than others?
+
+\item  What information do you think is available in ConceptNet for the word/concept \exword{cat}?   What about in WordNet?  Go check these databases to see what you guessed right or wrong.
+
+\item  Compare your recommendations on YouTube, Twitter/X, Amazon, or Netflix to those of a friend or classmate (if you feel comfortable doing so).  How similar or different are your recommendations, and why?
+
+\item  For the following scenarios, describe whether
+  precision or recall is more important and why.
+  \begin{itemize}
+  \item Identifying the cases where a cancer-curing drug has a side
+    effect of nausea.
+  \item Identifying the cases where a cancer-curing drug has a side
+    effect of death.
+  \item Identifying cars running red lights.
+  \item Identifying and removing weeds which look like (desired)
+    native flowers in your garden.
+  \end{itemize}
+
+\item  When we talked about how weblinking is used to
+  rank webpages, we mentioned how one page's popularity helps
+  determine that of another.  But there's a problem: Where do we start?  How
+  can we know another page's popularity if it, too, is based on the popularity of  other pages?
+
+  Assume that we initially assign every page a score of 1.
+  \begin{enumerate}
+  \item If every incoming page has the same score, namely 1, what is
+    the new score of a webpage, based on our previous formula?
+  \item Based on your answer for the previous question, what would be
+    the next step for giving every webpage a new score?  How many
+    steps would it take until every page had a final score?  Or,
+    another way to word it: How could you determine when you are done?
+
+  \end{enumerate}
+
+\item 
+  \begin{enumerate}
+  \item Describe in your own words why \emph{popularity} is a good
+    heuristic for measuring the quality of search results.
+  \item Provide an example where your search query results in a
+    popular, yet irrelevant, result as the first result from a search
+    engine.  What rank is your desired result?
+  \end{enumerate}
+
+\item  In the section on regular expressions, we
+  mentioned that some operators have different meanings for basic web
+  searching and in regular expressions.  Describe the difference in
+  meaning between the wildcard \texttt{*} allowed in web interfaces
+  and the Kleene star \texttt{*} used in regular expressions.
+
+\item Assume you have a huge text file which consists of
+  all the content of the English Wikipedia from a particular day
+  (\url{https://en.wikipedia.org/wiki/Main_Page}).  You have a report
+  due tomorrow on major and minor holidays of the world, focusing on
+  ones not found in the United States and celebrated during the fall.
+
+  \begin{enumerate}
+  \item Would regular expressions be more or less useful in this
+    context than using the Wikipedia search box?
+  \item What is more important to you in this context, precision or
+    recall?
+  \item Let us say that we attempt to search for holidays and holy
+    days in August, and we come up with the following regular expressions (which we can search for using the command \verb#egrep#).  What
+    is wrong with these regexes, and how could we fix them?
+
+    \begin{enumerate}
+    \item \verb#egrep 'world.*August.*(holidays)?'#
+    \item \verb#egrep 'august hol(i|y)days?'#
+    \item \verb#egrep 'holidays|holy days in August'#
+    \end{enumerate}
+  \end{enumerate}
+
+\item 
+  \begin{enumerate}
+  \item Can you describe the set of strings accepted by the automaton that has a single state ($P$) that is both initial and final, but  this time two arcs each looping from $P$ to $P$, one labeled with \exword{a} and one labeled with \exword{b}?
+
+  \item Can you see how to make an automaton that accepts ``'',  \exword{ab}, \exword{abab}, \exword{ababab}, and so on forever? That is, can you   work out how to arrange the states and arcs so that the available     routes from an initial to a final state are the ones that     correspond to zero or more repetitions of \exword{ab}?
+
+  \item Notice that the strings in the previous question are exactly  the ones that are matched by the regular expression     \texttt{/(ab)*/}. How can you change your automaton so that it     accepts the strings defined by the regular expression     \texttt{/ab(ab)*/}? How about the regular expression     \texttt{/(ab)+/}?
+
+  \end{enumerate}
+
+  \largerpage[3]
+\item In Under the Hood~\ref{ufsa}, we discussed matching strings to finite-state automata.  As it turns out, there  are some string matching tasks that are easy to state, but that  neither regular expressions nor finite-state automata can do.   Consider the following five sets of strings:
+
+  \begin{itemize}
+  \item Sequences following the pattern ``'', \exword{ba}, \exword{baba},  \exword{bababa}, up to any length.
+  \item Sequences following the pattern ``'', \exword{abc}, \exword{abcabc},\\  \exword{abcabcabc}, up to any length.
+  \item Sequences consisting of any number of \exword{a}s followed by the same number of \exword{b}s. The pattern is ``'', \exword{ab}, \exword{aabb},
+    \exword{aaabbb}, \exword{aaaabbbb}, up to any length.
+  \item Sequences consisting of any number up to 10 of \exword{a}s followed by the same number of \exword{b}s.
+  \item Sequences following the pattern ``'', \exword{aba}, \exword{abaaba},\\ \exword{abaabaaba}, up to any length.
+  \end{itemize}
+
+  \begin{enumerate}
+  \item Three of these sets of strings have automata and regular expressions that you will probably find quite quickly and not mind  writing down. Which ones are these? 
+
+  \item One of the string sets can be matched by a regular expression and can also be associated with an automaton that accepts exactly     the right strings, but neither the expression nor the automaton is     something that a normal human being would enjoy writing     down. Which one is this?
+
+ \item One of the string sets can neither be matched by a regular expression nor accepted by a  finite-state automaton. Which one is this? And why does this happen?
+  \end{enumerate}
+\end{enumerate}
+\end{tblsfilledsymbol}
+
+
+\begin{tblsfilledsymbol}{Further reading}{book}
+    
+
+ \citet{manning-et-al:08} provides a thorough (but now somewhat historical) technical introduction to the field of information
+retrieval.  If you want details on Google's PageRank algorithm, you might
+even want to try reading the paper which describes it
+\citep{pagerank:99}.
+
+For more information on boolean expressions and logical thinking, you
+can consult a number of textbooks on basic symbolic logic.  To obtain
+more of a focus on logic in the realm of linguistics, look for books
+on mathematical or formal linguistics, such as
+\citet{partee-et-al:90}.
+
+\citet{ShahBender:2022} discuss the pros and cons of generative language models versus traditional search for information retrieval.
+
+\citet{Lu-etal:2015} provide an overview of recommendation systems.
+
+\end{tblsfilledsymbol}
+
+
