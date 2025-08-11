@@ -1,0 +1,553 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.15394199}
+%\bibliography{localbibliography}
+
+\author {
+Marko Simonović\orcid{0000-0002-9651-6399}\affiliation{University of Graz}
+}% replace the above with you and your coauthors
+% rules for affiliation: If there's an official English version, use that (find out on the official website of the university); if not, use the original
+% orcid doesn't appear printed; it's metainformation used for later indexing
+
+%%% uncomment the following line if you are a single author or all authors have the same affiliation
+\SetupAffiliations{mark style=none}
+
+%% in case the running head with authors exceeds one line (which is the case in this example document), use one of the following methods to turn it into a single line; otherwise comment the line below out with % and ignore it
+%\lehead{Marko Simonović}
+% \lehead{Radek Šimík et al.}
+
+\title[Animacy influences segmental phonology]{Animacy influences segmental phonology: The velar--sibilant alternation in BCMS}
+% replace the above with your paper title
+%%% provide a shorter version of your title in case it doesn't fit a single line in the running head
+% in this form: \title[short title]{full title}
+\abstract{Bosnian/Croatian/Montenegrin/Serbian velar--sibilant alternation is a morphologised process that varies in application rates depending on the context. This article focuses on assibilation in {\DAT/\LOC.\SG} of the nouns which end in \textit{-a} in the citation form, where varying assibilation ratios are encountered. Two corpus studies targeting nouns with velar-final stems were conducted to establish the influence of phonological factors, animacy, and the presence of a non-alternating /i/ elsewhere in the paradigm on the alternation ratios. The results show that animacy comes out as a significant predictor of the alternation ratios in {\DAT/\LOC.\SG} in both data sets. 
+
+\keywords{morphologised phonological alternations, assibilation, corpus-based stu\-dy, animacy, statistical modelling}
+}
+
+
+\begin{document}
+\maketitle
+\section{Introduction}
+\label{sim:sec:intro}
+
+Bosnian/Croatian/Montenegrin/Serbian (BCMS) assibilation, whereby velars /k, ɡ, x/ alternate with sibilants  /ʦ, z, s/ in front of an /i/-initial affix, is a highly morphologised process whose application rates vary from context to context.\footnote{To my knowledge, there are no major differences between the four varieties when it comes to assibilation. As clarified in \sectref{sim:sec:methodology}, the empirical basis for this study originates from a Croatian and a Serbian corpus.} \tabref{sim:tab:contexts} shows four morphemes which all have the segmental content /i/. The imperative morpheme unexceptionally triggers the alternation, the {\NOM/\VOC.\PL} morpheme triggers the alternation productively, but exceptions are attested. On the other hand, the {\DAT/\LOC.\SG} morpheme is one of the examples where it is hard to determine whether application or non-application is more common: the morpheme triggers the alternation in some words, fails to do so in others, and triggers it optionally in yet other words. Finally, the {\GEN.\PL} morpheme never triggers assibilation. 
+
+\begin{table}
+\caption{Four assibilation contexts in BCMS}
+\label{sim:tab:contexts}
+ \begin{tabularx}{\textwidth}{p{0.15\linewidth}p{0.2\linewidth}X}
+  \lsptoprule
+        Application ratio   & Morphological\newline context & Examples \\
+  \midrule
+  Categorical  &{\IMP}   &{/leɡ-i/} $\rightarrow$ {[lezi]} `lie down'
+  \\\addlinespace
+  High  &{\NOM/\VOC.\PL} (nouns) &{/kirurɡ-i/} $\rightarrow$  {[kirurzi]} `surgeons'\newline
+  (except in very few cases such as\newline
+  {/deʧk-i/} $\rightarrow$ {[deʧki]} `guys')
+  \\\addlinespace
+  Medium & {\DAT/\LOC.\SG} (nouns) 
+  &{/bajk-i/} $\rightarrow$ {[bajʧi]} `fairy tale ({\DAT/\LOC})' \newline
+  {/alɡ-i/} $\rightarrow$ {[alɡi]} `alga ({\DAT/\LOC})' 
+  \newline
+  {/fresk-i/} $\rightarrow$ {[freski]} / {[fresʧi]} `fresco ({\DAT/\LOC})' 
+  \\\addlinespace
+  Zero &{\GEN.\PL} (nouns) &{/bajk-i/} $\rightarrow$ {[bajki]} `fairy tales ({\GEN})'
+  \newline
+  {/alɡ-i/} $\rightarrow$ {[alɡi]} `algae ({\GEN})' \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+The primary focus of this contribution is on the {\DAT/\LOC.\SG} ending /i/. I adhere to the assumption of traditional approaches to BCMS, asserting that the underlying form of the exponent of the {\DAT/\LOC.\SG} morpheme remains consistent. Various factors, then, determine whether this exponent triggers assibilation. In other words, I do not adopt an overabundance analysis (see \citealt{thornton2019overabundance} for the general approach and \citealt{levcic2015morphological} for an analysis in terms of overabundance in Croatian). An overabundance analysis would posit two {\DAT/\LOC.\SG} endings differing solely in their assibilation behavior. The rationale behind this choice not to employ an overabundance analysis lies in the observation that variable assibilation is characteristic of a plethora of unrelated morphological contexts in BCMS. Assuming two different endings competing in all these contexts would face the problem of accounting for the fact that precisely these two endings compete in all these unrelated contexts.
+
+The primary objective of the paper is to establish the factors determining the occurrence of assibilation in {\DAT/\LOC.\SG}. The factors, as outlined in standard descriptions, will serve as predictors in a statistical model to anticipate assibilation encountered in the corpus (see \citealt{lecic2016morphological} for an overview of statistical modeling of variation observed in corpus data). In addition to phonological and morphological factors, special attention will be given to the influence of animacy on the velar--sibilant alternation in BCMS. This attention is warranted due to its theoretical relevance -- the impact of a semantic factor on a segmental alternation.
+
+The rest of the paper is organised as follows. \sectref{sim:sec:predictors} provides an overview of the predictors of assibilation and their treatment in the descriptive literature on BCMS. In \sectref{sim:sec:methodology}, I describe the two corpus studies and the rationale behind them. \sectref{sim:sec:results} presents the results of the corpus studies, with the main finding being that animacy is a strong predictor of assibilation. \sectref{sim:sec:discussion} discusses the results and their theoretical implications. Finally, \sectref{sim:sec:conclusion} concludes the paper.
+
+\section{Predictors of assibilation}
+\label{sim:sec:predictors}
+
+Virtually all traditional descriptions of BCMS have a dedicated section on the application of assibilation in each of the morphological contexts. There are three important methodological obstacles in using these descriptions when modelling modern BCMS.  Firstly, they often mix prescriptive objectives with descriptive ones, failing to distinguish between the two domains. Secondly, even when fully descriptive, they frequently lack a description of the empirical basis for the descriptions. Finally, they contain long lists of classes or intersections of classes in which assibilation is either favoured or blocked, without any indication of the strength of the generalisations or the size of classes in question. 
+In what follows, I will provide a brief overview of the main phonological, morphological, and semantic factors that influence assibilation in BCMS. I will focus on generalisations that are applicable to a significant number of cases and can be meaningfully tested in a quantitative analysis. The ultimate goal is to define a list of properties which can be used in the quantitative analysis based on corpus data.
+
+\subsection{Phonological factors}
+\label{subsec:phonological}
+
+The most general phonological factor, described in quite some detail in \citet{tezak1986sibilarizacija}, is the \textsc{final velar}, i.e. the difference between the three velars. /k/ is most prone to assibilation, /x/ assibilates in a minority of cases, whereas /ɡ/ takes an intermediate position. This mirrors the size of the relevant classes within the declension class: \textit{k}-final stems are much more common than \textit{ɡ}-final stems, which are in turn much more common than \textit{x}-final stems (e.g., \cite[475--478]{guduric2010fonologija}).
+
+Several descriptions account for the non-application of assibilation in some classes by the fact that ``the alternation would be experienced as moving away from the citation form of the word" (translation mine) \citep[47]{pevsikan2010pravopis}. While this criterion is extremely vague and therefore difficult to implement, \citet[154]{Bar1995} argue that the danger of excessively altering the stem is especially relevant for words with monosyllabic stems (simply because they have less stem material). Following this reasoning, we can implement the factor \textsc{monosyllabic stem} as one of the predictors of non-assibilation. 
+
+All other phonological factors refer to stem-final consonant clusters, many of which block assibilation. While most such generalisations are tendencies, there is an unexceptional generalisation (first described as ``self-evident" in 
+\citealt[169]{maretic1963gramatika}): Assibilation never applies if the result would lead to total identity with the preceding consonant. This means that stems ending in \textit{-ʦk-, -zɡ-} and \textit{-sx-} never alternate. Unfortunately, this generalisation only applies to a handful of items. 
+
+The long lists of rules concerning more frequent clusters (all of which are \textit{k}-final) can be summarised as follows: all blockers have an obstruent stop or an affricate as the first member of the cluster, clusters which have a fricative as the first member allow both assibilation and non-assibilation, whereas clusters with more sonorous consonants tend to favour assibilation. We can conclude that the sonority of the consonant preceding the stem-final velar (\textsc{C\textsubscript{1}-Sonority}) is a predictor of assibilation. The more sonorous the first consonant of the cluster is, the more it is probable that assibilation will occur.  
+
+\subsection{Morphological factors}
+\label{subsec:morphological}
+
+The most important morphological predictor of assibilation is the specific morphological context. Since the present study only focuses on one specific context, this factor is controlled for. Still, I will take a brief look at two other morphemes which trigger assibilation in the nominal paradigm: {\NOM/\VOC.\PL} \textit{-i} and {\DAT}/{\LOC}/{\INS.\PL} \textit{-ima}. The discussion of these two morphemes will be helpful in formulating a hypothesis concerning the morpheme in focus here. 
+
+As mentioned in \sectref{sim:sec:intro}, the {\NOM/\VOC.\PL} morpheme \textit{-i} triggers assibilation, with very few exceptions. This morpheme only shows up in the para\-digms of masculine nouns, illustrated by the paradigm of [{kirurɡ}] `surgeon' in  \tabref{sim:tab:kirurgblago}. Such paradigms always contain another form with an assibilation-trig\-ger\-ing ending: the {\DAT}/{\LOC}/{\INS.\PL} ending \textit{-ima}. Interestingly, the {\DAT}/{\LOC}{\slash}{\INS.\PL} \textit{\nobreakdash-ima} also shows up in the paradigm of neuter nouns, where it is the only assi\-bi\-la\-tion-triggering ending, as illustrated by the paradigm of [{blaɡo}] `treasure' in \tabref{sim:tab:kirurgblago}. 
+
+The actual acceptability of the {\DAT}/{\LOC}/{\INS.\PL} forms of the handful of neuter nouns with velar-final stems still needs to be established. The parallel forms with and without assibilation cited in the table are based on the description in \citet[136]{Markovic2018}, who also points out that the forms with assibilation are in this case somewhat more marked. My personal judgement is ineffability in these case forms for all three nouns mentioned by \citet{Markovic2018}. In other words, for all three nouns ([klupko] `ball (of yarn)', [blaɡo] `treasure' and [ruxo] `attire'), I cannot derive an acceptable form with the ending \textit{-ima}. Either way, it is clear that {\DAT}/{\LOC}/{\INS.\PL} \textit{-ima} triggers assibilation much more successfully in masculine paradigms than it does in neuter ones.  
+
+\begin{table}
+\caption{Assibilation in masculine and neuter paradigms as illustrated by [{kirurɡ}] `surgeon' and [{blaɡo}] `treasure' based on \citet{Markovic2018}}
+\label{sim:tab:kirurgblago}
+ \begin{tabularx}{.9\textwidth}{l l l l l}
+  \lsptoprule
+& Masculine & & Neuter & \\ 
+ \midrule
+& {\SG} & {\PL} & {\SG} &{\PL}\\ 
+ \midrule
+ {\NOM}  &{kirurɡ}     &\textbf{kirurz-i}   &{blaɡ-o}   &{blaɡ-a} \\
+ {\GEN}  &{kirurɡ-a}   &{kirurɡ-a}          &{blaɡ-a}   &{blaɡ-a} \\  
+ {\DAT}/{\LOC}  &{kirurɡ-u}  &\textbf{kirurz-ima} &{blaɡ-u} & \textbf{blaɡ-ima/blaz-ima} \\  
+ {\ACC}  &{kirurɡ-a}  &{kirurɡ-e} &{blaɡ-o} &{blaɡ-a} \\
+ {\VOC}  &{kirurɡ-u}  &\textbf{kirurz-i}    &{blaɡ-o} &{blaɡ-a}\\
+ {\INS}  &{kirurɡ-om}  &{kirurz-ima} & {blaɡ-om} &  \textbf{blaɡ-ima/blaz-ima} \\  
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+One possible way of understanding the empirical picture described above is that the tendency towards assibilation is stronger in cases where multiple as\-sibi\-la\-tion-triggering endings occur in a paradigm. This could be due to the cumulative effect of these endings, which may enable the licensing of allomorphy. If this reasoning is correct, we would expect assibilation to be even more limited in paradigms containing another \textit{-i} ending that does not trigger assibilation. The feminine nouns in focus here are actually the ideal testing ground for this hypothesis, because some of them have the {\GEN.\PL} ending \textit{-i}, which never triggers assibilation, as mentioned in \sectref{sim:sec:intro}. 
+
+The distribution of the {\GEN.\PL} endings in the feminine declension in focus here can be summarised as follows. Nouns with a single stem-final consonant have the ending \textit{-a} (e.g., [{sʋraka}] `magpie.{\GEN.\PL}').\footnote{In all traditional descriptions, this {\GEN.\PL} ending contains a long vowel and causes a lengthening of the preceding vowel, e.g. [{sʋraka}] `magpie.{\NOM.\SG}' vs. [{sʋraːkaː}] `magpie.{\GEN.\PL}'. I am ignoring both vowel length and suprasegmental information here, because there is considerable variation in this respect, including large numbers of speakers who do not have distinctive vowel length.} On the other hand, in nouns with a stem-final consonant cluster three endings are attested: \textit{-i} (e.g. in [{kriŋki}] `disguise.{\GEN.\PL}'), \textit{-aa}, whose first vowel breaks up the consonant cluster (e.g. in [{banaka}] `bank.{\GEN.\PL}'), and, somewhat marginally, \textit{-a} (e.g., in \textsuperscript{?}[{kriŋka}] `disguise.{\GEN.\PL}' and \textsuperscript{?}[{baŋka}] `bank.\linebreak[0]{\GEN.\PL}'). If endings can play a role in favouring/blocking allomorphy in other members of the paradigm, nouns which have {\GEN.\PL} in \textit{-i} should be less prone to assibilation in {\DAT}/{\LOC.\SG} than nouns which have other endings in {\GEN.\PL}. In other words, if \textsc{\nobreakdash-i[gen.pl]} is a strong factor that blocks assibilation, most nouns should behave either as [{kriŋka}] `disguise' (i.e., have a {\GEN.\PL} in \textit{-i} and no assibilation in {\DAT}/{\LOC.\SG}) or as [{baŋka}] `bank.{\GEN.\PL}' (i.e., not have a {\GEN.\PL} in \textit{-i} and exhibit assibilation in {\DAT}/{\LOC.\SG}).
+
+\begin{table}
+\caption{Assibilation in [{baŋka}] and lack of assibilation in [{kriŋka}]}
+\label{sim:tab:bankakrinka}
+ \begin{tabularx}{.77\textwidth}{l l l l l}
+  \lsptoprule
+& {\SG} & {\PL} & {\SG} &{\PL}\\ 
+ \midrule
+ {\NOM}  &{baŋk-a}  &{baŋk-e}    &{kriŋk-a}      &{kriŋk-i} \\
+ {\GEN}  &{baŋk-e}  &{banak-a}          &{kriŋk-e}      &{kriŋk-i} \\  
+ {\DAT}/{\LOC}  &\textbf{banʦ-i}   &{baŋk-ama} &\textbf{kriŋk-i} & {kriŋk-ama} \\  
+ {\ACC}     &{baŋk-u}   &{baŋk-e}   &{kriŋk-u}  &{kriŋk-e} \\
+ {\VOC}     &{baŋk-o}   &{baŋk-e}    &{kriŋk-o}  &{kriŋk-e}\\
+ {\INS}     &{baŋk-om}  &{baŋk-ama}     &{kriŋk-om}     &{kriŋk-ama} \\  
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+
+\subsection{Semantic factors}
+\label{sim:subsec:semantic}
+
+All traditional descriptions contain lists of classes in which assibilation is blocked, often defined by one semantic and one formal criterion. Almost all such classes are restricted to animates. For instance, \citet[92--93]{tevzak1992gramatika} include classes such as: personal male and female names, surnames regardless of their origin, names of pets and domestic animals, terms of endearment, ethnonyms derived using the suffixes \textit{-ka}, \textit{-nka} and \textit{-čanka}, nouns in \textit{-jka} which mean a female person with a certain characteristic or are derived from loanwords, and many others. While none of the descriptive works that I am aware of suggest that there is a direct link between animacy and lack of assibilation, overviews as the one sketched above justify the implementation of \textsc{animacy} as one of the factors that blocks assibilation. 
+
+Indirect evidence that animacy plays a role in blocking assibilation is contained in the discussions of minimal pairs which emerge when words that typically refer to animates (often female inhabitants) acquire an additional inanimate referent, e.g., a factory, a restaurant, etc. In such cases, all sources report that assibilation becomes possible with the inanimate referent. Examples are \textit{Podravka} (the inhabitant of the Podravina region or a factory in Koprivnica, Croatia), \textit{Beograđanka} (the female inhabitant of Belgrade or a building in Belgrade), and \textit{Japanka} (a Japanese woman) vs. \textit{japanka} (flip flop). Most normative sources argue against assibilation in such cases (e.g., \citealt{hudevcek2022podravki} and \citealt[47]{pevsikan2010pravopis}), while others just describe it (e.g., \citealt[154]{Bar1995}). A potential example of an extension in the other direction would be the word \textit{stranka}, which most commonly means `party' (e.g., political party) but in some contexts can mean `client'. My intuition is that assibilation is only possible in the former meaning. 
+
+\section{Methodology}
+\label{sim:sec:methodology}
+
+Given the shortcomings of the existing descriptions, in order to get a realistic picture of the data, I obtained data from two web corpora of BCMS: hrWaC and srWaC \citep{ljub-klub14}. Corpus data are especially valuable when studying phenomena that exhibit a significant amount of variation, because they allow for the calculation of the relative frequencies of the specific options. In the case of assibilation in {\DAT/\LOC.\SG}, which allows for a considerable amount of variation, the relevant construct to be employed here is the \textsc{assibilation ratio}. The assibilation ratio of a word is the proportion of the {\DAT/\LOC.\SG} forms with assibilation, calculated as the number of {\DAT/\LOC.\SG} forms with assibilation divided by the total number of {\DAT/\LOC.\SG} forms. For instance, if three {\DAT/\LOC.\SG} tokens of the word [{loziŋka}] `password' were extracted and two of them are [{lozinʦi}], whereas one is [{loziŋki}], then the \textsc{assibilation ratio} for this noun is 0.67. 
+
+The outcome variable, \textsc{assibilation ratio}, can be computed for any noun. The same is true for \textsc{animacy}, \textsc{final velar} and \textsc{monosyllabic stem}. However, some of the predictors can only be meaningfully applied to a subset of nouns. Specifically, \textsc{C\textsubscript{1}-Sonority} and \textsc{\nobreakdash-i[gen.pl]} (implemented here as \textsc{\nobreakdash-i[gen.pl] ratio}) can only be applied to nouns with stems that end in a consonant cluster. I therefore address the nouns with stem-final consonant clusters in a separate study.
+
+\subsection{Study 1: Assibilation with CC-final stems in hrWaC}
+
+This study was based on data from the Croatian web corpus hrWaC. 
+In order to obtain nouns with CC-final stems, I first conducted a CQL search for lemmas ending in -CGa, where C is any consonant and G is any velar. The results were ranked by frequency and the 204 most frequent nouns were copied to a separate table.\footnote{The numbers of items eventually included in the study depended on the available time and manpower. However, it should be pointed out that the sample did include low frequency nouns, whose meaning needed to be looked up.} Each noun was then annotated for \textsc{final velar}, \textsc{monosyllabic stem}, \textsc{C\textsubscript{1}-sonority} and \textsc{animacy}.
+
+The annotation for \textsc{animacy} was implemented analogously to the category of animacy in the masculine declension, where animacy influences the exponence of the {\ACC.\SG} ({\ACC.\SG} = {\GEN.\SG} for animates, {\ACC.\SG} = {\NOM.\SG} for inanimates). For instance, the noun [{lutka}] `puppet' was annotated as animate because its masculine counterpart [{lutak}] `male puppet' declines as animate. 
+
+For simplicity, the predictor \textsc{C\textsubscript{1}-sonority} was implemented as a binary variable. A value of \textsf{0} was assigned to cases where the first consonant of the stem-final cluster is an obstruent stop or an affricate, while a value of \textsf{1} was assigned to all other cases. 
+
+An initial overview of the data showed that \textsc{final velar} could not be meaningfully included as a factor, because, among 204 most frequent nouns, there were no \textit{x}-final stems and only eight \textit{ɡ}-final stems. I therefore decided to only include \textit{k}-final items in this study and replaced the eight \textit{ɡ}-final items with the next eight \textit{k}-final items from the frequency list.
+
+For each of the targeted nouns the counts of all the possible {\DAT/\LOC.\SG} and {\GEN.\PL} forms were obtained by processing the results of CQL queries. Based on these counts the values for \textsc{assibilation ratio} and \textsc{\nobreakdash-i[gen.pl] ratio} were calculated. Specifically, since the morphological tags were found to be unreliable, CQLs were used to find strings in which the word in question is preceded by two congruent adjectival words. This method proved to yield a sufficiently precise sample, which could be manually cleaned within the constraints of the available time and manpower. The CQL used for the {\DAT/\LOC.\SG} form of the word [{freska}] `fresco' is shown in \REF{sim:ex:cql1:datloc}, while \REF{sim:ex:cql1:genpl} shows the CQL used for the {\GEN.\PL} forms of the same noun.\footnote{The employed endings from the adjectival declension uniquely identify the relevant paradigm cells: \textit{-oj} only appears in {\DAT/\LOC.\SG}, whereas \textit{-ih} [{ix}] only appears in {\GEN.\PL}.}
+
+\ea \ea \texttt{[word = ".*oj"][word = ".*oj"][word = "fres(c|k)i"]} \label{sim:ex:cql1:datloc}
+\ex \texttt{[word = ".*ih"][word = ".*ih"][word = "fres(ki|aka|ka)"]} \label{sim:ex:cql1:genpl}
+\z\z
+
+\noindent The nouns for which one of the queries yielded an empty result were removed and supplanted by the following word from the frequency ranking.
+
+For the statistical analysis, the data were transformed so that each attestation of the {\DAT}/{\LOC.\SG} form in the corpus constituted a separate observation (row in the table). This allowed us to treat the outcome variable \textsc{assibilation} as a binary variable. All relevant data, including \textsc{assibilation}, \textsc{monosyllabic stem}, \textsc{C\textsubscript{1}-sonority}, \textsc{animacy}, and \textsc{\nobreakdash-i[gen.pl] ratio}, are published in \citet{Simonovic2024}. These data were inputted into a mixed-effects logistic regression model in R, where \textsc{assibilation} served as the outcome variable, and \textsc{monosyllabic stem}, \textsc{C\textsubscript{1}-sonority}, \textsc{animacy}, and \textsc{\nobreakdash-i[gen.pl] ratio} were treated as fixed effects. Additionally, the specific noun was included as a random factor to account for random variance between different nouns.
+
+\subsection{Study 2: Assibilation with VC-final stems in srWaC}
+
+This study was based on data from the Serbian web corpus srWaC.\footnote{Data collection for this study was conducted in collaboration with participants of the course Collecting and Analyzing Corpus and Experimental Data in Hypothesis-Driven Linguistic Research at the University of Novi Sad.} 
+In order to obtain nouns with VG-final stems, we first conducted a CQL search for lemmas ending in -VGa, where V is any vowel and G is any velar. The results were cleaned and ranked by frequency. The 349 most frequent nouns were copied to a separate table and annotated for \textsc{final velar}, \textsc{monosyllabic stem} and \textsc{animacy}.\footnote{As with the previous study, the numbers of items eventually included in the study depended on the available time and manpower. However, it should be pointed out that the sample did include low frequency nouns, whose meaning needed to be looked up.}
+
+The annotation for \textsc{animacy} was implemented as in Study 1. Since the morphological tags were found to be unreliable, the values for \textsc{assibilation ratio} were obtained by processing results of two CQL queries. Specifically, CQLs were used to find strings in which the target word is preceded by one of the typical prepositions (\ref{sim:ex:cql2:datloc} illustrates this for [{baraka}] `barrack') and strings in which the word in question is preceded by a congruent adjectival word \REF{sim:ex:cql3:datloc}.
+
+\ea \ea  \texttt{[lemma = "(o|u|na|prema|k|ka)"][word = "bara(c|k)i"]} \label{sim:ex:cql2:datloc}
+\ex \texttt{[word = ".*oj"][word = "bara(k|c)i"]} \label{sim:ex:cql3:datloc}
+\z\z
+
+\noindent The search results were manually cleaned and the \textsc{assibilation ratio} was calculated for each noun. The nouns for which both queries yielded an empty result were removed and supplanted by the following word from the frequency ranking.
+
+As in Study 1, the data were transformed so that each attestation of the {\DAT}{\slash}{\LOC.\SG} form constituted a separate observation (row in the table). This allowed us to treat the outcome variable \textsc{assibilation} as a binary variable. All relevant data, including values for \textsc{final velar}, \textsc{monosyllabic stem}, \textsc{animacy} and \textsc{assibilation} are published in \citet{Simonovic2024}. These data were inputted into a mixed-effects logistic regression model in R, where \textsc{assibilation} served as the outcome variable, and \textsc{final velar}, \textsc{monosyllabic stem}, \textsc{animacy} were treated as fixed effects. Additionally, the specific noun was included as a random factor to account for random variance between different nouns.
+
+\section{Results}
+\label{sim:sec:results}
+
+\subsection{Study 1}
+\label{sim:sec:results1}
+
+Before presenting the results of the statistical model, a brief overview of the mean values for the \textsc{assibilation ratio} is provided. In this study, the overall mean \textsc{assibilation ratio} is 0.33. The means for all groups identified by single values of the binary variables, along with the number of items in these groups, are presented in \tabref{sim:tab:means1}.
+
+The mean \textsc{assibilation ratio} for animate nouns exhibits a notably low value, also indicating a significant difference of means concerning \textsc{animacy}. Similarly, and as expected, a considerable difference in means is observed for \textsc{C\textsubscript{1}-sonority}. Specifically, stems in which the first consonant of the stem-final cluster is an obstruent stop or an affricate, display, on average, a lower \textsc{assibilation ratio} compared to stems with different consonant configurations.
+
+Interestingly, the difference in means for \textsc{monosyllabic stem} is relatively small, but it also deviates from the expected pattern: monosyllabic stems exhibit a higher mean \textsc{assibilation ratio} than polysyllabic ones.
+
+\begin{table}
+\caption{Mean \textsc{assibilation ratio} for each value of the binary variables}
+\label{sim:tab:means1}
+ \begin{tabularx}{\textwidth}{l Y Y r}
+  \lsptoprule
+Variable & Mean \textsc{AR} for \textsf{1} (\textsc{n}) & Mean \textsc{AR} for \textsf{0} (\textsc{n})  & Difference \\ 
+ \midrule
+\textsc{animacy} & 0.04 (77) & 0.51 (127) & $-$0.47 \\
+\textsc{C\textsubscript{1}-sonority} & 0.39 (160) & 0.13 (44) & 0.26\\
+\textsc{monosyllabic stem} & 0.40 (80) & 0.29 (124) & 0.11 \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{|c|c|c|c|}
+% \hline
+% Variable & Mean \textsc{AR} for 1 (\textsc{n}) & Mean \textsc{AR} for 0 (\textsc{n})  & Difference \\ 
+% \hline
+% \textsc{animacy} & 0.04 (77) & 0.51 (127) & $-$0.47 \\
+% \hline
+% \textsc{C\textsubscript{1}-sonority} & 0.39 (160) & 0.13 (44) & 0.26\\
+% \hline
+% \textsc{monosyllabic stem} & 0.40 (80) & 0.29 (124) & 0.11 \\
+% \hline
+% \end{tabular}
+% \caption{Mean \textsc{assibilation ratio} for each value of the binary variables}
+% \label{sim:tab:means1-old}
+% \end{table}
+
+The binary predictor variables mentioned earlier, along with the continuous predictor variable \textsc{\nobreakdash-i[gen.pl]ratio} (with a mean of 0.87 in the dataset), were incorporated as fixed factors in a generalised linear mixed model. The binary variables \textsc{monosyllabic stem}, \textsc{C\textsubscript{1}-sonority} and \textsc{animacy} were stored as factors, while \textsc{\nobreakdash-i[gen.pl]ratio} was the only numeric factor. Individual lemmas, were included as a random factor, with by-noun varying intercepts. In (\ref{sim:ex:r1})
+ I provide the formula for the model as implemented in R using the package lme4 \citep{bates2015fitting}. The complete script is published in \citet{Simonovic2024}. The summarised results can be found in \tabref{sim:tab:results1}.\footnote{The significance codes used in this report follow the standard R output format: 
+‘***’ for \textit{p}-values $≤ 0.001$, ‘**’ for \textit{p}-values $≤ 0.01$, ‘*’ for \textit{p}-values $≤ 0.05$, ‘.’ for \textit{p}-values $≤ 0.1$, and no extra symbol for \textit{p}-values $> 0.1$. These codes are retained from the R output for consistency in reporting results.}
+
+
+\ea \texttt{model1 <- glmer(assib \textasciitilde{} mono + anim + c1son + igenpl + (1 | noun), family = binomial(link = "logit"), data = analysis1)}
+\label{sim:ex:r1}
+\z
+
+
+\begin{table}
+\caption{Generalised linear mixed model results}
+\label{sim:tab:results1}
+\resizebox{\textwidth}{!}{\begin{tabular}{lccccc}
+  \lsptoprule
+Variable & Coefficient & Std. Error & $z$ value & Pr($>|z|$) & Odds Ratio \\
+ \midrule
+(Intercept) & $3.3012$ & $1.0109$ & $ 3.266$ & $0.00109$** & $27.1447$ \\
+\textsc{monosyllabic stem} &$0.1950$ &$0.6303$ &$0.309$ &$0.75703$ &$1.2153$ \\
+\textsc{animacy} &$-6.7532$ &$0.8073$ &$-8.366$ &$< 2 \times 10^{-16}$*** &$0.0012$\\
+\textsc{C\textsubscript{1}-sonority} &$-4.9472$ &$0.7643$ &$-6.473$ & $9.62\times 10^{-11}$*** &$0.0071$ \\
+\textsc{\nobreakdash-i[gen.pl] ratio} &$-2.3075$ &$0.9823$ &$-2.349$ &$ 0.01882$* &$0.0995$ \\
+  \lspbottomrule
+ \end{tabular}}
+\end{table}
+
+% \begin{table}[htbp]
+%     \centering
+%     \caption{Generalized Linear Mixed Model Results}
+%     \label{sim:tab:results1-old}
+%     \begin{tabular}{lccccc}
+%         \hline
+%         Variable & Coefficient & Std. Error & $z$ value & Pr($>|z|$) & Odds Ratio \\
+%         \hline
+%         (Intercept) & 3.3012 & 1.0131 & 3.258 & 0.00112** & 27.1451 \\
+%        \textsc{monosyllabic stem} & 0.1950 & 0.6321 & 0.308 & 0.75773 & 1.2153 \\
+%        \textsc{animacy} & -6.7532 & 0.8072 & -8.366 & < 2e-16*** & 0.0012 \\
+%        \textsc{C\textsubscript{1}-sonority} & -4.9472 & 0.7667 & -6.452 & 1.1e-10*** & 0.0071 \\
+%         \textsc{\nobreakdash-i[gen.pl] ratio} & -2.3075 & 0.9823 & -2.349 & 0.01882* & 0.0995 \\
+%         \hline
+%     \end{tabular}
+% \end{table}
+
+The \textit{Coefficient} column in \tabref{sim:tab:results1} provides the estimated coefficients, revealing the log-odds change in the outcome variable for a one-unit change in each predictor. These estimates offer valuable insights into the direction and magnitude of the predictors' impact. Accompanying the estimates, the \textit{Std. Error} column indicates the standard error of each coefficient estimate. This information is crucial for assessing the precision and reliability of the estimated coefficients. The \textit{z}-statistic is calculated as the coefficient estimate divided by the standard error, where larger values
+indicate a larger estimated effect size. The \textit{p}-value represents the probability of observing an effect at least as large as the one found assuming the null hypothesis is true. Using an \textit{alpha}-level of $.05$, we consider effects
+where $\textit{p} < .05$ to be significant. Lastly, the \textit{Odds Ratio} column shows the exponentiated coefficients, offering a clear understanding of the multiplicative change in odds for a one-unit change in each predictor. This column provides practical insights into the implications of the predictors on the odds of the outcome.
+
+Summarising the findings, \tabref{sim:tab:results1} indicates, that among the four predictors, only two exhibit a highly statistically significant relationship with \textsc{assibilation}: \textsc{animacy} and \textsc{C\textsubscript{1}-sonority} both demonstrate particularly strong negative associations, as evidenced by their low \textit{p}-values. The predictor \textsc{\nobreakdash-i[gen.pl] ratio} shows a significant negative association with \textsc{assibilation}, aligning notably in the expected direction. It should, however, be noted that the magnitude of the effect size (OR) is somewhat lower than all the other significant predictors. Finally, the predictor \textsc{monosyllabic stem} does not show a statistically significant relationship with the outcome variable. Consequently, the unexpected positive difference of means observed earlier can be attributed to chance rather than a meaningful association.
+
+\subsection{Study 2}
+\label{sim:sec:results2}
+
+As with Study 1, I begin with a brief overview of the mean values for the \textsc{assibilation ratio}. In this study, the overall mean \textsc{assibilation ratio} is 0.75, which is much higher than in the previous study. The means for all groups identified by single values of the binary variables, along with the number of items in these groups, are presented in \tabref{sim:tab:means2}.
+
+The mean \textsc{assibilation ratio} for animate nouns exhibits a notably low value, indicating a significant disparity in means concerning \textsc{animacy}. Interestingly, the difference in means for \textsc{monosyllabic stem} is also relatively high, and it goes in the expected direction: monosyllabic stems exhibit a lower mean \textsc{assibilation ratio} than polysyllabic ones.
+
+\begin{table}
+\caption{Mean \textsc{assibilation ratio} for both binary variables}
+\label{sim:tab:means2}
+ \begin{tabularx}{\textwidth}{l Y Y r}
+  \lsptoprule
+Variable & Mean \textsc{SR} for 1 (\textsc{n}) & Mean \textsc{SR} for 0 (\textsc{n}) & Difference \\ 
+ \midrule
+ \textsc{animacy} & 0.13 (40) & 0.83 (309) & $-$0.70 \\
+\textsc{monosyllabic stem} & 0.44 (101) & 0.87 (248) & $-$0.42 \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{|c|c|c|c|}
+% \hline
+% Variable & Mean \textsc{SR} for 1 (\textsc{n}) & Mean \textsc{SR} for 0 (\textsc{n}) & Difference \\ 
+% \hline
+% \textsc{animacy} & 0.13 (40) & 0.83 (309) & -0.70 \\
+% \hline
+% \textsc{monosyllabic stem} & 0.44 (101) & 0.87 (248) & -0.42 \\
+% \hline
+% \end{tabular}
+% \caption{Mean \textsc{assibilation ratio} for both binary variables}
+% \label{sim:tab:means2-old}
+% \end{table}
+
+
+\tabref{sim:tab:means3} shows the mean \textsc{assibilation ratio} for the 3 values of the variable \textsc{final velar}. As expected, \textit{k}-final stems have the highest mean, whereas the \textit{x}-final stems have the lowest mean.
+
+\begin{table}
+\caption{Mean \textsc{assibilation ratio} for  the three values of \textsc{final velar}}
+\label{sim:tab:means3}
+ \begin{tabularx}{\textwidth}{YYY}
+  \lsptoprule
+Mean \textsc{AR} for \textsf{k} (\textsc{n}) & Mean \textsc{AR} for \textsf{g} (\textsc{n}) & Mean \textsc{AR} for \textsf{x} (\textsc{n}) \\ 
+ \midrule
+0.86 (248) & 0.54 (82) & 0.19 (19)\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+% \begin{table}[h]
+% \centering
+% \begin{tabular}{|c|c|c|c|}
+% \hline
+% Mean \textsc{AR} for `k' (\textsc{n}) & Mean \textsc{AR} for `g' (\textsc{n}) & Mean \textsc{AR} for `x' (\textsc{n}) \\ 
+% \hline
+% 0.86 (248) & 0.54 (82) & 0.19 (19)\\
+% \hline
+% \end{tabular}
+% \caption{Mean \textsc{assibilation ratio} for  the three values of \textsc{final velar}}
+% \label{sim:tab:means3-old}
+% \end{table}
+
+Both binary predictor variables discussed above, as well as the categorical predictor variable \textsc{final velar} were included in a generalised linear mixed model. Additionally, the specific noun was entered as a random variable. In (\ref{sim:ex:r2})
+ I provide the formula for the model as implemented in R using the package lme4. The complete script is published in 
+\citet{Simonovic2024}. The results  are summarised in \tabref{sim:tab:results2}. 
+
+\ea \texttt{model2 <- glmer(assib \textasciitilde { } finalvelar + anim + mono + (1 | noun), family = binomial(link = "logit"), data = analysis2)}
+\label{sim:ex:r2}
+\z
+
+
+\begin{table}
+\caption{Generalised linear mixed model results}
+\label{sim:tab:results2}
+\resizebox{\textwidth}{!}{\begin{tabular}{lccccc}
+  \lsptoprule
+Variable & Coefficient & Std. Error & $z$ value & Pr($>|z|$) & Odds Ratio \\
+ \midrule
+(Intercept) &$9.4696$ &$0.4308$ &$21.980$ & $< 2 \times 10^{-16}$*** & $1.296 \times 10^4$ \\
+\textsc{final velar:g} &$-5.2410$ &$0.8887$ &$-5.897$ &$1.23 \times 10^{-9}$*** &$0.00529$ \\
+\textsc{final velar:x} &$-10.0896$ &$1.6726$ &$-6.032$ &$1.62 \times 10^{-9}$*** & $4.15 \times 10^{-5}$ \\
+\textsc{animacy} &$-9.9452$ &$1.2072$ &$-8.238$ & $< 2 \times 10^{-16}$*** & $4.80 \times 10^{-5}$ \\
+\textsc{monosyllabic stem} &$-6.3654$ &$0.7886$ &$-8.072$ &$6.90 \times 10^{-16}$*** &$0.00172$ \\
+  \lspbottomrule
+ \end{tabular}}
+\end{table}
+
+% \begin{table}[htbp]
+%     \centering
+%     \caption{Generalised Linear Mixed Model Results}
+%     \label{sim:tab:results2-old}
+%     \begin{tabular}{lcccccc}
+%         \hline
+%         Variable & Coefficient & Std. Error & $z$ value & Pr($>|z|$) & Odds Ratio \\
+%         \hline
+%         (Intercept) & 9.4696 & 0.4094 & 23.132 & $< 2 \times 10^{-16}$*** & $1.296 \times 10^4$ \\
+%         \textsc{final velar:g} & -5.2410 & 0.8625 & -6.077 & $1.23 \times 10^{-9}$*** & 0.00529 \\
+%        \textsc{final velar:x} & -10.0896 & 1.7634 & -5.722 & $1.05 \times 10^{-8}$*** & $4.15 \times 10^{-5}$ \\
+%         \textsc{animacy} & -9.9452 & 1.1815 & -8.417 & $< 2 \times 10^{-16}$*** & $4.80 \times 10^{-5}$ \\
+%         \textsc{monosyllabic stem} & -6.3654 & 0.9145 & -6.960 & $3.39 \times 10^{-12}$*** & 0.00172 \\
+%         \hline
+%     \end{tabular}
+% \end{table}
+
+
+First, it is important to note that the categorial variable \textsc{final velar} was dummy coded, resulting in two of its values appearing in the list. The baseline value, \textsc{final velar:k}, is used as the reference category for comparison.
+
+The model results indicate that all incorporated predictors exhibit a negative association with \textsc{assibilation}. Specifically, for the variable \textsc{final velar}, which was omitted in Study 1, both \textsf{g} and \textsf{x} demonstrate negative associations with the outcome. Similarly, \textsc{animacy} maintains a negative association, consistent with the findings of Study 1. Notably, unlike in Study 1, \textsc{monosyllabic stem} also shows a negative association.
+
+\section{Discussion}
+\label{sim:sec:discussion}
+
+Having presented the results of the two corpus studies, an evaluation of the three types of factors presented in \sectref{sim:sec:predictors} is in order. 
+
+Regarding the phonological factors, \textsc{C\textsubscript{1}-sonority} has clearly come out as an important predictor in Study 1, as did the \textsc{final velar} in Study 2. Indirectly, the difference between the mean \textsc{assibilation ratio} in the two studies (0.33 vs. 0.75), although not statistically tested, points in the direction of a more general influence of the sonority of the segment preceding the stem-final velar.\footnote{The difference would have been even bigger if stems ending in consonant clusters in {/ɡ/} and {/x/} had been included in Study 1. I am not aware of a single noun from this group that undergoes assibilation in modern BCMS. \citet[154]{Bar1995} mention [{kaʋga}] `conflict' as the only Cɡ-final stem that undergoes assibilation, but most modern speakers seem to either not know this word or use it without assibilation. Including such items in Study 1 would have then additionally lowered the \textsc{assibilation ratio} in this study} The issue is somewhat less clear when it comes to the factor \textsc{monosyllabic stem}, which only came out as significant in Study 2.
+
+As regards the morphological factor \textsc{\nobreakdash-i[gen.pl] ratio}, its relation with \textsc{assibilation} was found to be statistically significant, but of relatively weak magnitude compared to the other factors. Especially in the context of the ongoing debate on the relevance of paradigms for phonological computation (see, e.g., \citealt[]{bobaljik2008paradigms}), the presented findings cannot be taken as firm evidence that other paradigm cells influence assibilation.   
+
+Finally, \textsc{animacy} unequivocally emerges as an influential factor in determining the application of assibilation. The described pattern then joins other, better described and understood, animacy effects in BCMS morphology. Animacy has been well described to influence the exponence of {\ACC.\SG} in the main masculine declension in BCMS, leading to minimal pairs such as, e.g., [{tip-a}] `guy.{\ACC.\SG}' vs. [{tip}] `type.\textsc{\ACC.\SG}'. The influence of animacy on BCMS tonal patterns has also been discussed in the literature, especially for the {\DAT/\LOC.\SG} ending [{-ú}], which seems to realise its underlying High tone only in inanimate monosyllables, leading to minimal pairs such as [{tíip-u}] `guy.{\DAT/\LOC.\SG}' and [{tiip-ú}] `type.{\DAT/\LOC.\SG}' (vs. [{tíip-a}] `guy/type.{\GEN.\SG}'; see \citealt{martinovic2012interaction} for a recent quantitative analysis).
+
+Prima facie, the assibilation pattern seems much more gradient than the other two animacy-controlled patterns. The closest we get to a categorical effect is the blocking of assibilation in animates. It is therefore worthwhile to take a closer look at the exceptional animates that display assibilation. The main insight is that there are extremely few animates that display assibilation more often than not (i.e. have assibilation ratios above 0.5). In Study 1, these are only 3 (out of 77 animates): [{majka}] `mother’, [{pomajka}] `foster mother’ and [{djevojka}] `girl(friend)’. In Study 2, out of 40 animate nouns, 5 have assibilation ratios higher than 0.5: [{supruɡa}] `wife’, [{unuka}] `granddaughter’, [{sluɡa}] `servant’, [{sʋastika}] `sister-in-law’ and [{vladika}] `bishop’. 
+The fact that all of these nouns refer to roles suggests that roles might belong to a distinct category between animates and inanimates. If this holds true, we can assert that there exists a clear prohibition on assibilation within the category of true animates in the {\DAT/\LOC.\SG}, and that the possibility of assibilation emerges for entities falling lower on the animacy hierarchy, such as roles and (other) inanimates.  
+
+\section{Conclusion}
+\label{sim:sec:conclusion}
+
+The present study aimed to investigate the influence of phonological, morphological and semantic factors on the application of assibilation in {\DAT/\LOC.\SG} in BCMS nouns. Through a comprehensive analysis of data and statistical modeling, it has become evident that \textsc{animacy} plays a central role in determining the occurrence of assibilation in this context.\footnote{As argued by one of the reviewers, the statistical tests used here are telling in terms of the statistical significance of the coefficients rather than on predictive power for novel data. We leave the latter type of analysis to future works.} A detailed analysis of the individual exceptions to the generalisation that animates do not allow assibilation showed that assibilation is restricted to animates that have the meaning of roles.
+
+While providing a complete formal account of the observed pattern is reserved for future research, the results of this study facilitate the formulation of desiderata for such an account. In the spirit of advancing incrementally, the following steps are suggested to establish a connection between the phenomenon described here and its closest related phenomena.
+
+The most closely related phenomenon appears to be the tonal pattern observed in the {\DAT/\LOC.\SG} forms of the main masculine declension. The two phenomena both exhibit a more intimate phonological interaction with case endings in inanimates compared to animates. This interaction is manifested as a tonal shift in one case and as assibilation in the other. However, a notable distinction lies in the fact that masculine declension roles do not permit the imposition of the {\DAT/\LOC.\SG} ending's tonal pattern.
+
+The next in line closely related domain is the occurrence or absence of assibilation elsewhere in the nominal and adjectival declensions. The {\DAT/\LOC.\SG} data presented above suggest the presence of a boundary that hinders phonological interactions between the stem and the case ending in animates. However, this boundary seems to disappear in the plural cases of the masculine declension, where animates undergo assibilation without restriction (e.g., in [{ʧex}] `Czech man.{\NOM.\SG}’, [{ʧesi}] `Czech man.{\NOM.\PL}’, [{ʧesima}] `Czech man.{\DAT/\LOC/\INS.\PL}’). Conversely, it is noteworthy that the adjectival declension never allows assibilation, despite having numerous \textit{i}-initial case endings.
+
+Future research will also profit from more extensive data collection, not only from corpora, but also from elicited production, wug experiments, etc. It is worth noting, that although the present study encompassed a sizable data sample, certain nouns had to be excluded due to the absence of encountered forms, particularly in Study 1, where the absence of {\GEN.\PL} forms led to the exclusion of many nouns with attested {\DAT/\LOC.\SG} forms. Moreover, it is possible that there are further factors which were not included in the analysis. 
+
+Finally, an important aspect that was not addressed here is the precise representation of animacy. The observed consistency in assibilation among animate entities suggests the possibility of formalising animacy as the presence of an additional feature or structure.
+
+Overall, the findings of this study contribute to our understanding of the intricate relationship between animacy and phonological processes in BCMS. While animacy's influence on other aspects of BCMS morphology has been previously described, this study unveils a novel finding by demonstrating its comprehensive impact on the application of segmental phonological alternations.
+
+% Just comment out the input below when you're ready to go.
+%\input{example-osl.tex}
+
+\section*{Abbreviations}
+
+\begin{tabularx}{.5\textwidth}{@{}lQ}
+{\ACC}  &accusative \\
+{\DAT}  &dative     \\
+{\GEN}  &genitive   \\
+{\IMP}  &imperative \\
+{\INS}  &instrumental   \\
+\end{tabularx}%
+\begin{tabularx}{.5\textwidth}{lQ@{}}
+{\LOC}  &locative   \\
+{\NOM}  &nominative \\
+{\PL}   &plural     \\
+{\SG}   &singular   \\
+{\VOC}  &vocative   \\
+%&\\ % this dummy row achieves correct vertical alignment of both tables
+\end{tabularx}
+
+\section*{Acknowledgments}
+ The author thanks the audience of FDSL 15 and the anonymous reviewers, as well as Peđa Kovačević and the participants of the course Collecting and Analyzing Corpus and Experimental Data in Hypothesis-Driven Linguistic Research held at the University of Novi Sad. Special thanks go to Igor Marchetti and Maja Miličević Petrović for all the help with the statistical analysis. This research was funded in whole by the Austrian Science Fund (FWF, Grant-DOI
+10.55776/I6258). 
+%Place your acknowledgements here and funding information here.
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+
+\begin{paperappendix}
+\section{Plots for predicted probabilities}
+
+Below I report the plots for predicted probabilities for each predictor. These were obtained in R using the package sjPlot \citep{sjplot} in R. The formula was implemented as \texttt{plot\_model(model1, type = "pred", terms = "name\_of\_the\_predictor").}
+
+\subsection{Study 1}
+
+\begin{figure}
+\caption{Animacy}
+\includegraphics[width=0.6\textwidth]{figures/sim-m1anim.png} % Adjust width as needed
+\end{figure}
+
+\begin{figure}
+\caption{monosyllabic stem}
+\includegraphics[width=0.6\textwidth]{figures/sim-m1mono.png} % Adjust width as needed
+\end{figure}
+
+\begin{figure}
+\caption{C\textsubscript{1}-sonority}
+\includegraphics[width=0.6\textwidth]{figures/sim-m1c1son.png} % Adjust width as needed
+\end{figure}
+
+\begin{figure}
+\caption{\textsc{i[gen.pl]} ratio}
+\includegraphics[width=0.6\textwidth]{figures/sim-m1igenpl.png} % Adjust width as needed
+\end{figure}
+
+
+\subsection{Study 2}
+\begin{figure}
+\caption{Animacy}
+\includegraphics[width=0.6\textwidth]{figures/sim-m2anim.png} % Adjust width as needed
+\end{figure}
+
+\begin{figure}
+\caption{monosyllabic stem}
+\includegraphics[width=0.6\textwidth]{figures/sim-m2mono.png} % Adjust width as needed
+\end{figure}
+
+
+\begin{figure}
+\caption{Final Velar}
+\includegraphics[width=0.6\textwidth]{figures/sim-m2finalvelar.png} % Adjust width as needed
+\end{figure}
+
+\clearpage
+\section{R session info}
+
+
+\begin{verbatim}
+R version 4.4.1 (2024-06-14 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 10 x64 (build 19045)
+\end{verbatim}
+
+\noindent
+\textbf{Matrix products:} default\\
+\textbf{Locale:}
+\begin{verbatim}
+[1] LC_COLLATE=Dutch_Netherlands.utf8
+    LC_CTYPE=Dutch_Netherlands.utf8
+    LC_MONETARY=Dutch_Netherlands.utf8
+    LC_NUMERIC=C
+    LC_TIME=Dutch_Netherlands.utf8
+\end{verbatim}
+
+\noindent
+\textbf{Time zone:} Europe/Vienna\\
+\textbf{tzcode source:} internal\\
+
+\textbf{Attached base packages:}
+\begin{verbatim}
+[1] stats     graphics  grDevices utils     datasets  methods   base
+\end{verbatim}
+
+\textbf{Other attached packages:}
+\begin{verbatim}
+[1] sjPlot_2.8.16   lme4_1.1-35.5   Matrix_1.7-0    apaTables_2.0.8
+    devtools_2.4.5  usethis_3.0.0   psych_2.4.6.26  readxl_1.4.3
+\end{verbatim}
+
+\textbf{Loaded via a namespace (and not attached):}
+{\small
+\begin{verbatim}
+[1] gtable_0.3.5       xfun_0.47          ggplot2_3.5.1
+    htmlwidgets_1.6.4  remotes_2.5.0      insight_0.20.3     lattice_0.22-6
+    sjstats_0.19.0     vctrs_0.6.5        tools_4.4.1        generics_0.1.3
+    datawizard_0.12.2  parallel_4.4.1     tibble_3.2.1       fansi_1.0.6
+    pkgconfig_2.0.3    RColorBrewer_1.1-3 ggeffects_1.7.0    lifecycle_1.0.4
+    farver_2.1.2       compiler_4.4.1     stringr_1.5.1      sjmisc_2.8.10
+    munsell_0.5.1      mnormt_2.1.1       httpuv_1.6.15      htmltools_0.5.8.1
+    later_1.3.2        pillar_1.9.0       nloptr_2.1.1       urlchecker_1.0.1
+    tidyr_1.3.1        MASS_7.3-60.2      ellipsis_0.3.2     cachem_1.1.0
+    sessioninfo_1.2.2  boot_1.3-30        nlme_3.1-164       mime_0.12
+    sjlabelled_1.2.0   tidyselect_1.2.1   digest_0.6.37      performance_0.12.2
+    stringi_1.8.4      dplyr_1.1.4        purrr_1.0.2        labeling_0.4.3
+    splines_4.4.1      fastmap_1.2.0      grid_4.4.1         colorspace_2.1-1
+    cli_3.6.3          magrittr_2.0.3     pkgbuild_1.4.4     utf8_1.2.4
+    broom_1.0.6        withr_3.0.1        scales_1.3.0       promises_1.3.0
+    backports_1.5.0    cellranger_1.1.0   memoise_2.0.1      shiny_1.9.1
+    knitr_1.48         miniUI_0.1.1.1     profvis_0.3.8      rlang_1.1.4
+    Rcpp_1.0.13        xtable_1.8-4       glue_1.7.0         pkgload_1.4.0
+    rstudioapi_0.16.0  minqa_1.2.8        R6_2.5.1           fs_1.6.4
+\end{verbatim}
+}
+\end{paperappendix}
+\end{document}
+

@@ -1,0 +1,73 @@
+\newcommand{\refp}[1]{(\ref{#1})}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\RefToRomanChapter}{m}
+  {%
+    \chapref{ch:\int_from_roman:n {#1}}
+  }
+\ExplSyntaxOff
+
+% A command that creates a chapter and sets both left
+% and right page header mark.
+\NewDocumentCommand{\ChapterAndMark}{+m}
+  {%
+    \chapter{#1}
+    \markdouble{%
+      \chapappifchapterprefix{\ }%
+      \thechapter\autodot\enskip #1%
+    }
+  }
+
+% Create a non-numbered subsection and an entry in the ToC.
+\NewDocumentCommand{\AddSubSection}{+m}
+  {%
+    \subsection*{#1}
+    \addsubsectiontocentry{}{#1}
+  }
+
+%% to creat a double underline. Should not be used as it doubles the underlying text too.
+\renewcommand{\ULdepth}{1.8pt}
+\contourlength{0.8pt}
+
+\newcommand{\myuline}[1]{%
+  \uline{\phantom{#1}}%
+  \llap{\contour{white}{#1}}}%
+
+%% No functional use. Just for adding meta data about the language of an example without invoking \selectlanguage, which breaks the \ex.
+\newcommand{\langmeta}[1]{} % this
+
+% Sets the language for hyphenation and display purposes and then resets to English
+\newcommand{\Language}[2]{%
+  \selectlanguage{#1}#2\selectlanguage{English}
+}
+
+% for editorial footnotes, etc.
+\newcommand{\eds}{(Eds.)}
+
+\makeatletter
+\AtBeginDocument
+      {%
+        \bgroup
+        \renewcommand{\newlineCover}{}
+        \renewcommand{\newlineSpine}{}
+        \newwrite\metadatafile
+        \immediate\openout\metadatafile=langscitmp.bib
+        \immediate\write\metadatafile{%
+          @book{langsci-current-book,
+            editor = {\unexpanded\expandafter{\@author}},
+            author = {Otto Jespersen},
+            title = {{\unexpanded\expandafter{\@title}}},
+            \if\@subtitle\empty\else subtitle = {{\unexpanded\expandafter{\@subtitle}}},\fi
+            year = {\lsYear},
+            series = {\lsSeriesTitle},
+            number = {\lsSeriesNumber},
+            location = {Berlin},
+            publisher = {Language Science Press},
+            options = {dataonly=true}
+          }
+        }
+        \immediate\closeout\metadatafile
+        \egroup
+        \addbibresource{langscitmp.bib}
+      }
+\makeatother

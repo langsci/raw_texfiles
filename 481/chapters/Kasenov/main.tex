@@ -1,0 +1,2067 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.15394178}
+%\bibliography{localbibliography}
+
+\author{Daniar Kasenov\affiliation{HSE University / Lomonosov Moscow State University}}
+
+\SetupAffiliations{mark style=none}
+
+\title{ABA in Russian adjectives, subextraction, and Nanosyntax}
+\abstract{This paper's core focus is the ABA pattern exhibited by a number of Russian adjectives in their degree paradigms (positive, comparative, superlative). While the surface pattern seems to be a counterexample to the *ABA generalization about adjectival degree paradigms stated in \citet{Bobaljik:2012}, a more involved exploration of Russian adjectival morphology shows that there are more classes of Russian adjectives that are problematic for the contemporary syntactic approaches to morphology (DM, Nanosyntax) given Bobaljik's containment hypothesis. This paper provides a description of these patterns in Russian adjectival morphology and provides an analysis for all the problematic classes in the framework of Nanosyntax, making use of two recent technical developments in the theory (Movement-Containing Trees of \citealt{Blix:2022} and the subextraction Spell-Out algorithm of \citealt{Caha:2022b,Caha:2023}).
+
+\keywords{morphology, adjectives, Russian, Nanosyntax, pseudo-ABA}
+}
+
+% \input{localpackages.tex}
+% \input{localcommands.tex}
+
+% \togglepaper[42]
+% % the chapter number will be provided by volume editors; for now keep this way
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\label{kas:sec:intro}
+
+This paper is concerned with an apparent counterexample to Bobaljik's ABA generalization in the domain of degree morphology \citep{Bobaljik:2012}. According to Bobaljik's cross-linguistic study, there is no language that has an adjective which has a suppletive stem $\alpha$ in positive and superlative and a suppletive stem $\beta$ in the comparative. To give an example, a logically possible language English$'$, in which the adjective `bad' has the forms \textit{bad} `bad.\textsc{pos}', \textit{worse} `bad.\textsc{cmpr}', \textit{baddest} `bad.\textsc{sprl}', is impossible according to the generalization that Bobaljik draws from his typological study. The attested and unattested patterns of Bobaljik's three-cell paradigm are summarized in \tabref{kas:tab:bobaljik:results}.
+
+\begin{table}
+\caption{(Un)attested suppletion patterns in adjectival paradigms}
+\label{kas:tab:bobaljik:results}
+ \begin{tabularx}{.8\textwidth}{lQQQl} 
+  \lsptoprule
+            &\textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} & \\
+  \midrule
+    AAA       &\textit{pretty} &\textit{pretti-er}  &\textit{pretti-est}  & English\\
+    ABB       &\textit{bad} &\textit{worse}  &\textit{worst}  & English\\
+    ABC       &\textit{bon-us} &\textit{mel-ior}  &\textit{optim-us}  & Latin\\
+    AAB       &\textit{bad} &\textit{badd-er}  &\textit{worst}  & Unattested!\\
+    ABA       &\textit{bad} &\textit{worse}  &\textit{badd-est}  & Unattested!\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+More generally, *ABA phenomena (such as the suppletion patterns in adjectives) are
+
+\begin{quote}morphological patterns in which, given some arrangement of the relevant forms in a structured sequence, the first and third [forms] may share some property ``A'' only if the middle member shares that property as well. If the middle member is distinct from the first, then the third member of the sequence must also be distinct. \citep[1--2]{Bobaljik:2018}
+\end{quote}
+
+This work follows the tradition of examining *ABA phenomena (patterns of suppletion, syncretism, and other morphological properties) through the lens of the theories of morphology which assume the Single Engine Hypothesis \citep{Marantz:2001}, the idea that all complex expressions (including words) are built by syntax. Among others, these theories include the realizational approaches of Distributed Morphology (DM, \citealt{Halle:1994} and subsequent work) and Nanosyntax (\citealt{Starke:2009} and subsequent work). In such approaches, *ABA phenomena are often understood structurally: cases of *ABA are due to the complex internal structure of examined wordforms, in which one form contains the other. Such analyses have been proposed for adjectival suppletion \citep{Bobaljik:2012}, case syncretism \citep{Caha:2009}, reflexive pronominal paradigms \citep{Middleton:2021}, numeral morphology \citep{Sudo:2022}, and many other phenomena. Bobaljik himself has accounted for the ban on ABA via the containment structure provided in \figref{kas:fig:contain}.
+
+\begin{figure}
+    \begin{forest}
+    for tree={s sep=.5cm, inner sep=0, l=0}
+    [\textsc{sprlP}
+        [\textsc{cmprP}
+		      [\textsc{adj}]
+		      [\textsc{cmpr}]
+	      ]
+   	    [\textsc{sprl}]
+    ]
+    \end{forest}
+    \caption{Containment structure for degree morphology}
+    \label{kas:fig:contain}
+\end{figure}
+
+Note, however, that containment structures do not rule out an ABA pattern by themselves. Such structures rule them out in conjunction with the widespread conception of (morphologically-conditioned) allomorphy phenomena in Dis\-tri\-buted Morphology (the framework of choice in \citealt{Bobaljik:2012}) as contextual allomorphy (see \citealt{Bonet:2012} and \citealt{Gouskova:2020} for an overview). The core logic is as follows: in DM, morphological forms are the results of Vocabulary Insertion rules which map syntactic objects onto morpho-phonological strings. Assuming that, allomorphy is understood as the same syntactic object being referenced by several mapping rules which differ by the contexts of their application. For example, the two allomorphs of the root of the English adjective \textit{bad} are the results of two distinct insertion rules, which differ by their contexts (the \textit{worse}-rule applied in the context of a \textsc{cmpr} node), as shown by the Vocabulary Insertion rules in \REF{kas:ex:bad:vi}.
+
+\ea Vocabulary Insertion rules for $\sqrt{\mbox{\textsc{bad}}}$\label{kas:ex:bad:vi}
+\ea $\sqrt{\mbox{\textsc{bad}}}$ $\leftrightarrow$ \textit{worse} /\rule{4mm}{.4pt}] \textsc{cmpr}]
+\ex $\sqrt{\mbox{\textsc{bad}}}$ $\leftrightarrow$ \textit{bad}
+\z\z
+
+\noindent In the absence of a specified rule for superlative forms, the containment structure ensures that the rule that applies in the context of the \textsc{cmpr} node also applies in the superlative form. Thus, the only allowed way for the ABA pattern to arise is accidental homophony: there should be two distinct insertion rules which just so happen to have the same morpho-phonological string as the result (like the Vocabulary Insertion rules in \ref{kas:ex:vi:homophony}). Accidental homophonies are thought to be a rare occasion and definitely unlikely to hold across many ``lexemes'' (see \citealt{Bobaljik:2018} for further discussion).
+
+\ea Vocabulary Insertion rules for an ABA pattern \textit{bad-worse-baddest}\label{kas:ex:vi:homophony}
+\ea $\sqrt{\mbox{\textsc{bad}}}$ $\leftrightarrow$ \textit{bad}  /\rule{4mm}{.4pt}] \textsc{cmpr}] \textsc{sprl}] 
+\ex $\sqrt{\mbox{\textsc{bad}}}$ $\leftrightarrow$ \textit{worse} /\rule{4mm}{.4pt}] \textsc{cmpr}] 
+\ex $\sqrt{\mbox{\textsc{bad}}}$ $\leftrightarrow$ \textit{bad} 
+\z\z
+
+\noindent Given this background, the core data in this paper comes from a certain class of Russian adjectives, which exhibits an ABA pattern with respect to the presence of the augment affix \textit{-(o)k}.\footnote{I follow \citet{VandenWyngaerd:2020} in using the term \textsc{augment} for this sort of adjectival affix in Slavic languages.} An example of such an adjective and its paradigm is given in \tabref{kas:tab:intro:vysokij}. Note that the alternation between \textit{-(o)k} and \textit{-(o)č} variants of the augment affix is due to morpho-phonological processes of palatalization. Without going into the depths of this phenomenon (see \citealt{Blumenfeld:2003} and see \citealt{Halle:1959} for a thorough treatment), it is relevant for our purposes that certain affixes turn segments /k g t s/ to /č ž č š/, respectively.
+
+\begin{table}
+\caption{{*}ABA-violating paradigm of Russian adjective \textit{vysokij} `high'}
+\label{kas:tab:intro:vysokij}
+ \begin{tabularx}{.8\textwidth}{QQl} 
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{vys-ok-ij} &\textit{vyš-e}  &\textit{vys-oč-aj-š-ij} \\
+        {high-\textsc{aug-agr}} &{high-\textsc{agr}}    &{high-\textsc{aug-cmpr-sprl-agr}}  \\
+        {`high'} & {`higher'}&{`highest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+The problem is clear: Bobaljik's *ABA generalization rules out such patterns and yet they are found in these adjectives. While one could consider the observed surface pattern to be a reason to abandon Bobaljik's structure, this paper aims to provide an analysis of Russian *ABA-violating adjectives that does not abandon the containment structure for degree morphology.
+
+This paper's goals are twofold. The first goal is to provide a thorough examination of Russian adjectival morphology and to pinpoint the problems it poses for contemporary generative approaches to morphology. The second goal is to resolve said problems following existing Nanosyntax work on degree morphology \citep{Caha:2019,VandenWyngaerd:2020,Caha:2023}. The technical solution will be based upon two novel ideas in the Nanosyntax literature: the movement-containing trees (MCTs) of \citet{Blix:2022} and the subextraction spell-out algorithm of \citet{Caha:2022b,Caha:2023}. 
+
+The paper is structured as follows. \sectref{kas:sec:data} examines the data and argues that there are three distinct classes of Russian adjectives whose degree paradigms are problematic for a Bobaljik-style approach. \sectref{kas:sec:nano} introduces the theoretical framework of the analysis to come, namely, Nanosyntax. \sectref{kas:sec:analysis} presents my own solution to the puzzles posed by Russian adjectival morphology while introducing unfamiliar technical elements (Movement-Containing Trees and the subextraction spell-out algorithm) and showing which parts of the data require them. \sectref{kas:sec:conclusion} concludes the paper. 
+
+\section{The landscape of Russian adjectival morphology}\label{kas:sec:data}
+
+This section presents the main patterns found in Russian adjectival morphology and discusses the existing allomorphs of the comparative and the superlative affixes, the periphrastic forms and three classes of adjectives that are problematic from the viewpoint of a simple containment structure for the degree morphology \citep{Bobaljik:2012}.
+
+\subsection{Basic adjectival morphology of Russian}
+
+Let us consider a basic Russian adjective with a basic degree paradigm. The adjective \textit{glupyj} `dumb' is an exemplar. As shown in \tabref{kas:tab:glup:paradigm}, Russian degree morphology shows a straightforward containment of the comparative form \textit{glup-ej-} in the superlative \textit{glup-ej-š-}, once we consider the affix \textit{-e} of the comparative form to be a $\varphi$-deficient agreement affix (or something else but crucially something irrelevant to the degree morphology).
+
+\begin{table}
+\caption{The basic degree paradigm of the adjective \textit{glupyj} `dumb'}
+\label{kas:tab:glup:paradigm}
+ \begin{tabularx}{.8\textwidth}{QQl}
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{glup-yj} &\textit{glup-ej-e}  &\textit{glup-ej-š-ij} \\
+        {dumb-\textsc{agr}} &{dumb-\textsc{cmpr-agr}}    &{dumb-\textsc{cmpr-sprl-agr}}  \\
+        {`dumb'} & {`dumber'} & {`dumbest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+The paradigm in \tabref{kas:tab:glup:paradigm} shows that the comparative affix is \textit{-ej-} while the superlative affix is \textit{-š-}. From here, I will refer to them as such, even if they arise in a form other than comparative or superlative, respectively. Most Russian adjectives have a similar paradigm, some of which are given in \tabref{kas:tab:more:regular}.
+
+\begin{table}
+\caption{More regular adjectives}
+\label{kas:tab:more:regular}
+ \begin{tabularx}{.9\textwidth}{llll} 
+  \lsptoprule
+        &\textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+  \multicolumn{4}{l}{Paradigm for \textit{umnyj} `smart'}   \\
+        &\textit{umn-yj} &\textit{umn-ej-e} &\textit{umn-ej-š-ij} \\
+        &{smart-\textsc{agr}} & {smart-\textsc{cmpr-agr}} & {smart-\textsc{cmpr-sprl-agr}}  \\
+        &{`smart'} & {`smarter'} & {`smartest'}\\\addlinespace
+ \multicolumn{4}{l}{Paradigm for \textit{važnyj} `important'}   \\
+        &\textit{važn-yj} &\textit{važn-ej-e} &\textit{važn-ej-š-ij} \\
+        &{important-\textsc{agr}} & {important-\textsc{cmpr-agr}} & {important-\textsc{cmpr-sprl-agr}}  \\
+        &{`important'} & {`more important'} & {`most important'}\\\addlinespace
+ \multicolumn{4}{l}{Paradigm for \textit{krasivyj} `pretty'}   \\
+        &\textit{krasiv-yj} &\textit{krasiv-ej-e}&\textit{krasiv-ej-š-ij} \\
+        &{pretty-\textsc{agr}} & {pretty-\textsc{cmpr-agr}} & {pretty-\textsc{cmpr-sprl-agr}}  \\
+        &{`pretty'} & {`prettier'} & {`prettiest'}  \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+However, the presented synthetic paradigm is not the only way of forming Russian comparatives and superlatives and, for the sake of completeness of the over\-view of Russian adjectival morphology, I should introduce the other morphological strategies as well. The first thing to mention are the analytic forms \textit{bolee}+\textsc{adj} and \textit{samyj}+\textsc{adj}, as shown in \tabref{kas:tab:analytic} for the adjective \textit{glupyj} `dumb'. Since these are outside the scope of this paper, I refer the reader to \citet{Matushansky:2002} for discussion of analytic comparatives and \citet{Goncharov:2015} for discussion of analytic superlatives. However, I will make an important observation that some speakers of Russian outright reject synthetic superlative forms and tend to prefer the analytic form across the board. The interaction between analytic and synthetic comparatives is more intricate and appears to be conditioned by many factors, including syllabic length of the adjective (see \citealt{Kosheleva:2016} for discussion). Given this preference, some speakers may find the forms presented later in the text to be dubious. I put this difference in idiolects aside and leave them for a further sociolinguistic exploration.
+
+\begin{table}
+\caption{The analytic paradigm of the adjective \textit{glupyj} `dumb'}
+\label{kas:tab:analytic}
+ \begin{tabularx}{.8\textwidth}{QQl}
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{glup-yj} &\textit{bolee glup-yj}&\textit{samyj glup-yj} \\
+        {dumb-\textsc{agr}} & {more dumb-\textsc{agr}} & {most dumb-\textsc{agr}}  \\
+        {`dumb'} & {`dumber'} & {`dumbest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+Another thing to note are the \textit{nai}-superlatives, which consist of the prefix \textit{nai-} and the synthetic superlative form, exemplified for the adjective \textit{glupyj} `dumb' in \tabref{kas:tab:nai}. These superlatives seem to be in free variation with regular synthetic superlatives, but some speakers consider them a ``more marked'' form conveying a focus on the degree. As far as I am aware, \textit{nai-}superlatives never present suppletion/allomorphy patterns distinct from synthetic comparatives, hence they will not be discussed in this paper in detail.
+
+\begin{table}
+\caption{Russian \textit{nai}-superlatives}
+\label{kas:tab:nai}
+ \begin{tabularx}{.85\textwidth}{Qll} 
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{glup-yj} &\textit{glup-ej-š-ij} &\textit{nai-glup-ej-š-ij} \\
+        {dumb-\textsc{agr}} & {dumb-\textsc{cmpr-sprl-agr}} & \textit{nai}-{dumb-\textsc{cmpr-sprl-agr}}  \\
+        {`dumb'} & {`dumber'} & {`dumbest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+To round up this short section, for our purposes it is important that, in the regular case, the Russian comparative affix is \textit{-ej-}, the Russian superlative affix is \textit{-š-}, and the superlative form contains the comparative affix -- while the comparative affix is -\textit{ej}, the superlative is \textsc{adj}-\textit{ej-š-}\textsc{agr} (with \textit{-ij} `\textsc{agr.m.sg}' being the concord affix used throughout the paper). These observations are perfectly in line with the theory of adjectival degree morphology laid out in \citet{Bobaljik:2012}, according to which the superlative form is built on top of the comparative form (the containment hypothesis), as discussed in the introduction. In light of the accordance of the data of basic Russian adjectives with Bobaljik's theory, the next subsection is devoted to showing the adjectives which deviate from the basic pattern of comparatives being formed with \textit{-ej-} and superlatives being formed with \textit{-š-} on top of the comparative form.
+
+\subsection{Three problematic classes of adjectives}
+
+Exemplars of the three puzzling classes are the adjectives \textit{strog-ij} `strict', \textit{rez-k-ij} `harsh', and \textit{vys-ok-ij} `high'. Let us go through these adjectives one by one. The paradigm of the adjective \textit{strog-ij} `strict' (shown in \tabref{kas:tab:strict:paradigm}) presents the following puzzle: despite it forming a zero-comparative with no overt comparative affix, the comparative affix \textit{-aj-} appears in addition to the superlative affix \textit{-š-} in the superlative form. Recall that alternations like \textit{strog-}/\textit{strož-} are due to the palatalization phenomena \citep{Blumenfeld:2003} and are not relevant for the present study's focus on the morphologically-conditioned allomorphy in Russian adjectives.
+
+\begin{table}
+\caption{The degree paradigm of the adjective \textit{strog-ij} `strict'}
+\label{kas:tab:strict:paradigm}
+ \begin{tabularx}{.8\textwidth}{QQl}
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{strog-ij} &\textit{strož-e} &\textit{strož-aj-š-ij} \\
+        {strict-\textsc{agr}} & {strict-\textsc{agr}} & {strict-\textsc{cmpr-sprl-agr}}  \\
+        {`strict'} & {`stricter'} & {`strictest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+One could argue that \textit{-ajš-} should not be decomposed and rather be treated as an allomorph of the superlative affix for adjectives which form a zero-com\-pa\-ra\-tive. However, the adjective \textit{krut-oj} `cool' and similar ones (the paradigms of which are shown in \tabref{kas:tab:zero:ej}) provide circumstantial evidence against such a hypothesis: \textit{krut-oj} forms a zero-comparative \textit{kruč-e} `cooler' and a superlative form \textit{krut-ej-š-ij} `coolest', which suggests that the \textit{-aj-} found in \textit{strož-aj-š-ij} `strictest' is the allomorph of \textit{-ej-}, the comparative affix in Russian. And again, the \textit{krut-}/\textit{kruč-}, \textit{čist-}/\textit{čišč-} and \textit{bogat-}/\textit{bogač-} alternations are morpho-phonological in nature and are thus irrelevant to the morphosyntactically-conditioned allomorphy patterns discussed in this paper.
+
+\begin{table}
+\caption{Zero comparatives with \textit{-ej-}}
+\label{kas:tab:zero:ej}
+ \begin{tabularx}{.9\textwidth}{lQQl} 
+  \lsptoprule
+        &\textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+  \multicolumn{4}{l}{The degree paradigm of the adjective \textit{krut-oj} `cool'}   \\
+        &\textit{krut-oj} &\textit{kruč-e} &\textit{krut-ej-š-ij} \\
+        &{cool-\textsc{agr}} & {cool-\textsc{agr}} & {cool-\textsc{cmpr-sprl-agr}}  \\
+        &{`cool'} & {`cooler'} & {`coolest'}\\\addlinespace
+ \multicolumn{4}{l}{The degree paradigm of the adjective \textit{čistyj} `clean'}   \\
+        &\textit{čist-yj} &\textit{čišč-e} &\textit{čist-ej-š-ij} \\
+        &{clean-\textsc{agr}} & {clean-\textsc{agr}} & {clean-\textsc{cmpr-sprl-agr}}  \\
+        &{`clean'} & {`cleaner'} & {`cleanest'}\\\addlinespace
+ \multicolumn{4}{l}{The degree paradigm of the adjective \textit{bogatyj} `rich'}   \\
+        &\textit{bogat-yj} &\textit{bogač-e} &\textit{bogat-ej-š-ij} \\
+        &{rich-\textsc{agr}} & {rich-\textsc{agr}} & {rich-\textsc{cmpr-sprl-agr}}  \\
+        &{`rich'} & {`richer'} & {`richest'}  \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+Taking both \textit{strog-ij} `strict' and \textit{krut-oj} `cool' into account, a puzzling picture emerges: while these adjectives form zero-comparatives (without the comparative affix \textit{-ej-}/\textit{-aj-}), the comparative affix emerges in the superlative form. While one could argue that we are dealing with an affix \textit{-ejš-}/\textit{-ajš-}, such an analysis misses a clear parallel to the regular adjectives like \textit{glup-yj} `dumb' in the superlative form. In what follows, I assume that the \textit{-ej-}/\textit{-aj-} in the superlative form is the same morphological entity (= result of the same insertion rule) as the \textit{-ej-} found in the comparative forms of regular adjectives. Furthermore, I make the assumption that the alternation between \textit{-ej-} and \textit{-aj-} is morpho-phonological in nature, which is supported by the observation that \textit{-aj-} allomorph is only found after /k/-, /g/-, and /x/-final adjectival stems (which are transformed into /č ž š/, respectively). Of course, this argument predicts that /k/-, /g/-, and /x/-final adjectives form their comparative forms with \textit{-aj-} but such adjectives always form zero-comparatives, so the prediction cannot be tested.
+
+Assuming that the overtness of the comparative affix is the default option (\textit{-ej-}/\textit{-aj-} is the default allomorph), the pattern of zero-comparatives presents a non-trivial problem for a theory like Bobaljik's. In order to account for the covertness of \textsc{cmpr} in the comparative form \textit{strože} `stricter', one has to posit a VI rule like \REF{kas:ex:zero:vi} which expones \textsc{cmpr} as a zero in the context of adjectives like \textit{krutoj} `cool' and \textit{strogij} `strict', but then posit a more specified rule like \REF{kas:ex:nonzero:vi} which expones \textsc{cmpr} as the default allomorph \textit{-ej-}/\textit{-aj-} since without such a rule there would be no way for the \textsc{cmpr} to be exponed in the superlative form. 
+
+\ea Zero-comparatives require accidental homophony of \textsc{cmpr}
+    \ea \textsc{cmpr} $\leftrightarrow$ \textit{-ej-}/\textit{-aj-} /$X$]\rule{4mm}{.4pt}] \textsc{sprl}] where $X \in \{\sqrt{\mbox{\textsc{strict}}}, \sqrt{\mbox{\textsc{cool}}}, ...\}$\label{kas:ex:nonzero:vi}
+    \ex \textsc{cmpr} $\leftrightarrow$ $\emptyset$ /$X$]\rule{4mm}{.4pt} where $X\in\{\sqrt{\mbox{\textsc{strict}}}, \sqrt{\mbox{\textsc{cool}}}, ...\}$\label{kas:ex:zero:vi}
+	\ex  \textsc{cmpr} $\leftrightarrow$ \textit{-ej-}/\textit{-aj-}
+    \z
+\z
+
+\noindent Given that having a zero-comparative is a property of multiple lexical items, the accidental homophony solution  appears dubious and hence I consider the pattern to be problematic for a straightforward DM approach to the presented data. In addition to that, there are two other problematic classes of adjectives left to be presented in this section, the first of which is exemplified by the adjective \textit{rez-k-ij} `harsh'. I dub this class \textsc{augment adjectives}, borrowing the term for the \textit{-(o)k-} affix from \citet{VandenWyngaerd:2020}. Example paradigms of augment adjectives are provided in \tabref{kas:tab:aug:paradigm}. The alternation between \textit{-(o)k-} and \textit{-(o)č-} is due to palatalization phenomena and the presence of \textit{o} is conditioned by stress (cf. \textit{vy-ˈsokij} and \textit{ˈredkij}) and hence both alternations are ignored for present purposes.
+
+\begin{table}
+\caption{Augment adjectives}
+\label{kas:tab:aug:paradigm}
+ \begin{tabularx}{.9\textwidth}{lQQl} 
+  \lsptoprule
+        &\textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+  \multicolumn{4}{l}{The degree paradigm of the adjective \textit{rezkij} `harsh'}   \\
+        &\textit{rez-k-ij} &\textit{rez-č-e} &\textit{rez-č-aj-š-ij} \\
+        &{harsh-\textsc{aug}-\textsc{agr}} & {harsh-\textsc{aug}-\textsc{agr}} & {harsh-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`harsh'} & {`harsher'} & {`harshest'}\\\addlinespace
+ \multicolumn{4}{l}{The degree paradigm of the adjective \textit{žutkij} `eerie'}   \\
+        &\textit{žut-k-ij} &\textit{žut-č-e} &\textit{žut-č-aj-š-ij} \\
+        &{eerie-\textsc{aug-agr}} & {eerie-\textsc{aug-agr}} & {eerie-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`eerie'} & {`eerier'} & {`eeriest'}\\\addlinespace
+ \multicolumn{4}{l}{The degree paradigm of the adjective \textit{žarkij} `hot'}   \\
+        &\textit{žar-k-ij} &\textit{žar-č-e} &\textit{žar-č-aj-š-ij} \\
+        &{hot-\textsc{aug-agr}} & {hot-\textsc{aug-agr}} & {hot-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`hot'} & {`hotter'} & {`hottest'}  \\\addlinespace
+ \multicolumn{4}{l}{The degree paradigm of the adjective \textit{gromkij} `loud'}   \\
+        &\textit{grom-k-ij} &\textit{grom-č-e} &\textit{grom-č-aj-š-ij} \\
+        &{loud-\textsc{aug-agr}} & {loud-\textsc{aug-agr}} & {loud-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`loud'} & {`louder'} & {`loudest'}  \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+On the surface, the augment adjectives present the very same pattern as zero-comparative adjectives: in the context of some syntactic nodes (be it $\sqrt{\mbox{\textsc{strict}}}$ or the augment \textit{-(o)k-}) the \textsc{cmpr} node is zero but is exponed as its default form once the \textsc{sprl} node enters the structure. The problem posed by augment adjectives is thus the same as posed by zero-comparatives, which raises the question of whether it is even sensible to draw a distinction between the two classes. However, foreshadowing my analysis, I will pursue the analytic strategy of deriving the patterns as portmanteaux -- hence, the distinction between a root- and augment-triggered zero-comparative will prove useful in the later sections.
+
+Now, consider the final class of adjectives: the *ABA-violating adjectives like \textit{vys-ok-ij} (already mentioned in the introduction) in \tabref{kas:tab:ABA:Violations}. Descriptively, the pattern is that the augment is not present in the comparative form but is present in the positive and superlative forms, which fits the ABA pattern as formulated by \citet{Bobaljik:2018}, and is, thus, highly problematic for a theory that adheres to the containment hypothesis of \citet{Bobaljik:2012}, which was put forward in order to exclude ABA patterns in degree morphology of adjectives.
+
+\begin{table}
+\caption{{*}ABA-violating adjectives}
+\label{kas:tab:ABA:Violations}
+ \begin{tabularx}{\textwidth}{llll} 
+  \lsptoprule
+        &\textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+  \multicolumn{4}{l}{Degree paradigm of the adjective \textit{vys-ok-ij} `high'}   \\
+        &\textit{vys-ok-ij} &\textit{vyš-e} &\textit{vys-oč-aj-š-ij} \\
+        &{high-\textsc{aug-agr}} & {high-\textsc{agr}} & {high-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`high'} & {`higher'}&{`highest'}\\\addlinespace
+ \multicolumn{4}{l}{Degree paradigm of the adjective \textit{red-k-ij} `rare'}   \\
+        &\textit{red-k-ij} &\textit{rež-e} &\textit{red-č-aj-š-ij} \\
+        &{rare-\textsc{aug-agr}} & {rare-\textsc{agr}} & {rare-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`rare'} & {`rarer'}&{`rarest'}\\\addlinespace
+ \multicolumn{4}{l}{Degree paradigm of the adjective \textit{šyr-ok-ij} `wide'}   \\
+        &\textit{šyr-ok-ij} &\textit{šyr-e} &\textit{šyr-oč-aj-š-ij} \\
+        &{wide-\textsc{aug-agr}} & {wide-\textsc{agr}} & {wide-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`wide'} & {`wider'}&{`widest'}  \\\addlinespace
+ \multicolumn{4}{l}{Degree paradigm of the adjective \textit{gad-k-ij} `disgusting'}   \\
+        &\textit{gad-k-ij} &\textit{gaž-e} &\textit{gad-č-aj-š-ij} \\
+        &{disgusting-\textsc{aug-agr}} & {disgusting-\textsc{agr}} & {disgusting-\textsc{aug-cmpr-sprl-agr}}  \\
+        &{`disgusting'} & {`more disgusting'}&{`most disgusting'}  \\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+\largerpage
+Given the observations about the zero-comparative adjectives and the augment adjectives, however, we can decompose the *ABA-violating pattern into the combination of the observations about zero-comparative adjectives and augment adjectives in the following way. The ABA pattern consists of (i) the \textsc{cmpr} node being zero-exponed in comparative form only in the context of the augment (augment-adjectives pattern); (ii) the node adjacent to the adjectival root being zero-exponed in the comparative form only (zero-comparatives pattern). I believe that decomposing the ABA pattern into two distinct and attested patterns in Russian allows for a more grounded analysis (even though the two phenomena are still problematic).
+
+To sum up, we have discussed the three classes of Russian adjectives that pose a problem for the containment hypothesis of \citet{Bobaljik:2012}. The descriptive contribution of this paper ends here. The next section is devoted to introducing Nanosyntax (but I presuppose basic knowledge of the main tenets of Distributed Morphology). The section after that presents my Nanosyntactic analysis while introducing recent technical developments of the theory along the way.
+
+\section{Nanosyntax: the basics}\label{kas:sec:nano}
+
+This section presents the basics of Nanosyntax: its theoretical commitments and the inner workings of Nanosyntactic analyses, using the main building blocks of Russian adjectival morphology as the example (comparative \textit{-ej-/-aj-} and superlative \textit{-š-}). The first subsection presents the basic ideas behind Nanosyntax. The second subsection presents an analysis of regular adjectives in Russian.
+
+\subsection{The basics of Nanosyntax}
+
+Nanosyntax \citep{Starke:2009,Baunaz:2018}, like the mainstream Distributed Morphology approach to the syntax-morphology interface \citep{Halle:1994}, is committed to the Single Engine Hypothesis \citep{Marantz:2001}: all complex expressions in languages are built by the same computational system (or module) -- syntax.  Unlike Distributed Morphology, however, Nanosyntax does not assume that individual syntactic terminals are morphemes / bundles of features (\textit{pace} \citealt{Embick:2015}). Instead, Nanosyntax assumes a version of the One Feature -- One Head thesis \citep{Kayne:2005}: all features are individual heads (and are, thus, privative). Thus, where DM would have a single ``bundle'' of, for example, $\varphi$-features on \textsc{agr} nodes on adjectives (as in existing DM work on nominal concord, see \citealt{Norris:2014} and the tree in \figref{kas:fig:nom:conc_a}), Nanosyntactic work on nominal concord assumes a hierarchy of feature heads (as in \citealt{Caha:2023b} and in the tree in \figref{kas:fig:nom:conc_b}).
+
+\begin{figure}
+\hfill
+     \begin{subfigure}[b]{0.3\textwidth}
+         \centering
+\begin{forest}
+      for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [AdjP
+   	    [AdjP
+        ]
+        [\textsc{agr}\textsubscript{[$\varphi$:\textsc{f.pl}]}
+        ]
+    ]
+\end{forest}
+    \caption{ }
+    \label{kas:fig:nom:conc_a}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.5\textwidth}
+         \centering
+\begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [PlP
+        [Pl]
+        [SgP
+		      [Sg]
+		      [FemP
+		          [Fem]
+			    [AnimP
+				    [Anim]
+				      [AdjP]
+			    ]
+		      ]
+	    ]
+   ]
+\end{forest}
+    \caption{ }
+    \label{kas:fig:nom:conc_b}
+     \end{subfigure}\hfill
+     \caption{Structure for nominal concord in DM and Nanosyntax}
+     \label{kas:fig:nom:conc}
+\end{figure}
+
+The question is, how are the individual features grouped together to be matched to morphemes? This question requires a two-step answer. The first step is to introduce the notion of phrasal spell-out. While DM assumes that Vocabulary Insertion maps syntactic terminals onto morpho-phonological representations, Nanosyntactic work assumes that Vocabulary Insertion targets constituents. The idea is, then, that the bundles of features form syntactic constituents in order to be lexicalized together. Nanosyntax forms such constituents of features/feature-heads via syntactic movement according to the Spell-Out algorithm provided in \REF{kas:ex:so:algorithm}. The core idea behind this algorithm is that after a new feature-head is merged, the resulting structure must be transformed into a structure that can be spelled-out, or to put it another way, whose subconstituents can be matched to existing lexical entries. The core property of the algorithm is that cumulative exponence is preferred (the separate exponence of the newly merged F is only possible via the step in \ref{kas:ex:so:algorithm_c}).
+
+\ea Spell-Out algorithm\label{kas:ex:so:algorithm}
+	\ea Merge F to XP and spell out
+	\ex If (a) fails, move Spec,XP to Spec,FP and spell out
+	\ex\label{kas:ex:so:algorithm_c} If (b) fails, move XP to Spec,FP and spell out
+	\ex If (c) fails, move to the next option in the previous cycle (backtracking)
+	\z
+\z
+
+\noindent Now the question lies in the precise nature of lexical entries in Nanosyntax and matching the feature structures to these entries. In Nanosyntax, lexical entries (or L-trees, to use proprietary terminology) are pairs of morpho-phonological representations and syntactic trees; an example is given in \figref{kas:fig:l-tree:example}.\footnote{I do not touch on the topic of the syntax-semantics interface in Nanosyntax (or any Late Insertion theory) due to the complexity of the issue and its lack of direct relevance to the paper.}
+
+\begin{figure}
+\centering
+    \begin{forest}
+    for tree={s sep=.5cm, inner sep=0, l=0}
+    [ZP
+        [Z]
+        [YP
+		      [Y]
+	          [XP]
+        ]
+    ]{\draw (.east) node[right]{$\Leftrightarrow$ /blick/}; }
+    \end{forest}
+    \caption{An example of an L-tree}
+    \label{kas:fig:l-tree:example}
+\end{figure}
+
+The matching of constituents to L-trees is regulated by the Superset Principle, which states that an L-tree can be matched to any subconstituent of the structure in the L-tree.  So, given the structure XP, the two lexical entries in \figref{kas:fig:two:ltrees} match it (since XP is a subconstituent of both), which requires a principled way of choosing between the two matching L-trees.
+
+\begin{figure}
+    \begin{subfigure}[b]{0.2\textwidth}
+         \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [ZP
+     	[Z]
+	    [YP
+		      [Y]
+		      [XP]
+	    ]
+     ]{\draw (.east) node[right]{$\Leftrightarrow$ $\alpha$}; }
+    \end{forest}\end{subfigure}
+    \hspace{1.5cm}
+    \begin{subfigure}[b]{0.2\textwidth}
+         \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+	[YP
+		[Y]
+		[XP]
+	]{\draw (.east) node[right]{$\Leftrightarrow$ $\beta$}; }
+    \end{forest}\end{subfigure}
+    \caption{Two matching L-trees for XP}
+    \label{kas:fig:two:ltrees}
+\end{figure}
+
+The choice between L-trees that match to the structure is regulated by the following principle: the L-tree with the least amount of structure not found in the syntactic constituent undergoing spell-out is chosen. So, between the two matching L-trees in \figref{kas:fig:two:ltrees}, the second one is to be preferred since it contains less ``excess'' structure.
+
+Finally, to end this quick introduction, I want to emphasize that phrasal spell-out and spell-out-driven movement are the only operations available in the Na\-no\-syn\-tax machinery. There is no contextual allomorphy (or readjustment rules, or impoverishment rules, or any other familiar DM operation) in Nanosyntax, only portmanteaux, and, thus, a difference in form implies the presence of additional structure or a phonological analysis.
+
+\subsection{A case study: basic adjectival morphology of Russian}
+
+To recap the previous subsection, Nanosyntax assumes phrasal spell-out of syntactic constituents consisting of individual feature-heads which are formed via movement. The sequence of features (or f-seq) for degree morphology, according to Nanosyntactic work (see \citealt{Caha:2019} for the argumentation in favour of the split structure for degree morphology) is provided in \REF{kas:ex:f-seq}.
+
+\ea Nanosyntactic f-seq for degree morphology\label{kas:ex:f-seq}\\
+		AdjP -- Q -- C1 -- C2 -- S1 -- S2
+\z
+
+\noindent In this subsection, I will provide a Nanosyntactic analysis of the basic paradigm of regular adjectives in Russian, repeated in \tabref{kas:tab:regular:desideratum}. The main goal is to provide a lexical entry for the comparative affix \textit{-ej-/-aj-} and for the superlative affix \textit{-š-}. 
+
+\begin{table}
+\caption{The paradigm of a regular adjective}
+\label{kas:tab:regular:desideratum}
+ \begin{tabularx}{.8\textwidth}{QQl}
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{glup-yj} &\textit{glup-ej-e}  &\textit{glup-ej-š-ij} \\
+        {dumb-\textsc{agr}} &{dumb-\textsc{cmpr-agr}}    &{dumb-\textsc{cmpr-sprl-agr}}  \\
+        {`dumb'} & {`dumber'} & {`dumbest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+The split comparative and split superlative structures proposed by \citet{Caha:2019} increase the number of analytical choices we are facing. While a simple Bobaljik-style structure would require \textsc{cmpr} being realized as \textit{-ej-/-aj-} and \textsc{sprl} as \textit{-š-}, the f-seq in \REF{kas:ex:f-seq} allows for various lexicalizations. Since the data of regular adjectives underdetermines the analysis, I will provide the lexical entries, which allow for the analyses of the three problematic classes that will be presented in the next section. One thing to note is that the constituents in the L-trees for \textit{\nobreakdash-ej-} and \textit{-š-} are remnant constituents (constituents, out of which something has moved, as shown by the presence of unary branching at the foot of the tree), see \figref{kas:fig:no:name}. Such remnant constituents are exclusively associated with suffixes in the Nanosyntax literature (see \citealt{Starke:2018}).
+
+\begin{figure}
+ \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+	\begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+    [QP
+        [Q]
+        [AdjP
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+    ] {\draw (.east) node[right]{$\Leftrightarrow$ \textit{glup}-}; }
+    \end{forest}\end{subfigure}
+    \begin{subfigure}[b]{0.3\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=1cm}
+    [{C2P}
+        [C2]
+        [C1P
+            [C1]
+            [,phantom]
+        ]
+    ] {\draw (.east) node[right]{$\Leftrightarrow$ -\textit{ej}-}; }
+    \end{forest}\end{subfigure}
+    \medskip
+
+    \begin{subfigure}[b]{0.39\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+    [S2P
+        [S2]
+        [S1P
+            [S1]
+            [C2P
+            [C2]
+            [,phantom]
+            ]
+        ]
+    ] {\draw (.east) node[right]{$\Leftrightarrow$ -\textit{š}-}; }
+    \end{forest}\end{subfigure}
+    \caption{Lexical entries for regular adjective paradigms}
+    \label{kas:fig:no:name}
+\end{figure}
+
+Here, we shall go through the derivations step by step to show that the proposed lexical entries result in the observed paradigm. The thing to keep in mind is the standard Nanosyntax Spell-Out algorithm \citep{Baunaz:2018} repeated in \REF{kas:ex:so:algo:repeat}.
+
+\ea Standard Nanosyntax Spell-Out algorithm\label{kas:ex:so:algo:repeat}
+    \ea Merge F to XP and spell out
+	\ex If (a) fails, move Spec,XP to Spec,FP and spell out
+	\ex If (b) fails, move XP to Spec,FP and spell out
+	\ex If (c) fails, move to the next option in the previous cycle (backtracking)
+    \z
+\z
+
+\noindent The derivation of the positive form is trivial: AdjP can be realized by the adjectival stem due to the Superset Principle and QP is the exact match of the lexical entry for \textit{glup-}, as shown in \figref{kas:fig:Derivation:glup_b}. I want to note here that, in presenting the Nanosyntactic derivations, I will match subconstituents to the affixes in their underlying form. While I understand that it hurts the readability of the lexicalizations themselves, the clarity of the paper overall benefits from this decision, in my opinion. 
+
+\begin{figure}
+ \begin{subfigure}[b]{0.4\textwidth}
+    \centering
+ \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [AdjP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,fit to=tree, label=below:\textit{glup}] {};}   
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]          
+        ]
+        \end{forest}
+ \caption{Start with AdjP}
+    \label{kas:fig:Derivation:glup_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.5\textwidth}
+    \centering
+ \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [QP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{glup}] {};} 
+            [Q]
+		      [AdjP
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+		      ]
+        ]
+        \end{forest}
+ \caption{Merge Q to AdjP and spell out}
+    \label{kas:fig:Derivation:glup_b}
+\end{subfigure}
+    \caption{Deriving the positive form \textit{glup-}}
+    \label{kas:fig:Derivation:glup}
+\end{figure}
+
+The derivation of the comparative is also rather straightforward, as shown in \figref{kas:fig:derivation:glupej}. Since the [C1 [Q AdjP]] structure does not match any lexical entry, as indicated by the double exclamation marks in \figref{kas:fig:derivation:glupej_a}, the next step is to move the specifier of QP to Spec,C1. However, there is no specifier of QP and, thus, the next step is to move QP to Spec,C1, which results in the proper lexicalization of C1P in \figref{kas:fig:derivation:glupej_b}. Then, the C2 head is merged and the resulting structure does not match any lexical entry in \figref{kas:fig:derivation:glupej_c}, which results in movement of QP to Spec,C2P in \figref{kas:fig:derivation:glupej_d}. This structure results in the observed form \textit{glup-ej-}, given our lexical entries.
+
+\begin{figure}
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [!C1P!
+            [C1]
+            [QP
+                [Q]
+		          [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+		          ]
+            ]
+        ]
+        \end{forest}
+ \caption{Merge C1 to QP}
+    \label{kas:fig:derivation:glupej_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+ \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [C1P, s sep=1cm
+            [QP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{glup}] {};} 
+            	[Q]
+		          [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+		          ]
+            ]
+            [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,xscale=1.1,yscale=.9,fit to=tree, label=below:\textit{ej}] {};}  [C1]]
+        ]
+        \end{forest}
+ \caption{Move QP to Spec,C1P}
+    \label{kas:fig:derivation:glupej_b}
+\end{subfigure}\medskip
+
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [!C2P! 
+            [C2]   
+            [C1P
+                [QP
+            	    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C1P 
+                    [C1]
+                ]
+            ]
+        ]
+        \end{forest}
+ \caption{Merge C2 to C1P}
+    \label{kas:fig:derivation:glupej_c}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [C2P, s sep=1cm
+            [QP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{glup}] {};} 
+            	[Q]
+		          [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+		          ]
+            ]
+            [C2P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{ej}] {};}  [C2] [C1P [C1] ]]
+        ]
+        \end{forest}
+ \caption{Move QP to Spec,C2P}
+    \label{kas:fig:derivation:glupej_d}
+\end{subfigure}
+    \caption{Deriving the comparative form \textit{glup-ej-}}
+    \label{kas:fig:derivation:glupej}
+\end{figure}
+
+The derivation of the superlative form is more complex and requires backtracking, the final step in the spell-out algorithm provided in \REF{kas:ex:so:algo:repeat}. After S1 is merged, there is no licit lexicalization even with movement of QP to Spec,S1P in \figref{kas:fig:glupeis_b} and movement of the whole comparative structure to Spec,S1P in \figref{kas:fig:glupeis_c}. The reason for this is that the lexical entry for the superlative affix \textit{-š-} requires there to be a subconstituent with [C2P [C2]] at its foot, which isn't present at this point in the derivation. Hence, backtracking happens and the procedure goes back to the ``next option in the previous cycle'' step, namely, movement of C1P to Spec,C2P in \figref{kas:fig:glupeis_d}. After that, merging S1 in \figref{kas:fig:glupeis_e} and moving C1P to Spec,S1P results in a lexicalizable structure in \figref{kas:fig:glupeis_f}. After merging S2 in \figref{kas:fig:glupeis_g} and moving C1P to Spec,S2P in \figref{kas:fig:glupeis_h}, we end up with a structure that is realized as the observed form for the superlative \textit{glup-ej-š-}.
+
+\begin{figure}
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [!S1P!
+            [S1]
+            [C2P
+                [QP
+            	    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C2P 
+                    [C2] 
+                    [C1P 
+                        [C1] 
+                    ]
+                ]
+            ]
+        ]
+        \end{forest}}
+ \caption{Merge S1 to C2P}
+    \label{kas:fig:glupeis_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [!S1P!
+            [QP
+                [Q]
+		          [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+		          ]
+            ]
+            [S1P
+                [S1] 
+                [C2P 
+                    [C2]
+                    [C1P 
+                        [C1] 
+                    ]
+                ]
+            ]
+        ]
+        \end{forest}}
+ \caption{Move QP to Spec,S1P}
+    \label{kas:fig:glupeis_b}
+\end{subfigure}\medskip
+
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [!S1P! 
+            [C2P
+                [QP
+            	    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C2P 
+                    [C2] 
+                    [C1P 
+                        [C1] 
+                    ]
+                ]
+            ]
+            [S1P 
+                [S1]
+            ]
+        ]
+        \end{forest}}
+ \caption{Move C2P to Spec,S1P}
+    \label{kas:fig:glupeis_c}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [C2P, s sep=1cm
+            [C1P, s sep=1cm
+                [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{glup}] {};}  
+                    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}   
+                    [C1]
+                ]
+            ]
+            [C2P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};}   
+                [C2]
+            ]
+        ]
+        \end{forest}}
+ \caption{Backtracking: move C1P to Spec,C2P}
+    \label{kas:fig:glupeis_d}
+\end{subfigure}
+\caption{Deriving the superlative form  \textit{glup-ej-š-}}
+\label{kas:fig:glupeis}
+\end{figure}
+
+\begin{figure}
+  \ContinuedFloat
+   \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [!S1P! 
+            [S1] 
+            [C2P 
+                [C1P
+                    [QP
+            	        [Q]
+		                  [AdjP
+                            [Adj]
+                            [$\sqrt{\mbox{\hspace{2pt}}}$]
+		                  ]
+                    ]
+                    [C1P   
+                        [C1]
+                    ]
+                ]
+                [C2P 
+                    [C2]
+                ]
+            ]
+        ]
+        \end{forest}}
+    \caption{Merge S1 to C2P}
+    \label{kas:fig:glupeis_e}
+\end{subfigure}\begin{subfigure}[b]{0.54\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [S1P, s sep=1cm
+            [C1P, s sep=1cm
+                [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{glup}] {};}  
+            	    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}   
+                    [C1]
+                ]
+            ]
+            [S1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};}   
+                [S1] 
+                [C2P 
+                    [C2]
+                ]
+            ]
+        ]
+        \end{forest}}
+ \caption{Move C1P to Spec,S1P}
+    \label{kas:fig:glupeis_f}
+\end{subfigure}\medskip
+
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.3cm, inner sep=0, l=1cm}
+        [!S2P! 
+            [S2]   
+            [S1P 
+                [C1P
+                    [QP 
+            	        [Q]
+		                  [AdjP
+                            [Adj]
+                            [$\sqrt{\mbox{\hspace{2pt}}}$]
+		                  ]
+                    ]
+                    [C1P  
+                        [C1]
+                    ]
+                ]
+                [S1P 
+                    [S1] 
+                    [C2P 
+                        [C2]
+                    ]
+                ]
+            ]
+        ]
+        \end{forest}}
+ \caption{Merge S2 to S1P}
+    \label{kas:fig:glupeis_g}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.54\textwidth}
+    \centering
+ \scalebox{0.87}{\begin{forest}
+        for tree={s sep=0.3cm, inner sep=0, l=1cm}
+        [S2P, s sep=1cm
+            [C1P, s sep=1cm
+                [QP , tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{glup}] {};}  
+            	    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}    
+                    [C1]
+                ]
+            ]
+            [S2P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};}   
+                [S2] 
+                [S1P 
+                    [S1] 
+                    [C2P 
+                        [C2]
+                    ]
+                ]
+            ]
+        ]
+        \end{forest}}
+    \caption{Move C1P to S2P}
+    \label{kas:fig:glupeis_h}
+\end{subfigure}
+    \caption{Deriving the superlative form \textit{glup-ej-š-} (continued)}
+    \label{kas:fig:glupeis-ctd}
+\end{figure}
+%https://tex.stackexchange.com/questions/110153/multi-page-figure-with-subcaption-package
+
+Even though it is not necessary for an analysis of the paradigm of regular adjectives on its own, the core property of the proposed analysis is that lexical entries for \textit{-ej-} and \textit{-š-} overlap in their inclusion of the C2 head: superlatives thus require backtracking (informally, splitting of C2 from C1 in lexicalization) and this property of the analysis presented will become relevant in the analysis of zero-comparatives, which is presented in the following section, along with the analyses for augment adjectives and *ABA-violating adjectives.
+
+\clearpage
+
+\section{Analysis of three problematic classes}\label{kas:sec:analysis}
+
+This section presents the Nanosyntactic analysis of the three problematic adjective classes: \textit{strogij}-type adjectives (zero-comparatives), \textit{rezkij}-type adjectives (augment adjectives), and \textit{vysokij}-type adjectives ({*}ABA-violating adjectives). In \sectref{kas:subsec:zero}, I present an analysis of zero-comparatives and introduce the notion of Mo\-ve\-ment-Con\-taining Trees \citep{Blix:2022} along the way. In \sectref{kas:subsec:augment}, I present an analysis of augment-adjectives and introduce the novel spell-out algorithm of \citet{Caha:2022b,Caha:2023}. Finally, \sectref{kas:subsec:aba} puts the analyses in \sectref{kas:subsec:zero} and \sectref{kas:subsec:augment} together to derive the ABA pattern established in the introduction. The core idea behind the analyses lies in the backtracking step forced by the L-tree of the superlative affix, as discussed in the previous section: in all three analyses, the backtracking step will trigger re-bundling of the features resulting in the exponence of the comparative and the augment.
+
+\subsection{Zero-comparatives: the need for movement-containing trees}\label{kas:subsec:zero}
+
+Let me repeat the pattern and the problem for a DM-style approach posed by zero-comparative here. The basic pattern is as follows: the comparative affix \textit{-ej-}/\textit{-aj-} is absent from the comparative form itself, but arises in the decomposition of the superlative form, as shown in the paradigm in \tabref{kas:tab:strict:paradigm:repeat} for the adjective \textit{strogij} `strict'.
+
+\begin{table}
+\caption{The degree paradigm of the adjective \textit{strog-ij} `strict'}
+\label{kas:tab:strict:paradigm:repeat}
+ \begin{tabularx}{.8\textwidth}{QQl}
+  \lsptoprule
+        \textsc{pos}   &\textsc{cmpr}  & \textsc{sprl} \\
+  \midrule
+        \textit{strog-ij} &\textit{strož-e} &\textit{strož-aj-š-ij} \\
+        {strict-\textsc{agr}} & {strict-\textsc{agr}} & {strict-\textsc{cmpr-sprl-agr}}  \\
+        {`strict'} & {`stricter'} & {`strictest'}\\
+  \lspbottomrule
+ \end{tabularx}
+\end{table}
+
+The problem for a DM-style analysis was that one appears to need a zero-insertion rule for the \textsc{cmpr} node, which is sensitive to the adjacent adjective. However, this rule needs to be overridden in the superlative form, which results in an accidental homophony for the default VI rule for \textsc{cmpr} and the rule which is sensitive to both the adjective and the presence of \textsc{sprl}.
+
+A basic Nanosyntax model (like the one introduced in \citealt{Baunaz:2018}) cannot accommodate these findings either. In Nanosyntax, having a zero-com\-pa\-ra\-tive entails that the adjectival root (like \textit{strog-}) has the comparative structure (C1 and C2 heads) in its lexical entry, as shown in \figref{kas:fig:normal:strog}.
+
+\begin{figure}
+% \centering
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+    [C2P
+        [C2]
+        [C1P 
+            [C1]
+            [QP
+                [Q]
+                [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+            ]
+        ]
+    ] { \draw (.east) node[right]{$\Leftrightarrow$ \textit{strog}-}; }
+    \end{forest}
+    \caption{A putative lexical entry (L-tree) for \textit{strog-}}
+    \label{kas:fig:normal:strog}
+\end{figure}
+
+The problem then is that when superlative heads are introduced into the derivation (S1 and S2), there is no way to trigger the overt comparative affix no matter what the lexical entry for the superlative affix -- all comparative structures will be realized either by the adjectival stem or by the superlative affix. Given backtracking, all structures will be divided into the adjectival stem and the superlative affix, one way or another (see \figref{kas:fig:normal:lexicalizations}). 
+
+
+\begin{figure}
+     \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+         \small
+\begin{forest}
+      for tree={s sep=0.15cm, inner sep=0, l=1cm}
+    [S1P, s sep=1.75cm
+            [C2P, tikz={\node [draw,ellipse,yshift=-3pt,yscale=.9,inner sep=-1pt,fit to=tree, label=below:\textit{strog-}] {};}
+                [C2]
+                [C1P   
+                    [C1]
+                    [QP
+                        [Q]
+                        [AdjP
+                            [Adj]
+                            [$\sqrt{\mbox{\hspace{2pt}}}$]
+                        ]
+                    ]
+                ]
+            ]
+            [S1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{-š-}] {};} 
+                [S1]
+            ]
+        ]
+\end{forest}
+    \caption{ }
+    \label{kas:fig:normal:lexicalizations_a}
+     \end{subfigure}
+     \hspace{.5cm}
+     \begin{subfigure}[b]{0.48\textwidth}
+         \small
+\begin{forest}
+    for tree={s sep=0.15cm, inner sep=0, l=1cm}
+        [S1P, s sep=1.75cm
+            [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{strog-}] {};}
+                [C1]
+                [QP
+                    [Q]
+                    [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+                    ]
+                ]
+            ]
+            [S1P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{-š-}] {};}
+                [S1]    
+                [C2P   
+                    [C2]
+                ]
+            ]
+        ]
+\end{forest}
+    \caption{ }
+    \label{kas:fig:normal:lexicalizations_b}
+     \end{subfigure}
+
+     \begin{subfigure}[b]{0.96\textwidth}
+         \centering
+\begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [S1P, s sep=1.75cm
+       	    [QP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{strog-}] {};} 
+                [Q]
+                [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+	            ]
+            ]
+	       [S1P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{-š-}] {};}
+                [S1]
+                [C2P
+                    [C2]
+                    [C1P
+                        [C1]
+                    ]
+                ]
+            ]
+        ]
+\end{forest}
+    \caption{ }
+    \label{kas:fig:normal:lexicalizations_c}
+     \end{subfigure}
+     \caption{Possible lexicalizations of S1P given the L-tree for \textit{strog-}}
+     \label{kas:fig:normal:lexicalizations}
+\end{figure}
+
+The solution for the problem of the comparative affix suddenly being overt in the superlative form comes from the work of Hagen Blix arguing that phrasal spell-out entails the possibility of spelling out constituents that ``include'' movement. To be more substantive, Blix suggests that L-trees like \figref{kas:fig:strog:mct} are available in the lexicon, given the possibility of spelling out whole constituents (see \citealt{Blix:2022} for an exploration of this idea based on Kipsigis number morphology). In accordance with an anonymous reviewer's comments, I emphasize that the idea of Movement-Containing lexical entries is not a theoretical addition to the Nanosyntactic project but rather an under-explored representational possibility.
+
+\begin{figure}
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+  	[C2P
+		[QP
+            [Q]
+            [AdjP]
+        ]
+		[C2P
+            [C2]
+            [C1P
+                [C1]
+            ]
+        ]
+	]{\draw (.east) node[right]{$\Leftrightarrow$ \textit{strog}-}; }
+    \end{forest}
+    \caption{Movement-Containing Tree for the lexical entry of \textit{strog-}}
+    \label{kas:fig:strog:mct}
+\end{figure}
+
+For our purposes, the main consequence of the proposed lexical entry is that there is no subconstituent of the L-tree in \figref{kas:fig:strog:mct} that contains both C1 and the adjective to the exclusion of C2. Hence, if we force C2 to be spelled-out together with superlative structure (via the backtracking step, see the previous subsection), the comparative affix will arise, as shown in \figref{kas:fig:mct:lexicalization}. Note that the derivational steps are the same as with the regular adjectives -- the only difference comes from the fact that adjectival stems like \textit{strog-} are able to realize the whole comparative structure.
+
+\begin{figure}
+ \begin{subfigure}[b]{1\textwidth}
+    \centering
+ \begin{forest}
+        for tree={s sep=0.25cm, inner sep=0, l=1cm}
+        [C2P, tikz={\node [draw,ellipse,inner sep=-2pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{strog-}] {};} 
+            [QP
+            	[Q]
+		          [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+		          ]
+            ]
+            [C2P
+                [C2]
+                [C1P
+                    [C1]
+                ]
+            ]
+        ]
+        \end{forest}\hfill\begin{forest}
+        for tree={s sep=0.25cm, inner sep=0, l=1cm}
+        [C2P, s sep=1.2cm
+            [QP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{glup}] {};} 
+                [Q]
+		          [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+		          ]
+            ]
+            [C2P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{ej}] {};} 
+                [C2]
+                [C1P
+                    [C1]
+                ]
+            ]
+        ]
+        \end{forest}
+ \caption{Lexicalization of the comparative \textit{strož-} (cf. \textit{glup-ej-})}
+    \label{kas:fig:mct:lexicalization_a}
+\end{subfigure}\medskip
+
+\begin{subfigure}[b]{1\textwidth}
+    \centering
+ \scalebox{0.9}{\begin{forest}
+        for tree={s sep=0.25cm, inner sep=0, l=1cm}
+        [S2P, s sep=0.9cm
+            [C1P, s sep=0.85cm
+                [QP , tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{strog}] {};}  
+                    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}
+                    [C1]
+                ]
+            ]
+            [S2P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{š}] {};}   [S2] [S1P [S1] [C2P [C2]]]]
+        ]
+        \end{forest}}\hfill\scalebox{0.9}{\begin{forest}
+        for tree={s sep=0.25cm, inner sep=0, l=1cm}
+        [S2P, s sep=0.9cm
+            [C1P, s sep=0.85cm
+                [QP , tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{glup}] {};}  
+            	    [Q]
+		              [AdjP
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+		              ]
+                ]
+                [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};} 
+                    [C1]
+                ]
+            ]
+            [S2P, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:\textit{š}] {};} 
+                [S2]
+                [S1P
+                    [S1]
+                    [C2P
+                        [C2]
+                    ]
+                ]
+            ]
+        ]
+        \end{forest}}
+ \caption{Lexicalization of the superlative \textit{strož-aj-š-} (cf. \textit{glup-ej-š-})}
+    \label{kas:fig:mct:lexicalization_b}
+\end{subfigure}
+    \caption{Lexicalizations of comparative and superlative forms of \textit{strogij} `strict'}
+    \label{kas:fig:mct:lexicalization}
+\end{figure}
+
+To put it informally, \citeposst{Blix:2022} proposal allows for a formalization of the intuition that the comparative affix is zero-exponed in the comparative only: it is ``inside'' a portmanteau form, which is possible in the comparative form only due to the internal structure of the lexical entry. Once S1 merges, the lexicalization requires bundling C2 together with S1, which results in QP being the only available subconstituent of the L-tree in \figref{kas:fig:strog:mct}, forcing the exponence of \textit{-ej-} in the superlative form.
+
+\subsection{Augment adjectives: the need for subextraction}\label{kas:subsec:augment}
+
+Although the movement-containing trees (together with backtracking) have allowed us to capture the zero-comparative class of adjectives, the augment adjectives present an additional puzzle: we need the augment affix itself to realize the comparative structure. The desired lexicalization is as follows: there is some right branch that spells out Q, C1 and C2 together in the comparative form, and the superlative form must look like every other superlative form does: Adj, Q, C1 and C2-S1-S2 are lexicalized by distinct affixes.
+
+The question is, how does one come to these lexicalizations given the regular Nanosyntax Spell-Out algorithm provided in \citet{Baunaz:2018} and \citet{Starke:2018}. My answer is: it is impossible. Let us see why. Given the regular Nanosyntax algorithm, the fact that the comparatives only have a single affix implies the lexicalization in \figref{kas:fig:augment:normal}.
+
+\begin{figure}
+% \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=1cm}
+    [C2P, s sep=1.5cm
+	    [AdjP , tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}  ]
+		[C2P , tikz={\node [draw,ellipse,inner sep=-1pt,xscale=1.1,yshift=-3pt,yscale=.8,fit to=tree, label=below:\textit{(o)k}] {};}
+            [C2]
+            [C1P
+                [C1]
+                [QP
+                    [Q]
+                ]
+            ]
+        ]
+	]
+    \end{forest}
+    \caption{Lexicalization with a single affix according to regular Nanosyntax algorithm}
+    \label{kas:fig:augment:normal}
+\end{figure}
+
+The following problem then arises: any L-tree which matches with the right branch of the tree in \figref{kas:fig:augment:normal} will match to the subconstituent without C2 (given the Superset Principle). Hence, the predicted lexicalization for the superlative form does not include the comparative affix, contrary to the data, see \figref{kas:fig:no:name:again}.
+
+\begin{figure}
+% \centering
+    \begin{forest}
+    for tree={s sep=0.75cm, inner sep=0, l=1cm}
+    [S2P, s sep=1.5cm
+	    [C1P
+		      [AdjP , tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};} ]
+		    [C1P , tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};}   
+                [C1]
+                [QP 
+                    [Q]
+                ]
+            ]
+		]
+		[S2P , tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};}   
+            [S2]
+            [S1P
+                [S1]
+                [C2P
+                    [C2]
+                ]
+            ]
+        ]
+	]
+    \end{forest}
+    \caption{Lexicalization of superlative given the regular Nanosyntax algorithm}
+    \label{kas:fig:no:name:again}
+\end{figure}
+
+This problem motivates a theoretical addition to the Nanosyntax model. To account for augment adjectives, I employ the novel subextraction Nanosyntax algorithm, which is given in \REF{kas:ex:new:algo}. Here, I take ``non-remnant'' to mean ``not containing a unary branch''. See \citet{Caha:2023} for a similar algorithm.
+
+\ea Subextraction spell-out algorithm\label{kas:ex:new:algo} (cf. \citealt{Caha:2023})
+    \ea Merge F and spell-out
+    \ex If (a) fails, move the closest non-remnant constituent to Spec,FP
+    \ex If (b) fails, move the dominating node to Spec,FP (recursive step)
+    \ex If (c) fails, try the next option in the previous cycle
+    \z
+\z
+
+\noindent Compared to the regular Nanosyntax algorithm, the steps are the same in a single-affix structure as the steps in the standard algorithm: the first step is to move the specifier (the closest non-remnant constituent) and the second step is to move the whole structure (the dominating constituent). The difference comes with multiple affix structures: given the structure in \figref{kas:fig:subext_a}, the first step would be to move the XP to Spec,HP (as in \figref{kas:fig:subext_d}) and not YP (as was the case with the old algorithm, see the step in \figref{kas:fig:subext_c}) -- the novel algorithm makes heavy use of subextraction (moving a subconstituent from a specifier).
+
+\begin{figure}
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [ZP
+		      [YP
+			    [XP]
+			    [YP 
+                    [Y]
+                ]
+		      ]
+		      [ZP 
+                [Z]
+            ]
+	    ]
+    \end{forest}
+ \caption{A multi-affix structure}
+    \label{kas:fig:subext_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+        [HP
+            [H]
+            [ZP
+		          [YP
+			        [XP]
+			        [YP
+                        [Y]
+                    ]
+		          ]
+		          [ZP
+                    [Z]
+                ]
+	        ]
+        ]
+    \end{forest}
+    \caption{Merge H}
+    \label{kas:fig:subext_b}
+\end{subfigure}\medskip
+
+ \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+    	[HP
+			[YP
+			    [XP]
+			    [YP
+                    [Y]
+                ]
+		      ]
+		      [HP 
+                [H]
+                [ZP 
+                    [Z]
+                ]
+            ]
+		]
+    \end{forest}
+    \caption{Old: move YP to Spec,HP}
+    \label{kas:fig:subext_c}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+    	[HP
+			[XP]
+			[HP
+				[H]
+				[ZP
+					[YP 
+                        [Y]
+                    ]
+					[ZP 
+                        [Z]
+                    ]
+				]
+			]
+		]
+	\end{forest}
+    \caption{New: move the closest non-remnant\\constituent (XP) to Spec,HP}
+    \label{kas:fig:subext_d}
+\end{subfigure}
+    \caption{Complex specifier and old/new spell-out algorithm}
+    \label{kas:fig:subext}
+\end{figure}
+
+The right branch of the structure in \figref{kas:fig:subext_d} is a peculiar one because if there is backtracking in the derivation, the next step in the derivation is the structure in \figref{kas:fig:subext_c} -- hence, if there is an L-tree for the right branch in \figref{kas:fig:subext_d}, backtracking may force the exponence of the affix which realizes [YP [Y]]. The core idea is shown graphically in \figref{kas:fig:affix:emergence}.
+
+\begin{figure}
+ \begin{subfigure}[b]{0.45\textwidth}
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+    	[HP
+			[XP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:{$\alpha$}] {};} ]
+			[HP, tikz={\node [draw,ellipse,inner sep=-1pt,yshift=-3pt,yscale=.9,fit to=tree, label=below:{$\beta$}] {};}
+				[H]
+				[ZP
+					[YP [Y]]
+					[ZP [Z]]
+				]
+			]
+		]
+	\end{forest}
+ \caption{Lexicalization of the right branch}
+    \label{kas:fig:affix:emergence_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=1cm}
+    	[HP
+			[YP
+				[XP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:{$\alpha$}] {};}]
+				[YP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:{$\gamma$}] {};} [Y]]
+			]
+			[HP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:{$\delta$}] {};} 
+                [H] 
+                [ZP [Z]]
+			]
+		]
+    \end{forest}
+    \caption{The next step (after backtracking)}
+    \label{kas:fig:affix:emergence_b}
+\end{subfigure}
+    \caption{Affix emergence with backtracking and subextraction algorithm}
+    \label{kas:fig:affix:emergence}
+\end{figure}
+
+This property is important given the lexical entry I propose for the augment affix, given in \figref{kas:fig:augment:solution}. The main idea is that the backtracking step forced by the L-tree for the superlative affix \textit{-š-} will trigger exponence of the affix which realizes [C1P [C1]] (namely, \textit{-ej-}). Before I show the step-by-step derivation for the superlative form, let us go through the necessary steps for such a constituent to arise in the first place. The first step is to provide an L-tree for the adjectival stem, which does not include Q since it it realized by the augment.
+
+\begin{figure}
+% \centering
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+    [C2P 
+   	    [C2]
+	    [C1P
+		      [QP [Q]]
+		      [C1P [C1]]
+	    ]
+    ]{\draw (.east) node[right]{$\Leftrightarrow$ \textit{(o)k}-}; }
+    \end{forest}\hspace{1.5cm}
+    \begin{forest}
+    for tree={s sep=1cm, inner sep=0, l=0}
+    [AdjP
+        [Adj]
+        [$\sqrt{\mbox{\hspace{2pt}}}$]
+    ]{\draw (.east) node[right]{$\Leftrightarrow$ \textit{rez-}}; }
+    \end{forest}
+    \caption{L-trees for the augment and for the stem \textit{rez-}}
+    \label{kas:fig:augment:solution}
+\end{figure}
+
+Now, let us go through the whole derivation in order to show that the lexical entry in \figref{kas:fig:augment:solution}, coupled with the subextraction spell-out algorithm, results in the observed morphological pattern of augment adjectives. After Q is merged (\figref{kas:fig:aug:pos_b}), the movement of AdjP to Spec,QP is necessary to lexicalize the structure (\figref{kas:fig:aug:pos_c}).
+
+\begin{figure}
+ \begin{subfigure}[b]{0.3\textwidth}
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+        [AdjP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\emph{rez}] {};}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+	\end{forest}
+ \caption{Start with AdjP}
+    \label{kas:fig:aug:pos_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.3\textwidth}
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+        [!QP!
+            [Q] 
+            [AdjP
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+        ]
+    \end{forest}
+    \caption{Merge Q}
+    \label{kas:fig:aug:pos_b}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.3\textwidth}
+    \begin{forest}
+        for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+        [QP
+            [AdjP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\emph{rez}] {};}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\emph{(o)k}] {};}
+                [Q]
+            ]
+        ]
+    \end{forest}
+    \caption{Move AdjP to Spec,QP}
+    \label{kas:fig:aug:pos_c}
+\end{subfigure}
+    \caption{Deriving the positive form \textit{rez-k-}}
+    \label{kas:fig:aug:pos}
+\end{figure}
+
+Then, after C1 is merged (\figref{kas:fig:aug:c1p_a}), the movement of AdjP to Spec,C1P does not allow proper lexicalization (\figref{kas:fig:aug:c1p_b}) and the next step is done (movement of QP to Spec,C1P, see \figref{kas:fig:aug:c1p_c}), which results in a licit lexicalization. Note that this lexicalization does not correspond to any existing form -- that is not an issue since C1P does not occur in the absence of C2P.
+
+\begin{figure}
+ \begin{subfigure}[b]{0.25\textwidth}
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!C1P!
+        [C1]
+        [QP
+            [AdjP
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+        [QP [Q]]
+        ]
+    ]
+    \end{forest}
+ \caption{Merge C1}
+    \label{kas:fig:aug:c1p_a}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.38\textwidth}
+\centering
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!C1P!
+        [AdjP
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [C1P
+            [C1]
+            [QP [Q]]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the closest non-remnant constituent (AdjP) to Spec,C1P}
+    \label{kas:fig:aug:c1p_b}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.32\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [C1P
+        [QP
+            [AdjP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};}
+                [Q]
+            ]
+        ]
+        [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}
+            [C1]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent (QP) to Spec,C1P}
+    \label{kas:fig:aug:c1p_c}
+\end{subfigure}
+    \caption{Lexicalizing C1P}
+    \label{kas:fig:aug:c1p}
+\end{figure}
+
+After C2 is merged (\figref{kas:fig:aug:c2p_a}), the first step of the subextraction algorithm is to move AdjP (and not QP, since it contains a unary branch [QP [Q]]) to Spec,C2P (\figref{kas:fig:aug:c2p_b}), which results in a right branch that matches the L-tree for the augment, deriving the fact that the comparative affix is not present in the comparative form of augment adjectives. 
+
+\begin{figure}
+\hfill
+    \begin{subfigure}[b]{0.4\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.4cm, inner sep=0, l=0.5cm}
+    [!C2P!
+        [C2]
+        [C1P
+            [QP
+                [AdjP
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP [Q]]
+            ]
+            [C1P
+                [C1]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Merge C2\\\ }
+    \label{kas:fig:aug:c2p_a}
+\end{subfigure}\hfill \begin{subfigure}[b]{0.44\textwidth}
+\centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [C2P
+        [AdjP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}, for tree={s sep=0.3cm}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [C2P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};}, for tree={s sep=0.3cm}
+            [C2]
+            [C1P
+                [QP [Q]]
+                [C1P [C1]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the closest non-remnant constituent (AdjP) to Spec,C2P}
+    \label{kas:fig:aug:c2p_b}
+\end{subfigure}
+\hfill
+    \caption{Lexicalizing C2P}
+    \label{kas:fig:aug:c2p}
+\end{figure}
+
+Now, let us see what happens when the superlative structure is introduced into the derivation. After S1 is merged (\figref{kas:fig:aug:s1p:1_a}), no operation in the cycle (movement of AdjP in \figref{kas:fig:aug:s1p:1_b}, C2P in \figref{kas:fig:aug:s1p:1_c}) results in a proper lexicalization. Thus, backtracking is necessary. 
+
+\begin{figure}
+ \begin{subfigure}[b]{0.35\textwidth}
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [S1]
+        [C2P
+            [AdjP, for tree={s sep=0.3cm}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [C2P, for tree={s sep=0.3cm}
+                [C2]
+                [C1P
+                    [QP [Q]]
+                    [C1P [C1]]
+                ]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Merge S1}
+    \label{kas:fig:aug:s1p:1_a}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.35\textwidth}
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [AdjP, for tree={s sep=0.3cm}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [S1P
+            [S1]
+            [C2P, for tree={s sep=0.3cm}
+                [C2]
+                [C1P
+                    [QP [Q]]
+                    [C1P [C1]]
+                ]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the closest non-remnant constituent (AdjP) to Spec,S1P}
+    \label{kas:fig:aug:s1p:1_b}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.5\textwidth}
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [C2P
+            [AdjP, for tree={s sep=0.3cm}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [C2P, for tree={s sep=0.3cm}
+                [C2]
+                [C1P
+                    [QP [Q]]
+                    [C1P [C1]]
+                ]
+            ]
+        ]
+        [S1P [S1]]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent (C2P) to Spec,S1P}
+    \label{kas:fig:aug:s1p:1_c}
+\end{subfigure}
+    \caption{First cycle in lexicalizing S1P}
+    \label{kas:fig:aug:s1p:1}
+\end{figure}
+
+However, the first step of backtracking will be movement of QP to Spec,C2P, resulting in a proper lexicalization more reminiscent of the regular adjectives, as shown in \figref{kas:fig:backtracking:1}.
+
+\begin{figure}
+% \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [C2P
+        [QP
+            [AdjP, for tree={s sep=0.3cm}, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\emph{(o)k}] {};}
+                [Q]
+            ]
+        ]
+        [C2P, for tree={s sep=0.3cm}, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}
+            [C2]
+            [C1P [C1]]
+        ]
+    ]
+    \end{forest}
+    \caption{Backtracking: Move the dominating constituent (QP) to Spec,C2P}
+    \label{kas:fig:backtracking:1}
+\end{figure}
+
+As was the case with regular adjectives, merging S1 still does not result in a proper lexicalization (as shown in \figref{kas:fig:aug:s1p-2}), no matter what the operation (movement of AdjP, QP, C2P) and thus backtracking is necessary once again.
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [S1]
+        [C2P
+            [QP
+                [AdjP, for tree={s sep=0.3cm}
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP [Q]]
+            ]
+            [C2P, for tree={s sep=0.3cm}
+                [C2]
+                [C1P [C1]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Merge S1}
+    \label{kas:fig:aug:s1p-2_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [AdjP, for tree={s sep=0.3cm}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [S1P
+            [S1]
+            [C2P
+                [QP [Q]]
+                [C2P, for tree={s sep=0.3cm}
+                    [C2]
+                    [C1P [C1]]
+                ]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the closest non-remnant\\constituent (AdjP) to Spec,S1P}
+    \label{kas:fig:aug:s1p-2_b}
+\end{subfigure}\medskip
+
+\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [QP
+            [AdjP, for tree={s sep=0.3cm}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [QP [Q]]
+        ]
+        [S1P
+            [S1]
+            [C2P, for tree={s sep=0.3cm}
+                [C2]
+                [C1P [C1]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent\\(QP) to Spec,S1P}
+    \label{kas:fig:aug:s1p-2_c}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [C2P
+            [QP
+                [AdjP, for tree={s sep=0.3cm}
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP [Q]]
+            ]
+            [C2P, for tree={s sep=0.3cm}
+                [C2]
+                [C1P [C1]]
+            ]
+        ]
+        [S1P [S1]]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent\\(C2P) to Spec,S1P}
+    \label{kas:fig:aug:s1p-2_d}
+\end{subfigure}
+    \caption{Lexicalizing S1P after first backtracking}
+    \label{kas:fig:aug:s1p-2}
+\end{figure}
+
+The next backtracking step is to move the C1P to Spec,C2P, resulting in a structure that allows for future lexicalization of C2 together with S1 and S2, as shown in \figref{kas:fig:backtracking:2}. Note that this instance of backtracking mirrors the derivational steps necessary to lexicalize the superlative form of the regular adjectives.
+
+\begin{figure}
+\small
+% \centering
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [C2P
+        [C1P
+            [QP
+                [AdjP, for tree={s sep=0.3cm}, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};}
+                    [Q]
+                ]
+            ]
+            [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}
+                [C1]
+            ]
+        ]
+        [C2P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};}
+            [C2]
+        ]
+    ]
+    \end{forest}
+    \caption{Backtracking: Move the dominating constituent (C1P) to Spec,C2P}
+    \label{kas:fig:backtracking:2}
+\end{figure}
+
+After merging S1 (\figref{kas:fig:aug:s1p:fin_a}), movement of AdjP  (\figref{kas:fig:aug:s1p:fin_b}) and QP (\figref{kas:fig:aug:s1p:fin_c}) does not result in a proper lexicalization -- but movement of C1P does, as shown by \figref{kas:fig:aug:s1p:fin_d}.
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [S1]
+        [C2P
+            [C1P
+                [QP
+                    [AdjP, for tree={s sep=0.3cm}
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+                    ]
+                    [QP [Q]]
+                ]
+                [C1P [C1]]
+            ]
+            [C2P [C2]]
+        ]
+    ]
+    \end{forest}
+    \caption{Merge S1}
+    \label{kas:fig:aug:s1p:fin_a}
+\end{subfigure}\hspace{.5cm}\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [AdjP, for tree={s sep=0.3cm}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [S1P
+            [S1]
+            [C2P
+                [C1P
+                    [QP [Q]]
+                    [C1P [C1]]
+                ]
+                [C2P [C2]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the closest non-remnant\\constituent (AdjP) to Spec,S1P}
+    \label{kas:fig:aug:s1p:fin_b}
+\end{subfigure}\medskip
+
+\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [!S1P!
+        [QP
+            [AdjP, for tree={s sep=0.3cm}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [QP [Q]]
+        ]
+        [S1P
+            [S1]
+            [C2P
+                [C1P [C1]]
+                [C2P [C2]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent (QP) to Spec,S1P}
+    \label{kas:fig:aug:s1p:fin_c}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [S1P
+        [C1P
+            [QP
+                [AdjP, for tree={s sep=0.3cm}, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};}
+                    [Q]
+                ]
+            ]
+            [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};}
+                [C1]
+            ]
+        ]
+        [S1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};}
+            [S1]
+            [C2P [C2]]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent  (C1P) to Spec,S1P}
+    \label{kas:fig:aug:s1p:fin_d}
+\end{subfigure}
+    \caption{Lexicalizing S1P}
+    \label{kas:fig:aug:s1p:fin}
+\end{figure}
+
+The same thing happens after merging S2 (\figref{kas:fig:aug:s2p_a}): movement of AdjP (\figref{kas:fig:aug:s2p_b}) and QP (\figref{kas:fig:aug:s2p_c}) does not result in a proper lexicalization, but movement of C1P does (\figref{kas:fig:aug:s2p_d}). In the end, we derive the superlative form \textit{rez-č-aj-š-ij} with an overt comparative affix.
+
+\begin{figure}
+\centering
+\begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!S2P! 
+        [S2]
+        [S1P
+            [C1P
+                [QP
+                    [AdjP, for tree={s sep=0.3cm}
+                        [Adj]
+                        [$\sqrt{\mbox{\hspace{2pt}}}$]
+                    ]
+                    [QP [Q]]
+                ]
+                [C1P [C1]]
+            ]
+            [S1P
+                [S1]
+                [C2P [C2]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Merge S2}
+    \label{kas:fig:aug:s2p_a}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!S2P!
+        [AdjP, for tree={s sep=0.3cm}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [S2P
+       	    [S2]
+	        [S1P
+                [S1]
+                [C2P
+                    [C1P
+                        [QP [Q]]
+                        [C1P [C1]]
+                    ]
+                    [C2P [C2]]
+                ]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the closest non-remnant\\constituent (AdjP) to Spec,S2P}
+    \label{kas:fig:aug:s2p_b}
+\end{subfigure}\medskip
+
+\begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.25cm, inner sep=0, l=0.5cm}
+    [!S2P!
+        [QP
+            [AdjP, for tree={s sep=0.3cm}
+                [Adj]
+                [$\sqrt{\mbox{\hspace{2pt}}}$]
+            ]
+            [QP [Q]]
+        ]
+        [S2P
+            [S2]
+            [S1P
+                [S1]
+                [C2P
+                    [C1P [C1]]
+                    [C2P [C2]]
+                ]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent (QP) to Spec,S2P}
+    \label{kas:fig:aug:s2p_c}
+\end{subfigure}\hfill\begin{subfigure}[b]{0.54\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.45cm, inner sep=0, l=0.5cm}
+    [S2P
+        [C1P
+            [QP
+                [AdjP, for tree={s sep=0.3cm},  tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{rez}] {};}
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP,  tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};},for tree={s sep=0.3cm} [Q]
+                ]
+            ]
+            [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};},for tree={s sep=0.3cm} [C1]]
+        ]
+        [S2P,  tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};},for tree={s sep=0.3cm}
+            [S2]
+            [S1P
+                [S1]
+                [C2P [C2]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Move the dominating constituent (C1P) to Spec,S2P}
+    \label{kas:fig:aug:s2p_d}
+\end{subfigure}
+    \caption{Lexicalizing S2P}
+    \label{kas:fig:aug:s2p}
+\end{figure}
+
+This subsection has presented an analysis for the problematic degree morphology pattern of Russian augment adjectives. The core analytical move was the L-tree for the augment: its shape and the novel subextraction spell-out algorithm guarantee that backtracking (which happens due to C2 being in the L-tree for the superlative affix) results in a structure where [QP [Q]] is the only subconstituent matching to the L-tree of the augment, allowing for the independent realization of the [C1P [C1]] subconstituent. In the next subsection, I will synthesize ideas from the proposed analyses of zero-comparatives and augment adjectives in order to account for the *ABA-violating adjectives.
+
+\clearpage
+
+\subsection{{*}ABA-violating adjectives: putting the pieces together}\label{kas:subsec:aba}
+
+At this moment, the solution to the *ABA-violating class of adjectives should be rather clear. The final lexicalized structure for comparatives of augment adjectives should be the L-tree for the adjectival stems of *ABA-violating adjectives, as given in \figref{kas:fig:aba:solution} for \textit{vys-}. The solution to the ABA distribution of zero-exponence of the augment in the *ABA-violating class is thus the same as the solution to the distribution of zero-exponence of the comparative affix in the zero-comparative class: the lexical entry for the adjectival stem is such that the whole structure for the comparative form is a portmanteau.
+
+\begin{figure}
+% \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [C2P
+        [AdjP
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [C2P
+            [C2]
+            [C1P
+                [QP [Q]]
+                [C1P [C1]]
+            ]
+        ]
+    ]{\draw (.east) node[right]{$\Leftrightarrow$ \textit{vys}}; }
+    \end{forest}
+    \caption{Lexical entry for \textit{vys}}
+    \label{kas:fig:aba:solution}
+\end{figure}
+
+The core property of this proposal is that this lexical entry does not provide any subconstituent with AdjP that is not an AdjP itself or the whole tree, which means that the adjectival root will not be available to spell-out anything but AdjP in the positive form (resulting in \textit{vys-ok-ij}, the lexicalization of which is given in \figref{kas:fig:aba_a}) and the superlative form (resulting in \textit{vys-oč-aj-š-ij}, the lexicalization of which is given in \figref{kas:fig:aba_b}).
+
+\begin{figure}
+\centering
+    \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [QP
+        [AdjP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{vys}] {};}
+            [Adj]
+            [$\sqrt{\mbox{\hspace{2pt}}}$]
+        ]
+        [QP, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};}
+            [Q]
+        ]
+    ]
+    \end{forest}
+    \caption{Lexicalized structure for \textit{vys-ok-}}
+    \label{kas:fig:aba_a}
+    \end{subfigure} \begin{subfigure}[b]{0.54\textwidth}
+    \centering
+    \begin{forest}
+    for tree={s sep=0.5cm, inner sep=0, l=0.5cm}
+    [S2P
+        [C1P
+            [QP
+                [AdjP, for tree={s sep=0.3cm},  tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{vys}] {};}
+                    [Adj]
+                    [$\sqrt{\mbox{\hspace{2pt}}}$]
+                ]
+                [QP,  tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{(o)k}] {};},for tree={s sep=0.3cm}
+                    [Q]
+                ]
+            ]
+            [C1P, tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{ej}] {};},for tree={s sep=0.3cm} [C1]]
+        ]
+        [S2P,  tikz={\node [draw,ellipse,inner sep=-1pt,fit to=tree, label=below:\textit{š}] {};},for tree={s sep=0.3cm}
+            [S2]
+            [S1P
+                [S1]
+                [C2P [C2]]
+            ]
+        ]
+    ]
+    \end{forest}
+    \caption{Lexicalized structure for \textit{vys-oč-aj-š-}}
+    \label{kas:fig:aba_b}
+    \end{subfigure}
+\caption{}
+\label{kas:fig:aba}
+\end{figure}
+
+Note that, from the derivational point of view, there is no difference in the spell-out steps for augment adjectives and {*}ABA-violating adjectives -- the only difference is the lexical property of {*}ABA-violating adjectives that they happen to have the correct right branch in their lexical entry, which creates an appearance of an ABA pattern with respect to the overtness of the augment. The core analytical contribution here is that the puzzling ABA pattern results from a combination of two independent phenomena (with theory-laden description) found in the domain of Russian adjectival morphology: the first phenomenon is the pattern of zero-comparatives (the adjectival root triggers zero-exponence of morphosyntactic material in the comparative form only), which is captured by positing a movement-containing L-tree for the adjectival stem. The second phenomenon is the pattern of augment adjectives (the augment affix zero-exponence of morphosyntactic material in the comparative form only). When one combines the derivational steps necessary for the analysis of augment adjectives with a mo\-ve\-ment-con\-taining L-tree for adjectival stems such as \textit{vys-}, an ABA pattern emerges.
+
+Some theorists may take the fact that the morphological theory used in this work generates ABA patterns as a matter of concern since many works (this paper included) have taken the impossibility of such patterns as the starting point of the investigation. However, recent research on similar (pseudo-)ABA patterns \citep{Middleton:2021,Davis:2021} has come to the conclusion that the middle cell (the B of ABA) needs to be a portmanteau -- this paper can be seen as adding to the body of evidence in favor of this idea.
+
+\section{Conclusion}\label{kas:sec:conclusion}
+
+In this paper, I have taken a look at the adjectival morphology of Russian through the lens of the comparative--superlative containment hypothesis put forth by \citet{Bobaljik:2012}. I have provided evidence for there being a number of adjectives whose morphological behavior in the comparative and the superlative forms is problematic for contemporary proposals that follow Bobaljik's general idea.
+	
+Although the reported surface patterns may be taken as counter-evidence to Bobaljik's claims, I have argued that his core ideas need not be abandoned and have proposed a Nanosyntactic analysis of the pattern building on the idea of Movement-Containing Trees (which are implied by the notion of phrasal spell-out but have been only recently argued for and used by \citealt{Blix:2022}) and the novel spell-out algorithm which allows subextraction from specifiers \citep{Caha:2022b,Caha:2023}.
+	
+Given that the morphological patterns discussed in this work are problematic for both Distributed Morphology and the standard version of Nanosyntax found in \citet{Baunaz:2018} and preceding work, it is possible to take the proposed analysis as an argument for accepting the generative power of the version of Nanosyntax with the subextraction algorithm presented in this work.
+
+\section*{Abbreviations}
+
+\begin{tabularx}{.5\textwidth}{@{}lQ}
+\textsc{aug}&augment        \\
+\textsc{agr}&{agreement}    \\
+\textsc{cmpr}&comparative   \\
+\textsc{f}&feminine         \\
+\textsc{m}&masculine        \\
+\end{tabularx}%
+\begin{tabularx}{.5\textwidth}{lQ@{}}
+\textsc{pl}&plural        \\%
+\textsc{pos}&positive       \\
+\textsc{sg}&singular        \\
+\textsc{sprl}&superlative   \\
+&\\ % this dummy row achieves correct vertical alignment of both tables
+\end{tabularx}
+
+
+\section*{Acknowledgments}
+I thank Petr Olegovich Rossyaykin, Alexandra Shikunova, Daria Paramonova, Maria Bolotova, Pavel Caha, Karlos Arregi, the audience at FDSL 2022 and two anonymous OSL reviewers for discussion of the material presented in this paper and their comments on an earlier draft. I am also grateful to Varvara Magomedova and Alexander Podobryaev for bringing the ABA pattern in Russian adjectives to my attention. This work is supported by RSF grant № 22-18-00285. All errors are my own.
+
+\printbibliography[heading=subbibliography,notkeyword=this]
+
+\end{document}
