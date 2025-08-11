@@ -1,0 +1,33 @@
+\emergencystretch=1em
+
+\renewcommand{\eachwordone}{\itshape}
+\babelfont[georgian]{rm}[Scale=MatchLowercase]{DejaVu Sans}
+
+\newcommand{\STAB}[1]{\begin{tabular}{@{}c@{}}#1\end{tabular}}
+
+% Solves a bug in langscibook that prevents Georgian being printed in footnotes
+\setkomafont{footnote}{\footnotesize}
+
+% Do not print a comma before the "authortype", in order to use this field
+% for author names in non-Latin script
+\renewbibmacro*{author}{%
+  \ifboolexpr{
+    test \ifuseauthor
+    and
+    not test {\ifnameundef{author}}
+  }
+    {\usebibmacro{bbx:dashcheck}
+       {\bibnamedash}
+       {\usebibmacro{bbx:savehash}%
+        \printnames{author}%
+  \iffieldundef{authortype}
+    {\newunit}%                               period instead of space
+    {\setunit{\space}}}% <<--- changed from langsci-unified.bbx
+     \iffieldundef{authortype}
+       {}
+       {\usebibmacro{authorstrg}%
+  \newunit}}%                                 period instead of space
+    {\global\undef\bbx@lasthash
+     \usebibmacro{labeltitle}%
+     \newunit}%                               period instead of space
+  \usebibmacro{date+extradate}}

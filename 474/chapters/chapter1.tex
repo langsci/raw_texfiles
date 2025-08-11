@@ -1,0 +1,1160 @@
+\documentclass[output=paper,colorlinks,citecolor=brown]{langscibook}
+\ChapterDOI{10.5281/zenodo.15682184}
+\title{Universality of semantic frames versus specificity of conceptual frames} 
+\author{Svetla Koeva\orcid{0000-0001-5947-8736}\affiliation{Department of Computational Linguistics, Institute for Bulgarian Language, Bulgarian Academy of Sciences}}
+
+\abstract{FrameNet is a semantic network that links semantic frames, each evoked by a set of lexical units and consisting of frame elements (with semantic types, definitions and relations) that outline the semantic structure of the frame, as well as frame-to-frame relations and annotations that illustrate the syntactic realisation of the frame elements.
+
+The Bulgarian FrameNet is based on the FrameNet and at the same time offers the possibility to encode language-specific semantic structures, either by replicating or reconstructing existing semantic frames or by introducing new frames. An abstract representation, called \emph{superframe}, is developed to replicate language-independent information (at least for English and Bulgarian) from semantic frames. In the Bulgarian FrameNet, the \emph{conceptual frames} inherit either all or part of the language-independent information from the semantic frames via the superframes and may contain additional language-specific data to represent scenarios evoked by the Bulgarian lexical units. Each conceptual frame is extended by a set of nouns that represent the lexical realisations of the frame elements corresponding to the target lexical units.
+
+The study presents the FrameNet, the creation of FrameNets for other languages, the motivation for introducing the conceptual frames and the superframes, which combine the semantic and conceptual frames in a \emph{multilingual network}, and the structure of the Bulgarian FrameNet, which includes Lexical, Grammatical, Frame and Syntactic sections (valence patterns). 
+
+The overall aim is to present our approach to the identification and transfer of \emph{language-universal} knowledge from the FrameNet semantic frames, universal in the sense that it applies to both English and Bulgarian, and the definition and integration of \emph{language-specific components} of the conceptual frames for Bulgarian (as compared to English).
+}
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[1]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction} 
+
+FrameNet is a semantic network that links semantic frames, each evoked by a set of lexical units and consisting of frame elements (with semantic types, definitions and relations) that outline the semantic structure of the frame \citep{Fillmore2003,fillmore2010}. It also includes frame-to-frame relations and contains syntactic and semantic annotations of examples that illustrate the syntactic realisation of frame elements.
+
+The study presents the structure of the Bulgarian FrameNet, which is based on two basic principles: maintaining consistency with FrameNet and providing a mechanism for encoding semantic structures that either replicate or reconstruct the existing semantic frames or are completely new. To achieve this, an abstract level of representation, the \emph{superframe}, is introduced, which contains the \emph{language-independent information} inherited from the semantic frames. To represent the semantic structure of Bulgarian lexical units that evoke the same situation, property or process, an abstract structure, the \emph{conceptual frame}, is introduced, which is influenced by the semantic frames of FrameNet. The conceptual frame:
+
+\begin{itemize}
+\item applies only to lexical units described by the same set of core frame elements, which in turn have the same syntactic realisation and lexical compatibility;
+\item is extended by nouns that can form semantically valid phrases with the verbal lexical units that evoke the frame.
+\end{itemize}
+
+A superframe is linked to exactly one semantic frame, while a superframe can be connected to one or more conceptual frames. Three models of correspondence between a conceptual frame and a superframe are described: (a) equivalence, (b) partial equivalence and (c) no equivalence. The superframe is introduced to ensure alignment with language-independent information from FrameNet that is valid for at least two languages, English and Bulgarian, while conceptual frames are used to delineate semantic and syntactic differences in conceptual descriptions of Bulgarian lexical units. This representation enables the integration of Bulgarian into a global network that captures both unique semantic and syn- tactic features of individual languages as well as language-independent features that may apply to a large group of languages.
+
+In the following sections, we present the structure of FrameNet, the creation of FrameNets for other languages, the motivation for the introduction of superframes and conceptual frames, and the relations between the two abstract structures. This is followed by an overview of the structure of the Bulgarian FrameNet, which comprises four sections: Lexical, Grammatical, Frame and Syntactic, all of which are integrated into a web-based data management system called BulFrame \citep{koeva-doychev-2022-ontology}. This system facilitates the manual evaluation and visualisation of the Bulgarian FrameNet.\footnote{https://dcl.bas.bg/bulframe/}
+
+We describe the components that make up the Lexical, Grammatical, Frame, and Syntactic section of each conceptual frame and present their components, sources and associated data. The Bulgarian lexical units are provided with additional grammatical, lexical and semantic information. The frame elements in the Bulgarian FrameNet are associated to nouns that are suitable for collocations with verbal lexical units that evoke the corresponding frame. Based on annotated examples, each frame element is linked to the relevant syntactic categories, grammatical roles and labels for implicit use related with its lexical representation.
+
+The contributions of the study are as follows: (a) formulation of an abstract structure, the superframe, to connect the semantic and conceptual frames in a cross-linguistic network; (b) identification of language-independent knowledge (for at least two languages, in our case for English and Bulgarian) in the semantic frames of FrameNet for transfer to the superframes; (c) definition of conceptual frames based on the structure of the semantic frames of FrameNet and their extension with components containing additional lexical and grammatical information; (d) associating the conceptual frame elements with sets of nouns that can be collocated contextually with the lexical units evoking the frame; and (e) developing the network of conceptual frames valid for Bulgarian, containing both language-independent information from the corresponding semantic frames and language-specific information for Bulgarian.
+
+The BulFrame system for editing, evaluating and visualising data as well as the results of the annotation are presented in various studies, e.g. in \citet{skoeva2024} and in \citet{koeva-doychev-2022-ontology} and the other contributions in this volume.
+
+\section{Semantic and syntactic representations in FrameNet}
+FrameNet is based on the theory of Frame semantics \citep{fillmore1982frame,fillmore1976frame,fillmore1976frame,fillmore1985frames,Fillmore+2006+373+400,Fillmore+2008,fillmore2010}, going beyond the general semantic roles of Case Grammar \citep{fillmore1968case}.
+
+The central idea of Frame semantics is that word meanings are described in relation to semantic frames, which are schematic representations of the conceptual structures and patterns of beliefs, practices, institutions, images, etc. that provide a foundation for meaningful communication within a particular speech community \citep[235]{Fillmore2003}. Semantic frames are defined more concisely as schematic representations of speakers' knowledge of the situations or states of affairs that underlie the meanings of lexical items \citep[130]{fillmore2007valency}. A frame-bearing lexical unit evokes a frame, and a valency description of a specific lexical unit presents the ways the semantic valents are expressed in the sentence built around the frame-bearing unit \citep[131]{fillmore2007valency}. 
+
+FrameNet is a collection of semantic frames (each evoked by a set of lexical units associated with valency patterns) that represent conceptual-semantic and syntactic descriptions based on the annotation of examples. The semantic frame in FrameNet includes the following components: the frame name; the informal definition of the situation represented by the frame; a specification for the semantic type of the frame (optional); the set of frame elements (core and non-core: peripheral, extrathematic and core-unexpressed); a specification for the relations between frame elements, if any; a specification for frame-to-frame relations, if any; and the lexical units that evoke the frame. 
+
+The frame element information includes the name of the frame element, its informal definition, the semantic type (optional) and examples illustrating the use of the frame element (optional). The information on the lexical units includes a definition, the semantic type (optional), examples and annotation in the examples of the frame elements as well as the grammatical categories and grammatical functions of their syntactic realisations.
+
+Frame semantics thus links lexical units with both linguistic and conceptual information. The linguistic information consists of the frames as predicate classes, the sets of frame elements associated with them and their valency patterns. The conceptual information comprises the descriptions of situations and their participants as well as the relations between the frames \citep{sikos2018framenets}.
+
+
+Two types of criteria were used to formulate the semantic frames \citep[11–17]{Ruppenhofer2016}: a checklist of features and other principles such as paraphrases and alternative answers to a question.
+
+
+The checklist of features includes \citep[12–14]{Ruppenhofer2016}: 
+\begin{itemize}
+    \item the same number and type of frame elements for all lexical units; 
+    \item the same set of stages and transitions (sub-events) shared by lexical units, i.e. unlike the verb \textit{decapitate}, the verb \textit{shoot} can be used to report the event of firing and hitting at a person, but it does not entail that the person dies, thus the two verbs should belong to different frames;
+    \item the same participants' point of view, i.e. since the verb \textit{buy} takes the point of view of the \fename{Buyer} and the verb \textit{sell} takes the point of view of the \fename{Seller}, they belong to different semantic frames;
+    \item the same interrelations between frame elements for all lexical units, i.e. a \fename{Purpose} expressed with the verb \textit{buy} relates to the \fename{Buyer}, a \fename{Purpose} expressed with the verb \textit{sell} relates to the \fename{Seller}, and the different relations indicate participation in different semantic frames;
+    \item the same presuppositions, expectations, and concomitants of the target lexical units, i.e, the verb \emph{receive} presupposes a willing \fename{Agent} participating as a \fename{Donor} while the verb \emph{take} does not;
+    \item the similar basic denotation of the lexical units (similarity of type);
+    \item the similar pre-specifications given to frame elements by frame-evoking lexical units, i.e. verbs such as \emph{crowd}, \emph{flock}, \emph{pour}, \emph{stream}, etc. are part of the frame \framename{Mass\_motion} but not of the frame \framename{Self\_motion}  since they require that the moving entity is a \framename{Mass\_theme}, which generally consists of many individuals.
+\end{itemize}
+
+The development of frames is also based on the \emph{paraphrasability} (or near-paraphrasability) of lexical units: whether one lexical unit can be more or less successfully replaced by another, while evoking the same frame and the same configuration of frame elements. A semantic frame can be evoked by synonyms, near synonyms, antonyms, derivationally related lexical units, hypernyms, or hyponyms. For example, the  verb \textit{hate} with the definition `feel intense dislike for or a strong aversion towards' is a synonym of the verb \textit{detest} with the definition `dislike intensely' in the semantic frame \framename{Experiencer\_focused\_emotion}.  Both verbs 
+have a hypernym \textit{dislike} with the definition `feel distaste for or hostility towards', the verb \textit{resent} with the definition `feel bitterness or indignation at' is also a hyponym of {\textit{dislike}} and it has hyponyms such as \textit{abhor}, \textit{abominate}, and  \textit{despise}. On the other hand, verbs like \textit{excrate}, \textit{contemn}, \textit{scorn}, \textit{disdain} are not presented in the frame as of September 2024. \textbf{Multiword expressions} are also included, albeit relatively rarely.
+
+As in dictionaries, the lexical units of FrameNet are provided with \emph{definitions}, which were either taken from the Concise Oxford Dictionary, 10th Edition (courtesy of Oxford University Press) or written by the FrameNet developers \citep[9]{Ruppenhofer2016}.
+
+In FrameNet, the frame elements are classified according to how central they are in a particular frame, whereby three levels are distinguished: core, peripheral and extrathematic.
+A \textbf{core frame element} is an element that is necessary for the central meaning of the frame \citep[133]{fillmore2007valency} and represents a conceptually essential component of a frame and distinguishes the frame from others \citep[23]{Ruppenhofer2016}. \textbf{Peripheral frame elements} mark such notions as \fename{Time}, \fename{Place}, \fename{Manner}, \fename{Means} \fename{Degree} and the like. They do not distinguish between different frames and can be instantiated in any semantically suitable frame \citep[24]{Ruppenhofer2016}.
+\textbf{Extrathematic frame elements} are understood as not conceptually belonging to the frames they appear in. They are part of other abstract frames and situate the event against the backdrop of another event \citep[133]{fillmore2007valency}.
+The \textbf{Core-unexpressed} property refers to frame elements that function as core frame elements but do not appear in descendants of that frame. In child frames, however, the Core-unexpressed frame element is absorbed by the lexical units in the frame and cannot be represented individually \citep[25]{Ruppenhofer2016}.
+
+In FrameNet, some formal properties, typically co-present, are taken into account when selecting the core frame elements. The core frame element \citep[23–24]{Ruppenhofer2016}:
+\begin{itemize}
+
+\item{should be specified openly};
+\item{receives a definite interpretation if it is omitted (in the sentence \emph{John arrived} a certain frame element -- \fename{Goal} (location) -- is understood; \fename{Goal} is therefore a core frame element)};
+\item{has no formal marking (its interpretation depends entirely on the target: i.e. frame elements that can be subject or object in a simple active sentence in English, or has an idiosyncratic formal marking (i.e. the preposition \textit{on} in \textit{depend on} has no semantic meaning)}.
+\end{itemize}
+
+Although some of the names of the frame elements correspond to the names of the semantic roles, the names of the frame elements only serve a mnemonic purpose \citep[237]{Fillmore2003}. The definitions of frame elements are statements that express the semantics of a particular frame element in relation to the target lexical unit (and possibly in relation to other frame elements).
+
+It has been established that the frame elements are not necessarily independent of each other. 
+Some groups of frame elements behave like sets (called Core Sets), since the existence of any member of the set is sufficient to fulfil the semantic valency of the predicator \citep[25]{Ruppenhofer2016}. For example, \fename{Source}, \fename{Path} and \fename{Goal} core frame elements in motion frames form a \textbf{Core Set} in the sense that only one or two (rarely all three) frame elements can occur in a sentence without violating the semantic structure.
+
+The relation \FrameRelation{Requires} is coded if the occurrence of a core frame element presupposes that another core frame element also occurs. The relation \textit{Excludes} is observed if one of the frame elements from a group of conceptually related frame elements occurs and no other frame element from this group can occur \citep[26]{Ruppenhofer2016}. For example, the frame elements \fename{Goal} and \fename{Item} complement each other in the frame \framename{Attaching} and exclude the frame element \fename{Items}:
+
+ \begin{exe}
+ \ex  \label{ch01:ex:01}
+  \textit{The robber \textbf{TIED}} [\textit{Harry}]$_{\feinsub{Item}}$ [\textit{to the chair}]$_{\feinsub{Goal}}$.
+ \ex  \label{ch01:ex:02}
+  \textit{The robber \textbf{TIED}} [\textit{Harry's ankles}]$_{\feinsub{Items}}$ \textit{together}.
+\end{exe}
+
+
+The FrameNet frames are linked by a system of nine \emph{frame-to-frame relations}, seven of which fall into three groups: Generalisation, Event structure, and Systematic \citep[806-807]{fillmore2010}.  
+FrameNet can therefore be seen as a semantic net (or a set of small semantic nets) whose nodes represent the semantic frames and whose arcs represent the (semantic) relations between the frames.
+
+Generalisation relations are \FrameRelation{Inheritance}, \FrameRelation{Perspective on} and \FrameRelation{Using}. In the relation \FrameRelation{Inheritance} (represented by directed (asymmetric) relations \FrameRelation{Inherits from} and \FrameRelation{Is Inherited by}), the frame elements of the parent frame are bound to the frame elements of the child frame, whereby the names of the child frame elements can be different. The semantics of the child frame is therefore a subtype of the semantics of the parent frame, and the child frame can contain additional frame elements \citep[330]{fillmore2010}. For example, the \FrameRelation{Inheritance} relation exists between the frame \framename{Revenge} and the frame \framename{Rewards\_and\_Punishment} because the frame \framename{Revenge} involves one person inflicting punishment on another, as in its parent frame, the frame \framename{Rewards\_and\_Punishment}. However, the frame \framename{Revenge} is explicitly different from the frame \framename{Rewards\_and\_Punishments} as it is outside institutional or judicial control \citep[330]{fillmore2010}.
+
+It is also asserted that the \FrameRelation{Inheritance} relation corresponds to the \FrameRelation{is-a} relation in ontologies and that every semantic fact about the parent frame must correspond to an equally specific or more specific fact about the child \citep[80]{Ruppenhofer2016}. The complexity of the \FrameRelation{Inheritance} relation can manifest itself in different ways \citep[81]{Ruppenhofer2016}: parent and child frames can have different extrathematic frame elements; a child frame can have frame elements that are not present in the parent frame or such that are extrathematic in the parent frame; a child frame often does not express the parent frame elements of type \fename{Core-unexpressed}; a frame element of a child frame can be mapped to two frame elements of the parent frame; etc.
+
+\tabref{tab:my_label1} illustrates the \FrameRelation{Inheritance} relation between the frame \framename{Experiencer\_focused\_emotion} and its successor frames: \framename{Desiring} and \framename{Mental\_stimulus\_exp\_\linebreak focus}.
+\largerpage[2]
+
+\begin{table}
+\begin{tabular}{lccc}
+\lsptoprule
+Frames & \rotatebox{90}{\parbox{3cm}{\framename{Experiencer\_focused\_emotion}}} 
+       & \rotatebox{90}{\framename{Desiring}} 
+       & \rotatebox{90}{\parbox{3cm}{\framename{Mental\_stimulus\_exp\_focus}}} \\
+\midrule
+\multicolumn{4}{l}{\fename{{Core Frame elements} (FEs})}\\
+\fename{Experiencer} & Yes &  Yes & Yes \\
+\fename{Content} & Yes & \fename{Focal\_participant};   &   \fename{Stimulus}\\
+                 &     &  \fename{Event}  & \\
+\fename{Topic}  & Yes  & & Yes\\
+\fename{Event} & Yes  &  \fename{Location\_of\_event}  &  \\
+\midrule
+\multicolumn{4}{l}{\fename{{Core Unexpressed} FEs}} \\
+\fename{Expressor}   & Yes  &  & Yes (core) \\
+\fename{State}  & Yes   &  & Yes (core) \\
+\midrule
+\multicolumn{4}{l}{\fename{{Peripheral} FEs}}\\
+\fename{Degree}  & Yes & Yes & Yes \\
+\fename{Manner}  & Yes & Yes & Yes \\ 
+\fename{Time}  & Yes & Yes & Yes \\
+\fename{Explanation}  & Yes & Yes & Yes  \\
+\fename{Circumstances}  & Yes & & Yes \\
+\fename{Parameter}  & Yes  &  & Yes  \\
+\fename{Empathy\_target}  &  &  & Yes  \\
+\fename{Duration}  &  & Yes & Yes \\
+\fename{Purpose\_of\_event}  &  & Yes &  \\
+\fename{Role\_of\_focal\_} &  & Yes &  \\
+\quad \fename{participant} & \\
+\fename{Time\_of\_event} &  & Yes &  \\
+\fename{Place} &  & Yes &  \\
+\lspbottomrule
+\end{tabular}
+\caption{The \FrameRelation{Inheritance} relation between the frame \framename{Experiencer\_focused\_emotion} and its successor frames, expressed by frame elements}
+\label{tab:my_label1}
+\end{table}
+
+As the example shows, the relations between the frame elements of the frames connected via the Inheritance relation are quite complex: omission of a core frame element, i.e. the frame element \fename{Topic} in the frame \framename{Desiring}; specification of child frame elements, which is indicated by the names of the frame elements, i.e. \fename{Stimulus} in the frame \framename{Mental\_stimulus\_exp\_focus}, defined as ``the person, event or state of affairs that evokes the emotional response in the \fename{Experiencer}", corresponding to the more general frame element \fename{Content} in the frame \framename{Experiencer\_focused\_emotion}, defined as ``what the Experiencer's feelings or experiences are directed towards or based upon; the \fename{Content} differs from a stimulus because the \fename{Content} is not construed as being directly responsible for causing the emotion". In addition, the \fename{Content} can be expressed by one or both of the frame elements \fename{Focal\_participant} (``the entity that the \fename{Experiencer} wishes to be affected by some \fename{Event}") and \fename{Event} (``the change that the \fename{Experiencer} would like to see") in the frame \framename{Desiring}; etc. Although the frame elements of the parent frame are by and large retained in the child frames linked by \FrameRelation{Inheritance}, the example shows that some frame elements of the parent frame can be omitted in the child frame.
+
+ 
+The relation \FrameRelation{Perspective on} (represented by directed (asymmetric) relations \FrameRelation{Perspectivises} and \FrameRelation{Is Perspectivised in}) encodes the different perspectives on an abstract event \citep[867]{fillmore2010}. The use of this relation indicates the existence of at least two different possible points of view on the neutral frame. The commercial transaction scenario, where buying and selling are seen as different perspectives on the transfer of goods (\framename{Commerce\_goods\_transfer}) and paying and accepting money are seen as different perspectives on the transfer of money (\framename{Commerce\_money\_transfer}), is an example that is frequently analysed in the FrameNet literature. 
+It has also been shown that frames with perspectives are often non-lexical and abstract \citep[131]{osswald2014jr}.
+
+In the relation \FrameRelation{Using} (with its members: \FrameRelation{Uses} and \FrameRelation{Is Used by}), the child frame is dependent on the background knowledge provided by the parent frame; at least some of the core frame elements of the parent frame are bound to child frame elements, but not all \citep[330]{fillmore2010}. The following example illustrates this: the frame \framename{Being\_attached} with a definition `An \fename{Item} is attached by a \fename{Handle}, via a \fename{Connector}, to a \fename{Goal}, or \fename{Items} are attached to each other' is \FrameRelation{Used by} the frame \framename{Being\_detached} with the definition `An \fename{Item}  is detached from a \fename{Source}, or \fename{Items} are detached from each other'.
+
+ \begin{exe}
+ \ex  \label{ch01:ex:03}
+  \textit{It seems that} [\textit{the nits}]$_{\feinsub{Item}}$ \textit{are \textbf{ATTACHED}}  [\textit{to the hair}]$_{\feinsub{Goal}}$.
+ \ex  \label{ch01:ex:04}
+  \textit{I feel like} [\textit{my head}]$_{\feinsub{Item}}$  \textit{is \textbf{DETACHED} }  [\textit{from the rest of my body}]$_{\feinsub{Source}}$.
+\end{exe}
+
+
+\textbf{Event structure} relations are \textit{Subframe} and \textit{Precedes}  \citep[867]{fillmore2010}. 
+
+\textit{Subframe} relation (\textit{Subframe of} and \textit{Has Subframe(s)}) is used when the child frame is expressed as a sub-event of a more complex parent event. For example, the frame \framename{Criminal\_process} has four subframes: \framename{Arraignment}, \framename{Arrest}, \framename{Sentencing}, and \framename{Trial}.
+
+\textit{Precedes} relation (\textit{Precedes} and \textit{Is Preceded by}) indicates that there is a temporal order between the frames: the parent frame precedes the child frame. For example, the frame \framename{Employment\_continue} \textit{Precedes} the frame \framename{Employment\_end} and \textit{Is Preceded by} the frame \framename{Employment\_start}.
+
+\FrameRelation{Causative of} and \FrameRelation{Inchoative of} are  \textbf{Syntactic} relations \citep[331]{fillmore2010}. In the relation \FrameRelation{Causative of},  the parent frame represents the causative  that corresponds to the child frame. In the relation \FrameRelation{Inchoative of},  the parent frame  represents the inchoative and the child represents the stative. For example, the frame \framename{Cause\_to\_fragment} is related to the frame \framename{Breaking\_apart} by the relation \FrameRelation{Causative of}. The frame \framename{Cause\_to\_fragment} has an \fename{Agent} as part of its conceptual core structure, while the frame \framename{Breaking\_apart} does not and expresses the \fename{Agent} as an oblique.
+
+Furthermore, if there are groups of frames that are similar and should be carefully distinguished, each of the frames in question has a \FrameRelation{See Also} relation with a representative member of the group; \FrameRelation{Metaphor} is a relation between a source frame and a target frame in which many or all of the lexical units of the target frame are at least partially understood in terms of the source frame \citep[85]{Ruppenhofer2016}.
+               
+According to Fillmore, the implementation of Frame semantics in FrameNet should lead to correct frame-to-frame relations, including generalisations about how syntactic roles are assigned to arguments that depend on the more abstract inherited schemas \citep[157]{fillmore2007valency}. Developing a consistent relational structure of frames with different degrees of abstraction is a key challenge for the FrameNet approach, as certain case studies show \citep[153]{osswald2014jr}. At the same time, the addition of new frame-to-frame relations together with proposals for distinguishing subtypes within existing relations \citep[12--19]{sikos2018framenets} emphasises both the complexity of the conceptual information presented and the potential for its extension.
+
+\figref{fig:F-to-FR} provides an overview of the connectedness between frames in FrameNet.
+
+\begin{figure}
+%   \includegraphics[width=\textwidth]{figures/F-to-F.png}
+  \includegraphics[width=\textwidth]{figures/F-to-F.pdf}
+  \caption{The immediate frame-to-frame relations of the semantic frame \framename{Arriving}. Red arrows \FrameRelation{Inheritance}, black --  \FrameRelation{Precedes}, green -- \FrameRelation{Using}, blue -- \FrameRelation{Subframe}, the direction is parent-child, the dashed lines show inverse relations.
+  }
+  \label{fig:F-to-FR}
+\end{figure}
+
+\newpage
+\textbf{The semantic types} in FrameNet are used for \citep[86]{Ruppenhofer2016}:
+
+\begin{itemize}
+ \item{Marking of frames for their function}.
+    \item{Specification of the basic typing of fillers for frame elements.}
+ \item{Marking important dimensions of semantic variation between the lexical units in a frame.}
+\end{itemize}
+
+Lexical units, frames and frame elements are categorised according to \textbf{ontological semantic types}. For example, the semantic type [Region] is assigned to the lexical unit \emph{island}.n in the frame \framename{Natural\_features}, while the type [Body of water] is assigned to the lexical unit  \emph{bay}.n.
+
+For frames, the semantic type indicates that each lexical unit of the frame can be labelled with an equivalent or more specific type. For example, the frame \framename{Clothing} has the semantic type [Artefact]. Consequently, all its lexical units denote artefacts, i.e. \textit{boot}.n, \textit{cape}.n, \textit{dress}.n, etc. \citep[422--423]{Lonneker-RodmanB09}.
+
+Semantic types for frame elements classify the type of filler that is to appear as a frame element. Not all frame elements (and frames) have a specific semantic type, and in general semantic types are too broad, so they lack precision when it comes to conveying actual constraints on lexical combinations. For example, certain frame elements within the semantic frame \framename{Experiencer\_focused\_emotion} have rather general semantic types: \fename{Content} with the semantic type [Content]; \fename{Event} with the semantic type [State of affairs]; \fename{Experiencer} with the semantic type [Sentient]; \fename{Degree} with the semantic type [Degree]; \fename{Explanation} with the semantic type [State of affairs]; \fename{Manner} with the semantic type [Manner]; \fename{Time} with the semantic type [Time].
+On the other hand, some frame elements such as \fename{Topic}, \fename{Expressor}, \fename{State} are not specified with a semantic type.
+
+\textbf{Framal types} are applied to frames. The type [Non-lexical] characterises fra\-mes that have no lexical units but are used to semantically connect frames in a network. The type [Non-perspectivized] is used for frames that consist of a large number of lexical units that are connected by a common scene as a background. These frames usually lack a consistent set of frame elements for the targets, a consistent assignment of time to events or players and a consistent point of view between the targets, e.g. the frame \framename{Performers\_and\_roles}, which contains lexical units as different as \textit{co-star}.v, \textit{feature}.v and \textit{as}.prep \citep[87]{Ruppenhofer2016}.
+
+\textbf{Annotations of examples} (originally mainly from the British National Corpus) are provided for lexical units. The annotations show the variety of syntactic manifestations of individual frame elements in the corpus (including zero realisations), together with the patterns of frame element realisations in sentences \citep[132]{fillmore2007valency}.
+
+The syntactic annotation includes the labelling of \textbf{grammatical categories} and the \textbf{grammatical functions} of sentence constituents in relation to a particular target lexical unit.
+
+The principal grammatical functions are External, Object and Dependent; the \newline  other grammatical functions are Appositive, Modifier, Head, Genitive and Quantifier, which are particularly important for nouns \citep[135]{fillmore2007valency}. The  grammatical function External corresponds not only to the subject of a finite sentence but also to the phrases that stand for the subject function of non-finite verbs, e.g., the controllers of subject roles in Raising and Equi constructions and subordinated participial constructions, and to the primary arguments of frame-bearing nouns and predicatively used adjectives \citep[135]{fillmore2007valency}. The function Dependent is used for all other dependents of a verbal predicate (other than External and Object).
+
+The annotated examples show that some frame elements are restricted to certain parts of speech, suggesting that it might be a slightly different scene and raising questions such as: Is there a difference between frame elements of targets from different parts of speech that evoke one and the same frame, and what is the inheritance relation for targets from different parts of speech?
+
+The top-down approach to frame creation and annotation is described as follows \citep[418--419]{Lonneker-RodmanB09}:
+
+\begin{itemize}
+ \item Selection of a semantic domain and outline of the frames involved.
+ \item Definition of the frames and their frame elements and selection of the lexical units, each with a short definition.
+ \item Determination of the principal syntactic patterns and extraction of examples for each pattern from a large corpus.
+ \item Annotation of a sufficient number of examples to prove all relevant syntactic realisations of each frame element. FrameNet has extended its annotation to continuous text. In full-text annotation, all content words are annotated, leading to the addition of new lexical units within existing frames and (less frequently) the creation of new frames.
+ \item Development of the FrameNet annotation view and the lexical entry view.
+\end{itemize}
+
+As pointed out, the semantic and syntactic descriptions in Frame\-Net differ from other lexical resources in several ways \citep[129]{fillmore2007valency}, including: (a) its reliance on corpus evidence; (b) its foundation on knowledge of the cognitive (semantic) frames that motivate and underlie the meanings of each lexical unit; (c) its recognition of various types of discrepancies between lexical units on the semantic level and patterns of syntactic form; and (d) its provision of the means of assigning partial interpretations to frame elements that are conceptually present but syntactically unexpressed.
+
+\section{FrameNets for other languages} 
+
+FrameNet has been largely extended to other languages \citep{boas2009multilingual}, such as Spanish \citep{Rggeberg2003SurpriseSF,Subirats+2009+135+162}, Japanese \citep{Ohara2004TheJF,ohara-2012-semantic},  German \citep{aljoscha2009}, 
+ Chinese \citep{You2005BuildingCF}, Italian \citep{lenci-etal-2010-building}, Swedish \citep{Borin-Lars2010-110368}, Brazilian Portuguese \citep{torrent2014multilingual}, 
+ French \citep{candito-etal-2014-developing}, Hebrew \citep{Hayoun2016TheHF}, Danish \citep{pedersen-etal-2018-danish}, Czech \citep{materna-pala-2010-using}, and many others \citep{framenet-2020-international}.
+
+When creating lexical-semantic networks, two basic approaches are usually used: the expand model and the merge model \citep[716]{vossen1996right}.  The first approach is to translate the lexical units, their definitions and (possibly) usage examples from one language (usually English) into another and to transfer (and manually or semi-automatically check) all the relations between the lexical units as well as the remaining semantic information.
+
+The task of FrameNets for other languages, which are created by the expand model (i.e. by searching for translation equivalents of language units), is to encode the language-specific features that can be expressed both semantically (by the number and relations of the frame elements) and at the grammatical level. In general, it can be said that many differences at the semantic level between languages are due to their different grammatical structures and, to a lesser extent, to the encoding of different features of the real world.
+
+For example, the Spanish FrameNet describes the meaning of lexical units by drawing directly on the frames already constructed for English and analysing the grammatical constructions in which these lexical units are instantiated \citep[136]{Subirats+2009+135+162}.  If the English frames are not compatible with the Spanish language, the inconsistencies are resolved by restructuring the frames.
+
+The second approach is to merge existing language resources for a particular language with other lexico-semantic resources for another language (usually English). One example is the Czech FrameNet, which was created by linking the independently developed Verbalex (a lexicon of verb valency for Czech) with the FrameNet \citep{materna-pala-2010-using}. The independent development of FrameNets may face the problem of achieving sufficient overlap in lexical coverage while maintaining language-specific properties.
+
+It was found that there are two primary strategies for FrameNet development: a lemma-by-lemma strategy, that provides annotations that reflect the overall ambiguity of a given lemma within a target corpus, and a frame-by-frame strategy, that enforces the coherence of annotations within a frame \citep[1373]{candito-etal-2014-developing}.
+
+The frame-by-frame approach, which is used by most FrameNets, takes into account the entire lexical diversity available for the expression of a frame \citep[1373]{candito-etal-2014-developing}. However, only the senses of a particular lemma related to covered frames are taken into account, and these senses are not necessarily the most frequent.
+
+The lemma-by-lemma strategy considers different lemma senses for which there is often no frame in the English FrameNet, including rare senses. During the development of the German FrameNet (SALSA), each instance of a lemma in a corpus was annotated and tested for a FrameNet frame. Proto-frames were created for lemmas that could not be defined by existing frames. The proto-frames contain a single lexical unit and are not coupled with frame-to-frame relations \citep[213]{aljoscha2009}.
+
+Some FrameNets are built entirely by experts (manually), both the mapping to English and the semantic and syntactic annotation, while others rely on automatic or semi-automatic mapping or annotation, possibly using post-validation, such as the Italian FrameNet \citep{lenci-etal-2010-building}.
+
+Some of the linguistic issues that have arisen in the development of other FrameNets have been discussed by \citet{boas2009multilingual}: degree of overlapping cross-lingual polysemy, differences in lexicalisation patterns, measurement of paraphrase relations (words that evoke a particular meaning may differ in different sentences) and translation equivalence.
+
+FrameNet is used extensively for the development of multilingual resources, and two general approaches to FrameNet integration can be distinguished: either building on the English FrameNet infrastructure as a foundation \citep{Boas+2009+59-100,Rggeberg2003SurpriseSF} or by (semi-)automatically creating frame-based multilingual resources \citep{10.1007/978-3-319-41552-9_35,torrent-etal-2014-copa}. The first approach uses the semantic frames as interlingual representations to connect different parallel lexicon fragments and involves several steps:
+
+\begin{itemize}
+\item Removing all language-specific information for English, including lemma, parts of speech and annotated sentences, and retaining only the information that is not specific to English -- frames, frame-to-frame relations, frame elements and frame element relations.
+\item Repopulating the database to create a non-English FrameNet \citep[72]{Boas+2009+59-100}.
+\end{itemize}
+
+The (semi-)automatic creation of FrameNet-like resources involves the use of existing linguistic frameworks or corpora to extract semantic frames, frame elements and their relations to each other. Computational methods are employed to automatically identify frames in large datasets and annotate examples. This process includes the extraction of frame elements and the creation of frame-to-frame relations. The aim is to create a comprehensive lexical-semantic resource, similar to FrameNet, with minimal manual intervention.
+
+The development of FrameNet for languages other than English has shown that many frames, especially those for common human behaviours such as \textit{drinking}, \textit{eating} and \textit{sleeping}, are relevant in multiple languages despite the presence of numerous language-specific valency patterns \citep[78]{baker-lorenzi-2020-exploring}. The different languages have adhered to the Berkeley FrameNet model to varying degrees: German, French, Swedish and Chinese FrameNet have deviated further from it by either adding many new frames or/and modifying existing ones, while Spanish, Japanese and Brazilian-Portuguese FrameNet have closely followed the original FrameNet and used FrameNet frames as templates \citep[78]{baker-lorenzi-2020-exploring}. The Multilingual FrameNet project \citep{baker-etal-2018-frame} investigates the relations between frames in different languages and alignments between FrameNets. There are different approaches to calculate the similarity of frames to create cross-lingual alignments: alignment by translation of lexical units, alignment by frame names, alignment by similarity of frame elements, alignment by similarity of distribution of lexical units, etc. \citep[79–80]{baker-lorenzi-2020-exploring}.
+
+In this study we outline the basic principles for the development of the Bulgarian FrameNet, relying on language-independent information from the semantic frames while taking into account the language-specific features of Bulgarian. We can characterise the model for the development of the Bulgarian FrameNet as a \textbf{semi-automatic expand model}, since the automatic mapping of lexical units from semantic frames is applied to the Bulgarian WordNet \citep{LesevaStoyanova2020}, but both the automatic mapping of translation equivalents and the semi-automatic compilation of extended semantic and grammatical information for Bulgarian are evaluated manually.
+
+The most important steps in the creation of the Bulgarian FrameNet can be summarised as follows:
+\begin{itemize}
+ \item Semi-automatic identification of lexical units (verbs) belonging to the general lexicon of Bulgarian;
+ \item Identification of semantic frames suitable for describing situations evoked by the selected Bulgarian lexical units;
+ \item Import of relevant language-independent information (valid at least for English and Bulgarian) from FrameNet semantic frames into superframes and conceptual frames within the system for the development of the Bulgarian FrameNet, BulFrame;
+ \item Semi-autоmatic population of conceptual frames with relevant Bulgarian lexical units and related lexical, grammatical and semantic information;
+ \item FrameNet-based annotations of examples to illustrate the valency patterns of the selected lexical units;
+ \item Manual evaluation of the information in conceptual frames based on the annotation and potential reconstruction of conceptual frames, leading to the development of multiple conceptual frames associated with a superframe.
+\end{itemize}
+
+\section{Introducing superframes and conceptual frames in Bulgarian FrameNet} 
+
+The endeavours to create the Bulgarian FrameNet have a history of about 20 years, the origins of which go back to predecessors such as the Bulgarian Valence Dictionary and the Semantic-Syntactic Dictionary of Bulgarian \citep{Koevaetal2003}. Originally, the resources focussing on frame-like semantic and syntactic descriptions were exclusively centred on Bulgarian, without establishing correspondences with FrameNet.
+
+In the following phase, appropriate semantic frames were selected manually and language-independent information was extracted from these frames. This information was then supplemented with Bulgarian lexical units evoking the corresponding frames, and relevant examples were annotated \citep{koeva-2010-lexicon}. However, this endeavour was fraught with challenges, as there were no suitable means of maintaining correspondence with the semantic frames while providing options for reconstructing the semantic frame structures required for an adequate representation of some Bulgarian lexical units. Further challenges were to encode the translation equivalence between Bulgarian and English lexical units and to ensure the consistency of the FrameNet-like annotation with respect to the Bulgarian grammatical structure.
+
+In its current stage, the Bulgarian FrameNet comprises two abstract semantic structures: a superframe and a conceptual frame, and it contains lexical units (accompanied by comprehensive lexical, semantic and grammatical information) that evoke conceptual frames, as well as valency patterns derived from authentic examples.
+
+The main motivation for introducing superframes and conceptual frames is to facilitate the inclusion of language-specific information while ensuring consistency and  alignment with the relevant semantic frames.
+
+Superframes establish abstract mappings between semantic frames in FrameNet and their counterparts in Bulgarian, thus forming a bridge between semantic resources. Conceptual frames (linked with a superframe) encode relevant information for Bulgarian, which may overlap in whole or in part with that for English (\figref{fig:frames}).
+\largerpage
+\begin{figure}
+ \includegraphics[width=\textwidth]{figures/F1-cropped.pdf}
+ \caption{The correspondence between Berkeley semantic frames, superframes and conceptual frames for Bulgarian.}
+  \label{fig:frames}
+\end{figure}
+
+\subsection{Superframes}  
+  
+
+Introducing a mediating abstract layer, such as the level of superframes, enables the alignment of the appropriate components in Bulgarian FrameNet with FrameNet semantic frames, while allowing some others to retain their specificity. Superframes are constructed by removing all language-specific information for English, including lexical units that evoke the frames and their parts of speech, and retaining only non-specific information -- semantic frames, their semantic types and definitions, frame-to-frame relations, frame elements, their semantic types and definitions, frame element relations, and administrative information such as frame and frame element names. Superframes therefore contain language-independent information that can apply to at least two languages, in this case English and Bulgarian.
+
+
+In principle, a superframe may be constructed based on semantic frames for languages other than English for which a FrameNet is developed. This means that when a conceptual frame is developed based on Bulgarian data for which no appropriate  superframe exists, a new superframe may be constructed, retaining only language-independent information in it.
+
+This strategy aims to establish a seamless connection with FrameNet while enabling the identification and description of language-specific conceptualisations that are unique to Bulgarian and, if necessary, splitting a semantic frame into two or more conceptual frames, each characterised by different levels of reconstruction. An equivalence relation is established between the language-independent information in a semantic frame and the language-independent information in a superframe.
+
+Conceptual frames are used to introduce script-like descriptions that are relevant to Bulgarian and that may be wholly or partially analogous to the information for English or provide unique information relevant to the Bulgarian conceptual description. A superframe can therefore be linked to one or more conceptual frames. However, there can be at most one conceptual frame whose components are connected to the language-independent components of the superframe via an equivalence relation and to the semantic frame via the latter. The remaining conceptual frames are connected to the superframe by partial equivalence relations, that can be tracked to determine which components of the conceptual frames are equivalent to the corresponding components in the superframe and which are not. In some cases, only one conceptual frame for Bulgarian can be associated with a particular superframe.
+
+The relations between superframes mirror the relations between semantic frames in FrameNet. At the current stage of development of the Bulgarian FrameNet, there is rarely a need to introduce a conceptual frame that is not linked to an existing superframe, and its mirroring as a superframe is not accompanied by the introduction of new frame-to-frame  relations. Such changes to the FrameNet network, if they become necessary in the future, should be made with a high degree of consensus.
+
+\subsection{Conceptual frames}  
+A \emph{conceptual frame} can be defined (similarly to the semantic frame) as an abstract structure that describes a certain type of situation or event together with its actors and properties \citep[7]{koeva2020}. The conceptual frame is characterised by frame elements and relations between them and is complemented by a set of nouns that are compatible with the lexical units that evoke the frame. 
+
+A specific conceptual frame in the Bulgarian FrameNet is evoked by a group of lexical units, which  (as of September 2024) are exclusively verbs.
+
+\emph{Conceptual frames} have a frame name, a definition, a semantic type, frame elements and relations between frames. \emph{Frame elements} have a name, a definition, a semantic type, a core status and relations to each other: Core Sets, Excludes, Requires. This information is inherited from the semantic frames (via superframes) if they are already defined for English, and validated for Bulgarian by annotation.
+ 
+Our motivation for employing superframes and conceptual frames is based on the following arguments:
+
+\begin{description}
+    \item[Argument 1:] Not all lexical units that evoke a given semantic frame exhibit the same semantic structure, which may lead to different syntactic behaviour.
+ \end{description}   
+As part of the comprehensive FrameNet approach to conceptual description, we want to distinguish groups of lexical units with equivalent semantic and syntactic properties. Therefore, we adhere to the principle that the \emph{semantic description of lexical units associated with a given conceptual frame is achieved by using the same number and type of core frame elements}. This approach does not change the structure of semantic frames, as many conceptual frames can be associated to a semantic frame (by a superframe). Therefore, there is often no one-to-one correspondence between a FrameNet semantic frame and a conceptual frame, as there are differences in conceptualisation between languages. The abstract superframe connects conceptual frames that express the same scene (one fully, the other partially) as the  FrameNet semantic frame. The omission, rare addition and status change of core frame elements within the conceptual frames associated with a semantic frame is justified by the annotation of examples. As for the equivalent syntactic properties, they are only related to the equivalent semantic properties, i.e. to the number and type of core frame elements, but not to the possibilities of expressing one and the same frame element in different syntactic ways, e.g. by a prepositional phrase or a clause.
+
+For example, the Bulgarian verbs \textit{настанявам} (sit-IPFV, `am sitting'), \textit{настаня} (sit-PFV, `sit'), with the definition `determine, show someone a place to sit or lie down and help him/her to take it' (or comparison: the definition of \textit{sit}.v in FrameNet is `cause to sit or be placed (somewhere)') evokes the frame \framename{Placing}, which encompasses core frame elements such as \fename{Agent}, \fename{Theme} and \fename{Goal}. The \fename{Agent} is in a Core Set with the core frame element \fename{Cause}, and each of them controls the \fename{Theme} by placing it in a location, the \fename{Goal}.
+For the semantic description of the Bulgarian verbs \textit{настанявам}, \textit{настаня} in the conceptual frame \fename{Placing}, only the frame element \fename{Agent} is relevant, while the frame element \fename{Cause} is omitted as semantically incompatible.
+
+ \begin{exe}
+ \ex  \label{ch01:ex:05}
+ \gll \textit{Тогава}  [\textit{тя}]$_{\feinsub{Agent}}$   \textit{\textbf{НАСТАНИ}}  [\textit{майка си}]$_{\feinsub{Theme}}$  [\textit{в удобното кресло}]$_{\feinsub{Goal}}$.\\
+ Then {she}  set {her mother} {in the comfortable armchair}. \\
+ \glt `Then she sat her mother in the comfortable armchair.' 
+ \end{exe}
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:06}
+\gll *\textit{Тогава} [\textit{вятърът}]$_{\feinsub{Cause}}$  \textit{\textbf{НАСТАНИ}} [\textit{майка ѝ}]$_{\feinsub{Theme}}$  [\textit{в удобното кресло}]$_{\feinsub{Goal}}$.\\
+Then {the wind}  set {her mother} {in the comfortable armchair}. \\
+\glt `{Then the wind sat her mother in the comfortable armchair}.' 
+\end{exe}
+
+ 
+Another example is the Bulgarian imperfect verbs from the frame \framename{Self\_Motion}, describing a scene in which a being moves in a certain way: \textit{ходя} (walk-IPFV, `am waking') `move by walking';  \textit{разхождам се} (walk-IPFV, `am waking') `walk somewhere outdoors'; \textit{плувам} (swim-IPFV, `am swimming') `for living organisms -- move on the water surface or in the water by certain movements of the body'.
+
+These lexical units imply very little in terms of source and direction, and there is no reason to include the frame elements \fename{Source},  \fename{Goal} and \fename{Direction} in their semantic description as core elements.\footnote{A deeper semantic analysis will show that verbs such as \textit{walk}, \textit{swim}, etc. are typical activity verbs, but when used with an explicitly expressed \fename{Goal}, they can be regarded as  accomplishment verbs.} This is in contrast to the derivatively related perfective verbs, in whose semantic structure these frame elements can be core elements: \textit{преплувам} (swim across--PFV, `swim across')  `for humans or animals - by swimming cross a body of water or reach a certain place to which I am led'; \textit{доплувам} (swim up--PFV, `swim up') `swim to a certain place'.
+
+ \begin{exe}
+ \ex  \label{ch01:ex:07}
+ \gll  [\textit{Момчето}]$_{\feinsub{Self\_mover}}$   \textit{\textbf{ПЛУВА}}  [\textit{в реката}]$_{\feinsub{Area}}$.\\
+{The boy}  swim-IPFV {in the river}. \\
+ \glt `The boy is swimming in the river.' 
+ \end{exe}
+ 
+  \begin{exe}
+ \ex  \label{ch01:ex:08}
+ \gll  [\textit{Момчето}]$_{\feinsub{Self\_mover}}$   \textit{\textbf{ДОПЛУВА}}  [\textit{до брега}]$_{\feinsub{Goal}}$.\\
+{The boy}  swim\_up-PFV {to the shore}. \\
+ \glt `The boy swam to the shore.' 
+ \end{exe}
+
+\begin{description}
+    \item[Argument 2:] In contrast to English and other languages, a large number of diatheses in Bulgarian are associated with a lexical and/or morphological change of the source verb and are part of the lexicon in dictionaries.
+\end{description}
+Our second reason relates to the inclusion of verbal diatheses in FrameNet. In FrameNet, there is no specific list of verbal diatheses that a semantic frame encompasses. However, certain details in the annotation instructions indicate that diatheses associated with a particular predicate are considered part of the frame to which the basic diathesis belongs.  For example, no additional frame is formulated for the word \emph{sell} to account for usages such as \emph{Those boots sell well} that deprofile and make generic one or more of the prominent participants, in this case the \fename{Seller} \citep[12]{Ruppenhofer2016}. A similar approach also applies to passive sentences.
+
+In cases where the semantic roles (the relation of an argument to the predicate or, in other words, of a frame element to the situation evoked by the lexical unit) do not change, the diatheses can undoubtedly be interpreted within a single frame, even if some frame elements remain implicit. We refer to such diatheses as syntactic, e.g. the participial passive and syntactic reciprocals in Bulgarian. However, if the semantic role of at least one frame element changes as a result of the diathetic alternation (we call such diatheses lexical), there are reasons to reconstruct the semantic frame in a new conceptual frame.
+
+In Bulgarian there are several lexical diatheses (\textit{se} passive, impersonal participle passive, impersonal \textit{se} passive, middle, anticausative, lexical reciprocal, optative, impersonal optative, “oblique” subject and property of the “oblique” subject \citep[153--155]{Koeva2022} and some others. The lexical diatheses can either be structure-preserving (i.e. the number of frame elements remains the same, but at least one of the frame elements is given a new semantic role) or structure-changing (whereby the number of frame elements changes).
+
+\begin{itemize}
+\item  \emph{Structure-preserving} diatheses in Bulgarian are optatives and lexical reciprocals.  In optative diathesis, the semantic role  of a core frame element, the source subject, is changed, which is accompanied by a change in its grammatical role. In lexical reciprocal diathesis, the semantic roles of two core frame elements (source subject and object) as well as the grammatical role and the syntactic category of the source object change.
+
+\item \emph{Structure-changing} diatheses in Bulgarian: the impersonal passives (both impersonal participle and  impersonal \textit{se}-passive), the impersonal optatives, the middles, the anticausatives, the “oblique” subjects and the property of “oblique” subjects -- show a reduction of semantic role as follows: both the source subject and the source object in the impersonal passives, the source subject in the middles and anticausatives and the source object in the impersonal optatives and “oblique” subjects. The reduction of the semantic role can be accompanied by a change in the semantic role, the grammatical role and the syntactic category of a remaining frame element. 
+
+\end{itemize}
+
+The problem of the representation of lexical diatheses in the structure of the Bulgarian FrameNet is even more complicated because: (a) in some of them the change of frame elements is connected with the appearance of a new frame element which is not present in the source diathesis; (b) some of them have a regular character, i.e. if certain lexical, morphological and syntactic features are present in the source diathesis, the formation of a certain lexical diathesis follows. An example of a regularly occurring lexical diathesis in which a new frame element appears that is not part of the structure of the source diathesis is optative diathesis in Bulgarian (which expresses a wish or desire to carry out the state or process evoked by the source diathesis).
+The optative diathesis in Bulgarian is characterised by the following general features: The semantic role (frame element) of the canonical subject changes from \fename{Agent} (the name of the frame element can be different in FrameNet, e.g. \fename{Reader}) to \fename{Experiencer}, while that of the canonical object (if the verb is transitive) does not. At the morphological level, the optative verb is characterised by a reduction of the verb paradigm to the third person singular and plural and by the conjunction of the verb with the marker \textit{се }(self, `oneself'). The agentive source subject has the selectional restriction \textit{person} (animate), the object -- the selectional restriction \textit{inanimate}, and the source verb should be in the imperfective aspect (primary or derived from a primary imperfective verb).
+
+ \begin{exe}
+ \ex  \label{ch01:ex:00}
+ \gll  [\textit{Момчето}]$_{\feinsub{Reader}}$   \textit{\textbf{ЧЕТЕ}}  [\textit{книга}]$_{\feinsub{Text}}$.\\
+{The boy}  read--IPFV {book}. \\
+ \glt `The boy is reading a book.' 
+ \end{exe}
+ 
+  \begin{exe}
+ \ex  \label{ch01:ex:10}
+ \gll   \textit{\textbf{ЧЕТЕ}} [\textit{му}]$_{\feinsub{Experiencer}}$   \textit{\textbf{СЕ}} [\textit{книга}]$_{\feinsub{Text}}$.\\
+ read-IPFV {him} self {book}. \\
+ \glt `He feels like reading a book.' 
+ \end{exe}
+ 
+Although the meanings of the modified verbs in lexical diatheses differ and there are morphological (the lemma form), grammatical (the change of syntactic categories and grammatical roles in the realisation of one or two frame elements) and semantic differences (the change in the number and type of frame elements or semantic roles), most lexical diatheses in Bulgarian are formed by regular language rules and can be predicted just like the syntactic ones. For those that involve the introduction of a new core frame element, such as the optative, there are only technical solutions to mark the option during annotation, i.e. by the name of the frame element: Agent-to-Experiencer and by the syntactic category and grammatical role of the word or phrase (otherwise, all conceptual frames that allow optative diathesis and other diatheses with similar regular alternations must be downgraded). However, numerous diatheses, e.g. lexical reciprocals and anticausatives, are not only formed regularly when certain conditions are met by the source diathesis, but they are also used very frequently and as such have become part of the lexicon in Bulgarian dictionaries. For such verbs there is a reason to present them in a separate conceptual frame in relation to their source verbs.
+
+\textbf{Lexical reciprocals} are defined as ``words with an inherent reciprocal meaning'' \citep[14]{Nedjalkov2007}. There are some unmarked reciprocal predicates in Bulgarian: \textit{приличам на} (resemble, `look like'); reciprocal predicates with a reciprocal marker \textit{се}: \textit{състезавам се} (compete with, `compete with someone'), and reciprocal predicates that are a derived reciprocal diathesis: \textit{прегръщам се} (hug with, `to hold someone at the same time as he/she holds me') derived from the source diathesis \textit{прегръщам} (hug, `to put one or two arms around someone or something and hug him/her to my chest'). The verbs \textit{прегръщам} and \textit{прегръщам се} are presented in two conceptual frames under the superframe \framename{Manipulation}, which is connected to the semantic frame \framename{Manipulation}. Since the meaning is reciprocal, but the reciprocity is not realised syntactically by a reciprocal pronoun and a plural subject as in \textit{The boy and the girl hold each other}, the frame elements are both \fename{Agent} and \fename{Entity} with a different focus on one of the two.
+
+\begin{exe}
+ \ex  \label{ch01:ex:11}
+ \gll  [\textit{Момчето}]$_{\feinsub{Agent}}$   \textit{\textbf{ПРЕГРЪЩА}}  [\textit{момичето}]$_{\feinsub{Entity}}$.\\
+{The boy}  hold--IPFV {the girl}. \\
+ \glt `The boy hugs the girl.' 
+ \end{exe}
+
+ \begin{exe}
+ \ex  \label{ch01:ex:12}
+ \gll  [\textit{Момчето}]$_{\feinsub{Agent-Entity}}$   \textit{\textbf{СЕ ПРЕГРЪЩА}}  [\textit{с момичето}]$_{\feinsub{Entity-Agent}}$.\\
+{The boy}  hold--IPFV {with the girl}. \\
+ \glt `The boy hugs with the girl.' 
+ \end{exe}
+
+Another example of diathesis that is regularly listed in dictionaries is \textbf{anticausative} diathesis, which is also known as inchoative, causative-inchoative or ergative diathesis \citep[27]{Levin:93}. In this diathesis, the semantic role of the source subject is reduced and the semantic and grammatical role of the source object is changed. For example, the verbs \textit{късам} (tear, `to cut something into pieces') and \textit{къса се} (is torn--3SG--3PL, `to tall into pieces') are members of the causative-anticausative diathesis and are located in separate conceptual frames under the superframe \framename{Cutting}, which is connected to the semantic frame \framename{Cutting}.
+
+\begin{exe}
+ \ex  \label{ch01:ex:13}
+ \gll  [\textit{Съседката}]$_{\feinsub{Agt}}$   \textit{\textbf{КЪСА}}  [\textit{салфетката}]$_{\feinsub{Item}}$ [\textit{на парчета}]$_{\feinsub{Pie}}$.\\
+{The neighbor}  cut-IPFV {the napkin} {into pieces} \\
+ \glt `The neighbor is tearing the napkin into pieces.' 
+ \end{exe}
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:14}
+\gll  [\textit{Салфетката}]$_{\feinsub{Item}}$   \textit{\textbf{СЕ}} \textit{\textbf{КЪСА}} [\textit{на парчета}]$_{\feinsub{Pie}}$.\\
+{The napkin}  itself is\_cut-IPFV.3SG {into pieces} \\
+\glt `{The napkin is torn into pieces}.'
+\end{exe}
+
+In fact, the anticausatives in FrameNet are housed in separate semantic frames, which are linked to the corresponding causative frames via the frame-to-frame relations \FrameRelation{Inchoative of} and \FrameRelation{Causative of}. However, the Inchoative frames are not yet fully represented in the FrameNet. In order to maintain the FrameNet structure, no new semantic frame is introduced for the anticausative (inchoative) diathesis, but an inchoative conceptual frame is established which, together with the causative conceptual frame, is connected to the causative superframe and via this to the causative semantic frame. This approach maintains the structure of the semantic frames without altering it, yet effectively reflects the distinctions in both the semantic and syntactic structures of the verbs that evoke them in Bulgarian.
+
+The so-called autocausative diathesis can be seen as a variant of the anticausative diathesis, with the difference that the verb is bound to an animate subject that causes its own activity. A large proportion of autocausative verbs have become part of the lexical structure of Bulgarian and are not perceived as a regular product of autocausative diathesis, as is actually the case.
+
+\begin{exe}
+ \ex  \label{ch01:ex:15}
+ \gll  [\textit{Бащата}]$_{\feinsub{Agent}}$   \textit{\textbf{ДЪРЖИ}}  [\textit{детето}]$_{\feinsub{Entity}}$ \textit{за ръка}.\\
+{The father}  hold--IPFV {the child} {for the hand} \\
+ \glt `The father is holding the child's hand.' 
+ \end{exe}
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:16}
+\gll  [\textit{Детето}]$_{\feinsub{Protagonist}}$   \textit{\textbf{СЕ}} \textit{\textbf{ДЪРЖИ}} \textit{за ръката на баща си.}\\
+{The child}  itself is\_hold-IPFV.3SG {for his father's hand}. \\
+\glt `{The child is holding his father's hand}.'
+\end{exe}
+
+In such examples, the autocausative marker \textit{се} (se, `oneself') in Bulgarian is not the short form of a reflexive pronoun, but a lexical marker that is part of the verb. For verbs such as \textit{държа се} (hold, `hold on to something with my hands, as a support to keep my balance so that I don't topple over or fall') separate conceptual frames are created (if a corresponding meaning is not lexicalised in English and there is no semantic frame), which are linked to the respective causative semantic frame by a superframe.
+
+\begin{description}
+    \item[Argument 3:] Conceptual frames differ from semantic frames in that the frame elements of the conceptual frame are associated with a number of lexical units through which they can potentially be realised.
+\end{description}
+Each core element of the conceptual frame is connected to a set of nouns that are compatible with the verbs that evoke the frame. The set can contain only one noun, several nouns or a large number of nouns linked by semantic relations at the lexical level (synonymy, antonymy) or by hierarchical conceptual relations (hyperonymy, hyponymy). For example, the verb \textit{варя} (boil) with the definition `WN: cook food in very hot or boiling water' from the frame \framename{Apply\_heat} is characterised by four frame elements: \fename{Cook}, \fename{Food}, \fename{Container} and \fename{Heating instrument}, and for each of these elements the synset (one or more) from the Bulgarian WordNet that dominates the nouns suitable for collocations is specified.
+
+\begin{itemize}
+    \item   \fename{Cook}: pro-drop, NP, subject,  eng-30-00007846-n: \textit{person} 
+   \item   \fename{Food}: optional, NP, object, eng-30-07555863-n: \textit{food};   eng-30-07649854-n: \textit{meat};  eng-30-07775375-n: \textit{fish};  eng-30-07707451-n: \textit{vegetable}
+  \item \fename{Container}: optional, PP, object (\textit{в} `in'),  eng-30-03990474-n: \textit{pot}
+ \item  \fename{Heating instrument}: optional, PP, object (\textit{в} `of', \textit{на} `on'), \newline eng-30-08581699-n: \textit{hearth}; eng-30-03543254-n: \textit{stove};  eng-30-03343560-n): \textit{fire}
+
+\end{itemize}
+
+\subsubsection{Levels of equivalence between conceptual frames and superframes}
+
+Three general cases can be outlined. A superframe may be suitable for adoption as a conceptual frame if it reflects the semantics of at least one Bulgarian lexical unit. Some modifications to the semantic structure of the superframe may be required to match the Bulgarian data; these changes relate to the number and type of frame elements. It may also be necessary to develop new conceptual frames to describe language-specific data.
+Thus, with regard to the use of the language-independent information from the semantic frames (which apply at least to English and Bulgarian), several cases may arise in relation to the superframes and conceptual frames: \emph{equivalence}, \emph{partial equivalence} and \emph{no equivalence}.
+
+An \FrameRelation{equivalence} relation is observed when the abstract semantic representation of a superframe is copied into a conceptual frame to describe a scene evoked by a particular Bulgarian lexical unit (or units).
+For example, the semantic frame \framename{Breaking\_apart} with the definition `A \fename{Whole} breaks apart into \fename{Pieces}, resulting in the loss of the \fename{Whole} (and in most cases no piece that has a separate function)' applies to English lexical units: \textit{break apart}, \textit{break}, \textit{crumble}, \textit{fragment}, \textit{shatter}, \textit{snap}, \textit{splinter}, as well as to their Bulgarian translation equivalents: \textit{чупи се},\textit{счупи се}, \textit{счупва се}, \textit{разпада се}, \textit{разпадне се}, \textit{разтрошава се}, \textit{разтроши се}, \textit{строшава се}, \textit{строши се}. In both languages, an equivalent situation can be represented, which is evoked by translation equivalents and expressed by the same number and type of frame elements: \fename{Whole} and \fename{Parts}. In Bulgarian FrameNet, the respective conceptual frame is thus constructed through a superframe.
+
+\begin{exe}
+ \ex  \label{ch01:ex:17}
+\gll  [\textit{Стъклената кана}]$_{\feinsub{Whole}}$   \textit{\textbf{СЕ СЧУПИ}} [\textit{на множество малки парченца}]$_{\feinsub{Pieces}}$.\\
+{Тhe glass jug}  break-PFV.3SG {into many small pieces}. \\
+\glt `{The glass jug broke into many small pieces}.'
+\end{exe}
+
+The same procedure applies if a semantic frame is defined in FrameNet that is suitable for describing a Bulgarian verb or verbs, but its translation equivalent is not available in FrameNet. For example, the semantic frame \framename{Breaking\_apart} is also suitable for describing the verbs \textit{пръсна се} `burst', \textit{пръсва се} `is bursting' with the definition `WN: of a solid body or object -- to split, break apart suddenly and with force into parts', which are hyponyms of the verbs \textit{счупи се}, \textit{счупва се}. In this case, the lexical units are added to the Bulgarian conceptual frame.
+
+\begin{exe}
+ \ex  \label{ch01:ex:18}
+\gll  [\textit{Балонът}]$_{\feinsub{Whole}}$   \textit{\textbf{СЕ ПРЪСНА}} \textit{неочаквано} [\textit{на парчета}]$_{\feinsub{Pieces}}$.\\
+{The bubble}  burst-PFV.3SG {unexpectedly} {into pieces}. \\
+\glt `{The bubble burst unexpectedly into pieces}.'
+\end{exe}
+
+A relation of \FrameRelation{partial equivalence} is observed when a semantic frame defined in FrameNet is only partially suitable for describing a Bulgarian verb or verbs. In such cases, an equivalent superframe is defined for the language-independent information and the corresponding conceptual frame is reconstructed. This reconstruction can include the exclusion or addition (rarely) of a frame element. It is also possible to change the core status of a frame element. For example, the frame \framename{Breaking\_apart} is partially suitable for describing the verbs \textit{пробива се} `is breaking through', \textit{пробие се} `break through' with a definition `WN: of a solid body or object -- suffer a breach of integrity by stabbing or piercing with a sharp object', whereby only one frame element is realised: \fename{Whole}. The new conceptual frame is connected to the same superframe as the conceptual frame evoked by verbs such as \textit{счупи се} "breaking apart".
+
+
+\begin{exe}
+ \ex  \label{ch01:ex:19}
+\gll  [\textit{Гумата}]$_{\feinsub{Whole}}$   \textit{\textbf{СЕ ПРОБИ}}  \textit{на две места}.\\
+{The tyre}  puncture-IPFV.3SG {in two places}. \\
+\glt `{The tyre has punctured in two places}.'
+\end{exe}
+
+
+The abstract semantic structure \emph{superframe} is introduced to maintain the relation to a semantic frame and to combine semantically related verbs that do not have exactly the same meaning and the same semantic, morphological and syntactic features. A superframe corresponds to a semantic frame from FrameNet and connects a group of conceptual frames that share all or part of the semantic information of the respective semantic frame in FrameNet. The conceptual frames associated with a particular superframe are identified by the name of the corresponding semantic frame and an additional unique name after one of the verbs that evoke the conceptual frame, e.g. \framename{Breaking\_apart\_пробива\_се}.
+
+The relation \FrameRelation{no equivalence} occurs when a semantic frame that is suitable for describing a Bulgarian verb is not defined in FrameNet and a new superframe and a conceptual frame must be defined. This can happen for two reasons:
+
+\begin{itemize}
+    \item The concept exists in English, but the corresponding semantic frame has not yet been created in FrameNet, for example, the verb \textit{golf}.v.
+    \item  The concept is not conceptualised in English; for example, \textit{захърквам} (am snoring-IPFV, `start snoring'); \textit{захъркам} (snore-PFV, `start snoring');  \textit{за\-търсвам} (am looking for--IPFV, `start looking for');  \textit{затърся} (look for--PFV, `start looking for').
+\end{itemize}
+
+\begin{exe}
+ \ex  \label{ch01:ex:20}
+ \gll  [\textit{Той}]$_{\feinsub{Sound\_source}}$  \textit{моментално}  \textit{\textbf{ЗАХЪРКА}}   \textit{в хотела}.\\
+{He}  {instantly} start\_snore-PST.3SG {in the hotel}. \\
+\glt `{He instantly started snoring in the hotel}.'
+ \end{exe}
+
+The language-independent information in the semantic frames, which is  inherited by the superframes, is located on the conceptual and semantic level. This includes the definitions of the frames, the relations between the frames, the number and types of the frame elements, their definitions, semantic types, core status and relations. Administrative information, such as the name of the frame and the names of the frame elements, is also inherited. In addition, conceptual frames may contain information that is language-specific or potentially language-uni\-versal but has not yet been integrated into FrameNet.
+
+Conceptual frames also contain sets of nouns that are suitable for collocations with the target verb. In addition, some information, such as definitions of lexical units, semantic relations between the concepts they denote, semantic classes of lexical units, grammatical information such as verb aspects and administrative information such as identification numbers, is taken from WordNet.
+
+\section{Structure of the Bulgarian FrameNet} 
+
+The structure in Bulgarian FrameNet associated with each lexical unit consists of the following sections: \textbf{Administrative}, \textbf{Lexical}, \textbf{Grammatical}, \textbf{Frame} and \textbf{Syntactic}.
+
+\textbf{Administrative} information ensures the unambiguous interpretation of lexical units and frames. The WordNet ILI \citep{Vossen2004} serves several purposes: it acts as a unique identifier in both Bulgarian FrameNet and Bulgarian WordNet (BulNet), as it is the primary identifier for lexical units in Bulgarian FrameNet, it indicates the mapping to the corresponding synset (concept) in Princeton WordNet, it relates synonyms and labels the word senses associated with the lexical units. The names of the semantic frames are unique and are transferred to both the superframes and the conceptual frames, and the combination of frame name and frame element name is also unique.
+
+Lexical units are provided with lexical and semantic information (lemma, part of speech, lexical type -- indication whether it is a multiword expression or not, sense definition, semantic class of the lexical unit, semantic relations to other verbs, if any, and some stylistic or usage labels) in the \textbf{Lexical section} and with grammatical information (verb aspect, transitivity and the range of grammatical subjects) in the \textbf{Grammatical section}.
+
+The \textbf{Frame section} contains information about the frame definition, the frame elements, their definitions and relations, their semantic types and the semantic classes of the noun synsets that are suitable for pairing with the lexical units that evoke the frame.
+
+Grammatical categories and grammatical functions encode the syntactic realisation (valency pattern) in the \textbf{Syntactic section}, as supported by the annotation.
+
+The sources of inheritance and uniqueness of information in the Bulgarian FrameNet are schematised in the \tabref{tab:my_label2}.
+
+\begin{table}
+    \begin{tabular}{llll}
+    \lsptoprule
+     &  & FrameNet (FN) & BulFrame (BF)  \\\midrule
+     \multicolumn{4}{l}{Admin. information}\\
+     & Frame name  & FN  & FN or BF\\
+     &  FE name & FN &  FN or BF \\
+     & Verb ID  & No & WordNet (WN) \\
+     \multicolumn{4}{l}{Lexical information}\\
+     & Lemma type & word, MWE &  word, MWE\\
+     & POS & V, N, Adj, Adv & V \\
+     & Definition & FN & BF\\
+     & Semantic class & No & WN \\
+     & Stylistic note & No & BulNet (BWN)\\
+     & Semantic type & FN &  FN\\
+     & Semantic relations & No &  WN\\
+     \multicolumn{4}{l}{Grammatical information}\\
+     & Verb Aspect & No & BWN \\
+     & Transitivity & No & BF \\
+     & Personality & No & BF \\
+     \multicolumn{4}{l}{Frame information}\\
+     & Frame definition & FN & FN or BF \\
+     & Frame-to-Frame relations & FN & BF\\
+     & Frame elements  & FN & FN or BF \\
+     & FE Core status & FN & FN or BF \\
+     & FE definition & FN &  FN or BF  \\
+     & FE type & FN & FN or BF \\
+     & FE relations & FN & FN or BF \\  
+     & V-to-N compatibility & No & BF \\
+     \multicolumn{4}{l}{Syntactic information}\\
+     & Grammatical category  & FN  & BF \\
+     & Grammatical function &  FN & BF \\
+     & Implicitness & FN & BF \\
+    \lspbottomrule
+    \end{tabular}
+    \caption{Source of information in Bulgarian FrameNet}
+    \label{tab:my_label2}
+\end{table}
+
+\subsection{Lexical section} 
+
+Following FrameNet, a \textbf{lexical unit} is defined as a pairing of a word with a sense \citep[235]{Fillmore2003} (expressed by lemma and definition). The FrameNet assumption that each sense of a polysemous word belongs to a different semantic frame is followed, and it also applies to homonyms. For example, the Bulgarian verb \emph{деля} (divide) with the definition `WN: make a division or separation; FN: separate into parts or groups' evokes the frame \framename{Separating}, while the verb \emph{деля} (share) with the definition `WN: use jointly or in common; FN: to use something jointly with another sentient being' evokes the frame \framename{Sharing}. There are five meanings in the Dictionary of Bulgarian Language\footnote{\scriptsize\url{https://ibl.bas.bg/rbe/lang/bg/деля}} that are close to the meaning of the verb \emph{дeля} `divide', and four meanings in the Bulgarian wordnet;\footnote{\scriptsize\url{https://dcl.bas.bg/bulnet/}} in both sources the granularity of meaning is thus high, suggesting that such words may belong to separate conceptual frames that are related to one or more superframes.
+
+In contrast to English, homonymy between lemmas from different parts of speech occurs less frequently in Bulgarian, but it does exist, e.g. the verb \textit{сушa} (dry, `WN: to remove moisture and make dry') and the noun \textit{суша} (land, `WN: the solid part of the earth's surface').
+
+In this phase of the development of the Bulgarian FrameNet, we focussed on 5,074 verbs, which were selected according to quantitative and qualitative criteria and a heuristic according to which the criteria are applied \citep[207–208]{koeva-doychev-2022-ontology}. The criteria include presence in the Age of Acquisition Test -- the school level at which a word (the meaning of a word) must be learnt or mastered \citep{dale1981,goodman_dale_li_2008,morrison1997}; presence in WordNet Base concepts \citep[12--14]{Vossen1998}, aiming for maximum overlap and compatibility between the wordnets of multiple languages; root distance (the number of nodes) of a synset to the root of the local tree (the hierarchical substructure in WordNet in which the corresponding synset is contained); relative frequency in the Bulgarian National Corpus \citep{Koeva2012}, in Bulgarian textbooks from first to fourth grade and in a Bulgarian dictionary for primary school children.
+
+\tabref{tab:my_label3} shows the language-independent and language-specific information provided in the Lexical section of the Bulgarian FrameNet.
+
+\begin{table}
+    \begin{tabular}{lll}
+     \lsptoprule
+     Type of information & FrameNet  & BulFrame  \\\midrule
+     Semantic class & No & Language-independent\\
+     Stylistic and usage notes & No & Both specific or independent\\
+     Semantic relations & No & Language-independent\\
+     \lspbottomrule
+    \end{tabular}
+    \caption{Language-independent and language-specific information in Lexical section}
+    \label{tab:my_label3}
+\end{table}
+
+This information either shows the systematic semantic relations between the  concepts denoted by the lexical units or serves as classifying meta-information indicating the affiliation of the lexical units to certain semantic, stylistic or usage classes.
+
+\subsubsection{Lemma}
+
+In Bulgarian grammar, it is assumed that the lemma is the highest unmarked word form, i.e. the form in which there are no morphematically expressed grammatical categories (with the exception of the verbs \citep[20]{kutsarov2007}, where the lemma is the form of the first person singular present tense, while the grammatically most bare form is the third person singular present tense).
+
+The lemma for certain verb classes with a restricted paradigm, such as impersonal verbs, is the present tense in the third person singular. For other verb classes with a restricted paradigm, however, the first person singular is chosen as the lemma in dictionaries, even if it is not used with the specified word sense. For example, \textit{тека} (flow-1SG.PRS, `I am flowing'), is used in dictionaries as a lemma instead of \textit{тече} (flow-3SG.PRS, `it is flowing'). In the Bulgarian FrameNet, the lemma is defined as the first member of the word paradigm actively used in the language \citep[25]{Koeva2008}, and for personal verbs the lemma is the first person singular, present tense; for impersonal and third-personal verbs the lemma is the third person singular, present tense; and for plural personal verbs the lemma is the first person plural, present tense \citep[19]{Koeva2010}.
+
+\subsubsection{Multiword expressions} 
+
+There are many different classifications for multiword expressions (\cite{baldwin2010multiword,constant-etal-2017-survey}), of which we have chosen the following classification for verbal multiword expressions in Bulgarian:
+
+\begin{description}
+\item[Semi-fixed:] The number of constituents is fixed, but these constituents can undergo certain paradigmatic changes within certain grammatical categories; the order of constituents can change, although there is a preferred word order; and there is room for insertions from restricted groups of words, i.e., the multiword expression \textit{гушна букета} (hug-PRS.1SG the-bouquet, `to kick the bucket').
+\end{description}
+In this context, we can distinguish different types of personal verbs whose lemma is formed with a reflexive-in-form particles. These include personal reflexiva tantum \textit{se} verbs, such as \emph{спирам се} (stop-1SG oneself, `am stopping'); personal reflexiva tantum \textit{si} verbs, such as \emph{спомням си} (remember-1SG oneself, `remember'); personal reciproca tantum \textit{se} verbs, such as \emph{състезавам се} (compete-1SG with someone, `compete with'); and personal reciproca tantum \textit{si} verbs, such as \emph{пиша си} (write-1SG with someone, `correspond with').
+
+This group also includes third-personal verbs that may or may not form their lemma with a ``reflexive'' particle. These are:  third-personal accusativa tantum verbs, such as \emph{мързи ме} (lazy-3SG me-ACC.1SG, `I am lazy'); third-personal dativa tantum verbs, such as \emph{хрумнe ми} (occur-3SG me-DAT.1SG, `it occurs to me'); and impersonal reflexiva dativa tantum verbs, such as \emph{гади ми се} (sick-3SG me-ACC.1SG oneself, `I feel sick'). In these verbs, one of the frame elements must obligatorily be expressed by a personal pronominal clitic (accusative or dative), but it is conventionally regarded as part of the lemma, since the other forms express no meaning without it.
+\begin{description}
+\item[Non-fixed:] Its constituents can undergo morphological changes, undergo changes in word order and accommodate variable elements in their composition, e.g. \textit{изнасям лекция} (give-3SG lecture, `to give a lecture'), \textit{лекция ще изнасям утре} (give-FUT.3SG lecture tomorrow, `I will give a lecture tomorrow').
+\end{description}
+
+Most constructions with support verbs belong to this group. In FrameNet, it is assumed that support (light) verbs are selected by a frame-bearing noun: \textit{say a prayer} = \textit{pray} vs. *\textit{give a prayer} and \textit{give a speech} = \textit{speak} vs. *\textit{say a speech} \citep[244]{Fillmore2003}. For example, \emph{give a lecture} is part of the frame \framename{Speak\_on\_Topic}, evoked by the lexical unit \emph{lecture}.n. An important consequence of this analysis is the annotation in FrameNet of support verb subjects as frame elements relative to the noun.
+
+The relevance of the verb to the support construction has been demonstrated as the support verbs can determine the semantic role that a particular constituent takes in a sentence \citep[244]{Fillmore2003}. For example, in the first sentence below, the grammatical subject is \fename{Patient}, while in the second sentence the grammatical subject is \fename{Agent}.
+
+\begin{exe}
+ \ex  \label{ch01:ex:21}
+ \gll \textit{В миналото}  [\textit{той}]$_{\feinsub{Patient}}$  \textit{\textbf{Е ИМАЛ $^S$$^u$$^p$$^p$}} [\textit{катастрофа}]$_{\feinsub{Undesirable\_event}}$   \textit{с камион}.\\
+ {In the past} {he}  {have-PST.3SG} {accident}  {with a truck}. \\
+\glt `{In the past he had an accident with a truck.}'
+\ex  \label{ch01:ex:22}
+ \gll \textit{Днес}  [\textit{той}]$_{\feinsub{Agent}}$  \textit{\textbf{НАПРАВИ $^S$$^u$$^p$$^p$}}  \textit{\textbf{катастрофа}}  \textit{с камиона}.\\
+{Today} {he} {make-PST.3SG} {accident} {with the truck}. \\
+\glt `{Today he has made an accident with the truck.}'
+\end{exe}
+
+Both multiword expressions serve as synonyms for the Bulgarian verb \textit{ка\-тастрофирам}. In the first example, it corresponds to the meaning  `having an accident',  in the second example to the meaning of `making an accident'. The observations indicating that constructions with support verbs often have a single verb synonym, as well as the fact that support constructions can be considered sentence predicates, provide convincing evidence for the inclusion of support constructions as verbal multiword expressions in the Bulgarian FrameNet. The solution is that the multiword expressions with support verbs are considered to evoke the respective noun frame and are annotated in the same way as in English. The difference is that the entire multiword expression is added as a lexical unit with its own meaning. Thus, the first multiword expression with a support verb becomes part of the conceptual frame  \framename{Catastrophe}, which is linked to the superframe and the semantic frame \framename{Catastrophe}, while a new conceptual frame and superframe is created for the second, since there is currently no suitable semantic frame that can be copied.
+
+\subsubsection{Definition} 
+
+The definition serves to explain the meaning of a verb in a way that clearly distinguishes it from other meanings of the same word. These definitions are taken from the Bulgarian WordNet \citep[57--58]{koeva2021}, in which verbs of the imperfective and perfective aspect are intentionally presented as synonyms, accompanied by a common definition to preserve the structure of the Princeton WordNet. An appropriate definition should reflect the category verb aspect and the morphological features of the verbs (the limited person paradigm as third person, impersonal and plural personal); therefore, some of the definitions in the Bulgarian FrameNet need to be modified. For example, the following two verbs: \emph{излитам} (take off-IPFV.1SG, `am taking off') and \emph{излетя} (take off-PFV.1SG, `take off') are described with one definition in Bulgarian WordNet: 
+`за летателни и космически апарати или под. -- отделям се от земята и започвам да летя' (of an aircraft and spacecraft or sub. -- leave-IPFV.1SG the ground and begin to fly).
+
+The definition was modified to describe the meaning of the imperfective and perfective verbs that are used in the third person only:
+
+\ea \emph{излита} \hspace{0.5cm} take off-IPFV.3SG \hspace{0.5cm}  \textit{It is taking off}.
+\glt `за летателни и космически апарати или под. -- отделя се от земята и започва да лети'
+\glt `of an aircraft, spacecraft, etc., leaves the ground and begins to fly' 
+\ex \emph{излети}  \hspace{0.5cm}  take off-PFV.3SG \hspace{0.5cm}  \textit{It takes off.}
+\glt `за летателни и космически апарати или под. -- да се отдели от земята и започне да лети' 
+\glt `of an aircraft, spacecraft, etc., to leave the ground and begin to fly'.
+\z
+
+\subsubsection{Semantic type, semantic class, stylistic and usage labels}
+
+Lexical units can be tagged with three different types from various sources: \emph{semantic type} from FrameNet, \emph{semantic class} from WordNet, and \emph{stylistic and usage labels} from Bulgarian WordNet.
+
+FrameNet applies a number of \textbf{semantic types} to lexical units, with most types reserved for nouns and adjectives; however, all types available for verbs can be added to Bulgarian lexical units where appropriate. For example, \textit{see}.v with the definition `COD: perceive with the eyes', which evokes the frame \framename{Perception\_experience}, and \textit{glance}.v with the definition `COD: take a brief or hurried look', which evokes the frame \framename{Perception\_active}, have the semantic type \emph{Visual\_modality}, which can be transferred to the corresponding Bulgarian lexical units.
+
+The synsets (or the individual words that make them up) in Princeton WordNet are organised into \emph{semantic classes} (primitives) that represent basic concepts that serve as distinct roots of different hierarchies. Verbs within these hierarchies are grouped under common semantic classes \citep[47]{fellbaum1993}, such as \textit{bodily care and functions}, \textit{change}, \textit{cognition}, \textit{communication}, \textit{competition}, \textit{consumption}, \textit{contact}, \textit{creation}, \textit{emotion}, \textit{motion}, \textit{perception}, \textit{possession}, \textit{social interaction}, \textit{weather verbs}, \textit{state}.
+Each verb in the Bulgarian FrameNet is assigned a semantic class from the WordNet. For example, the verb \textit{искам} (wish, `order politely; express a wish') has the semantic class verb.emotion and the verb \textit{моля} (request, `ask a person to do something') has the semantic class verb.communication.
+
+\textbf{Labels} or notes (also from the Bulgarian WordNet) are assigned to the corresponding lexical units to indicate various features, such as non-standard usage, figurative meanings, obsolete terms, informal usage and more. This labelling scheme reflects various distinctions in language usage: \textbf{belonging to non-stan\-dard lexis}, which includes dialectal words, slang or vernacular terms; \textbf{words with unfavourable connotations}; \textbf{use in a specific functional style}, such as colloquial, poetic, literary or technical terms; \textbf{historical period of use}, which distinguishes between obsolete, historical and newly coined words; \textbf{the expressive properties of the word}, such as pejorative meanings, augmentative or diminutive forms; \textbf{frequency of use}, which indicates whether a word is rare; \textbf{the nuances in use}, such as figurative meanings \citep[55]{koeva2021}. Stylistic marking usually excludes words from the core vocabulary, and although the labelling comes from the Bulgarian WordNet, the number of marked verbs is not large.
+
+While the stylistic and usage labels are language-specific, the semantic classes are largely language-independent. A single lexical unit can be given several labels if they characterise it in different ways.
+
+\subsubsection{Semantic relations}
+
+The \textbf{lexical units} that evoke a conceptual frame can be one or more linked to each other by lexical relations (synonymy, antonymy) and/or hierarchical semantic relations at the conceptual level (hypernymy, troponymy, entailment).
+
+The \emph{semantic relations} are inherited from the (Bulgarian) WordNet. Taxonomic relations for verbs are inverse and transitive (\emph{has a troponym} and \emph{has a hypernym}, or (\emph{has a subevent} and \emph{is a subevent of}).
+Non-hierarchical relations are: symmetrical, irreflexive and non-transitive (\emph{antonymy}); symmetrical, irreflexive and Euclidean (\emph{also see}, \emph{verb group}). 
+
+The semantic relations in WordNet are defined between synsets, and in Bulgarian WordNet verbs with different lexico-grammatical aspect are unnaturally grouped in one synset. The following general rules have been implemented to split verbs with different  aspect in the Bulgarian FrameNet, adopting the semantic relations for the concepts they express:
+
+\begin{itemize}
+ \item \emph{Troponymy}, \emph{Hypernymy} and \emph{Antonymy} connect either imperfective or perfective verbs.
+ \item \emph{Also see} and \emph{Verb group} link verbs regardless of their  aspect.
+\end{itemize}
+
+Semantic relations between lexical units are usually language-independent, with the exception of relations that reflect culturally and historically specific concepts. By integrating the semantic relations of WordNet into the Bulgarian FrameNet, the scope of the semantic description is extended, which enables the application of certain evaluation heuristics.
+
+\figref{fig:F11.png} shows an example of the Lexical section for the verb \textit{варя} (boil, `FN: cook by immersing in boiling water'), evoking the  conceptual frame \framename{Apply\_heat\_варя}.
+
+\begin{figure}[ht]
+  \includegraphics[width=\textwidth]{figures/FI11.png}
+  \caption{Illustration of Lexical section in the BulFrame system.}
+  \label{fig:F11.png}
+\end{figure}
+
+\subsection{Grammatical section}
+
+The conceptual frame integrates morphological details specific to each verb: the \textbf{verb aspect}; the \textbf{range of grammatical subjects} that a predicate can select, such as nouns, all personal pronouns, third person pronouns only, subject clauses or none; and the \textbf{range of grammatical objects} that a predicate can select, including nouns, personal accusative pronouns, complement clauses or none. The verb aspect is determined by the morphological structure of verbs, which includes lexico-grammatical prefixes and grammatical suffixes.
+The choice of grammatical subject is related to the person of the verb, while the presence of grammatical object depends to a certain extent on the transitivity of the verb.
+
+These features (the ranges of grammatical subjects and objects) are closely related to the semantic and grammatical structures of a particular language. Even though some of the grammatical features are common to typologically related languages, they cannot be considered language-independent.
+In the Slavic languages, including Bulgarian, the lexical manifestation of the verb aspect is evident, in contrast to English, where the continuous and perfect aspect are indicated by an auxiliary verb together with a present participle and a past participle respectively.
+The range of grammatical subjects and objects in FrameNet is illustrated by annotation and summaries of valency patterns, provided that the annotation covers all contextual realisations within a language. In the Bulgarian FrameNet, the verb aspect and the ranges of grammatical subject and object selection are explicitly indicated for each verbal lexical unit. In addition, these features are also confirmed by the annotation and the valency patterns.
+
+\tabref{tab:my_label4} summarises the language-specific information in the Grammatical section of the conceptual frame.
+
+\begin{table}
+    \begin{tabular}{lll}
+    \lsptoprule
+       Type of information & FrameNet  & BulFrame  \\\midrule
+       Verb aspect & No & language-specific\\
+       Range of grammatical subjects & language-specific & language-specific\\
+       Range of grammatical objects & language-specific & language-specific\\
+     \lspbottomrule
+    \end{tabular}
+    \caption{Language-specific information in Grammatical section}
+     \label{tab:my_label4}
+ \end{table} 
+
+ \newpage
+The combination of the values of the three categories (as well as some basic semantic information for the frame elements \fename{Agent} and \fename{Experiencer} such as  human and animate, and their grammatical roles) determines the formation of verbal diatheses in Bulgarian.
+
+\subsubsection{Verb aspect}
+
+As in other Slavic languages, it is disputed whether perfective and imperfective verbs express different lexical meanings or whether they are different forms of the same word. Some scholars such as \citet[137,193]{andreychin1944}, \citet[546]{kutsarov2007}, \citet[247]{Nitsolova2008} favour the former view, while others such as \citet[189]{Maslov}, \citet[8--9]{Stankov} argue for the latter. However, the prevailing evidence favours the first assumption and suggests that perfective and imperfective verbs in Bulgarian express different lexical and grammatical characteristics and thus represent different lexical units.
+
+Bulgarian perfective and imperfective verbs typically exhibit overt morphological distinctions. Aspectual derivation in Bulgarian involves two main processes: perfectivisation and imperfectivisation. These derivations are formed by adding a prefix, a suffix or both to the verb root.
+
+Certain verbs have a morphologically non-derived imperfective form (imperfectiva tantum) and can form perfective counterparts through prefixation. Conversely, perfective verbs can become imperfective through suffixation, a process known as secondary imperfectivisation. As a result, many Bulgarian verbs have aspect triplets.
+
+ \begin{exe}
+ \ex  \label{ch01:ex:23}
+ \glll \textit{водя}   \hspace{0.4cm}  \textit{\textbf{из}веда}  \hspace{0.4cm} \textit{\textbf{из}вежд\textbf{ам}}\\
+ take-IPFV  \hspace{0.4cm} take\_out-PER   \hspace{0.4cm} take\_out-IPFV \\
+  \textit{`am taking to'}  \hspace{0.4cm} \textit{`take out'}  \hspace{0.4cm}   \textit{`am taking out'} \\
+ \end{exe}
+ 
+A smaller group of verbs are morphologically non-derived perfective verbs (perfectiva tantum), which produce imperfective counterparts through suffixation. Both non-derived perfective and derived imperfective verbs can form new prefixed verbs, whereby the lexico-grammatical aspect of the source verb is retained.
+
+\begin{exe}
+ \ex  \label{ch01:ex:24}
+ \glll \textit{кажа} \hspace{1.2cm} \textit{каз\textbf{вам}}\\
+say-PFV  \hspace{1cm} say-IPFV\\
+ \textit{`say'} \hspace{1.3cm} \textit{`am saying'} \\
+
+ \ex  \label{ch01:ex:25}
+ \glll  \textit{\textbf{из}кажа} \hspace{1.0cm} \textit{\textbf{из}каз\textbf{вам}}\\
+express-PFV  \hspace{0.3cm} express-IPFV\\
+  \textit{`express'} \hspace{0.9cm} \textit{`am expressing'}\\
+ \end{exe} 
+
+In Bulgarian WordNet, each verb is assigned a label that indicates its lexico-grammatical aspect. For example: perfective verb -- \textit{запея} `start singing'; imperfective verb -- \textit{запявам} `starting singing'; simultaneous perfective and imperfective verb -- \textit{пенсионирам} `retire'; imperfective verb without perfective equivalent -- \textit{вали} `it is raining'; perfective verb without imperfective equivalent -- \textit{повярвам} `believe'. The labels indicating the aspect of the verbs in the Bulgarian WordNet are transferred to the Bulgarian FrameNet.
+
+The difference in verb aspect is reflected lexically, morphologically and syntactically, which determines the explicit definition of the aspect values in the Bulgarian FrameNet. Here are some examples of morphological differences \citep[256]{Nitsolova2008}:
+
+\begin{itemize}
+ 
+\item The verbs with perfective aspect lack the so-called independent present tense (the present tense forms can only be used in subordinate clauses and their temporal meaning depends on the main verb), the present participles (both active and passive) and the negative imperative forms.
+
+\item The derivational potential also differs between perfective and imperfective verbs. Perfective verbs cannot form certain types of deverbal nouns or nouns that denote occupations.
+
+\end{itemize}
+
+The syntactic differences can be summarised as follows \citep[56]{Koeva2022}:
+
+\begin{itemize}
+
+\item The perfective aspect has a direct influence on the syntactic realisation of verb complements. Direct objects of perfective verbs cannot remain implicit, and perfective verbs cannot serve as complements of phase predicates.
+
+\item The perfective aspect of the verbs also reflects the restrictions in the formation of diatheses, as the perfective verbs in Bulgarian do not form middles, optatives or impersonals.
+
+\end{itemize}
+
+\subsubsection{Range of grammatical subjects}
+
+With regard to the categories person and number, each verb in the Bulgarian FrameNet is categorised in one of four ways: \textbf{personal} (for first, second and third person singular and plural), \textbf{impersonal} (restricted to third person singular), \textbf{third-personal} (for third person both singular and plural) and \textbf{plural-personal} (for first, second and third person plural) \citep[33]{Koeva2010}. This categorisation is compatible with transitivity: Personal verbs can be both transitive and intransitive, while impersonal and third-personal verbs are typically intransitive, with the exception of accusativa tantum verbs.
+
+Furthermore, the range of grammatical subjects corresponds to the possibilities of occupying the subject position: personal verbs require a subject (noun, noun phrase, substantive, pronoun, or subject clause); impersonal verbs do not require an argument in the subject position; third-personal verbs admit only a third-person subject (noun, noun phrase, substantive, pronoun); and plural-personal verbs require a plural subject (noun, noun phrase, substantive, pronoun).
+
+\subsubsection{Verb transitivity}
+
+Transitivity (and intransitivity) result from a specific syntactic realisation of a core frame element: a noun phrase that fulfils the grammatical role of a direct object.
+
+Most languages have a number of transitivity classes of verbs. A typical pattern (which occurs in English, Bulgarian and many other languages) is given by \citet[4]{Dixon-2000}:
+\begin{itemize}
+\item strictly intransitive verbs that only occur in an intransitive clause;
+\item strictly transitive verbs that only occur in a transitive clause (in such a case, the position of the direct object in the Bulgarian FrameNet is marked with the label obligatory);
+\item ambitransitive verbs (or labile) that occur in both an intransitive and a transitive clause (in such a case, the position of the direct object in the Bulgarian FrameNet is marked with the label optional).
+\end{itemize}
+
+Within the two main groups of verbs (transitive and intransitive), the subclasses in Bulgarian are further subdivided on the basis of their lexical properties. This subdivision takes into account whether the verbs form a multiword expression with a ``reflexive'' particle and/or whether they obligatorily combine with a pronominal ``accusative'' or ``dative'' clitic \citep[34]{Koeva2010}.
+
+In diatheses, it is common that the number of core frame elements (subjects and objects) either decreases or that the semantic roles of these core frame elements change. Many diatheses mainly concern transitive verbs and their transformation into intransitives, in which the original object takes on the grammatical role of the subject.
+
+\subsection{Frame section}
+
+The parts of the Frame section have different origins: some are inherited from FrameNet (in our case through a superframe), others are built according to the FrameNet structure, and another part is specific to the organisation of conceptual frames.
+
+The correspondence with the language-independent semantic description in FrameNet (which is proven to be valid for at least two languages: English and Bulgarian) is documented in the conceptual frames by the superframes. There are three primary scenarios: two of them involve some form of equivalence (equivalence or partial equivalence) with a superframe, another does not. In the case of equivalence, the superframe is copied into a conceptual frame. In the case of partial equivalence, the language-independent information from FrameNet is reconstructed in a conceptual frame. If there is no equivalence, a new conceptual frame is developed and the language-independent information is integrated as a new superframe.
+
+The FrameNet-related parts (inherited, (re)constructed or newly constructed) include frame elements together with their names, status (core, non-core and extrathematic), definitions, semantic types and relations.
+
+The reconstruction of an inherited language-independent part may involve the reduction of a (core) frame element, the occasional insertion of a new frame element, or the change of status of a core or a peripheral frame element. Some relations between frame elements can either be reduced or redefined.
+
+In addition to specifying semantic types for frame elements, a set of nouns is defined by using one or more noun synsets in WordNet that dominate the hypernym trees in which the nouns compatible with the target lexical units are represented.
+
+\tabref{tab:my_label5} contains both language-independent and language-specific information in the Frame section, which is explained in more detail below.
+
+\begin{table}
+    \begin{tabular}{lll}
+    \lsptoprule
+       Type of information & FrameNet & BulFrame  \\\midrule
+       Frame elements & LI or specific & LI or specific\\
+       FE relations & LI or specific & LI or specific\\
+       FE noun fillers  & No & LI or specific\\
+     \lspbottomrule
+    \end{tabular}
+  \caption{Language-independent (LI) and language-specific information in Frame section}
+   \label{tab:my_label5}
+\end{table}  
+
+
+\subsubsection{Frame elements}
+
+Conceptual frames consist of frame elements equipped with name, definition, semantic type, core status, internal relations between the frame elements and information about the nouns with which these frame elements can be expressed. The names, definitions and semantic types of frame elements are adopted by FrameNet without additional specifications if they are suitable for Bulgarian. Only in rare cases, when a new frame (or a new frame element) is proposed, are they created from scratch.
+
+So far, only the core frame elements relevant to Bulgarian have been included in the conceptual frames. In most cases where there is overlap between the core frame elements in the conceptual descriptions for both languages (English and Bulgarian), this correlation also extends to the peripheral frame elements.
+
+\subsubsubsection{Core vs. peripheral frame elements}
+
+When constructing the Bulgarian FrameNet, it is necessary to assess whether (core) frame elements are applicable to the semantic structure of the Bulgarian lexical units. The task is to determine whether a particular frame element is relevant, and if so, whether it is a core or a peripheral, and in some cases there is a core status shift of frame elements in Bulgarian descriptions. A (core) frame element may be omitted or modified to better fit the description of the Bulgarian lexical units.
+
+The distinction between core and peripheral frame elements in FrameNet is based on the following properties of core frame elements: overtly specified, unambiguous interpretation when omitted, and without formal marking.
+
+If we compare Bulgarian with English, the overt specification of frame elements cannot be regarded as a formal feature of subjects. In contrast to English, subject omission in Bulgarian can occur in combination with all verbal categories, not only with the imperative. Bulgarian is a null subject language and allows subject omission due to its rich verb inflectional morphology, which indicates person, number and in some verb categories also the gender of the omitted subject. The use of null subjects in Bulgarian in the first and second person is not grammatically and contextually restricted, while the choice between explicit or implicit subject in the third person may depend on the context of the discourse.
+
+The conditions for direct null objects differ from the conditions for null subjects. Similar to some other languages, direct null objects in Bulgarian can only be observed with transitive imperfective verbs. Since the imperfective verb may not imply the result of an activity, the object can be omitted. A null object is permissible if it is understood by the lexical meaning of the verb, mentioned earlier in the discourse or implied by the context. In cases where support verbs are used, the object cannot be omitted even with transitive imperfective verbs:
+
+ \begin{exe}
+ \ex[]{\label{ch01:ex:26}
+\emph{Влязох в стаята, където Иван четеше \textbf{книга}, преди да заспи.}
+  \glt `{I entered the room where Ivan was reading a book before falling asleep.}'}
+ 
+ \ex[]{\label{ch01:ex:27}
+\emph{  Влязох в стаята, където Иван четеше, преди да заспи.}
+  \glt `{I entered the room where Ivan was reading  before falling asleep.}'}
+ 
+ \ex[]{\label{ch01:ex:28}
+ \emph{ Влязох в стаята, където Иван вземаше \textbf{хапчета за сън}, преди да заспи.}
+ \glt `{I entered the room where Ivan was taking sleeping pills before falling asleep.}'}
+ 
+ \ex[*]{\label{ch01:ex:29}
+\emph{ Влязох в стаята, където Иван вземаше, преди да заспи.}
+  \glt `{I entered the room where Ivan was taking before falling asleep.}'}
+\end{exe} 
+ 
+
+Indirect objects and nominal or prepositional adverbials that express a core element of the frame can also remain implicit if they can be derived from the wider context.
+
+It has been pointed out that arguments at the semantic level can be obligatory or non-obligatory, and truly optional semantic arguments are distinguished from obligatory semantic arguments. For example, in \textit{He kicked the pumpkin} (\textit{down the stairs}) the phrase \textit{down the stairs} is a realisation of an optional semantic argument, while in \textit{He threw the pumpkin} (\textit{down the stairs}) it is an obligatory semantic argument \citep[174--176]{Culicover2005}. Both verbs allow the optional expression of the \emph{path of motion}. If such a \emph{path} is not expressed with \textit{kick}, the direct object does not have to experience any movement. With \textit{throwing}, on the other hand, something is set in motion. Even if the \emph{path} expression is omitted, it is therefore semantically implicit. In the verb \textit{throw}, the \emph{path of motion} is therefore an obligatory semantic argument that remains implicit at the syntactic level.
+
+In Bulgarian, there is no general formal marking for grammatical roles such as subject and object. Only the personal pronominal clitics have forms for the nominative, accusative and dative. For indirect objects and prepositional adverbials, the range of permissible prepositions can be specified. Given the many options for omitting sentence constituents and the limited use of formal case markers, the unambiguous semantic interpretation of omitted core constituents therefore remains the primary formal feature for their differentiation in Bulgarian.
+
+The challenges in determining the core status of frame elements for Bulgarian verbs can be twofold: firstly, the categorisation of indirect objects that do not serve as core frame elements, and secondly, the categorisation of prepositional and noun adverbial phrases that serve as core frame elements.
+
+It has been pointed out that adverbial phrases as core frame elements typically accompany verbs describing situations in which temporal or spatial elements represent frame-internal information -- ``information that fills in details of the internal structure of an event ... as opposite to the information about the setting of incidental attending circumstances of that event, the frame-external information'' \citep[159]{fillmore1994}.
+
+  \begin{exe}
+ \ex  \label{ch01:ex:30}
+ \textit{The show started \textbf{at five o'clock}.}
+\ex  \label{ch01:ex:31}
+\textit{The performance lasted \textbf{five hours}.}
+\ex  \label{ch01:ex:32}
+\textit{John lives \textbf{in Sofia}.}
+\ex  \label{ch01:ex:33}
+\textit{The vase stays \textbf{at the table}.}
+ \end{exe} 
+  
+
+\subsubsubsection{Basic instances of restructuring frame elements}
+
+Since the core frame elements were taken from the FrameNet, the main task in building the Bulgarian FrameNet is to assess whether these frame elements are applicable to the semantic structure of the Bulgarian lexical units. In rare cases, a peripheral frame element may be elevated to the status of a core frame element in the Bulgarian FrameNet. Conversely, a core frame element can be omitted or modified in order to adapt it to the semantic description of the situation evoked by the Bulgarian lexical units.
+
+An example of the lack of a core frame element in the Bulgarian FrameNet is the semantic frame \framename{Awareness}, which contains core frame elements such as \fename{Cognizer}, \fename{Content} and \fename{Topic}, the latter two forming a Core Set.
+The Bulgarian verb \textit{вярвам} (believe, `COD: feel sure of the truth of') evokes the conceptual frame \framename{Awareness}, in which the frame element \fename{Topic} is not involved. In other words, when describing the verb \textit{вярвам}, only the frame element \fename{Content} is relevant within the conceptual frame \framename{Awareness}, while the frame element \fename{Topic} is omitted.
+
+ \begin{exe}
+ \ex  \label{ch01:ex:34}
+ \gll \textit{Вчера}   [\textit{той}]$_{\feinsub{Experiencer}}$    \textit{\textbf{ВЯРВАШЕ}}  [\textit{в своята гениалност}]$_{\feinsub{Content}}$. \\
+Yesterday {he}  believe-PST  {in his genius}. \\
+ \glt `Yesterday he believed in his genius.'
+ \end{exe} 
+
+
+ \begin{exe}
+ \ex  \label{ch01:ex:35}
+ \gll  [DNI]$_{\feinsub{Experiencer}}$   \textit{\textbf{ВЯРВАM}},  [\textit{че това е верният път}]$_{\feinsub{Content}}$. \\
+ {I-dropped} believe-PRS  {that this is the right way}. \\
+ \glt `I believe that this is the right way.'
+ \end{exe} 
+ 
+Another example in the Bulgarian FrameNet that illustrates the transformation of a peripheral frame element into a core frame element is the frame element \fename{Goods} in the frame \framename{Robbery}, which is defined as follows: A \fename{Perpetrator} wrongs a \fename{Victim} by taking something (\fename{Goods}) away from him. Bulgarian verbs such as \textit{обирам} (rob-IPFV, `am robbing'), \textit{обера} (rob-PFV, `rob') evoke the frame \framename{Robbery}, and in their syntactic realisation the element \fename{Goods} receives a unique interpretation and is therefore considered a core frame element.
+
+ \begin{exe}
+ \ex  \label{ch01:ex:36}
+ \gll \textit{Тогава}   [\textit{скитникът}]$_{\feinsub{Perpetrator}}$    \textit{\textbf{ОБРА}}  [\textit{дома на капитана}]$_{\feinsub{Source}}$. \\
+ Then  {the tramp} rob-PST  {the captain's house}. \\
+ \glt `Then the tramp robbed the captain's house.'
+ \end{exe} 
+
+ \begin{exe}
+ \ex  \label{ch01:ex:37}
+ \gll \textit{Тогава}  [\textit{скитникът}]$_{\feinsub{Perpetrator}}$   \textit{\textbf{ОБРА}}  [\textit{накитите}]$_{\feinsub{Goods}}$  
+ [\textit{от къщата}]$_{\feinsub{Source}}$. \\
+ Then  {the tramp}  rob-PST   {the ornaments} {from the house}. \\
+ \glt `Then the tramp stole the ornaments from the house.'
+ \end{exe} 
+ 
+
+The Bulgarian verbs resulting from lexical reciprocal diathesis, in which the reciprocal meaning is expressed at the lexical level in both singular and plural forms, are an example of a case in which the semantic roles of the core elements of the frame involved in the source are shifted within the derived diathesis. For example, the verbs \textit{пиша} (write-PER, `provide information to someone through letters') and \textit{пиша си} (write-PER oneself-REFL, `exchange information with someone through letters') are both parts of the frame \framename{Text\_creation}, which is defined as follows: An \fename{Author} creates a \fename{Text}, either written, such as a letter, or spoken, such as a speech, that contains meaningful linguistic tokens and may have a particular \fename{Addressee} in mind. The source diathesis evokes a situation with the core frame elements \fename{Author} and \fename{Addressee}, while the derived diathesis with the reciprocal meaning evokes a situation with the core frame elements \fename{Author1\_Addressee2} and \fename{Author2\_Addressee1}.
+
+\begin{exe}
+ \ex  \label{ch01:ex:38}
+ \gll  [\textit{Поетът}]$_{\feinsub{Author}}$   \textit{\textbf{ПИШЕ}}    [\textit{на своята любима}]$_{\feinsub{Addressee}}$. \\
+ {The poet} write-PRS  {to his beloved}. \\
+ \glt `The poet writes to his beloved.'
+ \end{exe} 
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:39}
+ \gll   [Поетът]$_{\feinsub{Author1\_Addressee2}}$  \textit{\textbf{СИ ПИШЕ}} [\textit{със своята любима}]$_{\feinsub{Author2\_Addressee1}}$. \\
+ {The poet}  oneself\_write-PRS {with his beloved}. \\
+ \glt `The poet corresponds with his beloved.'
+ \end{exe} 
+  
+
+\subsubsubsection{Frame element relations}
+
+The relations between frame elements are inherited from FrameNet. If a semantic description of a scene is suitable for English and Bulgarian, then the generalisations for the relations between the frame elements should also apply to both languages (as a general rule). For example, in the frame \framename{Manipulation}, which describes the manipulation of an \fename{Entity} by an \fename{Agent}, the \textit{Core Set} is defined between the frame elements \fename{Agent} and \fename{Bodypart\_of\_agent}.
+
+
+ \begin{exe}
+ \ex  \label{ch01:ex:40}
+  \gll  \textit{Бабата} \textit{започна}   \textit{да}  \textit{го}  \textbf{\textit{МАСАЖИРА}} [\textit{с ръце}]$_{\feinsub{Bodypart\_of\_agent}}$. \\
+ The\_old\_lady  start.3SG-PST to  he-DAT   massage {with hand-PL.}\\
+ \glt `The old lady started massaging him with her hands.'
+ \end{exe} 
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:41}
+ \gll \textit{Бавно}  [\textit{ръцете}]$_{\feinsub{Bodypart\_of\_agent}}$  \textit{\textbf{МАСАЖИРАХА}}  \textit{врата}  \textit{и}  \textit{гърба}  \textit{му}. \\
+ Slowly the\_hand.PL massage-3PL neck  and  back his. \\
+ \glt `Slowly, the hands massaged his neck and back.'
+ \end{exe} 
+  
+
+The definition of Core Sets (each member of the set is sufficient to fulfil the semantic valency of the predicator) allows the inclusion of diatheses \textit{Oblique} subject, as members of one and the same conceptual frame. The alternations that fall into this group are: Natural force subject, Instrument subject, Locatum subject, Raw Material Subject \citep[79–83]{Levin:93}. The ``oblique subject'' diatheses are realised when the semantic role of the subject does not change and the semantic role of the prepositional object is reduced, but the source noun of the prepositional phrase is realised as a derived subject \citep[148]{Koeva2022}.
+
+In many cases, it is sufficient to define a Core Set because it means the realisation of one frame element instead of another, but it also defines their co-occurrence, which is not possible with the relation \textit{Exclusion}.
+ 
+The frame elements \fename{Content} (The \fename{Content} is the entity that evokes a cognitive reaction for the \fename{Experiencer}) and \fename{Experiencer} (The \fename{Experiencer} is newly aware of the \fename{Content}) from the frame \framename{Enter\_awareness} are in the relation \textit{Requires}. The frame element \fename{Content} cannot appear without the frame element \fename{Experiencer}. The example is for with the lexical unit \textit{хрумне ми} (it occurs to me, `FN: suddenly become known (to someone)’).
+
+
+\begin{exe}
+ \ex  \label{ch01:ex:42}
+ \gll \textit{\textbf{ХРУМНА}}   [\textit{ми}]$_{\feinsub{Exp}}$  [\textit{една}  \textit{идея}]$_{\feinsub{Content}}$. \\
+ Occur  I-DAT an  idea. \\
+ \glt `An idea occurred to me.'
+ \end{exe} 
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:43}
+ \gll \textit{\textbf{ХРУМНА}}   [\textit{му}]$_{\feinsub{Exp}}$  [\textit{да}   \textit{излезе}  \textit{от} \textit{стаята}]$_{\feinsub{Content}}$. \\
+ Occur  he-DAT to leave  from  the\_room. \\
+ \glt `It occurred to him to leave the room.'
+ \end{exe} 
+ 
+An example of the additional coding of relations between frame elements are the relations \textit{Requires} between the frame elements \fename{Whole} and \fename{Parts} as well as between \fename{Part} and \fename{Part2}, while \fename{Part1} \textit{Excludes} \fename{Parts} and \fename{Part2} \textit{Excludes} \fename{Parts} in the frame \framename{Becoming\_separated} with the definition: A \fename{Whole} separates into \fename{Parts}, or one part of a whole, called \fename{Part1}, becomes separate from the remaining portion, \fename{Part2}.
+
+\subsubsection{Noun frame element fillers}
+
+FrameNet enables the characterisation of `role fillers' by semantic types of frame elements, which should be largely constant across all uses. However, not all frame elements are provided with a semantic type or the semantic types are too general. For this reason, we have decided to specify as far as possible the set of nouns that are suitable to represent a particular frame element in a sentence and combine with the target verb.
+
+Several attempts have been made in this direction. Compared to FrameNet, another lexical-semantic resource based on frame semantics, VerbAtlas, uses fewer semantic roles (frame elements) (25) and many more semantic types (selectional preferences) (116), expressed in terms of WordNet synsets \citep[627]{di-fabio-etal-2019-verbatlas}. Selectional preferences were manually chosen from a set of 116 macro-concepts defined by WordNet synsets whose hyponyms are considered likely candidates for the corresponding argument slot \citep[627]{di-fabio-etal-2019-verbatlas},  a strategy similar to the previous one based instead on algorithms \citep{agirre-martinez-2001-learning}. The comparison of the interpretation of the verb \textit{heаr} in FrameNet and VerbAtlas shows that the semantic frame in FrameNet \framename{Perception\_experience} is more general (it includes any kind of perception), while the frame in VerbAtlas includes verbs with a different but narrower meaning, limited to auditory perception. In FrameNet there is a frame element that refers to the body part through which the perception occurs, and in VerbAtlas there are two semantic roles: \emph{Stimulus} and \emph{Source}, with an equal selectional preference: \emph{entity} (the difference remains unclear). Both resources contain frame elements (semantic roles) for the \emph{Perceiver} and the perceived auditory \emph{Phenomenon}. It is very difficult to define sets of verb-noun combinations, regardless of whether automatic or corpus observation methods are used, due to the objective difficulties that figurative but acceptable usage may always entail.
+
+In another approach, for a dictionary containing FrameNet-based data for English, Brazilian Portuguese and Spanish, domain-specific ontologies are used to impose semantic constraints on the frame elements \citep{Hauck}. 
+In the context of the Brazilian FrameNet, each core frame element undergoes an analysis based on the aspect of the scene it represents, resulting in the mapping of one or more frames to the frame element \citep{Torrent}. Only frames that stand for events, states, attributes and relations are eligible for frame element to frame relations. The information available from the definition or semantic type is used to determine the type of concept it refers to (e.g. person, place, event) and to identify the highest level frame that represents it. In this way, the FrameNet is enriched with additional semantic information by linking the conceptual structures that make it up. The approach seems to be similar to the introduction of morphosemantic relations between verb and noun synsets in WordNet; however, this extension is not applicable as nouns have not yet been included in the Bulgarian FrameNet.
+
+The accepted approach is to select the topmost synset (or conjunction of topmost synsets) from the Bulgarian WordNet that dominates all corresponding noun synsets for a given frame element. The nouns in WordNet are divided into 25 semantic classes \citep[16]{Miller1990}, which, being general, can be subdivided into subclasses. For example, within the semantic class {food}, the subclass {beverage} can be introduced for nouns associated with verbs such as \textit{stir}, \textit{sip}, \textit{drink}, \textit{lap}, and so on. Such a representation aims to specify the organisation of concepts in an ontological structure that allows inheritance between semantic classes in the hierarchy and ensures a more precise specification of compatibility between verbs and nouns. One way to extend the WordNet semantic class repository is to map the WordNet synsets to an existing hierarchy of semantic types, e.g. the Corpus Pattern Analysis (CPA) types \citep{hanks2004}. The extension of the WordNet semantic classes with the CPA semantic types is done manually by matching the CPA semantic types with the WordNet synsets and selecting the most suitable ones \citep{koeva-etal-2018-mapping}. Initially, less than 100 semantic classes were used; however, as the number of lexical units and conceptual frames increased, so did the number of semantic classes defined, reaching 377 in September 2024.
+
+The aim is to provide representative information about the collocations between verbs and nouns by extracting corpus evidence. Both extremely vague and overly specific descriptions are avoided. For example, the verbs \textit{bomb}.v and \textit{attack}.v are part of the frame \framename{Attack} (An \fename{Assailant} physically attacks a \fename{Victim}), and the frame element \fename{Victim} with the verb \textit{bomb}.v is characterised by the hyponyms {region}: eng-30-08630985-n and {building}: eng-30-02913152-n. Combinations such as \textit{bombed the island}, \textit{village}, \textit{meadow}, \textit{bank}, \textit{building} etc. are therefore supplied, while collocations such as \textit{bombed the ship}, \textit{boat} and \textit{army}, which have a lower frequency, are not supplied. For the verb \textit{attack}.v, the specification is: {\textit{settlement}}: eng-30-08672562-n, {\textit{building}}: eng-30-02913152-n, {\textit{military unit}}: eng-30-08198398-n, {\textit{defensive structure}}: eng-30-03171356-n. In FrameNet, the frame element \fename{Victim} is represented by the semantic type \emph{Sentient}, which is not particularly representative for the verbs \textit{bomb}.v and \textit{attack}.v. In the VerbAtlas, the verbs \textit{bomb} and \textit{attack} are part of the frame \textbf{bomb-attack}, and the corresponding semantic role is \textbf{patient} with the selective preference \textbf{object}, which is an overgeneralised representation. Instead, our approach is to identify patterns of nouns that are combined with specific verbs from semantically relevant frames.
+
+Another example is the verbs used in Bulgarian to convey information to the recipient (indirect object), such as \textit{казвам, съобщавам} (say, `convey an information, an opinion, an instruction, etc.'); \textit{разказвам} (tell; narrate, `communicate a story, a fairy tale, etc.'); \textit{обяснявам, разяснявам} (explain, `clarify (something) to someone by describing it in more detail'), etc. All these verbs are assigned to the semantic class verb.communication in WordNet and belong to the semantic frame \framename{Statement} with the definition: This frame contains verbs (and nouns) that communicate the act of a \fename{Speaker} to address a \fename{Message} to some \fename{Addressee} using \fename{Language}. Similarly, a \fename{Topic} can be specified instead of a \fename{Message}.
+To illustrate the proposed approach, the corresponding noun fillers for the frame elements \fename{Speaker} and \fename{Message} are shown in the frame \framename{Statement}  evoked by the verb \textit{обяснявам} (explain).
+
+The fillers for the frame element \fename{Speaker} are either nouns that are assigned to the semantic class noun.person in WordNet, or non-sentient nouns whose meaning can express unions of persons, such as \textit{party, ministry, organisation, company}, etc., which denote organisations that are responsible for specific functions, policies or services. In this context, such nouns embody abstract concepts of administrative powers, policy formulation, regulatory oversight, etc., which do not refer to physical, tangible entities, but to the collective functions and responsibilities related to human activities. Therefore, in this case, appropriate nouns in the WordNet synsets should be classified based on their ability to express the collective functions of people.
+
+Regarding the noun fillers of the frame element \fename{Message}, it should be noted that these are nouns that are classified as noun.communication or noun.cognition in WordNet. However, these nouns differ in how they express communication and cognition. Therefore, it is important to develop a technique to eliminate those nouns that cannot be collocated with the verb \textit{обяснявам} `explain' as direct objects. The synset {communication} with the definition `something that is communicated by or to or between people or groups'  is at the top of the hierarchy  of nouns labelled with the semantic class noun.communication. However, this meaning is too abstract to serve as a filler for the frame element \fename{Message}. The same applies to the top synset in the hierarchy, which is labelled with the semantic class noun.cognition: {cognition; knowledge; noesis} with the definition `the psychological result of perception, learning and reasoning'. Although the hyponyms of these synsets are suitable in most cases, some inappropriate synsets appear in the respective subtrees: \emph{receipt} -- `an acknowledgment (usually tangible) that a payment has been made'; \emph{mail} -- `the bags of letters and packages that are transported by the postal service'; and \emph{publication} -- `the communication of something to the public; making information generally known', among others. All non-combinable nouns are concrete and contained in synsets labelled noun.communication. One possible strategy to restrict them is to add another level of noun classification: abstract and concrete nouns.
+
+Two approaches must therefore be combined to correctly determine the appropriate noun classes to fill the positions of the frame elements of a given verb:
+
+\begin{itemize}
+
+\item Selection of the most appropriate synset or the most suitable combination of synsets in the hypernym hierarchy that semantically dominate the corresponding nouns.
+ \item Introduction of additional elementary semantic types and classification of nouns based on these types so that correct generalisations can be made. These types include \textit{collective, abstract, concrete} and \textit{agentive}.
+ 
+\end{itemize}
+
+\figref{fig:FF} shows an example of how the information for conceptual frames is stored in Bulgarian FrameNet.
+
+\begin{figure}[ht]
+  \includegraphics[width=\textwidth]{figures/FF.png}
+  \caption{An extract from the conceptual frame \framename{Applied\_heat\_варя}.}
+  \label{fig:FF}
+\end{figure}
+
+
+\subsection{Syntactic section (Valency patterns)}
+
+The Syntactic section comprises two components: the specification of \emph{grammatical categories} and the assignment of \emph{grammatical functions} to syntactic phrases, which are realisations of frame elements. In addition, it contains specifications for implicit realisations and sets of suitable prepositions for prepositional phrases as well as sets for suitable clause-linking components.
+
+Valence patterns associated with frame elements of specific conceptual frames are language-specific, although a comparison with English may show that some patterns are applicable to both languages.
+
+\tabref{tab:my_label6} represents language-specific information in the Syntactic section.
+
+\begin{table}
+    \centering
+    \begin{tabular}{lll}
+    \lsptoprule
+      Type of information & Semantic frame  & Conceptual frame  \\\midrule
+      Implicitness & language-specific & language-specific\\
+      Grammatical category & language-specific & language-specific\\
+      Grammatical function & language-specific & language-specific\\
+      \lspbottomrule
+    \end{tabular}
+    \caption{Type of information in the Syntactic section}
+     \label{tab:my_label6}
+  \end{table}  
+
+The main source for the annotation and extraction of the valency patterns is the Bulgarian sense-annotated corpus \citep{2012-Bulgarian-Sense-annotated}. It was selected due to its relatively extensive coverage, which includes 17,041 verbs with 6,612 unique senses. The high variance in the corpus is achieved by selecting about 100 word excerpts from each of the 500 texts of the Bulgarian Brown Corpus. These samples are selected based on the density of the most frequently occurring open-class lemmas, applying heuristics to ensure a fair representation across different parts of speech and a broader coverage of lemmas. In addition, the corpus is characterised by the fact that all the words it contains have been manually annotated for their senses from the Bulgarian WordNet. So far, the full annotation includes verbs related to communication, contact, change, perception, emotion and movement, with a total of about 2,500 unique meanings \citep{skoeva2024}. The annotation led to the grouping of lexical units (as of September 2024) into 551 conceptual frames, which are linked to 247 semantic frames.
+
+For the realisations of each frame element, a \textbf{syntactic description} is provided on the basis of the annotation. For example, the verb \textit{режа} (cut, `WN: separate with or as if with an instrument') from the frame \framename{Cutting} is characterised by the following syntactic description of the frame elements:
+\begin{itemize}
+    \item \fename{Agent}: pro-drop, NP, Subject
+    \item \fename{Object}: optional, NP, Object
+    \item \fename{Parts}:  optional, PP, Object (\textit{на} `of')
+    \item \fename{Instrument}: optional, PP, Object (\textit{с} `with')
+\end{itemize}
+
+Individual words are annotated for the part of speech and dependency relations corresponding to grammatical functions (roles) are automatically assigned by the Natural Language Processing Pipeline \citep{koeva-etal-2020-natural}, so that the grammatical categories and universal dependencies are automatically annotated before the correspondences between grammatical categories, grammatical roles and frame elements are manually annotated.
+
+\subsubsection{Grammatical categories}
+
+The \textbf{grammatical categories} in the syntactic realisation of the core frame elements in Bulgarian are: NP (noun phrase), PP (prepositional phrase), S (clause), AP (adjective phrase), ACCCL (obligatory accusative clitic) and DATCL (obligatory dative clitic). Noun phrase stands for nouns, substantives (lexical and syntactical), pronouns or noun phrases, also coordinative. A prepositional phrase can have a simple structure (a preposition and a noun, a pronoun or a substantive) or a complex structure (a preposition and a noun phrase). The adjective phrase, the noun phrase and the prepositional phrase can be a realisation of a small clause. Obligatory accusative or dative clitics are frame element fillers of multiword verbs, although as such they are part of the complex lemma. Since in such cases the accusative or dative clitics are instances of core frame elements, we repeat the clitics both in the lemma and in the valency patterns.
+
+There can be more than one valency pattern for a single verb with a unique meaning. To account for this, two strategies are used:
+\begin{itemize}
+ \item A given frame element can have more than one type of realisation, e.g. a noun phrase or a clause;
+ \item In some conceptual frames, special relations may exist between the competing realisations of frame elements.
+\end{itemize}
+
+ For example, the lexical unit \textit{убеждавам} (persuade) is part of the frame \framename{Suasion} which has a frame element \fename{Topic} with a definition: The general item or items that are the focus of the \fename{Content} of the \fename{Speaker}'s message.
+ The frame element \fename{Topic} can have different syntactic realisations: a prepositional phrase or a clause.
+
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:44}
+ \textit{Днес} [\textit{все повече предприемачи}]$_{\feinsub{Spkr}}$ \textit{\textbf{УБЕЖДАВАТ}} [\textit{клиентите}]$_{\feinsub{Addr}}$ \\
+$[$PP \textit{в предимствата на търговската марка}]$_{\feinsub{Topic}}$. \\
+ `\textit{Nowadays, more and more entrepreneurs are convincing customers in the advantages of the trademark}.'
+ \end{exe} 
+
+ 
+\begin{exe}
+ \ex  \label{ch01:ex:45}
+ \textit{Днес} [\textit{все повече предприемачи}]$_{\feinsub{Spkr}}$ \textit{\textbf{УБЕЖДАВАТ}} [\textit{клиентите}]$_{\feinsub{Addr}}$,  \\
+$[$S \textit{че търговската марка има предимства}]$_{\feinsub{Top}}$. \\
+ `\textit{Nowadays, more and more entrepreneurs are convincing customers that the trademark has advantages}.'
+ \end{exe} 
+
+In the annotation, various prepositions and clause-linking phrases can be collected for a specific frame element, which is expressed as a prepositional phrase. The types of clauses vary according to the type of linking, whether by interrogative pronouns or conjunctions; the complex linking phrases or complementisers are annotated and summarised accordingly. The combinations of prepositions and clause types form clusters within different verb classes, each associated with conceptual frames belonging to different semantic domains.
+
+We have implemented an approach that complements the annotation to encode possible valency patterns, even if they do not yet occur in the corpus examples. A different approach would significantly reduce their number. For example, the lexical unit \textit{разказвам} (`tell, narrate; communicate a story, tale, etc.') from the conceptual frame \framename{Statement} is linked to 22 valency patterns that only take the core frame elements into account. These patterns include options for expressing the frame element \fename{Speaker} with a Definite Null Instantiation or a noun (a noun, a noun phrase or a pronoun, with the exception of possessive and reflexive pronouns): the frame element \fename{Message} with Indefinite Null Instantiation, a noun (a noun, a noun phrase, an accusative personal pronoun clitic) or a complement clause; the frame element \fename{Addressee} with an Indefinite Null Instantiation or a prepositional phrase introduced by the preposition \textit{на} `to' or replaced by a dative personal pronoun clitic, and the frame element \fename{Topic} with Indefinite Null Instantiation or a prepositional phrase introduced by the preposition \textit{за} `about'.
+
+\subsubsubsection{Null instantiations of frame elements}
+
+The phrases expressing the frame elements are: (a) (in rare cases in Bulgarian) obligatorily explicit or (b) non-obligatory explicit, which means that the potential for syntactic realisation of the phrase is present, but its explicitness is not obligatory because it is understood from the context in a broader sense (verb morphology, preceding text, extra-linguistic information, etc.). A special case is a pronominal drop in the subject position.
+
+In FrameNet, the annotation for zero instantiation corresponds to the alternatives for the omission of core frame elements in Bulgarian FrameNet: pro-drop subjects and implicit (optional) objects. If the missing part is understood in the linguistic or conversational context, this is called Definite Null Instantiation in FrameNet and corresponds to pro-drop subjects. Indefinite Null Instantiation is indicated by the absence of objects in verbs such as \textit{eat}, \textit{read}, \textit{drink}, etc., i.e. in cases where transitive verbs are used intransitively. As in FrameNet, construct-related omitted constituents can also occur here, such as the omitted subject of imperative sentences, the omitted agent of passive sentences, etc.
+
+\subsubsection{Grammatical functions}
+
+The \textbf{grammatical functions} used in Bulgarian FrameNet are subject, direct object, indirect object, adverbial, subject clause, object clause, adverbial clause and small clause. Compared to FrameNet, they are more detailed, especially with regard to the clauses.
+
+The frame elements associated with the subject of Bulgarian verbs can be characterised as follows: They can have an explicitly or implicitly expressed subject with a complete paradigm; alternatively, they can have a subject explicitly or implicitly expressed in the third person; or they can have no subject at all. The frame elements corresponding to the objects of Bulgarian verbs can be classified as follows: with a single NP object; with an NP object and a complement clause; with an NP object and PP objects, regardless of their number; with an NP object, PP objects (regardless of their number) and a complement clause; with PP objects, regardless of their number; with PP objects (regardless of their number) and a complement clause; with a complement clause; and without objects. In addition, an AdvP predicate modifier, SC (small clause) NP, SC (small clause) PP and SC (small clause) AP can occur as realisations of some frame elements.
+
+While the grammatical functions are largely predictable due to the nature of the frame elements and the grammatical categories of their syntactic realisations, the encoding of this information mainly illustrates the manifestation of different types of diatheses registered for a lexical unit.
+
+Our approach aims to maximise coverage by explicitly encoding the grammatical functions for potential syntactic realisations of a given frame element alongside the annotation process.
+
+\figref{fig:FFF} provides an overview of the encoding of syntactic information (valency patterns) in the Bulgarian FrameNet.
+
+\begin{figure}[ht]
+  \includegraphics[width=\textwidth]{figures/FFF.png}
+  \caption{Illustration for a part of the Syntactic section in the BulFrame system.}
+  \label{fig:FFF}
+\end{figure}
+
+\section{Conclusions}
+
+The study presents the semantic frames of FrameNet on the basis of Charles J. Fillmore's frame semantics theory and outlines the main assumptions underlying the development of the Bulgarian FrameNet.
+
+A core premise of our research is that the semantic frames developed for English as part of the Berkeley FrameNet project can also be applied to the semantic analysis of Bulgarian. In other words, we claim that semantic frames represent a language-independent repository of semantic descriptions in which the language-independent components of the semantic frames are integrated into abstract structures known as superframes.
+
+Most semantic frames can actually be used for analysing Bulgarian, especially through the use of superframes and conceptual frames that facilitate the alignment of semantic frames with Bulgarian data, including idiosyncratic differences and lexical diatheses. The main components of this description, lexical units and frame elements, are enriched in the following way: lexical units are enriched with grammatical, lexical and semantic information, such as semantic classes and semantic relations, while frame elements are associated with noun phrases that represent how they can be realised and combined with the target lexical units.
+
+The Bulgarian FrameNet will be integrated into the network of equivalent or identical linguistic descriptions for other languages by using the language-universal information in the FrameNet to describe Bulgarian lexical units.
+
+The unified representation of semantic and syntactic information is important for the system analysis, description and use of Bulgarian, both for natural language processing and as a source of linguistic knowledge. The syntactic patterns resulting from the realisation of frame elements can be studied in order to draw classificatory and typological conclusions about Bulgarian verb classes. This also applies to the patterns of prepositions and clause types and, to the highest degree, to the semantic classes of nouns that coexist with the target lexical units.
+
+\section*{Abbreviations}
+
+\begin{multicols}{2}
+\begin{tabbing}
+MMMM \= Adjective\kill
+A or a \> Adjective \\
+ACCCL \> Obligatory accusative clitic \\
+\scshape Addr \> \fename{Addressee} \\
+AdvP \> Adverbial phrase \\
+AP \> Adjectival phrase \\
+%Auth \> \fename{Author} \\
+BF \> BulFrame \\
+%BodP \> \fename{Body\_part} \\
+%Cont \> \fename{Content} \\
+CPA \> Corpus Pattern Analysis \\
+DATCL \> Obligatory dative clitic \\
+%Exp \> \fename{Experiencer} \\
+FE \> Frame element \\
+FN \> FrameNet \\
+ILI \> Inter-lingual index \\
+IPFV \> Imperfective \\
+LI \> Language-independent \\
+LS \> Language-specific \\
+MWE \> Multiword expression \\
+N or n \> Noun \\
+NP \> Noun phrase \\
+PFV \> Perfective \\
+%Perp \> \fename{Perpetrator} \\
+PP \> Prepositional phrase \\
+S \> Subordinate clause \\
+SC \> Small clause \\
+SPKR \> {Speaker} \\
+%Src \> \fename{Source} \\
+%Thm \> \fename{Theme} \\
+TOPIC \> {Topic} \\
+V or v \> Verb \\
+WN \> WordNet \\
+\end{tabbing}
+\end{multicols}
+
+\section*{Acknowledgements}
+
+This research is carried out as part of the project \emph{Enriching Semantic Network WordNet with Conceptual Frames} funded by the Bulgarian National Science Fund, Grant Agreement No. KP-06-H50/1 from 2020.
+
+%\section*{Contributions}
+%John Doe contributed to conceptualisation, methodology, and validation.
+%Jane Doe contributed to the writing of the original draft, review, and editing.
+
+%\section*{Contributions}
+%John Doe contributed to conceptualisation, methodology, and validation.
+%Jane Doe contributed to the writing of the original draft, review, and editing.
+
+{\sloppy\printbibliography[heading=subbibliography,notkeyword=this]}
+\end{document}
