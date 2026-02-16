@@ -1,0 +1,371 @@
+\chapter{Pilot study -- Button press}
+\label{sec:pilot}
+
+The aim of this pilot study was to test the design of the stimuli used in the pupillometric experiment reported in Chapter \ref{ch:5}, ensuring that the introduced deviances in the numeric sequences were indeed perceivable. For the pilot study, an explicit deviant-detection task was employed using a button press paradigm. Participants in the pilot study also performed the cognitive test battery measuring individual variability, so that the respective implementations could be tested as well. A different sample of listeners was necessarily recruited for the pilot and the pupillometry studies, given that the listeners who took part in the pilot study were aware of the presence of deviants in the items.
+
+\section{Participants}
+\label{subsec:participants}
+
+Thirty native speakers of German (19 female, 11 male), aged between 20 and 34 years (mean age = 24.7 years, \textit{SD} = 3.9), took part in the study. Participants provided written informed consent in accordance with the Declaration of Helsinki and in compliance with the ethics clearance from the Ethics Board of the \textit{Deutsche Gesellschaft für Sprachwissenschaft} (DGfS). Participants received reimbursement for their participation (either course credit or monetary compensation). None of them reported any speech, hearing, or neurological impairments. 
+
+\section{Speech materials}
+\label{subsec:speechmaterials}
+
+The design and the acoustic characterisation of the speech materials tested in this pilot study are those used in the pupillometry study reported in \sectref{subsec:5.2.2} and \sectref{subsec:5.2.3}.
+
+\section{Experimental procedures}
+\label{subsec:experimentalprocedures}
+
+\subsection{Button press}
+
+Each experimental session consisted of the pilot task, i.e., a button press task, succeeded by a battery of cognitive tests, always in the following order: a version of the flanker task (measuring inhibitory ability), a version of the odd-man-out task (measuring processing speed), and a version of the digit span task (measuring WMC; see \sectref{subsec:5.2.4} for more details on these tasks).\footnote{The button press, the flanker, and the odd-man-out tasks were implemented in \textit{OpenSesame} \citep{mathot_opensesame_2012}. The digit span task was implemented in \textit{SoSci} Survey \citep{leiner_sosci_2024}. In all these tasks, participants could take an optional short break between the blocks, and during the practice phase they received immediate feedback on the screen.} After a briefing about the structure of the experimental session, participants started with the deviant-detection task in a button press paradigm. Participants were seated in a quiet lab room in front of a computer monitor and a keyboard, wearing headphones. The experimenter informed the participants that they would be presented auditorily with numeric sequences. Each experimental trial started with a screen presenting a black fixation cross for 1500 ms. Participants were instructed to fixate the black cross that would appear on the screen, and were informed that as soon as the cross turned green, they would hear a sequence. The green cross remained on the screen throughout the audio file’s duration. Participants were also informed that some of the sequences would include some out-of-the-sequence numbers, and were asked to press the SPACE button on the keyboard as fast as possible when they heard the deviant number. A time-out was set at the end of the audio file. Each trial ended with a blank screen for 1000 ms. Written instructions were also provided. The task started with a practice phase of five items. After the practice phase, participants had the option to ask potential clarification questions. The task consisted of three blocks of 24 items each. The task was approximately 35 minutes long. \figref{fig:1button} illustrates the structure of an experimental trial.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{figures/BUTTONPRESS-Trial-Illustration.png}
+	\caption[Schematic exemplar of a button press trial] {Schematic illustration of an experimental trial in the button press task.}
+	\label{fig:1button}
+\end{figure}
+
+\subsubsection{{Cognitive test battery}}
+
+For the description of each task in the battery test, see \sectref{subsec:5.2.4}.
+
+\section{Data processing and statistical analyses}
+\label{subsec:data}
+
+Data processing and statistical analyses were conducted in R, version 4.1.2 \citep{r_core_team_r_2023}, using the R packages \textit{brms} 2.17.0 \citep{burkner_brms_2023}, \textit{ggplot2} 3.3.5 \citep{wickham_ggplot2_2016}, and \textit{tidyverse} 1.3.1 \citep{wickham_welcome_2019}. For reproducibility, data and scripts have been made available at \url{https://osf.io/nhy4c}.
+
+\subsection{Data pre-processing}
+
+\subsubsection{{Button press task}}
+
+In the pilot task, accuracy (correct/incorrect responses coded as 1/0) as well as response times (in ms) were recorded for each trial, and participants’ mean accuracy and mean correct response time were computed. Every trial in which participants pressed the response button after the onset of the deviant in trials introducing arithmetic deviances (the experimental items) was considered a correct response. Simultaneously, the lack of a button press in trials which did not include deviances, i.e., the filler items, were considered correct responses. Every trial where participants pressed the response button before the presentation of the deviant in the sequence, did not press the response button at all, although the sequence included a deviant, or pressed the response button although the sequence did not include a deviant were taken to be incorrect responses.\footnote{One participant was excluded from the analyses, as their overall accuracy in the filler items was 14\%.} Correct response time was computed as the time from the onset of the deviant number until the press of the response button on every trial including a deviant.
+
+\subsubsection{{Cognitive test battery}}
+
+For the pre-processing of the cognitive scores, see \sectref{subsec:5.2.5}.
+
+\subsection{Inference criteria}
+
+The statistical evaluation of the pilot results is divided into \textit{confirmatory} and \textit{exploratory} analyses. In the confirmatory part, I tested i) whether deviant numbers are indeed detected, and ii) whether rising intonation, due to its reported attention orienting function, facilitates deviant recognition, and thus task performance, compared to falling or neutral intonation. 
+
+In the exploratory part, I examined two-way interactions between the main variable, that is prosodic condition, and two other predictors. Specifically, given the two different item lengths (medium and long), which controlled for the deviant position, I explored whether sequence length affects accuracy and correct response times, and whether length interacts with the prosodic conditions. Further, I investigated if and how individual cognitive variability affects the processing of the introduced deviances produced with different intonational patterns. Finally, I investigated whether there is a speed--accuracy trade-off in the participants' performance.
+
+\subsubsection{{Confirmatory analyses}}
+
+Correct response times (in ms) and accuracy (correct/incorrect response, coded as 1/0) were modelled by fitting separate Bayesian hierarchical regression models (linear hierarchical regression for response times, and Bernoulli logistic regression for accuracy) as a function of \textsc{prosodic condition}. Treatment contrast was used to code the predictor \textsc{prosodic condition} (levels: neutral/rise/fall) with the level neutral serving as the reference. Random effects for both \textsc{subjects} and \textsc{items} included full variance--covariance matrices \citep[e.g.,][]{barr_random_2013}.
+
+\subsubsection{{Exploratory analyses}}
+
+\subsubsubsection{Sequence length}
+Correct response time (in ms) and accuracy (correct/incorrect response) were modelled separately as a function of two-way interactions between \textsc{prosodic condition} and \textsc{length}. Similarly to \textsc{prosodic condition}, treatment contrast was used to code the predictor \textsc{length} (levels: long/medium), with the long stimuli serving as the reference level. Random effects for both \textsc{subjects} and \textsc{items} included full variance--covariance matrices \citep[e.g.,][]{barr_random_2013}.
+
+\subsubsubsection{Cognitive variability}
+The continuous cognitive scores resulting from the three cognitive tests were z-scored before entering any statistical models. Subsequently, they were tested for correlations in order to find out whether participants' skills are interrelated. In the case of a correlation among the three scores, only one of the three scores would be selected for the subsequent analyses. Correct response time (in ms) and accuracy (correct/incorrect response) were modelled separately as a function of two-way interactions between \textsc{prosodic condition} and cognitive score(s). Random effects for both \textsc{subjects} and \textsc{items} included full variance--covariance matrices \citep[e.g.,][]{barr_random_2013}.
+
+\subsubsubsection{Speed--accuracy trade-off}
+Finally, the speed--accuracy trade-off was also examined by modelling accuracy (correct/incorrect response) as a function of a two-way interaction between \textsc{prosodic condition} and \textsc{speed} (i.e., response time, z-scored). Here, response times of both correct and incorrect responses were included.  Random effects for both \textsc{subjects} and \textsc{items} included full variance--covariance matrices \citep[e.g.,][]{barr_random_2013}.
+
+All models used weakly informative priors for all parameters (the full prior specification can be found in the script provided on OSF), allowing for a wide range of effect sizes while controlling for unreasonably large effects. All models ran with four chains and 4000 iterations, with a warm-up period of 2000 iterations, and they all converged: there were no divergent transitions and all Ȓs were close to 1, showing that chains mixed without issues. Model fits were also visually inspected using the posterior predictive check function. In the following section, inferences are drawn using the posterior distributions of the parameters. For this, the following are reported: posterior estimates, standard errors (SE), the low and high boundaries of the 90\% credible interval (CrI) of the estimate, and the posterior probability that the estimate falls on one side of zero (e.g., \textit{P}(\textit{β} < \textit{0}) = 0.95). When almost all of the posterior mass for an estimate lies on one side of zero, zero is not included in the 90\% CrI (by a reasonably clear margin), and the posterior probability \textit{P} is close to one, the effect is considered reliable. 
+
+\section{Results}
+\label{subsec:Results}
+
+\figref{fig:2rawfig} illustrates accuracy on deviant identification (left panel), and response times of the accurate responses (right panel) across the three prosodic conditions (neutral, rise, fall). Violin plots visualise distributions of values as kernel density plots. On top of the violins, mean accuracy and mean response times are plotted using dot plots. Dots in different colours illustrate mean scores of each individual participant per prosodic condition, while the large triangles depict mean values of each distribution at the group level. Visual inspection of the data shows that the overall accuracy is at ceiling across all prosodic conditions (neutral = 94\%, rise = 97\%, fall= 96\%), and that mean response times do not differ considerably across prosodic conditions (neutral = 919 ms, rise = 942 ms, fall = 952 ms). 
+
+In the following, I first report on the confirmatory analyses, and subsequently explore interactions between the main variable and sequence length as well as individual cognitive variability. Finally, I present an analysis of potential speed--accuracy trade-offs in individual performance.
+
+\begin{figure}
+	\includegraphics[width=0.9\textwidth]{figures/RawFig.png}
+	\caption[Distributions of accuracy and correct mean response times] {Distribution of accuracy on deviant identification in the numeric sequences (left panel) and mean response times of accurate responses (right panel) across the three prosodic conditions (neutral, rise, fall).}
+	\label{fig:2rawfig}
+\end{figure}
+
+\subsection{Confirmatory analyses}
+\label{conf}
+
+Model outputs suggest that prosodic condition did not reliably affect either accuracy or correct response times, as they did not provide evidence for reliable differences among conditions. Estimated contrast details are given in \tabref{tab:1}.
+
+\begin{table}
+	\caption{Tabular overview of modelling accuracy (a) and response time (b) as a function of prosodic condition.}
+	\label{tab:1}
+	\begin{subtable}{\textwidth}
+	\caption{Accuracy}
+	\begin{tabularx}{\textwidth}{Q r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison  & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.56 & 0.43 & −0.15 & 1.26 & 9.81 & \textit{P}(\textit{β} > 0) = 0.91\\
+		neutral vs. fall & 0.41 & 0.40 & −0.23 & 1.08 & 5.38 & \textit{P}(\textit{β} > 0) = 0.84\\
+		rise vs. fall & 0.15 & 0.49 & −0.68 & 0.96 & 1.71 & \textit{P}(\textit{β} > 0) = 0.63\\
+		\lspbottomrule
+	\end{tabularx}
+\end{subtable}\medskip\\
+\begin{subtable}{\textwidth}
+	\caption{Response time}
+	\begin{tabularx}{\textwidth}{Q r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison  & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.02 & 0.02 & −0.02 & 0.06 & 3.96 & \textit{P}(\textit{β} > 0) = 0.80\\
+		neutral vs. fall & 0.03 & 0.02 & −0.01 & 0.07 & 7.96 & \textit{P}(\textit{β} > 0) = 0.89\\
+		rise vs. fall & −0.01 & 0.03 & −0.05 & 0.03 & 0.61 & \textit{P}(\textit{β} > 0) = 0.38\\
+		\lspbottomrule
+	\end{tabularx}
+\end{subtable}
+\end{table}
+
+\subsection{Exploratory analyses}
+\label{exp}
+
+\subsubsection{{Sequence length}}
+First, it was tested whether sequence length had an effect on both dependent variables (i.e., accuracy and correct response times) as well as whether there was an interaction with prosodic condition. Models on both accuracy and correct response times indicate that there is no reliable evidence for either an effect of length or an interaction between prosodic condition and sequence length. Estimated comparison details for accuracy are presented in \tabref{tab:2}, and for correct response times in \tabref{tab:3}.
+
+\begin{table}
+	\caption{Tabular overview of modelling accuracy as a function of prosodic condition and length. From top to bottom, (a--b) provide estimate differences between prosodic conditions in medium-length and long sequences, while (c) shows estimate difference between medium-length and long sequences across prosodic conditions.}
+	\label{tab:2}
+	\begin{subtable}{\textwidth}
+	\caption{medium length}
+	\begin{tabular}{l r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & −0.11 & 0.84 & −1.46 & 1.31 & 0.79 & \textit{P}(\textit{β} > 0) = 0.44\\
+		neutral vs. fall & 0.33 & 0.80 & −0.97 & 1.66 & 1.91 & \textit{P}(\textit{β} > 0) = 0.66\\
+		rise vs. fall & 0.43 & 0.70 & −0.70 & 1.57 & 2.80 & \textit{P}(\textit{β} > 0) = 0.74\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}\medskip\\
+	\begin{subtable}{\textwidth}
+	\caption{long length}
+	\begin{tabular}{l r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & −0.57 & 0.47 & −1.34 & −0.20 & 0.13 & \textit{P}(\textit{β} > 0) = 0.11\\
+		neutral vs. fall & −0.51 & 0.46 & −1.27 & 0.22 & 0.14 & \textit{P}(\textit{β} > 0) = 0.12\\
+		rise vs. fall & 0.05 & 0.57 & −0.89 & 1.00 & 1.16 & \textit{P}(\textit{β} > 0) = 0.54\\
+		\lspbottomrule
+	\end{tabular}
+\end{subtable}\medskip\\
+\begin{subtable}{\textwidth}
+	\caption{medium vs. long}
+	\begin{tabular}{l r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.63 & 0.48 & −0.13 & 1.43 & 10.63 & \textit{P}(\textit{β} > 0) = 0.91\\
+		neutral vs. fall & 0.17 & 0.60 & −0.82 & 1.17 & 1.53 & \textit{P}(\textit{β} > 0) = 0.60\\
+		rise vs. fall & −0.21 & 0.58 & −1.18 & 0.75 & 0.55 & \textit{P}(\textit{β} > 0) = 0.35\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}
+\end{table}
+
+\begin{table}
+	\caption{Tabular overview of modelling correct response time as a function of prosodic condition and length. From top to bottom, the first two panels provide estimate differences between prosodic conditions in medium-length and long sequences, while the last panel shows estimate difference between medium-length and long sequences across prosodic conditions.}
+	\label{tab:3}
+	\begin{subtable}{\textwidth}
+	\caption{medium length}
+	\begin{tabular}{l r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.00 & 0.06 & −0.10 & 0.09 & 0.89 & \textit{P}(\textit{β} > 0) = 0.47\\
+		neutral vs. fall & 0.00 & 0.06 & −0.10 & 0.10 & 0.97 & \textit{P}(\textit{β} > 0) = 0.49\\
+		rise vs. fall & 0.01 & 0.03 & −0.05 & 0.06 & 1.31 & \textit{P}(\textit{β} > 0) = 0.57\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}\medskip\\
+	\begin{subtable}{\textwidth}
+	\caption{long length}
+	\begin{tabular}{l r r r r r r}
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & −0.01 & 0.04 & −0.07 & 0.05 & 0.55 & \textit{P}(\textit{β} > 0) = 0.35\\
+		neutral vs. fall & −0.03 & 0.03 & −0.09 & 0.02 & 0.18 & \textit{P}(\textit{β} > 0) = 0.15\\
+		rise vs. fall & −0.02 & 0.03 & −0.08 & 0.03 & 0.36 & \textit{P}(\textit{β} > 0) = 0.26\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}\medskip\\
+	\begin{subtable}{\textwidth}
+	\caption{medium \textit{vs} long}
+	\begin{tabular}{l r r r r r r}
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.02 & 0.03 & −0.03 & 0.08 & 3.16 & \textit{P}(\textit{β} > 0) = 0.76\\
+		neutral vs. fall & 0.02 & 0.05 & −0.06 & 0.10 & 1.67 & \textit{P}(\textit{β} > 0) = 0.63\\
+		rise vs. fall & −0.01 & 0.05 & −0.09 & 0.07 & 0.67 & \textit{P}(\textit{β} > 0) = 0.40\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}
+\end{table}
+
+\subsubsection{Cognitive variability}
+Subsequently, it was explored whether individual cognitive variability interacts with the prosodic structure of deviants, affecting task performance. Before moving on to the modelling results, I will report on the cognitive profile of the individuals. \tabref{tab:4} presents raw mean scores per individual participant across the three cognitive tasks.
+
+\begin{table}
+	\caption{Mean score performance per participant across the three cognitive tasks.}
+	\label{tab:4}
+	\begin{tabular}{l r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		Participant & Flanker & Odd-man-out & Digit Span\\ %table header
+		\midrule
+		1 & 1.00 & 3.25 & 5\\
+		2 & 0.94 & 3.33 & 5\\ 
+		3 & 0.96 & 3.72	& 7\\ 
+		4 & 0.96 & 4.65	& 9\\ 
+		5 & 0.98 & 4.52 & 7\\ 
+		6 & 1.00 & 7.57 & 5\\
+		7 & 1.00 & 4.17 & 6\\
+		8 & 0.98 & 3.32	& 7\\ 
+		9 & 0.96 & 3.42	& 8\\ 
+		10 & 0.94 & 2.90 & 6\\
+		11 & 0.96 & 2.80 & 7\\
+		12 & 0.98 & 6.32 & 5\\ 
+		13 & 0.92 & 3.78 & 7\\ 
+		15 & 0.98 & 4.97 & 5\\ 
+		16 & 0.96 & 6.60 & 7\\
+		17 & 0.98 & 5.15 & 5\\ 
+		18 & 0.96 & 3.50 & 6\\
+		19 & 1.00 & 4.47 & 6\\
+		20 & 1.00 & 3.37 & 6\\
+		21 & 0.90 & 5.29 & 6\\
+		22 & 0.96 & 5.22 & 6\\ 
+		23 & 1.00 & 6.52 & 7\\
+		24 & 0.96 & 3.31 & 7\\ 
+		25 & 1.00 & 12.41 & 6\\
+		26 & 0.92 & 4.42 & 7\\ 
+		27 & 0.94 & 5.01 & 6\\ 
+		28 & 0.98 & 4.06 & 7\\ 
+		29 & 0.92 & 6.09 & 9\\ 
+		30 & 0.96 & 4.47 & 7\\ 
+		\lspbottomrule
+	\end{tabular}
+\end{table} 
+
+Higher scores in the flanker task indicate better inhibitory skills; higher scores in the digit span task indicate larger WMC; and higher scores in the odd-man-out task indicate slower processing speed. A correlation test among the three scores revealed a weak correlation between the flanker task scores and the other two scores. Specifically, a weak positive correlation between flanker and odd-man-out scores was found (\textit{r}(1042) = 0.24, \textit{p} < 0.001), such that the better the inhibitory skills, the slower the processing speed. In contrast, a weak negative correlation between flanker and digit span scores was observed (\textit{r}(1042) = −0.34, \textit{p} < 0.0001), such that the better the inhibition, the shorter the span. Given even this weak correlation between two of the cognitive predictors, only one of them was selected for the subsequent analyses, the \textit{flanker scores}, as these indicate inhibitory ability, a cognitive ability highly relevant for the main research question.
+
+Whereas the model on response times provided no reliable evidence for a two-way interaction between prosodic conditions and flanker scores, the model on accuracy provided compelling evidence for such an interaction. Specifically, the model showed that individuals with higher flanker scores achieved reliably lower accuracy in the neutral prosodic condition, but higher accuracy in the rising prosodic condition. Moving to comparisons among prosodic conditions in interaction with flanker scores, the model showed that the higher the flanker score, the better the accuracy in rising and falling conditions, compared to the neutral condition. There were no further differences between the rising and falling conditions. Estimated comparison details for response times are presented in \tabref{tab:5}, and for accuracy in \tabref{tab:6}.
+
+\begin{table}
+	\caption{Tabular overview of modelling response times as a function of a two-way interaction between prosodic condition and flanker scores. The table shows mean differences between prosodic conditions with and without interactions (a), as well as differences between prosodic conditions in interaction with attention (b).}
+	\label{tab:5}
+	\begin{subtable}{\textwidth}
+	\caption{Prosody \textit{vs} prosody:flanker}
+	\begin{tabularx}{\textwidth}{Q r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral:flanker & 0.03 & 0.02 & −0.01 & 0.07 & 6.64 & \textit{P}(\textit{β} > 0) = 0.87\\
+		rise:flanker & 0.01 & 0.01 & −0.01 & 0.03 & 2.79 & \textit{P}(\textit{β} > 0) = 0.74\\
+		fall:flanker & 0.00 & 0.02 & −0.03 & 0.02 & 0.87 & \textit{P}(\textit{β} > 0) = 0.47\\
+		\lspbottomrule
+	\end{tabularx}
+\end{subtable}\medskip\\
+
+\begin{subtable}{\textwidth}
+	\caption{prosody:flanker}
+	\begin{tabularx}{\textwidth}{Q r r r r r r} % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.00 & 0.04 & −0.06 & 0.07 & 1.11 & \textit{P}(\textit{β} > 0) = 0.53\\
+		neutral vs. fall & 0.00 & 0.04 & −0.06 & 0.07 & 1.05 & \textit{P}(\textit{β} > 0) = 0.51\\
+		rise vs. fall & 0.00 & 0.03 & −0.05 & 0.05 & 1.15 & \textit{P}(\textit{β} > 0) = 0.54\\
+		\lspbottomrule
+	\end{tabularx}
+\end{subtable}
+\end{table}
+
+\begin{table}
+	\caption{Tabular overview of modelling accuracy as a function of a two-way interaction between prosodic condition and flanker scores. The table provides mean differences between prosodic conditions with and without interactions (a), as well as differences between prosodic conditions in interaction with attention (b). Reliable differences are highlighted in bold.}
+	\label{tab:6}
+	\begin{subtable}{\textwidth}
+	\caption{prosody \textit{vs} prosody:flanker}
+	\begin{tabularx}{\textwidth}{Q r r r r r r } % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral:flanker & −0.88 & 0.38 & −1.53 & −0.30 & 130.15 & \textit{P}(\textit{β} < 0) = \textbf{0.99}\\
+		rise:flanker & 0.71 & 0.47 & −0.06 & 1.49 & 14.47 & \textit{P}(\textit{β} > 0) = \textbf{0.94}\\
+		fall:flanker & 0.42 & 0.45 & −0.32 & 1.16 & 4.67 & \textit{P}(\textit{β} > 0) = 0.82\\
+		\lspbottomrule
+	\end{tabularx}
+	\end{subtable}\medskip\\
+	\begin{subtable}{\textwidth}
+	\caption{prosody:flanker}
+	\begin{tabularx}{\textwidth}{Q r r r r r r }
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 2.00 & 0.77 & 0.74 & 3.27 & 204.13 & \textit{P}(\textit{β} > 0) = \textbf{1.00}\\
+		neutral vs. fall & 1.57 & 0.71 & 0.42 & 2.76 & 102.90 & \textit{P}(\textit{β} > 0) = \textbf{0.99}\\
+		rise vs. fall & 0.43 & 0.63 & −0.62 & 1.47 & 3.08 & \textit{P}(\textit{β} > 0) = 0.76\\
+		\lspbottomrule
+	\end{tabularx}
+	\end{subtable}
+\end{table}
+
+\subsubsection{{Speed--accuracy trade-off}}
+Lastly, this section reports on whether there is a speed--accuracy trade-off in the participants’ performance. \figref{fig:3speed} illustrates the speed--accuracy trade-off using raw values. The zero point (also highlighted by a dashed line) on the y-axis illustrates the onset of the deviant, while the second dashed line represents the end of the sequence. Values between zero and the end of the sequence show correct response times. Negative values show response times before the onset of the deviant. Response times after the offset of the sequence show cases where participants incorrectly did not press the button, and as a result the end of the audio was recorded as the response time. As it can be observed from the overall means, the correct response times do not differ among conditions, an interpretation also supported by the model reported in the confirmatory analyses.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/tradeoff.png}
+	\caption[Speed--accuracy trade-off across prosodic conditions.] {Speed (y-axis) -- accuracy (x-axis) trade-off across prosodic conditions.}
+	\label{fig:3speed}
+\end{figure}
+
+The model on the speed--accuracy trade-off provided compelling evidence for an interaction between speed (response time) and prosodic condition. Specifically, in the neutral prosodic condition, the slower the speed, the better the accuracy, while for the falling condition, the opposite pattern was observed -- the slower the speed, the worse the accuracy. This is also shown in \figref{fig:3speed}. For the neutral condition, most of the incorrect responses occurred on trials where participants pressed the button before the onset of the deviant (i.e., faster speed, less accuracy; slower speed, better accuracy). For the falling condition, the opposite pattern can be observed, that is, most of the incorrect responses resulted from participants not pressing the button at all, as also shown in the model results (slower responses, less accuracy). Finally, the model provided no evidence for an effect of speed on accuracy for the rise condition, or evidence for differences among prosodic conditions in interactions. Estimated comparison details for the speed--accuracy trade-off are presented in \tabref{tab:7}.
+
+\begin{table}
+	\caption{Tabular overview of modelling accuracy as a function of speed (response time). The table provides mean differences between prosodic conditions in interaction with speed (a) as well as differences between prosodic conditions with and without interactions (b). Reliable differences are highlighted in bold.}
+	\label{tab:7}
+	\begin{subtable}{\textwidth}
+	\caption{prosody \textit{vs} prosody:speed}
+	\begin{tabular}{l r r r r r r } % add l for every additional column or remove as necessary
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral:speed & 0.61 & 0.17 & 0.34 & 0.92 & Inf & \textit{P}(\textit{β} > 0) = \textbf{1.00}\\
+		rise:speed & 0.00 & 0.27 & −0.44 & 0.45 & 0.99 & \textit{P}(\textit{β} > 0) = 0.50\\
+		fall:speed & −0.47 & 0.24 & −0.89 & −0.08 & 41.11 & \textit{P}(\textit{β} < 0) = \textbf{0.98}\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}\medskip\\
+	\begin{subtable}{\textwidth}
+		\caption{prosody:speed}
+		\begin{tabular}{l r r r r r r }
+		\lsptoprule
+		comparison & \textit{β} & SE & Low & High & Evid. & Post.\\
+		& & & CrI & CrI & Ratio & Prob\\
+		\midrule
+		neutral vs. rise & 0.02 & 0.64 & −1.05 & 1.07 & 1.03 & \textit{P}(\textit{β} > 0) = 0.50\\
+		neutral vs. fall & 0.81 & 0.59 & −0.16 & 1.79 & 10.28 & \textit{P}(\textit{β} > 0) = 0.91\\
+		rise vs. fall & 0.71 & 0.59 & −0.17 & 1.78 & 10.36 & \textit{P}(\textit{β} > 0) = 0.91\\
+		\lspbottomrule
+	\end{tabular}
+	\end{subtable}
+\end{table}
+
+\section{Discussion}
+\label{subsec:discAppendix}
+
+The results of the pilot study point towards an overall ceiling performance across conditions, showing that listeners reliably perceive and detect the deviances in the numeric sequences presented in an explicit behavioural task. At the group level, listener performance did not differ across conditions, indicating that rising intonation did not facilitate the identification of the deviant, or across sequence lengths, showing that there was no benefit of one length over the other. However, the advantage of the rising prosodic condition is subtly in evidence through the speed--accuracy trade-off and individual variability. When examining the relation between speed and accuracy, it is evident that the rising condition is the only condition for which there was no trade-off between speed and accuracy for listeners. On the contrary, there was a trade-off for the other two conditions (faster responses in the neutral condition, and slower responses in the falling condition, lead to worse performance), showing that both neutral and falling intonation challenges listeners in some way in their detection of the deviant. Further, as evinced by the cognitive profiles of the listeners who participated in this pilot study, rising intonation appears to be relevant for successful performance. Specifically, we see that participants with better inhibitory skills showed higher accuracy in the rising condition than average, and that they were better overall in both the rising and falling conditions compared to the neutral one, showing that they need intonation to jolt them out of their inhibition. In particular, the model indicates that even participants with high inhibitory skills had lower accuracy in the neutral condition, corroborating the finding that neutral intonation impedes the identification of deviants. To conclude, rising intonation appears to be advantageous in detecting the deviant number compared to the neutral and falling conditions, which are more challenging, with the neutral condition being the most likely to involve errors, and the falling condition lying somewhere between the rising and the neutral conditions.

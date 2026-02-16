@@ -1,0 +1,35 @@
+\newcommand{\addtext}[2]{
+    \chapter{#2}\label{text:#1}
+    \section*{Meta}
+    \input{chapters/#1/meta_#1.tex}
+    \section*{Summary \& background}
+    \input{chapters/#1/intro_#1.tex}
+    \section*{Translation}
+    \input{chapters/#1/translation_#1.tex}
+    \section*{Glossed text}
+    \input{chapters/#1/glosses_#1.tex}
+}
+\hypersetup{hypertexnames=false}%fixes the wrong hyperlinks after \setcounter{chapter}{0} in main.tex
+\newcommand{\textref}[1]{Text~\ref{#1}}%xref command for texts
+\renewcommand{\sectref}[1]{Section~\ref{#1}}%xref command sections
+\newcommand{\gl}[1]{\textsc{#1}}
+
+\newcommand{\exsource}[1]{\hspace*{1pt}\hfill{\mbox{{\footnotesize{[#1]}}}}}%example source
+\newcommand{\stem}[1]{\textbackslash#1/}%verb stems
+
+\renewcommand{\exfont}{\itshape}
+
+\newtoggle{pointer}
+\newcommand{\test}[2]{%
+  \edef\tmp{#1}%
+  \expandafter\setsepchar\expandafter{\expandafter{\expandafter|\tmp|}}%
+  \readlist\tmparray{#2}
+  \ifnum\tmparraylen>1\relax\toggletrue{pointer}\else\togglefalse{pointer}\fi%
+}
+\newcommand{\performtest}{\test{\theequation}{\includelist}}
+\newcommand{\examplepointer}{\iftoggle{pointer}{{\color{red}\bfseries\LARGE\hspace*{-7mm}$\Rightarrow$\hspace*{1.5mm}}}}{\relax}
+
+\newcommand{\togglehighlighting}{
+       \renewcommand\thexnumi{\examplepointer{}\arabic{xnumi}}
+       \renewcommand\ea{\performtest\begin{exe}\ex}
+}
