@@ -1,0 +1,227 @@
+\documentclass[output=paper,colorlinks,citecolor=brown, japanesefont]{langscibook}
+\ChapterDOI{10.5281/zenodo.17641072}
+\author{Masaru Yamada\orcid{0000-0002-7490-5414}\affiliation{Rikkyo University, Japan} }
+\title[Teaching translation with AI]{Teaching translation with AI: Bridging theory and practice through prompt engineering}
+\abstract{This chapter explores the innovative application of large language models (LLMs) in translator training, focusing on the use of few-shot prompts and chain-of-thought prompting. It proposes a novel approach that integrates metalanguages and concepts of Translation Studies into prompt engineering, moving beyond traditional natural language processing goals of improving machine translation quality. The chapter demonstrates how this method can create interactive and engaging learning experiences for translation students, allowing them to explore various translation strategies and develop critical thinking skills. Through concrete examples, the chapter illustrates the potential of LLMs to generate diverse translation variations and provide insightful analyses of translation processes. While acknowledging limitations and the need for critical evaluation, the research emphasises the positive and proactive possibilities of LLMs in translator training. This approach not only bridges the gap between translation theory and practice but also opens new avenues for autonomous learning and the development of essential skills for future translators in the AI era.
+}
+
+%move the following commands to the ``local..." files of the master project when integrating this chapter
+% \usepackage{tabularx}
+% \usepackage{langsci-optional}
+% \usepackage{langsci-gb4e}
+% \bibliography{localbibliography}
+% \newcommand{\orcid}[1]{}
+
+\IfFileExists{../localcommands.tex}{
+   \addbibresource{../localbibliography.bib}
+   \input{../localpackages}
+   \input{../localcommands}
+   \input{../localhyphenation}
+   \boolfalse{bookcompile}
+   \togglepaper[23]%%chapternumber
+}{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+Recent advancements in artificial intelligence (AI), particularly the emergence of Large Language Models (LLMs), have generated extensive debate regarding their benefits and drawbacks. In response, the UK’s Institute of Translation and Interpreting (ITI) has articulated the Slow Translation Manifesto \citep{ITI2024}. Drawing on an analogy between fast food and AI-generated translations, this manifesto highlights the potential societal and professional harms of prioritising speed over quality in translation practices. It advocates for a renewed appreciation of slow, human-led translation, emphasising its artistry, ethical rigour, and cross-cultural competence -- qualities that are often sacrificed in rapid, machine-driven translation processes.
+
+The Société française des traducteurs (SFT), the French translators' association, has also raised concerns about the inadequate quality of AI-based translations and the transparency of the resources used for machine learning in LLMs. The SFT warns that unfettered access to AI tools, such as ChatGPT, could lead to a decline in respect for language professionals or result in an ``unchecked rush of translations that we are asked to enhance" \citep{Slator2024}. Similar statements regarding the potential crisis posed by AI technology in translation have been issued by other organisations, including CEATL \citep{CEATL2024}, ATA \citep{ATA2024}, and JAT \citep{JAT2024}.
+
+The EU's Language in the Human-Machine Era (LITHME) project, focusing on language in the technology era, aims to ``prepare language researchers for what is coming" and ``facilitate longer-term dialogue between linguists and technology developers" (\citealt{LITHME2021}; see also \citealt{Sayers2021}). This comprehensive project compiles expert opinions and views, aiming to counteract the potential overreliance on AI-based technology and the market-driven overselling of AI \citep{Sayers2021,way2025}. By promoting such perspectives, the project plays a crucial role in encouraging a more cautious and thoughtful approach towards AI advancements. These investigations and statements from this project serve as a reminder to pause and critically reflect on the rapidly accelerating trends in our society.
+
+However, upon closer examination of these statements and surveys, it becomes apparent that the understanding and predictions about technology are not always accurate or up-to-date, and may not be entirely evidence-based. For instance, while LITHME’s 2021 report \citep{Sayers2021} does touch on concepts relevant to LLMs and Generative AI (GenAI), these references are minimal and do not encompass the transformative developments that have since occurred, such as chat-based LLMs. This highlights the challenge of keeping pace with the rapid evolution of technology, which even at that time was difficult to fully anticipate.
+
+Similarly, the SFT states that the output of machine translation (MT) remains unreadable in its raw state and requires human correction through post-editing. However, it also adds that ``70 percent of our member translators who responded to our survey considered PE (and by extension AI) a threat to their profession" \citep{Slator2024}. The conflicting statement leaves unclear which era or type of MT it refers to, and the apparent emotional reaction reflecting fears of job loss suggests a lack of clarity about the intended scope and technological context of the claim. This also implies that such statements may not fully reflect the current state of cutting-edge technology.
+
+In the context of translator training, which is the primary focus of this book, there may not be as strong a backlash against AI as in parts of the industry. For instance, while some industry stakeholders see AI as a tool to enhance efficiency and provide opportunities for post-editing work, many independent professional translators express significant concerns. Fears about the indiscriminate use of AI, especially by untrained users, persist due to its potential to cause quality issues and undermine the value and compensation for human translators. According to \citet{elis_elis_2025}, around 64\% of students in translation programmes report using GenAI at least occasionally, with 19\% using it regularly. University staff estimate MT use at 63\%, compared to 58\% among students. These figures mark a steep rise from the limited adoption reported in 2024 and highlight the contrast between the comparatively cautious professional industry and the rapid integration of GenAI in translator training.
+
+\sloppy
+This chapter proposes leveraging the accumulated knowledge assets of professional translators and translation researchers to actively interact with LLMs through basic prompts such as Chain of Thought (CoT) prompting and few-shot prompts. For example, translation memories, which are repositories of past human translations paired with their source texts, can be effectively used for translator training in conjunction with few-shot prompts. Additionally, the concepts of translation briefs and work instructions, traditionally used in professional translation, can be directly applied as prompts. Furthermore, the classical assets of translation research that describe translation strategies can be adapted for use as CoT prompting. 
+
+The concepts studied in translation research, which explain the act of translation, can be collectively referred to as the metalanguages of translation \citep{Miyata2023}. These metalanguages can be effectively applied to prompt creation. These attempts are not merely an engineering perspective to enhance the accuracy of translation outputs from LLMs but are proposed as significant considerations for translator training in the AI era.
+
+\section{Literature review}
+
+Previous studies on prompts for translation and LLMs have primarily been published in the field of natural language processing (NLP). Most research has focused on using LLMs as replacements for existing MT systems or as tools to address the shortcomings of MT. Specifically, these studies often investigate how translation accuracy compares between LLM-generated translations and traditional MT when using simple prompts, such as zero-shot prompts that merely instruct the model to translate from one language to another. For example, several studies (such as \citealt{hendy2023goodgptmodelsmachine, jiao2023chatgptgoodtranslatoryes, wang-etal-2023-document-level}) have examined how accurately LLMs can translate using zero-shot prompts and found that, for high-resource languages—languages with abundant digital resources and training data such as English, Spanish, or Chinese—LLMs can produce translations with accuracy comparable to or exceeding that of traditional MT \citep{way2025}.
+
+Other studies have explored using LLMs and prompts to enhance translation quality, particularly for low-resource languages. For instance, \textcite{jiao2023chatgptgoodtranslatoryes} analysed ChatGPT's MT capabilities and found that while it competes with commercial systems for high-resource European languages, it struggles with low-resource and distant languages. \textcite{gao2023designtranslationpromptschatgpt} developed a new method for translation prompts that includes task information, contextual domain information, and part-of-speech tags, which significantly improved ChatGPT's performance, surpassing commercial systems in multiple translation directions. \textcite{Zhang2023} provided a comprehensive summary of prompt strategies used to date and attempted to overcome the shortcomings in translation for low-resource language combinations and other challenging scenarios.
+
+Recent experiments have also focused on the translation of high-context and multi-modal materials such as Japanese manga using LLMs. \textcite{Yang2024} conducted experiments demonstrating that applying appropriate prompts can significantly improve translation accuracy in such contexts. However, practical translation organisations have raised concerns about the feasibility of applying these methods to manga, particularly in capturing its nuanced cultural and contextual layers, which are integral to the genre \citep{JAT2024}.
+
+While these studies originate from the NLP field and tend to focus on engineering improvements, there appears to be a difference in the understanding of translation between NLP researchers and Translation Studies (TS) scholars. In NLP, translation is often approached -- particularly in evaluation -- as if there were a single correct outcome. At the system level, however, MT models may generate multiple possible translations and then output the one judged to be the ``most likely'', which does not necessarily align with what a human expert would consider the ``best''. By contrast, TS generally recognises that translation may vary according to context and purpose. This variability makes it difficult to define what constitutes a ``good'' or ``quality'' translation. For instance, classical translation theories such as Skopos theory suggest that translation strategies (e.g. domestication vs. foreignisation \citep{Venuti1995}, covert vs. overt translation \citep{House1981}) might depend on the purpose of the translation. Over time, TS has developed insights into these variations.
+
+The following sections attempt to address the gap left by NLP researchers by incorporating the metalanguages of TS, namely the concepts of translation, into LLM prompts and examining the resulting changes in translation output. 
+
+\textcite{yamada-2023-optimizing}, for instance,  investigated the impact of incorporating translation purposes and target audiences into prompts on ChatGPT's translation output. This study focused on the pre-production phase of the translation process, drawing on previous translation research, industry practices, and ISO standards. By including concepts and terms from TS as prompts, the research explored the potential for achieving flexible translations that traditional MT systems have struggled to produce. The study evaluated changes in translation output using subjective qualitative assessments and cosine similarity, incorporating concepts such as dynamic equivalence \citep{Nida1969}.
+
+Further, \textcite{he2024promptingchatgpttranslationcomparative} explored using translation research concepts to design prompts for LLMs to improve translation quality. The study discussed the effectiveness of incorporating conceptual tools and personas of translators and authors into ChatGPT's translation task prompts. Although the small-scale experiments indicated limited effectiveness in improving translation quality, the paper highlighted the need for further research on the impact of TS concepts on LLMs translation tasks.
+
+Building on the ideas from these two papers, this chapter presents the study finding evaluating the effectiveness and potential of incorporating TS concepts as prompts for translator training, rather than assessing improvements in LLM-generated translation quality. It further discusses the implications of this approach for translation education.
+
+\section{Aims and pedagogical potential of this chapter}
+As observed in the comparative analysis of previous research, prompts in NLP often tend to prioritise the engineering aspect of achieving equivalence between source and target texts, typically measured by standardised translation metrics such as BLEU \citep{Papineni2002} and COMET \citep{Rei2020}. This approach generally focuses on how closely the translation aligns with the source text. In contrast, TS often emphasises the importance of how the translation is received by the target audience, considering the context and situational variables. This philosophical challenge in evaluating translation quality involves numerous variables and may not be solely based on source-target text equivalence. By incorporating the concepts and metalanguages of TS, it may be possible to create prompts for LLMs that better address these complex considerations.
+
+This chapter aims to serve as a starting point for designing pedagogical activities that leverage concepts and terminologies (metalanguages) from TS to create effective and unique prompts for LLMs. While not attempting to exhaustively evaluate all metalanguages as LLM prompts for educational use, the chapter presents several specific examples to inspire translation educators and instructors in their practice. By doing so, it highlights the potential of integrating TS knowledge into LLM-assisted translation education.
+
+To achieve this, the chapter first provides an overview of the foundational concepts of prompt engineering for LLMs, specifically few-shot prompts and CoT prompting. It then explores how these concepts might be integrated with existing TS knowledge. Through these examples and discussions, the chapter aims to offer practical suggestions and potential directions for incorporating TS concepts into LLM-assisted translation education, rather than presenting definitive solutions.
+
+\section{Few-Shot prompts and CoT prompting}
+The concepts of few-shot prompts and CoT prompting are explained in the Prompt Engineering Guidelines.\footnote{\url{ https://www.promptingguide.ai}} Applying these concepts in this chapter requires some modifications and expanded interpretations, with concrete examples provided in Sections~5 and~6.
+
+Few-shot prompting is a prompt design method for LLMs that includes a few examples of input-output pairs along with task instructions. This approach allows the model to infer the task's intent and output format from the provided examples, potentially leading to more accurate and desirable outputs. Few-shot prompting is particularly effective for complex tasks or when zero-shot prompting (instructions without examples) may be insufficient.
+
+Consider a scenario similar to a translation memory where portions of source and target texts are provided to the LLM. The model may learn implicit patterns from these examples and apply these learned patterns to generate translations. This method parallels actual practices in the translation industry, where translation service providers often provide translation memories to human translators. Translators typically learn from these past translations, observing how style guide rules are concretely applied. Similarly, translation coordinators or project managers provide instructions to human translators. This chapter aims to investigate how comparable instructions, when used as few-shot prompts for LLMs, might affect translation output.
+
+CoT prompting involves verbalising the thought process as a prompt. Just as humans follow a step-by-step reasoning process to solve problems, CoT prompting encourages LLMs to explicitly follow a CoT. This leads to more accurate and interpretable responses.
+In the context of translation, few-shot prompts provide examples of source and target texts without explaining the intermediate process. In contrast, CoT prompting could describe the translation process, referencing translation process research literature. For instance, a translator might read the source text, produce a literal translation, consider the context, monitor the translation, and then revise it to make sense for the target audience, culture, and readers (e.g., monitor model, \citealt{Tirkkone-Condit2005}). This step-by-step description of the translation process can be given as a CoT prompting.
+
+Additionally, as suggested by \textcite{yamada-2023-optimizing}, CoT prompting can be interpreted as detailed translation briefs. \textcite{he2024promptingchatgpttranslationcomparative} demonstrated that setting translator personas (profiles) can also be considered a variant of CoT prompting. In professional translation settings, companies typically select suitable translators for specific tasks and provide detailed translation briefs. This chapter interprets CoT prompting as analogous to the language used for describing translation processes \citep{Miyata2023} and investigates how such prompts might influence translation output, as well as their potential educational implications.
+
+\section{Example of a few-shot prompt}
+Firstly, we present an example of a few-shot prompt. This example aims to examine how the output changes when a portion of a translation memory is input into the LLM. However, from an educational perspective, it is valuable to consider how learners, when faced with their own translation tasks, can study and emulate various linguistic aspects from the given corpus and incorporate them into their subsequent translations.
+
+In this case, we deliberately focused on linguistic tone and manner. A highly distinctive translation corpus was prepared. As indicated in the prompt below, the original English text was contextualised as a monologue reflection of an elderly person on their life. In the corresponding Japanese translation, we used expressions characterised by sentence endings typical of the linguistic style associated with Japanese elderly individuals, creating an exaggerated translation that exemplifies their manner of speaking. Although this example is quite extreme and may lack realism, it can be likened to the specific style and voice used in a particular company's user manuals in a real-world context.
+
+The purpose of this approach is twofold: to observe how the LLM adapts its output based on the provided translation memory, and to encourage learners to critically analyse how they can learn from and apply specific linguistic features, tones, and styles in their own translation work. This exercise, while using an exaggerated example, aims to heighten awareness of the importance of adapting language to specific contexts and audiences in translation practice.
+
+This prepared sample set was then given as a few-shot prompt to the LLM, instructing it to translate a new source text following the corpus. The LLM used was Claude 3.5 Sonnet. To provide a comparison, the new source text was also translated using the MT service DeepL. Subsequently, the LLM translations and the MT translations were compared against the original corpus. Additionally, evaluations were conducted using the automatic evaluation tool COMET\footnote{We used WMT20-COMET for this evaluation.} The results of these comparisons and evaluations are presented below.
+
+\llmprompt{
+Below are provided the English text [source text], in which an elderly individual living in contemporary America reflects on their life, and its Japanese translation [target text]. Based on this corpus, please translate the [new source text] into Japanese.\newline
+
+[source text]
+``When I was young, life was so different. We didn't have all these gadgets and technology. We had to work hard for everything we had. But, those were good times too. I remember walking miles to school, playing outside until dusk, and everyone knew each other in the community."\newline
+
+[target text]
+{\jpn「若い頃はのう、生活はまったく違っとったんじゃ。今みたいなガジェットやテクノロジーはなかったんじゃ。何でも手に入れるために一生懸命働かなければならんかったんじゃ。でも、それもまた良い時代だったんじゃよ。学校まで何マイルも歩いて、夕暮れまで外で遊んで、みんながコミュニティの中でお互いを知っとったんじゃ。」}\newline
+
+[new source text]
+``I miss those simple days. We didn’t have much, but we were happy. I spent my summers helping my father on the farm and learning about life from him. Sundays were always special, with family gatherings and big dinners. As I grew older, the world changed rapidly, and sometimes it’s hard to keep up. But I cherish those memories, they keep me grounded."
+}
+
+% 画像の挿入コマンド
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/cd.pdf} % 画像ファイル名
+    \caption{Claude vs. DeepL.}
+    \label{fig:sample-image}
+\end{figure}
+
+
+According to the COMET scores in Figure 1, Claude's scores range from 0.360 to 0.995, while DeepL's scores range from 0.633 to 1.051. These scores indicate generally high-quality translations, as scores closer to 1.0 typically reflect strong alignment with the reference text. On average, DeepL achieves higher scores at 0.626 compared to Claude at 0.499.
+
+However, when evaluated by a human translator, a stark stylistic difference becomes evident between the two. Claude Translation skilfully captures the distinctive elderly speech patterns found in the reference translations. Using a small corpus, it creates the impression that the same elderly person is continuing the conversation seamlessly. In contrast, DeepL Translation employs a completely standard Japanese tone, making it appear as though a different person is speaking, thereby disrupting the flow of the monologue. This discrepancy highlights a limitation of the COMET scoring system: it fails to account for stylistic features or cultural nuances such as those present in Japanese ``elderly speech patterns".
+
+In an educational context, it is crucial for human translators to first anticipate the linguistic features that can be learned from the corpus provided in the prompt, and then compare these expectations with the LLM's response. Additionally, comparing with MT allows reflection on how these predictions differ from actual outputs. When COMET scores are available, it may be beneficial to critically analyse whether these scores accurately reflect our predictions. As mentioned above, in this case, it appeared that COMET did not adequately reflect the situation, so we decided to question an LLM (in this instance, ChatGPT) about why this might be the case. The response we received is as follows:
+
+\llmresponse{Your observation about the tone and manner of speech in translations highlights an important aspect of translation quality that COMET might not fully capture. Here's why:\newline
+
+1. Literal Accuracy vs. Stylistic Fidelity: COMET is primarily designed to evaluate the literal accuracy and fluency of translations. It does well in judging how close the MT is to the reference in terms of meaning and linguistic quality.\newline
+
+2. Stylistic Nuance: While COMET can capture some aspects of fluency and naturalness, it might not fully appreciate stylistic nuances such as the specific tone, voice, or manner of speech that are present in the reference translation. For example, an elderly man's distinctive speech patterns might not be fully valued in COMET's scoring if the reference doesn't explicitly indicate the importance of these characteristics.\newline
+
+3. Contextual and Cultural Sensitivity: Human evaluators can recognise and appreciate subtleties such as tone, cultural references, and stylistic consistency. Automated metrics like COMET are still limited in their ability to assess these elements comprehensively.\newline
+
+(It should be noted that such categories are analytical constructs used by human evaluators; the LLM itself does not ``understand" or deliberately apply them.)}
+
+This type of activity can provide a novel translator training experience. First, learners understand the relationship between few-shot prompts and parallel corpora, learning that LLMs can generate similar translations from them. While the above example focuses on tone and manner, it could also be interesting to investigate whether LLMs can replicate aspects such as terminology and grammatical structures. As noted in related work, similar attempts have been made in the context of metaphor
+\citep{Dorst2024}. To achieve this, it might be necessary not only to show parallel corpora but also to add specific prompts that supplement what aspects of the language should be learned from them. Here, the practical application of TS concepts and professional translation considerations can be implemented in the form of prompts.
+
+Moreover, this approach encourages critical thinking about translation quality assessment. By comparing human evaluations with automated metrics such as COMET, learners can develop a deeper understanding of the complexities involved in translation evaluation. This specific exercise highlights the importance of considering both quantitative metrics and qualitative aspects such as style, tone, and cultural nuances in assessing translation quality. It also underscores the current limitations of automated evaluation tools and the continued relevance of human expertise in translation assessment. Furthermore, engaging with LLMs to analyse discrepancies between human and automated evaluations can provide valuable insights into the strengths and limitations of different evaluation methods, fostering a more comprehensive and nuanced approach to translation quality assessment in both educational and professional contexts.
+
+\section{CoT prompting and the translation process}
+In this section, a simple CoT prompt was used, employing a taxonomy of translation strategies. Rather than recreating the translation process through a CoT prompt, in other words, not a strict step-by-step prompt, it facilitated a relatively high-resolution cognitive process concerning translation. Specifically, the well-known procedures described by \citet{Vinay1995} were provided to the LLM. The definitions were generated by ChatGPT-4o. Subsequently, the model was instructed to translate a Japanese sentence (previously used in an example) by applying all the procedures from the provided taxonomy. Let us first examine the following prompt:
+
+\llmprompt{Translate the English sentence ``When I was young, life was so different" into Japanese, adhering to the provided taxonomy below.\medskip
+
+\noindent
+Direct Translation Methods\\
+1. Borrowing: Directly taking words from the source language into the target language without translation (e.g., ``pizza").\\
+2. Calque: Translating a foreign word or phrase literally, creating a new expression in the target language (e.g., ``skyscraper" as ``gratte-ciel" in French).\\
+3. Literal Translation: Word-for-word translation that adheres closely to the original syntax and meaning, appropriate when the languages share similar structures and cultural contexts.\medskip
+
+\noindent
+Oblique Translation Methods\\
+4. Transposition: Changing the grammatical category of a word without altering its meaning (e.g., transforming a noun into a verb).\\
+5. Modulation: Changing the form of the message, introducing a shift in point of view or cognitive category to fit the natural expression in the target language (e.g., ``It's not difficult" instead of ``It's easy").\\
+6. Equivalence: Using an entirely different expression to convey the same situation, often applied in idiomatic expressions or proverbs (e.g., ``Out of sight, out of mind" translated as ``Loin des yeux, loin du cœur" in French).\\
+7. Adaptation: Modifying the cultural reference when the source language situation is unknown or unrecognisable in the target culture (e.g., changing a reference to Thanksgiving in the U.S. to a relevant local holiday in the target culture).\\
+}
+
+While such taxonomies of translation strategies are often lectured on in introductory TS courses, it was not realistic to use classification tables for discussing translations in practical translation classes. Especially when teaching translation into Japanese, European-developed classifications often did not directly apply, necessitating the use of customised literature or adaptation for practical use. In essence, this strategy classification taxonomy exemplifies how categorisations and accumulations from TS research were seldom utilised in practical teaching classes. Frankly, it was cumbersome. However, this is not to say that human translators do not mentally engage in a process similar to this taxonomy, creating and selecting from multiple translation options. Nor is it to suggest that such taxonomies are entirely without merit. To reiterate, the primary issue was the time-consuming nature of the process.
+
+Given this context, we provided the aforementioned prompt and requested a translation. The result is as follows. For the translation, Claude 3.5 Sonnet was utilised, consistent with the earlier example.
+
+\llmresponse{Borrowing: {\jpn ヤングの頃、ライフはとても違っていた。}\\
+Calque: {\jpn 若かった時、生命は非常に異なっていた。}\\
+Literal Translation: {\jpn 若かった頃、人生はとても違っていた。}\\
+Transposition: {\jpn 若い時代には、人生は大きく異なっていた。}\\
+Modulation: {\jpn 若かった頃は、今とは全く違う人生だった。}\\
+Equivalence: {\jpn 若い頃は、今とは別世界だった。}\\
+Adaptation: {\jpn 青春時代は、今とは天と地ほど違っていた。}
+}
+
+As mentioned earlier, Vinay and Darbelnet's translation taxonomy is challenging to apply to Japanese translation. Therefore, I was impressed that the LLM could instantly `understand' this taxonomy and create examples adapted to Japanese translations. However, understanding this classification in Japanese remains difficult, so I supplemented the prompt by asking for specific explanations of ``which parts of the translation each strategy [this] is applied to". Consequently, the following detailed explanations were obtained. Due to space constraints, only the first three results are presented here.
+
+\llmresponse{1. Borrowing: 
+``Yangu no koro, raifu wa totemo chigatte ita."{\jpn (ヤングの頃、ライフはとても違っていた。)}
+- The English words ``young" and ``life" are borrowed directly into Japanese as ``yangu" and ``raifu" respectively.\newline
+
+\noindent
+2. Calque: 
+``Wakakatta toki, seimei wa hijou ni kotonatte ita."{\jpn (若かった時、生命は非常に異なっていた。)}
+- ``Life" is translated as ``seimei" {\jpn (生命)}, which is a more literal translation of ``life" as in ``living being", rather than the more common ``jinsei" {\jpn (人生)} meaning ``lifetime" or ``course of life".
+- ``So different" is translated more literally as ``hijou ni kotonatte ita" {\jpn (非常に異なっていた)}.\newline
+
+\noindent
+3. Literal Translation: 
+``Wakakatta koro, jinsei wa totemo chigatte ita."{\jpn (若かった頃、人生はとても違っていた。)}
+- The sentence structure of the original is maintained, with each word translated to its Japanese equivalent.
+\[\ldots\]
+In actual translation practice, these strategies would typically be combined to create a natural and effective target text. Some of these examples may appear unnatural as they are designed to highlight the specific features of each translation strategy.
+}
+
+While it may seem repetitive, I must emphasise how remarkably clear, accurate, and well-explained these examples are. The precision and correctness of both the instances and their descriptions are noteworthy.
+
+This verification suggests the potential for LLMs to support human translators throughout their translation process using CoT prompting. However, more immediately apparent is how such activities could offer significant insights for translation education. The example presented here, applying a well-known taxonomy of translation strategies to create translation examples, is just one illustration of this potential.
+
+Beyond this, we might also consider the application of other TS assets, such as learning about translation issue typologies. These exercises provide a tangible sense of how theoretical concepts from TS can be practically applied.
+
+In essence, this approach not only demonstrates the impressive capabilities of LLMs in understanding and applying complex translation theories but also opens up new possibilities for translation education. By bridging the gap between theoretical knowledge and practical application, it offers a novel way to engage with TS concepts that have traditionally been challenging to implement in practical training settings.
+
+\section{Discussion and concluding remarks}
+
+Firstly, it is crucial to understand that prompt engineering is not solely aimed at improving automatic translation quality based on NLP technologies or unified value systems. We often perceive AI and LLMs as adversarial to human translators. While important, this perspective, which leads to a focus on cautious educational or practical use -- such as copyright concerns or ethical considerations -- may be overly conservative. To draw an extreme analogy, it is akin to focusing solely on avoiding accidents or problems when planning an enjoyable trip, rather than considering how to make the journey truly rewarding. This chapter has specifically explored the positive and proactive possibilities of utilising LLMs in translator training.
+
+To elucidate these positive applications, we have examined the use of accumulated TS assets and metalanguages as prompts for LLMs. However, I must reiterate that the primary aim of this chapter was not to apply TS concepts to prompts for the simple goal of improving LLM-generated translation quality, as is often the focus in NLP. Instead, the objective was to demonstrate how translation metalanguages can be used to engage in dialogue with AI, potentially enhancing translation education.\footnote{It should be emphasised that such systems do not in fact “understand” translation concepts; rather, they generate output based on statistical predictions of likely word sequences.}
+
+Specifically, we have presented concrete examples of learning scenarios using translation concepts within the frameworks of few-shot prompts and CoT prompting. The prompt utilising process taxonomy to generate various translation variations was particularly surprising and insightful. Critical analysis and AI consultation on this approach yielded highly accurate responses. While these examples are limited and the high accuracy may be partly attributed to the use of the well-known Vinay and Darbelnet taxonomy, they represent just the first step in exploring a vast potential. As an educator, I am both intrigued and obligated to further investigate these possibilities.
+
+While these results are promising, it is important to note that this is just the beginning. Further research and experimentation could reveal even more ways in which LLMs can enhance translation education and support professional translation practices. Moreover, this method could potentially make the learning process more interactive and engaging for students, allowing them to explore various translation strategies and their implications in a more hands-on manner. It also provides a platform for discussing the nuances of translation choices, which is crucial for developing critical thinking skills in aspiring translators. This approach may offer opportunities to foster autonomous learning and develop essential qualities for independent translators.
+
+It is also important to acknowledge some limitations. Not all responses from LLMs were accurate, and some prompts were less successful than others. For instance, while the LLM correctly explained why COMET could not provide a fair evaluation in the few-shot prompt example, it failed to give a reasonable answer when asked which translation (Claude or DeepL) was closer to the reference translation. Such errors and limitations of LLMs become more apparent with increased use. However, given that translator training inherently requires maintaining a critical perspective, I believe exploring the possibilities of using LLMs is as important as considering the risks.
+
+In conclusion, this chapter has demonstrated concrete methods for exploring the potential of LLMs in translation education. By leveraging the concepts and metalanguages of TS in prompt engineering, we can create more engaging, interactive, and effective learning experiences for translation students. While challenges and limitations exist, the potential benefits of integrating LLMs into translator training are significant and warrant further investigation and development.
+
+%\section*{Abbreviations}
+%\begin{tabularx}{.5\textwidth}{@{}lQ@{}}
+%... & \\
+%... & \\
+%\end{tabularx}%
+%\begin{tabularx}{.5\textwidth}{@{}lQ@{}}
+%... & \\
+%... & \\
+%\end{tabularx}
+
+
+%\section*{Acknowledgements}
+%\citet{Nordhoff2018} is useful for compiling bibliographies
+%\section*{Contributions}
+%John Doe contributed to conceptualization, methodology, and validation. 
+%Jane Doe contributed to writing of the original draft, review, and editing.
+
+\sloppy
+\printbibliography[heading=subbibliography,notkeyword=this]
+\end{document}

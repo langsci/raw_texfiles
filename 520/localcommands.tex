@@ -1,0 +1,97 @@
+\makeatletter
+\let\thetitle\@title
+\let\theauthor\@author
+\makeatother
+
+\newcommand{\togglepaper}[1][0]{
+   \bibliography{../localbibliography}
+   \papernote{\scriptsize\normalfont
+     \theauthor.
+     \titleTemp.
+     To appear in:
+     E. Di Tor \& Herr Rausgeberin (ed.).
+     Booktitle in localcommands.tex.
+     Berlin: Language Science Press. [preliminary page numbering]
+   }
+   \pagenumbering{roman}
+   \setcounter{chapter}{#1}
+   \addtocounter{chapter}{-1}
+}
+
+\newbool{bookcompile}
+\booltrue{bookcompile}
+\newcommand{\bookorchapter}[2]{\ifbool{bookcompile}{#1}{#2}}
+
+% LLMの線
+\DeclareTColorBox[auto counter, number within=chapter]
+                 {LLMPrompt}{m O{0.8mm} O{\lsSeriesColor}}
+  {
+    graphical environment = tikzpicture,
+    title = {#1},
+    boxsep = 0pt,
+    toptitle = 5mm,
+    top = 5mm,
+    bottom = 5mm,
+    left = 5mm,
+    right = 5mm,
+    borderline = {#2}{0pt}{#3},
+    beforeafter skip balanced = \baselineskip,
+  }
+
+\newcommand{\llmprompt}[1]{%
+\begin{LLMPrompt}{LLM Prompt \thetcbcounter:}
+#1
+\end{LLMPrompt}
+}
+
+% \newcommand{\llmprompt}[1]{%
+%   \vspace{\baselineskip} % 上に1行分の空白を追加
+%   \noindent
+%   \begin{tabular}{|p{.9\textwidth}|}
+%     \hline
+%     \footnotesize \textbf{LLM Prompt:}\\ % フォントサイズをさらに小さく
+%     \footnotesize #1 \\
+%     \hline
+%   \end{tabular}
+%   \\ % 改行を追加
+%   \vspace{\baselineskip} % 下に1行分の空白を追加
+% }
+
+% LLM responseの線
+\DeclareTColorBox[auto counter, number within=chapter]
+                 {LLMResponse}{m O{black!12}}
+      {
+        graphical environment = tikzpicture,
+        title = {#1},
+        boxsep = 0pt,
+        toptitle = 5mm,
+        top = 5mm,
+        bottom = 5mm,
+        left = 5mm,
+        right = 5mm,
+        frame engine = path,
+        extras = {frame engine=path},
+        frame style = {fill=#2},
+        sharp corners = all,
+      }
+  
+\newcommand{\llmresponse}[1]{
+\begin{LLMResponse}{LLM Response \thetcbcounter:}
+#1
+\end{LLMResponse}
+}
+
+% \newcommand{\llmresponse}[1]{
+%   \vspace{\baselineskip} % 上に1行分の空白を追加
+%   \noindent
+%   \begin{tabular}{|p{\textwidth}|}
+%     \hline
+%     \footnotesize \textbf{LLM Response:}\\ % フォントサイズをさらに小さく
+%     \footnotesize #1 \\
+%     \hline
+%   \end{tabular}
+%   \\ % 改行を追加
+%   \vspace{\baselineskip} % 下に1行分の空白を追加
+% }
+
+\renewcommand{\lsAcknowledgementTitle}{Acknowledgements}

@@ -1,0 +1,406 @@
+\chapter{Gender issues in machine translation}
+
+\label{Chapter2-2}
+The previous subsections (see Subsection \ref{sub:translatinggender}, \ref{sub:language/gender}, and \ref{Sexism in language}) showed how (i) languages differ in the way they refer to gender and gender conveys social connotations; (ii) language use can be sexist and disregard women and other sexes/genders; and (iii) human translators are confronted with difficulties when translating gender in language. It is well-known that technology reflects societal prejudices or biases (e.g. \cite{bolukbasi2016man}). Therefore, this chapter introduces gender bias in MT starting with a definition of bias itself. The term is complex and has overlapping and/or contrasting definitions \citep{crawford2017keynote}. A precise and exhaustive definition was provided by Crawford in the field of machine learning, so this broader field is briefly taken into account in the first section. The second section focuses on gender bias in MT, presenting an overview of the literature in the field, while the third section analyses its sociotechnical implications. Finally, PE is introduced as a common practice within the translation industry. Gender bias remains one of the greatest issues in MT, but little research addresses the PE effort to adjust biased output, i.e. \textcite{savoldi2024harm} and the present work.
+
+%--------------------------------------
+%	SECTION 5
+%-------------------------------------
+\section{Gender bias in machine learning: definition and classification} \label{sub:biasml}
+%The previous Chapters (see Chapter \ref{sub:translatinggender}, \ref{sub:language/gender}, and \ref{Sexism in language}), showed how (i) languages differ in the way they refer to gender and gender conveys social connotations; (ii) language use can be sexist and disregard women and other sex/genders; and (iii) human translators are confronted with difficulties when translating gendered elements. It is well-known that technology reflects societal prejudices or biases (e.g. \cite{bolukbasi2016man}). Therefore, this chapter introduces gender bias in machine translation (MT) starting with a definition of bias itself. The term is complex and has overlapping and/or contrasting definitions (\cite{crawford2017keynote}). A precise and exhaustive definition was provided by Crawford (ibid) in the field of machine learning, so this broader field is briefly taken into account in the first part of the chapter. The second part focuses on gender bias in MT, presenting an overview of the literature in the field, while the third section analyses the sociotechnical implications of this issue.
+
+Machine learning can be defined
+\begin{quote}
+    as a set of methods that automatically detect patterns in data, and then use the uncovered patterns to predict future data, or to perform other kinds of decision-making under uncertainty. \citep[1]{murphy2012machine}
+\end{quote} Typical machine-learning applications may include document classification, email spam filtering, image classification and face recognition \citep[5]{murphy2012machine} as well as deep learning applications like the recently popular ChatGPT. According to \textcite{crawford2017keynote}, the term \textit{bias} has overlapping and also partially contradictory meanings. 
+
+It is worth focusing on (i) the common meaning of the term as an undue prejudice; (ii) statistical bias, since statistics is used in several machine-learning applications; models may be skewed and select more frequently some members of a population instead of others, e.g. facial recognition models are mostly trained with images of white males and perform much worse on black people or women (see \cite{buolamwini2018gender}); and (iii) the normative legal meaning, based on which judgments are the results of preconceived notions or prejudice \citep{crawford2017keynote}. 
+
+\textcite{crawford2017keynote} underlines how a system can be statistically unbiased but nevertheless produce legally biased outputs. The researcher reports that 83\% of the 4.4 million people who were stopped and questioned based on the Stop-and-Frisk programme run by the New York City Police Department in 2012 were Black or Hispanic. This reflects the long history of discrimination against these groups in policing and the programme was discontinued. Bias is therefore to be considered both a social and a technical issue, i.e. sociotechnical. 
+
+Bias is to be found in machine-learning applications because the training data used can be incomplete, skewed, drawn from non-representative samples, or constructed in non-transparent ways \citep{crawford2017keynote}. In 2015, Amazon realised that the recruiting tool used to review the CVs of candidates applying for programming jobs was discriminating against women. The system had been trained with resumes sent by applicants over a 10-year period and a vast majority of them were men -- thus confirming male dominance in this particular sector. The tool learned to penalise CVs including the word \textit{women} leading Amazon to discard it \citep{dastin2018amazon}. Data are not neutral but produced in a specific societal and cultural setting, so they encode societal biases like sexism, racism, and classism amongst others. \textcite{o2017weapons} explains, for instance, how bias is encoded in algorithms that impact the life of many marginalised individuals and reinforce inequality.
+
+Zou \& Schiebinger claim that algorithms also play an important role in the propagation of bias: \begin{quote}
+    A typical machine-learning program will try to maximize overall prediction accuracy for the training data. If a specific group of individuals appears more frequently than others in the training data, the program will optimize for those individuals because this boosts overall accuracy. \citep{zou2018ai}
+\end{quote}
+
+Bias can be mainly classified into allocative and representational bias \citep{crawford2017keynote}. The former is related to decision-making and is found when applications deny resources to a certain group, e.g. a woman is not considered for a job or is denied a mortgage just because she is a woman. The latter relates to identity and reinforces the subordination of certain groups \citep{crawford2017keynote}, e.g. MT systems rarely generate feminine and gender-fair forms \citep{prates2019assessing,dev-etal-2021-harms}. As shown in Table \ref{tab:representationbiasnlp}, there are different types of representational bias.
+
+%-------------------------------------------TABLE BEGINS HERE---------------------------------------------
+\begin{table}[ht]
+   \caption[Representational harms in applications]{Representational harms in different applications proposed by \textcite{sun2019mitigating} based on \textcite{crawford2017keynote}; the columns represent denigration (D), stereotyping (S), recognition (R), and underrepresentation (U)}
+    \centering
+    \begin{tabular}{m{4cm}m{1cm}m{1cm}m{1cm}m{1cm}}
+    \lsptoprule
+         Task & D & S & R & U \\
+         \midrule
+         \textbf{Machine Translation} & x & x & x & x\footnotemark  \\ 
+         \textbf{Caption Generation} & - & x & x & - \\ 
+         \textbf{Speech Recognition} & - & - & x & x \\ 
+         \textbf{Sentiment Analysis} & - & x & - & - \\ 
+         \textbf{Language Model} & - & x & x & x \\
+         \textbf{Word Embedding} & x & x & x & x \\
+         \lspbottomrule
+    \end{tabular}
+    \label{tab:representationbiasnlp}
+\end{table}
+%---------------------------------------------TABLE ENDS HERE----------------------------------------------
+
+\footnotetext{\textcite{sun2019mitigating} do not categorise underrepresentation as one of the harms caused by MT systems. However, this is the case of women but also of non-binary individuals, who precisely according to \textcite{sun2019mitigating} are ignored in the field of NLP. \textcite{savoldi2021gender} also argue that MT systems misrepresent women and erase the identity of non-binary people.}
+
+These are denigration, stereotyping, recognition, and underrepresentation. Specifically, denigration refers to the use of culturally or historically derogatory terms, e.g. gendered identity terms are sometimes translated with slurs into other languages; stereotyping relates to the use of societal stereotypes, e.g. word embeddings associate nurses more strongly with women and doctors with men; recognition concerns the inaccuracy of algorithms in recognition tasks, e.g. speech detection works better for standard varieties of a given language; and underrepresentation describes the low representation of a specific group, e.g. neopronouns are mistakenly machine-translated. 
+
+
+Since language technologies have found wide use in everyday life, their societal impact has raised concerns (see for example \cite{hovy2016social}, \cite{blodgett-etal-2020-language}). \textcite[593]{hovy2016social} concentrated specifically on NLP applications, noting how the use of language data always implies demographic bias, intended as ``latent information about the demographics in it''. Such bias can have severe consequences, namely (i) exclusion, (ii) overgeneralisation, and (iii) underexposure. The first means that an NLP application developed in the USA is usually based on a standard language that may be easier to use for white males than for citizens of Latino origins, rendering it less user-friendly. The second may cause, amongst others, users' attributes such as gender, age, sexual orientation or religious views to be wrongly inferred, e.g. an email could address people with the wrong gender. The third refers to the underexposure of language varieties for economic reasons -- English is the most frequently used language in NLP tools. The literature on bias in NLP applications is vast (see \cite{sun2019mitigating} for an overview of gender bias, and \cite{hutchinson-etal-2020-social} for an overview of other societal biases in general). %Sociotechnical implications of gender bias in machine translation are discussed in Chapter \ref{sub:sociotechnical}. 
+
+
+
+%--------------------------------------
+%	SUBSECTION 1
+%-------------------------------------
+\subsection{Gender bias in machine translation} \label{sub:biasMT}
+The previous section provided a definition of bias in machine learning. \textcite[5454]{blodgett-etal-2020-language} underline how the analysis of bias is actually an ``inherently normative process'' that requires establishing ``what kinds of system behaviours are harmful, in what ways, to whom and why''. Such a claim has also been endorsed by \textcite{hardmeier2021write} who propose writing a bias statement when submitting papers on gender bias in NLP. Consequently, based on the definition by \textcite{Friedman1996bias}, biased MT models are here defined as those ``that \textit{systematically} and \textit{unfairly} discriminate against certain individuals or groups of individuals in favor of others'' (emphasis as in original). 
+
+The term \textit{discrimination} is occasionally used in this chapter. However, in this context, it does not refer to explicit legal discrimination but to systematic unfair treatment in algorithmic decisions based on gender. This aligns with the concept of normative bias \citep{crawford2017keynote}, and with Friedman \& Nissenbaum’s (\cite*{Friedman1996bias}) formulation of unfair system behaviour toward underrepresented groups.
+
+Similarly to human translation, gender bias in MT systems arises because linguistic gender is complex and ambiguous. First, its implementation differs across languages. For example, sentences in English such as ``I am happy'' are neutral, but a gender must be assigned when translating into Italian or French. Moreover, gender has social connotations; doctors are usually thought of as men and nurses as women. MT systems must therefore simultaneously handle various gender-related tasks with reference to three different areas, namely \citep[457]{monti2020gender}:
+\begin{enumerate}
+\setlength\itemsep{-0.5em}
+    \item Anaphora resolution: the process by which MT must identify references back to a previously introduced entity. (\textcite{mitkov1999special} provided an overview of the literature in this field back at the end of the 1990s). This is especially problematic when pronouns refer back to entities in another sentence because some NMT systems mostly translate texts sentence by sentence or part by part without taking the context of the whole document into account.\footnote{While much of the early work in MT, and consequently in gender bias, focused on the sentence level, there is growing recognition of the importance of context beyond individual sentences. MT systems are increasingly addressing discourse-level phenomena and document-level contextual information to improve translation quality and reduce bias \citep{jin-etal-2023-challenges}}
+    \item Named-Entity Recognition (NER): the correct identification and classification of proper nouns, such as those referring to people and institutions. Research has focused on approaches to improve MT system performances on NER (see for example \cite{babych-hartley-2003-improving}).
+    \item Agreement between word classes such as verb-noun or adjective-noun. \textcite{saunders2020reducing} claim that such errors particularly affect translation into grammatical gender languages, as they are more inflected than notional gender (or genderless) ones. 
+\end{enumerate}
+As a result, MT systems rarely generate correct gendered inflections or proforms (\cite{sun2019mitigating}, \cite[457]{monti2020gender}), rely on gender stereotypes (\cite{prates2019assessing}) and have a strong male default (\cite[457]{monti2020gender}). 
+
+\textcite[333]{Friedman1996bias} divide bias into three different categories, namely (i) pre-existing, (ii) technical, and (iii) emergent bias. Bias (i) exists independently of the system and is rooted in institutions, social practices, and attitudes. In MT, it arises from both an overrepresentation of men and a sexist use of language (see Subsection \ref{Sexism in language}) in human-produced datasets used to train such systems. For instance, \textcite{vanmassenhove2019getting} and \textcite{choubey2021improving} found that sentences with gender-neutral or female gender inflections occur much less frequently in the data used for training. 
+
+Bias (ii) is related to the technical design of the system. In this case, models not only reproduce bias, but they also amplify it due to their functioning and their architecture\footnote{In this context, architecture refers to how components of a computer system are combined.} (\cite{vanmassenhove-etal-2019-lost}, \cite{vanmassenhove2021machine}, \cite{costa2020gender}, \cite{roberts2020decoding}). For instance, \textcite{vanmassenhove-etal-2019-lost} found that both statistical and neural MT systems are biased towards the most frequently occurring words in the language corpora used to train them, hence overgeneralising and presenting loss of linguistic richness and diversity. The scholars refer to such MT outputs as ``machine translationese''. This tendency was confirmed by \textcite{roberts2020decoding}, who found that some models are biased towards more recurring words, and therefore also masculine pronouns. This leads MT systems to perform poorly on linguistic diversity. In addition, \textcite{costa2020gender} found that the architecture of NMT impacts performance on gender diversity. When assessing gender bias or proposing debiasing methods, the specific architecture and training settings employed should be considered. 
+
+
+Bias (iii) arises when a system is used in a context other than the one it was designed for. For example, \textcite{rabinovich-etal-2017-personalized} demonstrated that gender traits are weakened in translation, leading \textcite{hovy2020you} to find that MT systems make authors sound averagely male in translation. This means that models are not equipped to adapt to user diversity.
+
+Finally, another issue in this research area concerns Translation Quality Assessment (TQA). \textcite{bentivogli-etal-2020-gender} and \textcite[465]{monti2020gender} claim that metrics used for this task, such as the Bilingual Evaluation Understudy (BLEU) \citep{papineni2002bleu}, Translation Edit Rate (TER) \citep{snover2006study} or the Multidimensional Quality Metrics (MQM) \citep{lommel2014multidimensional}, do not specifically consider the issue of gender bias. Consequently, using these metrics after debiasing MT does little or nothing to confirm whether the debiasing approach was effective.
+Moreover, \textcite{zaranis2024watching} found that quality estimation (QE) metrics -- metrics that automatically assess the quality of machine-translated text, without relying on human reference translations -- are prone to bias. For instance, when a human entity’s gender in the source text is undisclosed, masculine-inflected translations score higher than feminine-inflected ones, and gender-neutral translations are penalised. \textcite[465]{monti2020gender} proposes that corpora be annotated with gender information and used as reference material when evaluating MT models, whereas \textcite{bentivogli-etal-2020-gender} created the MuST-SHE Corpus, a specific benchmark for the assessment of gender bias in (speech) translation technologies.
+
+Research on gender bias in MT has been going on for some time. It initially focused on the translation of grammatical and pronominal gender in the aforementioned areas of anaphora resolution, named entity recognition and agreement between word classes (see for example \cite{mitkov1999special,babych-hartley-2003-improving}). More recent contributions, however, have consisted of comparative studies assessing MT performance across different commercial and/or academic systems, approaches, and language pairs, starting with a study by \textcite{frank2004gender}. These newer studies demonstrate how all MT paradigms, which are mainly rule-based, statistical and neural, are subject to gender bias. In the case of NMT, gender bias in the training corpora is also exacerbated and systems tend to overgeneralise. An overview of this research field is presented below.
+
+%Laura Douglas. 2017. AI is not Just Learning our Biases; It Is Amplifying Them. https://bit.ly/ 2zRvGhH. Accessed on 11.15.2018.
+
+As already mentioned, gender issues in MT systems have been studied for decades (see for example \cite{mitkov1999special}, \cite{witthoft2003effects}, \cite{frank2004gender}). However, interest in this field has dramatically grown over the last few years. \textcite{olson2018algorithm} explains how, at the beginning of 2018, examples of gender bias found in Google Translate had been shared via social media. Since then, numerous studies on gender bias in Neural MT (NMT) have appeared. Based on \textcite{savoldi2021gender}, gender bias in MT is discussed by grouping studies according to different conceptualisations: (i) benchmarks created to assess gender issues in MT systems; (ii) studies on contrastive linguistic phenomena to assess whether gender is correctly rendered in translation; (iii) studies on the perpetuation of gender stereotypes in MT; and (iv) gender preservation in MT (\cite{savoldi2021gender}; an overview of the studies can be found in Table \ref{tab:genderassessment}.) %\textcite[1632f]{sun2019mitigating} refer to data set specifically created to assess gender bias in a NLP system as ``Gender Bias Evaluation Testsets (GBETs)''. An overview of the publicly available GBETs for MT is presented in the next paragraphs.
+
+\begin{table}
+        \caption[Studies assessing gender bias in MT -- Overview]{Overview of the studies conducted to assess gender bias in MT. Based on \textcite{savoldi2021gender}, the table provides information on the typology of studies as well as the genders (binary or non-binary) and the harms addressed.}
+    \label{tab:genderassessment}
+    {\begin{tabularx}{\textwidth}{QQlQ}
+    \lsptoprule
+        \textbf{Study} & \textbf{Typology} & \textbf{Gender} & \textbf{Harms}  \\
+        \midrule
+        \textcite{stanovsky2019evaluating} & benchmark: WinoMT & B & underrepresentation, stereotyping \\
+        \textcite{font2019equalizing} & benchmark: Occupation test set & B & underrepresentation, stereotyping \\
+        \textcite{habash-etal-2019-automatic} & benchmark: The Arabic Parallel Gender Corpus & B & underrepresentation \\
+        \textcite{costa-jussa-etal-2020-gebiotoolkit} & benchmark: GeBioCorpus & B & underrepresentation \\
+        \textcite{saunders2020neural} & benchmark: gender-neutral WinoMT & NB & recognition, underrepresentation \\
+        \textcite{frank2004gender} & contrastive & B & underrepresentation \\
+        \textcite{abu2017errors} & contrastive & B & underrepresentation \\
+        \textcite{rescigno2020gender} & contrastive & B & underrepresentation, stereotyping \\
+        \textcite{prates2019assessing} & perpetuation of stereotypes & B & underrepresentation, stereotyping \\
+        \textcite{cho2019measuring} & perpetuation of stereotypes & B & underrepresentation, stereotyping \\
+        \textcite{stanovsky2019evaluating} & perpetuation of stereotypes & B & underrepresentation, stereotyping \\
+        \textcite{gonen-webster-2020-automatically} & perpetuation of stereotypes & B & underrepresentation, stereotyping \\
+        \textcite{vanmassenhove2019getting} & gender preservation & B & allocative: reduced quality of service \\
+        \textcite{hovy2020you} & gender preservation & B & underrepresentation \\
+        \textcite{vanmassenhove-etal-2021-neutral} & gender preservation & B & underrepresentation \\
+        \textcite{currey-etal-2022-mt} & gender preservation & B & underrepresentation \\
+        \lspbottomrule
+    \end{tabularx}}
+\end{table}
+
+\textcite[1632f]{sun2019mitigating} refer to datasets specifically created to assess gender bias in an NLP system as ``Gender Bias Evaluation Testsets (GBETs)''. For instance, \textcite{stanovsky2019evaluating} produced WinoMT, a challenge test for the evaluation of gender bias in NMT models that consists of 1,826 masculine, 1,822 feminine and 240 neutral sentences respectively. Sentences are structured as follows: ``The doctor asked the nurse to help her in the procedure''. They contain two human entities and one of them is referred to with a pronoun specifying their gender. Entities are featured both in pro- and in anti-stereotypical gender roles. This allows researchers to evaluate if NMT systems can correctly resolve pronouns or if they perpetuate stereotypes when translating. However, a shortcoming of WinoMT is that  in examples such as the aforementioned, \textit{her} could refer to either the doctor, nurse, or a third party. Therefore, WinoMT may not necessarily indicate gender bias. The metrics used for assessment are (i) gender accuracy; (ii) the difference in score between correctly translated masculine and feminine forms; and (iii) the difference between pro- and anti-stereotypical translation. A neutral version of WinoMT was produced by \textcite{saunders2020neural} in which 1,826 entities are referred to with singular \textit{they} to assess the translation of gender-neutral entities in NMT systems. To the best of my knowledge, this is the first research study to investigate the translation of gender-fair forms in MT, even though this was not its main purpose. 
+
+\textcite{font2019equalizing} developed an occupation test set to evaluate the effect of the debiasing methods tested on their NMT models. %(see Chapter \ref{sub:debiasing} for a more detailed description of the study). 
+The test consists of a sentence pattern featuring human entities in pro- or anti-stereotypical gender roles and is structured as follows: ``I’ve known [her/him/<proper Spanish noun>] for a long time, my friend works as [a/an] <occupation>''. The list of occupations is retrieved from the U.S. Bureau of Labor Statistics as in \textcite{prates2019assessing}. Since the noun \textit{friend} has to be gendered in Spanish and the sentence includes context, this benchmark allows for the assessment of gender bias, more specifically the perpetuation of gender stereotypes.
+
+\textcite{habash-etal-2019-automatic} created The Arabic Parallel Gender Corpus. The corpus consists of 12,238 first-person-singular Arabic sentences with their English translation. The scholars retrieved data for the corpus from the OpenSubtitles Corpus \citep{lison-tiedemann-2016-opensubtitles2016}, selected sentences including first-person-singular pronouns and annotated gender (F as feminine, M as masculine and B as ambiguous). Sentences containing masculine entities were copied and modified to change the gender into feminine and vice versa to obtain a balanced corpus. This was later used to train different NLP systems.
+
+\textcite{costa-jussa-etal-2020-gebiotoolkit} developed the GeBioToolKit, a tool to collect parallel sentences retrieved from bibliographical entries on Wikipedia that are balanced in reference to gender (see Figure \ref{fig:GeBioToolKit} for an overview of its architecture). They created the GeBioCorpus, comprising 2,000 sentences in English, Spanish and Catalan, that allows the evaluation of gender accuracy in translation. The languages were selected as they belong to different linguistic subfamilies, namely Germanic and Romance, and English-Catalan represents a low-resourced pair.
+
+%---------IMAGE begins here----------
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\textwidth]{figures/geBioToolKit.pdf}
+\caption[GeBioToolKit]{GeBioToolKit architecture (\cite{costa-jussa-etal-2020-gebiotoolkit})}
+\label{fig:GeBioToolKit}
+\end{figure}
+%------------IMAGE ends here------------
+
+\textcite{bentivogli-etal-2020-gender} posit that the use of artificial datasets in gender bias assessment may produce unreliable results. The researchers released the MuST-SHE Corpus, a multilingual, natural benchmark built on TED talks and composed of about 1,000 audio, transcript and translation triplets for each of the three available language pairs (EN-IT, EN-FR, and EN-SP). The balanced, annotated corpus features two main gender phenomena: gender can be recovered (i) through the person speaking and (ii) through context. While MuST-SHE was used to assess gender bias in speech translation technologies, it can also be used in text-to-text MT.
+
+\textcite{vanmassenhove-monti-2021-gender} introduce gENder‑IT, an annotated English–Italian parallel challenge set specifically designed to examine how MT handles natural gender phenomena, with a focus on cross‑linguistic ambiguity. Their dataset enhances the English source with word‑level gender tags, and on the Italian side they offer multiple alternative translations where gender distinctions are relevant. By enabling fine-grained evaluation of MT’s ability to correctly resolve gender when translating into a grammatically gendered language, gENder‑IT offers both a benchmark and diagnostic tool for identifying and improving gender-aware translation behaviour.
+
+\textcite{currey-etal-2022-mt} present MT-GenEval, a multilingual benchmark for evaluating gender accuracy in MT across eight languages. The dataset includes both counterfactual sentence pairs, differing only in gender, and contextual segments requiring discourse-level gender inference. They propose metrics for gender accuracy and the gender quality gap, revealing that most MT systems exhibit significant gender bias and perform inconsistently across genders. Their findings underscore the importance of gender-balanced data and contextual modeling for mitigating bias in MT.
+
+%Monti, 2017 --> non la trovo, prcmdnn
+Other research endeavours consist of contrastive analyses of linguistic phenomena relating to gender. As shown in Subsection \ref{sub:language/gender}, languages express gender in different ways, i.e. some languages are not or are rarely marked for it, while others are morphologically richer. This complicates the translation process, as MT systems lack extralinguistic information to handle such differences (see Subsection \ref{sub:biasMT} for deeper explanations on the topic). For example, \textcite{frank2004gender} selected a set of 20 sentences to be translated from EN into DE and from DE into FR. The sentences contained peculiar gender phenomena of each target language, such as pronominal reference, appositions, and predicate constructions. They were used to assess gender bias in four different commercial Statistical MT (SMT) systems, e.g. Prompt Online Translator and Systran. The researchers found that when translating from EN into DE the majority of the tested systems could not correctly process feminine forms, even though the gender of the entity in the source sentences was clear. For example, in ``Our manager, Mary, arrived today'', the profession was translated as \textit{Manager} instead of \textit{Managerin} \citep[5]{frank2004gender}.\footnote{Note that this study, like many others, is based on a binary conception of gender and it is supposed that gender can be inferred from the proper name.} As regards the language pair DE-FR, SMT systems exhibited most of the analysed phenomena.
+
+\textcite{abu2017errors} translated four technical texts from English into Arabic in order to study errors made by three commercial MT systems, namely Systran, Google Translate, and Bing Microsoft Translator. The scholar provided a qualitative analysis of errors concerning (i) subject-verb agreement; (ii) adjectival-noun agreement; and (iii) pronoun-antecedent agreement. The gender systems of the two languages differ considerably, Arabic being morphologically richer than English. Hence, automated translation struggled to produce correct inflections. The area that showed more issues was (iii).  While in English \textit{you}, \textit{they}, and \textit{it} have single a form, in Arabic they differ based on number and gender. The tested systems lacked extralinguistic information in English in order to correctly transfer them.
+
+\textcite{rescigno2020gender} created a simple test set of English sentences composed of the first-person singular \textit{I}, the verb to be, and the indefinite article, mixed with 107 professions or 30 epicene nouns and 136 personality adjectives. The researchers produced two different types of sentences: (i) minimal clauses like ``I am an assistant'' and (ii) clauses with an adjective as well, for instance ``I am a beautiful assistant''. This test set was then translated into Italian, French, and Spanish with Google Translate, DeepL Translator and Bing Microsoft Translator. The researcher found that in the first case, the systems adopted a male default, translating sentences much more often in the masculine than in the feminine. In the second case, they found that systems perpetuated gender stereotypes. For example, when sentences contained the adjective \textit{beautiful}, they were more often translated in the feminine than in the masculine form. 
+
+
+%After finding that word-embeddings\footnote{Word-embeddings are a technique used to represent text data as vectors that are used as a ``dictionary'' by computers to understand and use word meaning (\cite{bolukbasi2016man})} reproduce sexist stereotypes (\cite{bolukbasi2016man}, \cite{caliskan2017semantics}), it was also noted machine learning applications were subjected to a similar issue. In 2018, popular publications illustrated how Google Translate reproduced gender stereotypes when translating from a genderless language such as Turkish into English: a gender-neutral sentence like o ``bir muhendis'' was translated as ``he is an engineer whereas ``o bir hemsir'' as `she is a nurse'' (\cite{olson2018algorithm}). Studies in this area investigate whether and to what extent NMT reproduces gender stereotypes.
+
+\textcite{prates2019assessing} compiled a list of short and simple sentences in 12 genderless languages, among others Turkish and Hungarian. As shown in Figure \ref{fig:genderbiasGT}, these sentences contained different typologies of professions. The test set contained 1,019 professions altogether that were obtained from the U.S. Bureau of Labor Statistics (BLS). The test set was translated into English with the Google Translate API. Based on the produced target sentences, statistics were collected to prove that the translation system is generally biased. Target sentences included a male subject more often than a female or a neutral one. More specifically, if the sentences contained male-dominated professions, gender bias was higher. In addition, a comparison was drawn between these results and data on how many women are to be found in each job position. By doing so, the researchers demonstrated that Google Translate did not reproduce the actual ratio of female to male workers. They also created another set of sentences with 21 adjectives in order to understand whether stereotypical gender roles can affect MT’s outputs as well. They found that sentences containing certain adjectives were translated with masculine pronouns (e.g. proud, guilty, brave) but others with feminine ones (e.g. shy, desirable, dumb).
+
+%---------IMAGE begins here----------
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/genderbiasGT.pdf}
+\caption[Gender Bias in Google Translate]{Example of gender bias based on stereotyping in the language pair Hungarian-English (\cite[6365]{prates2019assessing})}
+\label{fig:genderbiasGT}
+\end{figure}
+%------------IMAGE ends here------------
+
+
+\textcite{cho2019measuring} conducted similar and yet wider research. They focused on the creation of a test set in Korean, another genderless language, which was translated into English. The corpus was called the Equality Evaluation Corpus (ECC) and was composed of 4,236 sentences of three different kinds: 324 containing a positive or a negative judgment towards a person and 735 containing an occupation. To these standard 1,029 sentences, a formal version of the pronoun as well as a politeness suffix were added in order to reach the final size. The purpose was to understand whether sentences were translated with different subjects depending on (in)formality, (im)politeness, (negative and positive) judgements, and occupations. The scholars also developed an index, namely the translation gender bias index (TGBI), to evaluate three different translation tools -- Google Translate, Naver Papago, and Kakao Translate -- and they did a qualitative analysis of the collected data. The study confirmed that occupations are the most biased field. Formal and negative sentences also had a stronger male default than the informal and positive ones. In contrast, politeness did not seem to affect the MT outputs. 
+
+\textcite{stanovsky2019evaluating} created the WinoMT test set to assess gender bias in four commercial MT tools, namely Google Translate, Bing Microsoft Translator, Amazon Translator and Systran, and two academic models. WinoMT was translated from English into eight other languages with grammatical gender, for instance French, German, and Italian. The researchers found that NMT systems often ignore context and are inclined to a certain translation because they reproduce gender stereotypes.
+
+\textcite{gonen-webster-2020-automatically} designed an automated system to identify gender issues in MT. This pipeline filters gender-neutral sentences in English that include a human entity (e.g. ``so is that going to affect my chances of becoming a \textit{counselor}?'') which is then replaced to enlarge the dataset and detect gender issues (e.g. ``so is that going to affect my chances of becoming a \textit{nurse}?''). Such sentences are translated into French, German, Spanish, and Russian (all grammatical gender languages that require gender assignment) with Google Translate, aligned and the gender of the entity is tagged with a morphological analyser. As shown in Figure \ref{fig:BERT}, the pipeline finally identifies sentence pairs in which entities have been assigned a different gender and includes them in a final dataset used to assess gender bias in MT. On analysing the resulting dataset, the researchers found that classical gender stereotypes are reproduced by MT and that \textit{fighter} is associated with maleness.
+
+%---------IMAGE begins here----------
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/BERT.pdf}
+\caption[Assessing Gender Bias Using Gonen/Webster's (\cite*{gonen-webster-2020-automatically}) pipeline]{Examples from the dataset produced with the pipeline designed by \textcite[1994]{gonen-webster-2020-automatically}}
+\label{fig:BERT}
+\end{figure}
+%------------IMAGE ends here------------
+
+Research on gender preservation builds on previous findings that demonstrate how MT weakens specific author traits, such as gender (see for example \cite{rabinovich-etal-2017-personalized}). From this starting point, \textcite{vanmassenhove2019getting} proposed to morphologically tag corpora used to train NMT with speakers' gender and eventually compared their baseline model with their debiased systems. %(see Chapter \ref{sub:debiasing} for a brief summary of the study). 
+As often claimed, when translating simple sentences such as ``I am happy'' from less into more inflected languages, for example from English into French (the output may be either ``je suis heureux'' or ``je suis heureuse''), NMT systems lack extralinguistic information to define the speaker's gender and therefore often adopt a male default or rely on gender stereotypes learned during training. This claim was confirmed by \textcite{vanmassenhove2019getting}, who found that their baseline model struggled to render the correct speaker's gender, whereas the debiased systems showed improved performance.
+
+\textcite{hovy2020you} collected reviews containing information about user age and gender in English, German, French, and Dutch from Trustpilot and translated them (from or into English) with Google Translate, DeepL Translator, and Bing Microsoft Translator. They used an age and gender classifier to investigate whether such author traits are preserved in translation. They found that when translating into English, the systems were generally biased towards men, i.e. making authors sound generally more male. When translating from English into the other languages, systems showed bias towards women in French and German. Generally, the age classifier overestimated the age for translations.
+
+Finally, beyond identifying bias, recent work focuses on developing technical debiasing techniques, emphasising interpretability and control in MT systems. Interpretability aims to understand why a model makes a particular gendered translation, shedding light on the underlying biases in its training data or architecture. This allows for more targeted interventions rather than relying solely on post-hoc corrections. For instance, \textcite{attanasio-etal-2023-tale} conducted the first thorough study of gender bias in instruction-fine-tuned models using the WinoMT benchmark (English → German/Spanish). They find that these models default to male-inflected translations, even when feminine pronouns or anti-stereotypical contexts are present. Through interpretability analysis, they reveal that misgendering tends to occur when models ignore pronouns in input utterances. Leveraging this insight, the authors propose a few‑shot debiasing strategy, selecting in-context examples where pronouns were previously overlooked. This method substantially improves gender fairness with as few as four exemplars.
+
+As shown in Table \ref{tab:genderassessment} and by \textcite{nettt2022}, most of the studies in this field have been conducted based on the assumption that gender is binary. Nevertheless, there is a multitude of genders (see Chapter \ref{identities}) which are often neglected in NLP and MT (see also \cite{sun2019mitigating}, \cite{cao-daume-iii-2020-toward} and \cite{dev-etal-2021-harms}). Similarly, very few studies in TS address non-binary genders, this monograph being one of them. An overview of such research is provided in Section \ref{relatedwork}.
+
+The present work was developed prior to the popularisation of Large Language Models (LLMs) in NLP research after the introduction of ChatGPT \citep{wu2023brief}, yet it is important to acknowledge this shift. LLMs introduce new opportunities for prompt-based control over gendered forms but simultaneously raise concerns regarding reproducibility, consistency, and ethical grounding. Current research (e.g. \cite{sant-etal-2024-power}) shows that base LLMs exhibit stronger gender bias than traditional NMT systems. However, prompt engineering can significantly reduce bias, improving gender accuracy up to 12\% on standard benchmarks. Such work highlights prompting as an effective, lightweight strategy for mitigating gender bias without model retraining. Similarly, \textcite{sanchez-etal-2024-gender} show that decoder-only LLMs can be prompted to produce gender-specific translations, offering greater control over gender forms.
+
+
+%------------------------------------
+%prima c'era capitolo su debiasing
+%------------------------------------
+
+%--------------------------------------
+%	SUBSECTION 5
+%-------------------------------------
+\subsection{Sociotechnical implications of gender bias} \label{sub:sociotechnical}
+%Translation is essential to make content available all over the world. Due to globalisation, there is an ever-increasing demand for translations that cannot be met by humans solely. One of the focuses of research in translation technologies is how to speed up the translators workflow while increasing their efficiency as well (\cite[2]{santy2021language}). In particular, MT is one of the most frequently used language technologies. Many online platforms such as social media and e-commerce services, for instance, apply automated translation to make their content available to the widest public as possible (\cite[457]{monti2020gender}).
+
+MT is ubiquitous. Many online platforms such as social media and e-commerce services apply automated translation to make their content available to the widest possible audience \citep[457]{monti2020gender}. Since the introduction of neural networks, MT's quality has dramatically improved, leading to claims of human parity (e.g. \cite{hassan2018achieving}). Although this was shown not to be true (see e.g. \cite{laubli-etal-2018-machine}), NMT outputs can be deceptive because of their fluency \citep{laubli-etal-2018-machine,toral-etal-2018-attaining,laubli2020set}. Hence, users might lack awareness of being exposed to automatically translated texts \citep{martindale2018fluency}. This may be extremely problematic because MT is known to suffer from gender bias.
+
+The analysis of bias is a normative process that requires decisions on ``what kind of system behaviours are harmful, in what ways, to whom and why'' \citep[5454]{blodgett-etal-2020-language}. In the field of MT, research has mainly concentrated on representational harms, such as underrepresentation, stereotyping, and recognition (see \cite{savoldi2021gender} as well as the previous section for an overview). In their survey on gender bias in the broader field of NLP, \textcite{stanczak2021survey} note how gender is explicitly or implicitly defined as binary (see also \cite{sun2019mitigating,cao-daume-iii-2020-toward}). Harms affecting non-binary people are thus generally ignored, with the exception of \textcite{savoldi2021gender} who briefly mention them, and \textcite{dev-etal-2021-harms}. 
+
+One of the main causes of gender bias in MT is that training data are biased \citep{vanmassenhove-etal-2019-lost,vanmassenhove2021machine}. Bias can be qualitative, i.e. in which terms the genders are represented, as well as quantitative, i.e. how often they are represented \citep{savoldi2021gender}. This is mostly a societal issue. There is a general lack of awareness that gender is not binary and not all people identify either as men or women. In addition, trans and non-binary individuals frequently experience discrimination; for instance, their existence is questioned and/or ridiculed. The main consequence is that they are underrepresented or presented in negative and/or stereotypical ways in the media \citep{mclaren2021see}. This leads NMT systems to (i) not recognise non-binary language, and (ii) learn spurious associations for pronouns and terms \citep[1970]{dev-etal-2021-harms}. Moreover, there is not a one-size-fits-all solution to representing non-binary people. As discussed in Section \ref{inclusivelanguage}, there is a multitude of gender-fair strategies in languages such as German and Italian. This complicates both the human and MT process which, with the exception of the present work, has not been investigated yet. 
+
+At a technical level, MT systems lack contextual information, which complicates the translation from languages less marked for gender into morphologically richer languages. Furthermore, there are few gender-fair datasets available and there is no de facto standard for referring to non-binary people in numerous languages, such as German and Italian. This complicates MT debiasing in the extreme. \textcite{savoldi2021gender} call for a heuristic approach to gender bias which recognises that the issue is of a sociotechnical nature. Participatory research as put forward by \textcite{burtscher-2022-genderfairmt} and \textcite{gromann2023participatory} may be a first step towards gender-fair MT beyond the binary. This particular research design allows for a variety of stakeholders, e.g. MT experts, translation professionals, and non-binary people, to critically engage with the topic considering the different interests involved. 
+
+
+Drawing on the definition of allocative and representational harms by \textcite{crawford2017keynote} presented in Section \ref{sub:biasml}, the harms faced by non-binary people in MT are described here. If a non-binary person wants to translate their biography for their personal website, they may need a more considerable effort in post-editing the outputs than men and, partly, women due to mistakes in gendered forms \citep{savoldi2021gender}. In the field of medical and legal translation, incorrectly gendered forms may lead to invalidation or incorrect care, e.g. a patient who was assigned female at birth may not be asked about their pregnancy status when a new medication is prescribed \citep{dev-etal-2021-harms}. The fact that non-binary language is not processed by MT leads to misgendering -- which can cause psychological distress, emotional pain and a feeling of identity invalidation \citep{matsuno2017non,Zimman2019soclang} -- and omissions. Finally, NMT systems learn spurious associations from the training data. Terms that are accepted within a language and culture might be translated to offensive, derogatory terms, such as in the case of the word \textit{kathoey} used to refer to trans people in Thailand and translated as \textit{ladyboy} in English. 
+
+Since users might lack awareness of being exposed to MT because of its fluent output \citep{martindale2018fluency}, stereotypical assumptions and prejudices may be reinforced \citep{levesque2011sex,regner2019committees}. Representational harms are, as discussed here, not unique to MT or machine learning because they pertain to wider societal issues. They can also be observed in human translations, e.g. of subtitles \citep{misiek2020misgendered} and news reports \citep{lardellitranslating}, with reference to non-binary individuals. 
+
+
+%Different definitions of bias are possible (see for example \cite{crawford2017keynote}). This also pertains to gender bias and bias in MT (\cite{savoldi2021gender}). The present work adopts a sociological perspective of defining bias as judgement based on preconceived notions or prejudices rather than an impartial decision (\cite{barocas2017problem}). This applies to models trained on biased data as well. Such bias can lead to different types of harms, namely are allocative and representational harms (\cite{barocas2017problem}) (see Table \ref{tab:harms-mt}). The former refers to withholding opportunities or resources from a specific group, while the latter refers to reinforcing the subordination of groups along the lines of identities, i.e. race, class, gender, etc. In other words, representational harm directly relates to identity and how people are understood socially. For instance, a misrepresentation of non-binary genders in modern language and MT models perpetuates representational harm and the omission of non-binary gender identities (\cite{dev-etal-2021-harms}). Since users might lack awareness of being exposed to MT because of its fluent output (\cite{martindale2018fluency}), stereotypical assumptions and prejudices (e.g. only men are qualified for high-level positions) may be reinforced (\cite{levesque2011sex,regner2019committees}).
+
+%Representational harm is, however, not unique to MT or machine learning, but can also be observed in human translations, e.g. of subtitles (\cite{misiek2020misgendered}) and news reports (\cite{lardelli2022est}), in reference to non-binary individuals. This omission of an entire group from language has a direct representational harm for the social group as well as an allocative harm, e.g. disadvantages in hiring contexts (\cite{horvath2016reducing}). It can also lead to emotional pain and feelings of identity invalidation (\cite{Zimman2019soclang}).
+
+
+
+%\begin{table}[ht]
+    %\centering
+    %\caption[Harms in MT systems]{Harms caused by biased machine translation systems (see \cite{crawford2017keynote}, \cite{prates2019assessing}, \cite{saunders2020neural}, \cite{savoldi2021gender})}
+    %\label{tab:harms-mt}
+    %\begin{tabular}{|m{3.5cm}|m{3.5cm}|m{7cm}|}
+    %
+     %    \textbf{Harm type} & \textbf{Harm sub-type} & \textbf{Explanation} \\
+      %   \textbf{Allocational Harm} & & MT systems can be regarded as resources themselves: quality performance differs across users, e.g. women translating their biographies are more likely to find wrong male references in the outputs and therefore expending more effort to post-edit the target text. \\
+       %  \textbf{Representational Harm} & \textit{Underrepresentation} & Low representation of women, i.e. female entities rendered in the male form, especially high-level professions or institutional roles. \\
+        % & \textit{Stereotyping} & MT systems select female or male forms based on gender stereotypes and/or roles, e.g. when translating from genderless languages into gendered ones, adjectives such as \textit{beautiful} are coupled with a female subject, whereas \textit{strong} with a male one. \\
+         %& \textit{Recognition} & The existence of non-binary individuals is ignored, e.g. gender neutral forms are not recognised and often rendered as male or female forms. \\
+    %\end{tabular}
+%\end{table}
+
+
+
+%These harms can aggregate, and the ubiquitous embedding of MT in Web applications provides us with paradigmatic examples of how the two types of (R) can interplay. For example, if women or non-binary3 scientists are the subjects of a query, automatically translated pages run the risk of referring to them via masculine-inflected job qualifications. Such misrepresentations can lead readers to the experience of feelings of iden- tity invalidation (Zimman et al., 2017). 
+
+
+
+%gender bias come problema: gli studi si concentrano su diversi problemi = differenze tra lingue, riproduzione di stereotipi, ecc. --> concettualizzazione di bias cambia --> diversi tipi di harm in MT
+
+%DEFINIRE BIAS NEL MIO CASO QUINDI --> riferimento anche al paper sul bias statement
+
+%Definire impatto della tecnologia sulle persone non-binary --> traduzione ovunque, appiattimento identita 
+
+%First, the definition of the concept of gender bias is itself problematic. As seen in Chapter \ref{Sexism in language}, sexism in language manifests itself in different forms, such as the lack of linguistic forms to represent women or non-binary people, or the use of stereotypes and/or expressions that imply sexist or cisgenderist views. This emerges also in the literature of gender bias in the field of language technologies. \textcite[5454]{blodgett-etal-2020-language} note that the term is used to describe a vast range of phenomena that can be harmful in different ways and \textcite{savoldi2021gender} underline how this impacts technology itself. Approaches to counteract gender bias must take into account the underlying conceptualisation of the issue, hence the impossibility to find a one-fits-all solution. Such an approach would be only partial due to the complexity of the issue. As already discussed in Chapter \ref{inclusivelanguage}, the present work focuses on the representation of non-binary individuals in discourse. Gender bias is therefore defined as the lack, or the lacking use, of linguistic forms to represent them.
+
+%On the broader social level, there is poor awareness on topics such as gender, identity and sexuality (\cite{van2017biological}). Transgender and non-binary individuals face discrimination on a daily basis (see for example \cite{lester2018trans}). This occurs also linguistically, since non-binary GFL is often met with ostracism (see for example \cite{vergoossen2020four} for critics by its opponents). This is reflected on the technical level since gender bias and approaches to counteract it are still frequently conceptualised in a binary fashion. Research in the field of language technologies largely neglects non-binary individuals (see for example \cite{sun2019mitigating}, \cite{cao-daume-iii-2020-toward}, \cite{savoldi2021gender}). Accordingly, there is a general lack of linguistic data to train and approaches to debias MT and systems cannot correctly process gender-fair forms \footnote{This issue is partially addressed by \textcite{saunders2020neural}, and also by the \textit{Workshop on Non-Binary Language Towards Non-Binary Language Technology (GenderFairMT)} of which the thesis' author is one of the co-organisers.}. Finally, MT systems knowingly amplify discriminatory attitudes due to their functioning and architecture (see \cite{vanmassenhove-etal-2019-lost}, \cite*{vanmassenhove2021machine}, \cite{costa2020gender}, \cite{roberts2020decoding}). For example, \textcite{prates2019assessing} found that Google Translate male outputs for STEM professions exceeded the real word ratio of men in such positions.
+
+%The use of machine translation has thus strong sociotechnical impact on women and, especially, on non-binary and/or sex/gender non-conforming people. In Table \ref{tab:harms-mt} possible harms that these subjects face when using MT are summarised. It emerges how quality of MT systems must be improved and the input of human translators, e.g. in form of PE, is needed in order to improve machine translated texts containing gendered language, especially non-binary GFL. 
+
+%----------------------------------------------------------------
+%	SECTION 6
+%----------------------------------------------------------------
+
+\section{Machine translation PE (MTPE)} \label{sec:mtpe}
+The previous section presented an overview of gender issues in MT. Despite the great advances made in terms of quality due to the use of neural networks, MT systems are not only gender-biased, but they still produce several mistakes, e.g. grammatical, syntactic, lexical, and terminological errors. The type and number of errors may depend on various factors, including the language pair and direction, the content of the source text, and the data used to train the MT engine \citep[106]{o2022deal}. 
+
+To the best of my knowledge, there is little research concerning the correction of gendered (or gender-fair) language in PE. Only \textcite{lardellipostediting} conducted a brief investigation into the choices of non-professional post-editors during an online hackathon. \textcite{savoldi2024harm} conducted a human-centred study quantifying the tangible impact of gender bias in MT. By analysing post-editing tasks across multiple languages and user profiles, they demonstrate that feminine translations require significantly more time, effort, and financial cost to correct than masculine ones. Crucially, their findings reveal that existing automatic bias metrics do not correlate with these human-centered costs, highlighting the need for evaluation methods that capture real-world harms. 
+
+The present work aims to contribute to the field by comparing the translation and PE process of GFL with the aim of investigating, for example, whether MT PE (or simply PE) may be a suitable instrument to produce gender-fair translations and datasets. To this end, a brief overview of PE as an established work practice in the language industry is presented in this section -- for a more comprehensive introduction to the topic, see \textcite{nitzke2021short}).
+
+There are different definitions for PE. One that is frequently adopted was offered by \textcite[197f]{o2011towards}, who describes it as ``the correction of raw machine-translated output by a human translator according to specific guidelines and quality criteria''. PE introduced a new perspective to both TS and the translation profession as translators are to deal with half-finished texts that must be improved \citep[1]{allen2003post}. Its adoption dates back to the infancy of MT, also attracting the attention of translation scholars \citep[319]{vieira2019post} (see also \textcite{allen2003post} who provided a first overview on the topic). However, its use and the interest around it have dramatically increased only in the last few years \citep[319]{vieira2019post}. 
+
+While translators have always integrated technology in their workflow, e.g. word processing (\cite{o2012translation,laubli2019translation}), Computer-Aided Translation (CAT) tools and especially MT have become widely adopted in the last fifteen years (\cite{o2012translation}). The history of MT is crucially linked to PE and therefore relevant to the topic. Initial attempts by linguists, computer scientists, and mathematicians focused on fully automatic high-quality MT (FAHQMT), which \textcite{bar1952present} had already labelled as unrealistic back in 1951. A similar statement was also made in the well-known ALPAC report (\cite{alpac}), where it was argued that MT requires PE (\cite{laubli2019translation}). The focus thus shifted from FAHQMT to human-aided MT (HAMT) (see also Figure \ref{fig:translationdimensions} with the dimensions of human and MT). In such a scenario, MT remains at the centre of the translation process, but professional translators have to improve its output (\cite[9f]{nitzke2021short}).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Translationdimensions.pdf}
+    \caption[Dimensions of human and MT]{Dimensions of human and MT as in \textcite[9]{nitzke2021short}}
+    \label{fig:translationdimensions}
+\end{figure}
+
+Raw MT outputs can nevertheless serve specific purposes, e.g. internal communications in a company. In similar cases, MT can be used for gisting, i.e. grasping the meaning of the original content. In others, e.g. online help or support documentation, lightly or heavily post-edited forms may be preferred (\cite{way2018quality}) -- see Subsection \ref{peguidelines} for the distinction between light and full PE. \textcite{bowker2019fit} advocates for \textit{fit-for-purpose} translations, highlighting how language professionals do not have to produce the highest-quality translation possible but rather adapt to client specifications. A central question concerns the purpose of a particular text. On this basis, raw MT outputs could suffice, whereas sometimes light, full PE or even human translation might be preferred. 
+
+The terms \textit{PE} to describe the activity as well as \textit{post-editor} to describe the person who performs it are debatable (\cite[106]{o2022deal}): translation professionals usually work in CAT tool environments, recycling previously translated text chunks in the translation memory (TM) and also integrating MT in their workflow. In such a scenario, a translator might translate a sentence, edit a fuzzy match for the next and post-edit another. Hence, the lines between translation and PE are increasingly blurring (\cite{vieira2019post}), especially when it comes to interactive and adaptive PE (see next section). 
+
+PE has become a well-established activity because the translation market is increasingly growing as a result of globalisation (see \cite[1]{nitzke2021short}). Advances in the quality of MT outputs due to the application of neural networks (\cite{castilho2017neural}) additionally increased the use of and research on PE (\cite[177]{o2021post}). Since the topic is vast, various aspects are briefly discussed in the next section, namely different approaches to PE, guidelines, and factors that should guide its adoption. Finally, a brief overview of research in the field is also presented.
+
+\subsection{PE approaches}
+%In the previous section, a brief definition of PE (``the correction of raw machine-translated output by a human translator according to specific guidelines and quality criteria'') was provided. 
+PE can be carried out manually, e.g. in Excel sheets in which a column is used for the source and another for the automatically translated text, or simply in a text document. However, MT can be and is increasingly integrated into CAT tools (\cite[45]{nitzke2021short}, \cite[111]{o2022deal}).
+
+There are different ways to do so. The translator can resort to MT when there is no useful match from the TM. For instance, when fuzzy matches show a similarity of less than 75\%, MT might be preferred. The translator could decide whether to use the MT output, edit it, or discard it in favour of a translation. Based on different factors such as the language pair and the MT tools, this 75\% threshold could also be increased. The translator can otherwise customise their CAT tool settings to automatically receive MT suggestions when certain conditions are met (\cite[111f]{o2022deal}). Though different, these approaches can be referred to as \textit{static PE} because the generation and correction of the MT output are performed as separate steps (\cite[322]{vieira2019post}). In terms of human agency, static PE is in the middle between automatic PE and PE with adaptive/interactive MT (see Figure \ref{fig:PEapproaches}). 
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/PEapproaches.pdf}
+    \caption[Spectrum of human agency in the PE process]{Spectrum of human agency in the PE process (\cite[328]{vieira2019post})}
+    \label{fig:PEapproaches}
+\end{figure}
+
+Automatic PE (APE) describes systems that learn from human post-edited data to improve MT outputs (\cite{do2021review}). This approach is MT-centric and headed towards FAHQT because humans only provide the system with data which are used to learn patterns in their edits and automatically correct MT outputs. At the other end of the spectrum are more human-centred approaches. These include adaptive and interactive MT tools that have been developed to make PE less repetitive (\cite[46]{nitzke2021short}).
+
+Adaptive MT refers to a feature whereby the system learns from the post-editor feedback (\cite[113]{o2022deal}). When the post-editor finds an error in the MT outputs, they fix it so that it does not occur when the same sentence is translated again. This feature has been implemented, for example, in the widely adopted CAT tool Trados Studio.\footnote{\url{https://www.trados.com/blog/adaptivemt-sdl-trados-studio-2017-transformational-mt-technology.html}}
+
+Interactive MT describes systems that adapt their outputs on the fly based on the post-editor changes (\cite[113]{o2022deal}), as explained by Daems \& Macken:
+\begin{quote}
+    An interactive system tries to autocomplete the text the user is going to type; it either predicts the text the user is going to type or changes the MT suggestion on the basis of what is typed, whereas an adaptive system is an MT system that learns from corrections on the fly and is continuously trained. (\cite[118]{daems2019pe})
+\end{quote}
+An example of this is the LILT translation and localisation tool. \footnote{\url{https://lilt.com}}
+
+In the present study, as explained in Chapter \ref{methodology}, participants were divided into two groups. The first received a translation assignment, whereas the second had to perform static PE (see Figure \ref{fig:PEapproaches}), i.e. the author machine translated the study texts and delivered them to the participants. 
+
+\subsection{PE guidelines} \label{peguidelines}
+The main reasons behind the adoption of PE are to increase the volume of translated content while saving time and money. The translations need not necessarily be of high quality, and quality criteria that need to be met must be defined in advance (\cite[29]{nitzke2021short}). This led to a distinction between the different extents to which PE might be performed, i.e. light and full PE (\cite[107]{o2022deal}).
+
+The International Organization for Standardization (ISO) defines light PE as the ``process of PE to obtain a merely comprehensible text without any attempt to produce a product comparable to a product obtained by human translation'' while full PE is the ``process of PE to obtain a product comparable to a product obtained by human translation'' (\cite{ISO}). \textcite[107f]{o2022deal} criticises these definitions because they are very vague and the differences between the two modes are unclear. The Translation Automation User Society (TAUS) created specific guidelines and the main difference between full and light PE is that the former involves stylistic changes (\cite{massardo2016mt}). This section focuses on the TAUS guidelines, though there are others such as ISO 18857:2017 (\cite{ISO}). 
+
+Light PE should be preferred when \textit{good enough} quality is required. Translations should be comprehensible and accurate, but style is of marginal importance. Furthermore, grammar and syntax may be incorrect as long as the meaning is comprehensible. The guidelines for light PE by TAUS (\cite{massardo2016mt}) include:
+
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+
+    \item Aim for semantically correct translation.
+    \item Ensure that no information has been accidentally added or omitted.
+    \item Edit any offensive, inappropriate or culturally unacceptable content.
+    \item Use as much of the raw MT output as possible.
+    \item Basic rules regarding spelling apply.
+    \item No need to implement corrections that are stylistic only.
+    \item No need to restructure sentences solely to improve the natural flow of the text.
+\end{itemize}
+
+
+The objective of full PE is to achieve quality that is similar or equal to human translations. In this case, style is an important aspect and syntax, grammar, and punctuation must be correct. The guidelines for full PE by TAUS (\cite{massardo2016mt}) include:
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+
+    \item Aim for grammatically, syntactically and semantically correct translation.
+    \item Ensure that key terminology is correctly translated and that untranslated terms belong to the client's list of ``Do Not Translate'' terms.
+    \item Ensure that no information has been accidentally added or omitted.
+    \item Edit any offensive, inappropriate or culturally unacceptable content.
+    \item Use as much of the raw MT output as possible.
+    \item Apply basic rules regarding spelling, punctuation and hyphenation.
+    \item Ensure that formatting is correct.
+\end{itemize}
+
+\textcite[110f]{o2022deal} highlights that the link between PE levels and levels of quality is problematic because the underlying assumption is that human translators always produce high-quality texts. She maintains that the level of editing required depends rather on the MT output quality, i.e. the lower the quality of the machine-translated text, the higher the number of edits needed to adjust it. O'Brien also highlights that professional translators do not normally want to produce translations of \textit{good enough quality}. This view is supported by Bowker who advocates for a change
+\begin{quote}
+   of the way that translators are educated and indoctrinated into the profession [...] where tool use is typically associated with poor quality work, to a continuum where it is recognized that translations can be commissioned for a diverse range of purposes, and a translator’s job is to choose the strategy best suited to producing a target text that fits the specified purpose. (\cite[454]{bowker2019fit})
+\end{quote}
+
+While PE can be distinguished based on the quality criteria that need to be met, another distinction concerns the language(s) involved. PE can be bilingual, i.e. source and target texts are compared, or monolingual, where the source text is not taken into account and the person performing it may not know the source language at all (\cite[32]{nitzke2021short}) -- in which case there is no assessment of whether the meaning of the source text has been adequately transferred.
+
+Within the context of the study, participants engaged in bilingual PE, which required them to compare the source and target texts. Bilingual PE was preferred because it is a more common practice, and certain linguistic strategies, such as using the pronoun \textit{they} to refer to a single person, may only be recognized in contrastive scenarios. Participants were also provided with the full PE guidelines outlined in this subsection.
+
+\subsection{Factors guiding the adoption of MTPE}
+Several factors must be taken into account when deciding whether to use MT and/or light or full PE. To this end, \textcite{nitzke2019risk} propose the decision tree in Figure \ref{fig:PEModel} with criteria that guide the decision-making process. These include text type, risk considerations, data security, MT quality, turnaround time, life span of translations, and available resources. A brief overview of these factors is provided below.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/PEModel.pdf}
+    \caption[Decision tree guiding the adoption of MTPE]{Decision tree guiding the adoption of MTPE (\cite[246]{nitzke2019problem})}
+    \label{fig:PEModel}
+\end{figure}
+
+First, some text types are more suitable for MT than others. Translations requiring high levels of creativity such as literature, marketing, and slogans should usually be translated by humans, whereas texts that are not very creative, contain redundancies, and have been created using specific rules or controlled languages can be machine-translated. Second, human translation should be preferred for high-risk texts such as warning messages since the risk of mistakes or misunderstandings when using MT could be too high. Another factor underlying the decision whether or not to use MT is data security. If the text for translation contains sensitive information, using a publicly available MT system could be too risky. The quality of the MT outputs is also an important criterion because the lower their quality, the higher the PE effort. \textcite[60]{nitzke2021short} advise pre-editing texts for MT if there are available resources to do so.
+
+Other considerations involve the turnaround time, i.e. how urgent the translation is. For example, products such as software are released simultaneously on different markets, which is why translations for such products or product documentation must be produced very quickly and the adoption of MT is essential to meet tight deadlines. Furthermore, the translation of texts with a very short shelf-life, e.g. internal communications in a global company, may be unfeasible or too expensive. Finally, the number of qualified translators available (or not) also has an impact on the decision whether to use MT. If there is a huge volume of content to be translated, but few language professionals available, MTPE might be a feasible solution to meet the deadlines.
+
+
+\subsection{Research on PE}
+A wealth of literature has concentrated on PE. One of the seminal texts in this field was written by \textcite{krings2001repairing}, who investigated the PE effort in comparison with translation, using rudimentary methods such as a camera to record the process. Krings also contributed to the measurement of PE effort by dividing it into temporal, i.e. the time needed to PE a text, technical, i.e. keyboard and mouse actions, and cognitive effort.
+
+In research on PE effort, different methods are applied. Keylogging software such as Translog (\cite{jakobsen2017translation}) is used to analyse the keyboard activity. However, edit distance measures have also been introduced, such as TER (\cite{snover2006study}). These metrics count the minimum number of operations needed to post-edit a text. Cognitive effort is more complex to measure and different methodologies have been applied ranging from verbalisations such as think-aloud protocols and retrospective interviews (\cite{krings1986kopfen,ericsson1984protocol}) to eye-tracking (\cite{jakobsen2017translation,o2009eye}). 
+
+While research on PE effort has garnered great attention, other aspects of PE have also been investigated. These include:
+\begin{itemize}
+\setlength\itemsep{-0.5em}
+    \item Comparison of PE effort between statistical and neural MT (e.g. \cite{jia2019post}).
+    \item PE of literary texts (e.g. \cite{moorkens2018translators}).
+    \item Development of a competence framework for PE training and education (e.g. \cite{nitzke2019risk}).
+    \item Distinction between editing, PE, and revision as well the number and types of corrections in revision and PE and instances of over-editing (e.g. \cite{koponen2020translation}).
+    \item User attitudes and experience with PE interfaces (e.g. \cite{moorkens-obrien-2013-user}).
+    \item User experiences with interactive and/or adaptive MT (e.g. \cite{daems2019pe}).
+\end{itemize}
+As already explained, the present work is the first to investigate both the translation and PE process of gender-fair translation. PE is still currently required to remove bias from MT outputs despite different debiasing techniques being proposed by computational linguists (\cite{savoldi2021gender}).
+
+
+\section{Relevance for the empirical study}
+The scope of the present section is to summarise key aspects presented in this third chapter and highlight their relevance for the empirical study described in Chapter \ref{methodology}, thereby illustrating how the literature on gender bias in MT shaped the methodology of the present work. 
+
+The chapter outlined the persistence of gender issues in MT systems, which often require PE to eliminate bias from their outputs. Though different debiasing techniques have been proposed (\cite{vanmassenhove2019getting,saunders2020reducing,tomalin2021practical}), gender bias remains an issue in MT and also in Large Language Models (LLMs) that have recently seen an exponential increase in interest both from the general public and researchers (\cite{kotek2023gender}). 
+
+It is important to underline that gender issues in both human and MT arise for various reasons. For instance, gender may need to be explicitly marked in the target text while being ambiguous or neutral in the source text. In such cases, human translators frequently rely on social gender, i.e. stereotypical associations between a word, usually a noun, and a specific gender (\cite{nissen2002aspects}). Similarly, MT systems rely on patterns learned from training data that reflect societal biases (\cite{forcada2017making}). Two aspects are particularly pertinent to the present work.
+
+First, bias in translation technology raises societal concerns due to the widespread use of MT, hence individuals might be unaware they are reading machine-translated content (\cite{martindale2018fluency}). This can exacerbate gender bias, resulting in the invalidation and discrimination of marginalised groups (\cite{dev-etal-2021-harms}). The theoretical framework of this monograph posits that language, and consequently translation, can also be used to counter discrimination and promote societal change.
+
+Second, the nature of gender bias in MT is interdisciplinary. It encompasses linguistics (e.g. how gender is expressed in languages and its societal connotations), computer science and computational linguistics (e.g. how machine learning systems function), and Translation Studies (TS) (e.g. how gender issues arise in cross-linguistic scenarios). However, research in this area often overlooks literature and methodologies from TS.
+
+Gender bias is therefore best conceptualised as a complex sociotechnical issue (\cite{savoldi2021gender}). Essentially, machine learning systems are trained on extensive datasets that reflect societal biases and are optimised to maximise prediction accuracy for the training data, thus exacerbating these biases (\cite{zou2018ai}). Combining theories from feminist and queer TS with a process-oriented investigation was identified as a promising approach to examine a specific form of bias, namely the lack of non-binary representation, in (machine) translation. This approach considers translation as a powerful socially embedded practice (\cite{wolf2007sociology}).
+
+Consequently, methodologies from translation process research were employed in the study of gender-fair language to understand how translation professionals actively engage with it to enhance the linguistic visibility of non-binary individuals. In this context, the differences between translation and PE proved particularly enlightening for understanding the impact of MT outputs on the work of translation professionals. Moreover, the professional insights of translators might inform debiasing techniques that recognise the multifaceted nature of bias in cross-linguistic contexts. Different translations may be produced for the same target text based on a variety of factors, including linguistic structures and divergent societal perspectives.
+
+The following chapter concludes the theoretical framework of the present work. It presents strategies for GFL across different languages, illustrating that various approaches are feasible within the same language. The selection of a particular strategy carries significant implications, underscoring the importance of investigating the GFL translation and PE process from the standpoint of language professionals.
+
+
+
+
+
+
+
+
+
+

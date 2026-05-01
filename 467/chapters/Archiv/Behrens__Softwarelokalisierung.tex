@@ -1,0 +1,941 @@
+% Options for packages loaded elsewhere 
+\documentclass[output=paper]{langscibook}
+ 
+\author{Alexander Behrens\affiliation{Universität Leipzig}}
+\title{Begriffliche Grundlagen der Softwarelokalisierung} 
+\abstract{}
+\begin{document}
+
+\maketitle
+\index{Softwarelokalisierung|(}
+
+%Der Terminus \textit{Softwarelokalisierung }steht synekdochisch für die Gesamtheit der Begriffe \textit{Internationalisierung}, \textit{Lokalisierung} und \textit{Translation}. Diese Begriffe sind fachlich und damit ergonomisch nicht immer klar voneinander abzugrenzen. Softwarelokalisierung ist damit eine Interdisziplin, für deren Beherrschung Kenntnisse formaler wie natürlicher Sprachen nötig sind. 
+
+%\iffalse Wie eng die fachliche Verflechtung dieser drei Begriffe ist, lässt sich gut am Lebenszyklus einzelner Oberflächenstrings eines Programms veranschaulichen. Von der Bereitschaft des Translators, sich dieser Verflechtung zu stellen, wird abhängen, ob er Zugang zur Softwareoberfläche als Text\index{Text} und damit die Möglichkeit bekommt, eine integrierte Übersetzungsleistung zu erbringen.\fi 
+
+%Microsoft verwendet die genannten vier Bezeichnungen ebenfalls, verknüpft mit ihnen aber eigene, hier nicht berücksichtigte Begriffe.
+
+%\paragraph{Keywords:} Globalisierung, Internationalisierung, Lokalisierung, Translation, computergestützte Übersetzung, Translation Scripting
+
+\section{Zum Begriff der Softwarelokalisierung}\index{Softwarelokalisierung}
+
+Softwarelokalisierung war zu Beginn der ersten Globalisierungswelle in den achtziger Jahren eine Tätigkeit, die technisches Verständnis voraussetzte und entsprechend von nur wenigen Übersetzungsdienstleistern erbracht wurde bzw. alternativ von Tandems, die sich aus Übersetzungsdienstleistern und Entwicklern zusammensetzten. Dass Softwarelokalisierung zu einem Massenmarkt werden konnte, liegt weniger an einer gestiegenen IT-Expertise unter Translatoren denn an der Tatsache, dass selbige sich erfolgreich gegen die wachsende formalsprachliche Komponente der Translation gesperrt, und auf diese Weise die Softwareentwicklung genötigt haben, Werkzeuge und Dienstleister (namentlich Lokalisierungsingenieure) hervorzubringen, die die extralinguistische Seite der Softwarelokalisierung übernehmen. Das hat den Begriff der Softwarelokalisierung zunehmend verzerrt. Translatoren haben im bezeichneten Feld Ihre Rolle als Dienstleister mithin aufgegeben; sie sind heute eher Zwischenkonsumenten und erfüllen in diesem Sinne eine Hilfstätigkeit.
+
+Genannte Verzerrung macht eine begriffliche Bestandsaufnahme umso nötiger, je leistungsfähiger und paternalistischer die Werkzeuge werden. Gegenstand vorliegenden Beitrags soll die am Rohprodukt Software erbrachte, IT-Expertise erfordernde menschliche Dienstleistung sein.
+
+\section{Globalisierung (G11N)}\label{G11N}
+\index{Globalisierung|(}
+\index{G11N|see {Globalisierung}}
+
+Der Terminus \textsc{Globalisierung}, abgekürzt auch mit dem Numeronym \textsc{G11N} für \textit{globalization}, bezeichnet im GILT\index{GILT}\index{GILT}-Paradigma alle auf die Erschließung von Auslandsmärkten abzielenden unternehmerischen Aktivitäten.\footnote{Die Abkürzung GILT umfasst vier Begriffe Globalisierung~-- Internationalisierung\index{Internationalisierung}~-- Lokalisierung\index{Lokalisierung}~-- Translation\index{Translation} (siehe \cite{fry_lisa_2003}).} Aufgabenfelder der Globalisierung sind u.~a. Standortentwicklung, Finanzplanung, Entwicklungsplanung, Marktforschung, Vertriebs- und Lieferantenmanagement. Dieser Globalisierungsbegriff hat keinen fachlichen Bezug zum Produkt Software und existiert losgelöst von den übrigen drei Begriffen des GILT\index{GILT}-Paradigmas. Dass er trotzdem Eingang ins Begriffssystem gefunden hat, wird vornehmlich terminographischen Überlegungen geschuldet gewesen sein, denn bis dahin wurden die Ausdrücke \textit{Globalisierung} und \textit{Internationalisierung}\index{Internationalisierung} uneinheitlich verwendet, oft genug synonymisch. Eine normative Gegenüberstellung der zwei war aus damaliger Sicht also durchaus sinnvoll.
+
+\index{Globalisierung|)}
+
+\section{Internationalisierung (I18N)}\label{I18N}\index{Internationalisierung|(}\index{I18N|see {Internationalisierung}}
+
+Der Terminus \textsc{Internationalisierung}, abgekürzt \textsc{I18N} für \textit{in\-ter\-na\-tion\-al\-iza\-tion}, wird in der Literatur bis heute uneinheitlich verwendet und entzieht sich deswegen einer allgemeingültigen Definition (siehe hierzu \cite[45f.]{behrens_lokalisierbarkeit_2016}). Dies mag nicht zuletzt der Tatsache geschuldet sein, dass unterschiedliche Produkte unterschiedlich internationalisiert werden müssen. Bei der Betrachtung materieller wie immaterieller Produkte lassen sich grob zwei Internationalisierungstypen unterscheiden.
+
+% Am unverfänglichsten mag immer noch eine Umschreibung des Internationalisierungsbegriffs mit dem von Microsoft verwendeten, etwas schwammigen Wort \textit{world-readiness} sein.
+
+\subsection{Internationalisierungstypen}
+\index{Internationalisierungstyp|(}
+
+
+
+\subsubsection{Internationalisierungstyp Lokalisierbarkeit}\index{Lokalisierbarkeit}
+\label{Lokalisierbarkeit}
+
+Der am stärksten beanspruchte Internationalisierungsbegriff beinhaltet jenen Entwicklungsschritt, der ein Produkt für die Lokalisierung (zum Begriff siehe Abschnitt~\ref{L10N}) vorbereiten~-- es also lokalisierbar machen~-- soll. Vertreter dieses Internationalisierungsbegriffs sind u.~a. \cite{schmitz_softwarelokalisierung_2000} \iffalse :2f.\fi sowie \cite{fry_lisa_2003}\iffalse :14\fi . \citet[339ff.]{gopferich_textproduktion_2002} bespricht diesen Begriff unter der Bezeichnung \textit{Internationalisierung mit dem Ziel einer anschließenden Lokalisierung\index{Lokalisierung} (Fall~b)}. Diese Form der Internationalisierung wird vorzugsweise durch eine modulare\index{Modularisierung} Gestaltung des Produkts erreicht: Ein marktneutraler Produktkern wird von marktabhängigen Komponenten technologisch getrennt. \iffalse Modularisierung liegt z.~B. bei einem Laptop vor, wenn dessen Gehäuseoberteil (ist Teil des Produktkerns) und dessen Tastatur (ist eine marktabhängige Komponente) voneinander lösbar projektiert werden. \fi Ein auf diese Weise modularisiertes\index{Modularisierung} Produkt kann ohne Interferenzen zwischen den einzelnen Gewerken~-- zwischen jenen, die am Produktkern arbeiten und jenen, die für dessen marktabhängige Komponenten zuständig sind~-- entwickelt, verändert und produziert werden.
+
+\subsubsection{Internationalisierungstyp Universalität}\index{Universalität}
+Ein anderer, in der Literatur etwas vernachlässigter Internationalisierungsbegriff beinhaltet das Überflüssigmachen des Lokalisierungsschritts\index{Lokalisierung}. \citet[339ff.]{gopferich_textproduktion_2002} bespricht diesen Begriff unter der Bezeichnung \textit{Internationalisierung ohne anschließende Lokalisierung\index{Lokalisierung} (Fall~a)}. Diese Form der Internationalisierung wird durch Eliminierung marktabhängiger Merkmale im Produkt erreicht. Universalität\index{Universalität} entsteht etwa durch den Verzicht auf verbale Informationen, wie wir es von Icons\index{Icon} und Piktogrammen\index{Piktogramm} kennen. \iffalse Multibyte-Kodierungen\index{Zeichenkodierung} sind universal, weil sie Zeichen unterschiedlicher Schriftsysteme\index{Schriftsystem}\index{Skript (Schriftsystem)|see {Schriftsystem}} ohne einen Tabellenwechsel~-- also ohne Lokalisierung des Zeichensatzes\index{Codepage}\index{Zeichensatz|see {Codepage}}~-- darstellen können. Auch die Entscheidung für einen alle Schriftsysteme abdeckenden Font\index{Font}\index{Schriftart|see {Font}} mag diesem Typ zugerechnet werden.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.5\textwidth]{futura.png}
+\end{center}
+\caption{Verwendung eines Ersatzfonds in der Zielsprache\index{Zielsprache}}
+\label{futura}
+\end{figure}
+
+\label{Assimilation}\index{Assimilation}
+Universalität\index{Universalität} entsteht, wenngleich unwillkürlich, schließlich auch dort, wo Lokalisierung\index{Lokalisierung} lang genug unterlassen oder mangelhaft umgesetzt worden war. Zielkulturen\index{Kultur} reagieren auf Lokalisierungsdefizite\index{Lokalisierung} durch Assimilation\index{Assimilation} an die Herkunftskultur\index{Kultur}. Abbildung~\ref{globe} zeigt den US-amerikanischen Prototyp des Erdglobus auf einer deutschsprachigen Website. \iffalse 
+
+Besonders deutlich lässt sich dieser Mechanismus an der Konventionsbildung in den achtziger Jahren nachvollziehen, als kulturellen\index{Kultur} Einflüssen auf die \textitt{Akzeptabilität}\index{Akzeptabilität} (Neubert~\& Shreve~1992:73f.) und damit auf die Vermarktbarkeit von Software noch nicht die heutigen Beachtung geschenkt wurde. In dieser Zeit gerieten die Auslandsmärkte im „Rest der Welt“ unter kulturellen\index{Kultur} Hegemonialdruck der US-Kultur, was sich bis heute in verbalen und nonverbalen Interferenzen\index{Interferenz} manifestiert. 
+
+\fi Abbildung~\ref{home} zeigt ein Icon\index{Icon}, das durch Polysemie\index{Polysemie} im Englischen motiviert und doch sprachübergreifend akzeptiert ist. (Die Richtungsangabe „nach Hause“ wird durch den Begriff „Haus“ symbolisiert, im Englischen beides „home“.) 
+
+% Ganz ähnlich übrigens ist das plattform- und kulturübergreifend gebräuchliche Klemmmappen-Icon~\includegraphics[width=0.02\textwidth]{paste} für den Befehl „Einfügen“ eigentlich nur im Englischen herleitbar, wo die Zwischenablage „clipboard“ heißt. 
+
+\begin{figure}[h]
+
+\begin{subfigure}{0.5\textwidth}
+
+\begin{center}
+\includegraphics[width=0.6\textwidth]{globe.png}
+\end{center}
+\caption{Nonverbale Interferenz\index{Interferenz} in einer Form; Quelle: \cite{noauthor_suchergebnisse_nodate}}
+\label{globe}
+
+\end{subfigure}
+\begin{subfigure}{0.5\textwidth}
+
+\begin{center}
+\includegraphics[width=0.1\textwidth]{homebutton.png}
+\end{center}
+\caption{Verbale Interferenz\index{Interferenz} in einer Form, hier: Startseiten-Schaltfläche von Mozilla Firefox V.125.0.2}
+\label{home}
+
+\end{subfigure}
+
+\caption{Assimilation\index{Assimilation} in Formen}
+\label{Interferenzen}
+\end{figure}
+
+Eine solche durch Assimilation\index{Assimilation} erreichte Universalität\index{Universalität} ist der Gegenentwurf zur Lokalisierung\index{Lokalisierung}, weil sich hier die Zielkultur\index{Kultur} an das Produkt \iffalse bzw. über das Produkt an eine \textit{cultura franca}\index{cultura franca}\fi anpasst. \iffalse 
+
+Die Zukunft des Lokalisierungsmarkts wird schließlich von der Frage abhängen, ob der Trend zur Globalisierung\index{Globalisierung} weiter anhält oder langfristig nicht doch einer Re-Regionalisierung\index{Regionalisierung} weicht. Es mag paradox klingen, aber im ersteren Fall wird der Lokalisierungsmarkt\index{Lokalisierung} wohl perspektivisch schrumpfen. In einer globalisierten\index{Globalisierung} Lebenssphäre wird Assimilation\index{Assimilation}, die unwillkürlich und ohne Verursachung von Kosten vonstattengeht, regionale Unterschiede auslöschen und die Dienstleistung Lokalisierung\index{Lokalisierung}, die Planung und Kompetenz voraussetzt und Kosten verursacht, verdrängen. 
+
+Natürlich sind das nur Modelle. Meistens wird man Mischformen der zwei genannten Internationalisierungstypen vorfinden, etwa wenn das Gehäuseoberteil des Laptops und dessen regionale Tastaturen demselben physischen Layout\index{Layout} folgen, dergestalt, dass nicht für jede regionale Tastatur ein anderes Gehäuseoberteil benötigt wird. In diesem Fall wäre der Laptop modular\index{Modularisierung} aufgebaut, dessen Oberteil aber universal\index{Universalität}. Das Beispiel in Abbildung~\ref{futura} zeigt überdies, dass Lokalisierung\index{Lokalisierung} im Einzelfall auch ohne Internationalisierung möglich sein mag.\fi 
+
+\fi
+
+\index{Internationalisierungstyp|)}
+\subsection{Internationalisierung von natürlicher Sprache}\index{natürliche Sprache}\label{InternationalisierungvonnatürlicherSprache}
+
+\label{Kontrollierte Sprache}\index{kontrollierte Sprache}
+\subsubsection{Internationalisierungstyp Lokalisierbarkeit}\index{Internationalisierungstyp}\index{Lokalisierbarkeit}
+Internationalisierung von natürlicher Sprache bedeutet im Lokalisierungskontext zunächst allgemein die Herstellung von Übersetzungsgerechtheit\index{Übersetzungsgerechtheit} durch den Einsatz kontrollierter Sprache\index{kontrollierte Sprache}. Je nach Regelwerk mag Übersetzungsgerechtheit etwa die Absenkung des Präsuppositionsniveaus\index{Präsupposition}, die Vermeidung von Implikationen\index{Implikation}, Realia\index{Realie}, Regionalismen\index{Regionalismus}, Idiolektismen\index{Idiolektismus} und Suprasegmentalia\index{Suprasegmentalia} bedeuten, ferner Konnotationsfreiheit\index{Konnotation}, die Einhaltung lexikalischer\index{Lexik} und syntaktischer\index{Syntax} Verbote und Konsistenz\index{Konsistenz} im Fachlichkeitsgrad\index{Fachlichkeit}.  \iffalse Das Kriterium der Übersetzungsgerechtheit\index{Übersetzungsgerechtheit} gilt besonders für \hyperref[Normalisierung]{normalisierte Stringbestände}.\index{Normalisierung}\footnote{Zum Begriff der Normalisierung siehe Abschnitt~\ref{Normalisierung}.} Nicht internationalisiert ist beispielsweise der Stringbestand in Listing~\ref{ts1}: Der String \code{Include a word if it matches} lässt sich nicht in wohlgeformtes\index{Wohlgeformtheit} Deutsch übersetzen, weil im deutschen Nebensatz das (im vorliegenden Datensatz unbekannte) Satzobjekt vor dem Prädikat erwartet wird.\fi Internationalisierung von natürlicher Sprache\index{natürliche Sprache} ist schließlich auch die Sicherstellung terminologischer\index{Terminologie} Eineindeutigkeit und Konsistenz\index{Konsistenz} \label{eineindeutig}in der Bedienoberfläche und in der Beziehung zwischen der Bedienoberfläche und den Hilfeseiten eines Programms.
+
+Ausführlich werden zum Internationalisierungstyp\index{Internationalisierungstyp} Lokalisierbarkeit\index{Lokalisierbarkeit} gehörende Bearbeitungsschritte in \cite[343ff.]{gopferich_textproduktion_2002} besprochen. Zur Verwendung von kontrollierter Sprache\index{kontrollierte Sprache} in Softwareoberflächen äußern sich \citet[53ff.]{beste_softwarelokalisierung_2006} und \citet{obrien_controlled_2019}.
+
+\subsubsection{Internationalisierungstyp Universalität}\index{Universalität}\index{Internationalisierungstyp}
+
+Das Prinzip der Universalität\index{Universalität} kommt zunächst überall dort zur Anwendung, wo auf eine Lingua franca\index{Lingua franca} ausgewichen wird; es kann aber ebenso auf Nomina propria angewandt werden. Weil der Glaubenssatz „Nomen est omen“ auch für zufällige Assoziationen gilt, sollten Produktnamen möglichst universal\index{Universalität} sein (\textit{culturally sensitive branding}), was u.~a. die Freiheit von lautlicher Ähnlichkeit mit ungewollten Botschaften einschließt. Manche Hersteller unterziehen ihre Produkte deswegen vor der internationalen Vermarktung einer sprachlichen Unbedenklichkeitsprüfung\index{Unbedenklichkeitsprüfung}\index{Sprachunbedenklichkeit|see {Unbedenklichkeitsprüfung}}. 
+
+\subsection{Internationalisierung von Software}\label{AnwendungsfallSoftware}
+
+\subsubsection{Nicht internationalisierte Software}
+
+Bis in die siebziger Jahre hinein wurden Ausgabestrings noch explizit in der Quelltextdatei\index{Quelltextdatei} hinterlegt~-- sie wurden \label{hartkodiert}hartkodiert\index{Hartkodierung}. In nicht internationalisierter Software finden Datenspeicherung und Datenverarbeitung also in einer und derselben Datei statt wie in Listing~\ref{lst:hartkodierung} illustriert:
+
+% The Evolution of Localization: Microsoft lieferte seinen Excel-Vorläufer Multiplan an die Lokalisierer noch im Quelltext aus, in dem dann die Dialogtexte auszutauschen waren.
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Beispiel für Hartkodierung\index{Hartkodierung} in Pseudocode},captionpos=b,label=lst:hartkodierung]
+write("Hallo, Welt!");
+\end{lstlisting}
+
+In diesem Beispiel ist \code{write()} die Ausgabefunktion und deren Argument \code{Hallo, Welt!} der Ausgabestring. Hartkodierung\index{Hartkodierung} war in der Entwicklungsphase gewiss komfortabel, machte die Wartung und das Projektmanagement\index{Projektmanagement} im Zuge der Globalisierung\index{Globalisierung} aber zunehmend unbeherrschbar und teuer, weil nach jeder Modifikation das Programm neu lokalisiert\index{Lokalisierung} werden musste. 
+
+\subsubsection{Internationalisierte Software}
+
+Aus solchen Erfahrungen, die keineswegs nur, aber eben auch die Lokalisierung\index{Lokalisierung} betrafen, begann man, Software modellhaft in Schichten\index{Schichtenmodell} zu organisieren (Internationalisierungstyp\index{Internationalisierungstyp} Lokalisierbarkeit\index{Lokalisierbarkeit}, siehe Abschnitt~\ref{Lokalisierbarkeit}). In den nun folgenden Überlegungen soll von einer dreischichtigen Architektur\index{Schichtenarchitektur|see {Schichtenmodell}} ausgegangen werden mit~\ldots
+
+\begin{enumerate}
+
+ \item einer Präsentationsschicht\index{Präsentationsschicht}, umfassend jene Dateien, die für die Darstellung am Ausgabegerät zuständig sind (Typographie\index{Typographie}- und Layoutinformationen\index{Layout});
+
+ \item einer Geschäftslogik\index{Geschäftslogik}-Schicht, umfassend jene Dateien, die für die logische Verarbeitung zuständig sind (\textsc{Quelltextdateien}\index{Quelltextdatei}) und
+
+ \item einer Datenschicht\index{Datenschicht}\label{Datenschicht}, umfassend die von der Software benötigten persistenten Daten (\textsc{Ressourcen}\index{Resource-Datei}). 
+
+\end{enumerate}
+
+Zu den Ressourcen\index{Resource-Datei} und damit zur Datenschicht\index{Datenschicht} gehören auch die Ausgabestrings, mithin das, woran hauptsächlich Translatoren\index{Translator} arbeiten. Ressourcen können Datenbanken\index{Datenbank} oder Dateien sein. Im letzteren Fall spricht man von \textsc{Resource-Dateien}\index{Lokalisierungsdatei|see {Resource-Datei}}\index{Resource-Datei} oder, wenn es um regionsabhängige Dateien geht, auch von \textit{Lokalisierungsdateien}\index{Resource-Datei}. Da, wie in Abschnitt \ref{Arbeitsumgebungen} noch auszuführen sein wird, in der Softwarelokalisierung unterschiedliche Gewerke und Denktraditionen aufeinandertreffen, darf man sich hier allerdings auf terminologische Abenteuer gefasst machen. Bei Trados\index{CAT-Tool} Studio heißen die Resource-Dateien\index{Resource-Datei} \textit{Projektdateien}, bei memoQ\index{CAT-Tool} \textit{zu übersetzende Dokumente}. (Das Wort „Ressource“ ist bei diesen Werkzeugen\index{CAT-Tool} Dateien und Technologien vorbehalten, die den Translator\index{Übersetzer|see {Translator}}\index{Translator} bei seiner Arbeit unterstützen: TMs\index{Translation Memory}, Termbanken\index{Termbank}, MÜ\index{maschinelle Übersetzung}\index{MÜ|see {maschinelle Übersetzung}}, Autokorrektur-Tools etc.). Auch in der Entwicklung haben die Projekte jeweils eigene Hausterminologien. Bei GNU~gettext\index{GNU gettext Portable Object (Dateiformat)}\index{GNU~gettext}\index{gettext|see {GNU~gettext}} heißen die Resource-Dateien\index{Resource-Datei} \textit{message catalogs}, bei Apple werden sie je nach Format \textit{string catalogs} oder \label{apple}\textit{strings dictionaries} genannt, bei KDE\index{KDE} \textit{dictionary files}, bei Qt\index{Qt} \textit{translation files} oder \textit{translation sources}, bei Mozilla~Fluent\index{Mozilla Fluent} \textit{translation lists}.
+ 
+
+\paragraph{Datenspeicherung (Resource-Datei)}\index{Datenspeicherung}\index{Resource-Datei}
+Die Ausgabestrings verbleiben bei internationalisierter Software also nicht in der Quelltextdatei\index{Quelltextdatei}, sondern werden in Resource-Dateien\index{Resource-Datei} ausgelagert. Dies geschieht meist getrennt nach Kultur\index{Kultur}, im Falle eines Dateisystems\index{Dateisystem} sinnvollerweise eine Kultur\index{Kultur} pro Ordner oder Datei\iffalse (Abbildung~\ref{resourcedateien}\fi, seltener mehrere Kulturen\index{Kultur} in einer Datei\iffalse (Abbildung~\ref{resourcedateien}\fi. Die \hyperref[locale]{locale}-neutrale Identifikation eines Ausgabestrings erfolgt hier über einen Bezeichner, der \label{key}\textsc{Schlüssel}\index{Schlüssel} genannt wird.\footnote{Zum Locale-Begriff siehe Abschnitt \ref{locale}.} Der unter diesem Schlüssel in der Resource-Datei\index{Resource-Datei} gespeicherte String heißt \label{value}\textsc{Wert}\index{Wert}. Entsprechend nennt man den Datensatz einer Resource-Datei\index{Resource-Datei} \textsc{Key-Value-Paar}\index{Key-Value-Paar} (Listings~\ref{lst:keyvaluepaarde} und ~\ref{lst:keyvaluepaaren}) und die Datei \textsc{Key-Value-Datei}\index{Key-Value-Datei}. Als Resource-Dateien\index{Resource-Datei} kommen flache Formate wie Java Properties\index{Java Properties (Dateiformat)}\index{Properties (Dateiformat)|see {Java Properties (Dateiformat)}}, Objective-C Strings\index{Objective-C Strings (Dateiformat)}\index{Strings (Dateiformat)|see {Objective-C Strings (Dateiformat)}} oder gettext Portable Object\index{GNU gettext Portable Object (Dateiformat)}\index{Portable Object (Dateiformat)|see {GNU gettext Portable Object (Dateiformat)}}\index{GNU~gettext}, aber auch hierarchische Formate wie XML\index{XML (Dateiformat)}, JSON\index{JSON (Dateiformat)} oder YAML\index{YAML (Dateiformat)} zum Einsatz, die nach der translatorischen Bearbeitung zum Teil noch in ein Binärformat übersetzt \iffalse (z.~B. PO~\rightarrow MO, RESX~\rightarrow RESOURCES)\fi oder in eine Programmbibliothek \iffalse (\rightarrow DLL)\fi eingebunden werden.
+
+\iffalse
+\begin{figure}[h][ht]
+
+\begin{subfigure}{1\textwidth}
+
+\begin{center}
+\includegraphics[width=1\textwidth]{dateistruktur}
+\end{center}
+\caption{Beispiel für eine Dateistruktur; im Vordergrund eine geöffnete Resource-Datei\index{Resource-Datei} mit Key-Value-Paaren\index{Key-Value-Paar}, hier für die Anwendung OBS~Studio}
+\label{dateistruktur}
+
+\end{subfigure}
+\begin{subfigure}{1\textwidth}
+
+\begin{center}
+\includegraphics[width=1\textwidth]{ordnerstruktur_office_16}
+\end{center}
+\caption{Beispiel für eine Ordnerstruktur; im Vordergrund eine geöffnete Resource-Datei\index{Resource-Datei} mit Key-Value-Paaren\index{Key-Value-Paar}, hier für MS~Office~2016}
+\label{ordnerstruktur_office_16}
+
+\end{subfigure}
+
+\caption{Resource-Dateien in Windows}
+\label{resourcedateien}
+\end{figure}
+\fi
+ 
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Key-Value-Paar in einer deutschen Ressource},captionpos=b,label=lst:keyvaluepaarde]
+string_1 = Hallo, Welt!
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Key-Value-Paar in einer englischen Ressource},captionpos=b,label=lst:keyvaluepaaren]
+string_1 = Hello, world!
+\end{lstlisting}
+\label{helloworld}
+
+In diesen Beispielen ist \code{string\_1} der Schlüssel, das Gleichheitszeichen der Zuweisungsoperator und \code{Hallo, Welt!} resp. \code{Hello, world!} der Wert.
+
+%Teil des modularen Gedankens ist schließlich auch, dass zwischen unterschiedlichen Ressourcen-Typen (Text-, Sound-, Bilddaten) diszipliniert getrennt wird. Zu dieser Trennung gehört etwa der Verzicht auf Textinformationen in anderen Ressourcen als in Text.
+
+\paragraph{Datenaufruf (Quelltextdatei)}\index{Quelltextdatei}
+
+In der Quelltextdatei eines internationalisierten Programms steht anstelle des Ausgabestrings eine Lookup-Funktion, die diesen String in der Resource-Datei\index{Resource-Datei} des aktuell eingestellten \hyperref[locale]{Locale}\index{Locale} zunächst nachschlagen muss. Die Identifikation des Strings erfolgt, wie oben gesagt, über einen Schlüssel\index{Schlüssel}, der der Funktion mitgegeben werden muss (Listing \ref{lst:aufruf}). Der Rückgabewert der Lookup-Funktion ist der aufgelöste Ausgabestring.
+
+\label{hallowelt}
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Aufruf in einer internationalisierten Quelle (Pseudocode)},captionpos=b,label=lst:aufruf]
+write(lookup("string_1"))
+\end{lstlisting}
+
+In diesem Aufruf ist \code{write()} die Ausgabefunktion, deren Argument \code{lookup()} die Lookup-Funktion und wiederum deren Argument \code{string\_1} der Schlüssel, unter dem der Ausgabestring in der Resource-Datei\index{Resource-Datei} gespeichert ist. 
+
+\iffalse Abbildung~\ref{java}} zeigt die Datenspeicherung\index{Datenspeicherung} und "~verarbeitung in nicht internationialisierter resp. internationalisierter Software in einer Java\index{Java}-Quelltextdatei.
+
+\begin{figure}[h][ht]
+
+\begin{subfigure}{1\textwidth}
+
+\begin{center}
+\includegraphics[width=0.85\textwidth]{java_nicht_internationalisiert}
+\end{center}
+\caption{Aufruf in einer Java\index{Java}-Quelle vor deren Internationalisierung}
+\label{java_nicht_internationalisiert}
+
+\end{subfigure}
+\begin{subfigure}{1\textwidth}
+
+\begin{center}
+\includegraphics[width=0.85\textwidth]{java_internationalisiert}
+\end{center}
+\caption{Aufruf in der Java\index{Java}-Quelle Abbildung~\ref{java_nicht_internationalisiert} nach deren Internationalisierung}
+\label{java_internationalisiert}
+
+\end{subfigure}
+\begin{subfigure}{1\textwidth}
+
+\begin{center}
+\includegraphics[width=0.65\textwidth]{properties}
+\end{center}
+\caption{Key-Value-Paar\index{Key-Value-Paar} in der Resource-Datei\index{Resource-Datei} zum Aufruf Abbildung~\ref{java_internationalisiert}}
+\label{properties}
+
+\end{subfigure}
+
+\caption{Anwendungsbeispiel für Internationalisierung in Java\index{Java}}
+\label{java}
+\end{figure}
+
+\paragraph{Kollidierende Konzepte}
+Manche Entwicklungsumgebungen erlauben es, als Schlüssel\index{Schlüssel} den ausgangssprachlichen Wert\index{Wert} zu verwenden (Listings~\ref{lst:aufruf2} und \ref{lst:gettext}):\footnote{Siehe hierzu etwa \cite{noauthor_text_nodate}.}
+
+% Beispiel: https://doc.qt.io/qt-5/linguist-id-based-i18n.html
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Wiederholung des Aufrufs Listing~\ref{lst:aufruf} unter Verwendung des ausgangssprachli\-chen Werts\index{Wert} als Schlüssel\index{Schlüssel}},captionpos=b,label=lst:aufruf2]
+write(lookup("Hallo, Welt!"))
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Auflösung des Strings laut Aufruf Listing~\ref{lst:aufruf2} am Beispiel einer englischen gettext-Ressource},captionpos=b,label=lst:gettext]
+msgid "Hallo, Welt!"
+msgstr "Hello, world!"
+\end{lstlisting}
+
+Eine solche Vorgehensweise verbessert die Lesbarkeit der Quelle und macht das Programm robuster, weil es bei Fehlen einer Übersetzung oder gar einer kompletten Datei auf den Schlüssel\index{Key|see {Schlüssel}}\index{Schlüssel} zurückfallen und damit immer noch eine sinnvolle Ausgabe hervorbringen kann, wenn auch in der falschen Sprache (nämlich der Ausgangssprache\index{Ausgangssprache}). Probleme kann diese Vorgehensweise jedoch beim Datenimport in ein generisches TMS\index{Translation-Memory-System}\index{CAT-Tool} verursachen, das i.~d.~R. dafür ausgelegt sein wird, den ausgangssprachlichen Wert\index{Wert} auszulesen und diesen durch den zielsprachlichen zu ersetzen, im hier diskutierten Szenario nun aber den Schlüssel\index{Schlüssel} auslesen und dessen Übersetzung als Wert in eine separate Adresse des Dokuments schreiben soll. (Bei Qt\index{Qt}, Listings~\ref{ts0}, \ref{ts1} und \ref{ts2}, ist diese Adresse der Textknoten des Elements \code{translation}; bei GNU~gettext\index{GNU gettext Portable Object (Dateiformat)}\index{GNU~gettext}, Beispiel Listing~\ref{lst:gettext}, ist sie das Attribut\index{Attribut} \code{msgstr}.) Einige TMS\index{Translation-Memory-System}\index{CAT-Tool} sind über die letzten Jahre mit Filterassistenten\index{Filtereditor}, teilweise sogar fertigen Filtern\index{Parser|see {Filter}}\index{Filter}, für solche (nicht ganz zutreffend „multisprachig“ oder „mehrsprachig“\index{multisprachige Ressource}\index{mehrsprachige Ressource|see {multisprachige Ressource}} genannten) Dateien\index{Resource-Datei} nachgerüstet worden und kommen mit ihnen mittlerweile gut zurecht. 
+
+Es gibt, wenngleich seltener, auch echte mehrsprachige Ressourcen\index{Resource-Datei} (Listings \ref{lst:xml} und \ref{lst:json}):
+
+%\lstset{language=XML}
+\begin{lstlisting}[language=XML, caption={Mehrsprachige Anlage in XML},captionpos=b, label=lst:xml]
+<document>
+ <entry id="0">
+ <item lang="de">Ausschneiden</item>
+ <item lang="en">Cut</item>
+ </entry>
+ <entry id="1">
+ <item lang="de">Kopieren</item>
+ <item lang="en">Copy</item>
+ </entry> 
+ <entry id="2">
+ <item lang="de">Einfügen</item>
+ <item lang="en">Paste</item>
+ </entry> 
+</document>
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black}, caption={Alternative (transponierte) mehrsprachige\index{multisprachige Ressource} Anlage in JSON\index{JSON (Dateiformat)}},captionpos=b,label=lst:json]
+
+ {
+ "de": {
+ "0": "Ausschneiden",
+ "1": "Kopieren",
+ "2": "Einfügen"
+ },
+ "en": {
+ "0": "Cut",
+ "1": "Copy",
+ "2": "Paste"
+ }
+ }
+\end{lstlisting}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{memoqmehrsprachig}
+\end{center}
+\caption{Mit XPath geschriebene Filterregel in memoQ für die Datenanlage Listing~\ref{lst:xml}}
+\label{memoqmehrsprachig}
+\end{figure}
+
+Abbildung \ref{csvmemoq} zeigt eine graphisch eingegebene Filterregel für multisprachige CSV in memoQ.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{csvmemoq}
+\end{center}
+\caption{Graphisch eingegebene Filterregel für multisprachige CSV in memoQ}
+\label{csvmemoq}
+\end{figure}
+\index{Internationalisierung|)}
+
+\fi
+
+\index{Lokalisierung|(}
+\section{Lokalisierung (L10N)}\label{L10N}\index{L10N|see {Lokalisierung}}
+
+Der Terminus \textsc{Lokalisierung}, abgekürzt auch \textsc{L10N} für \textit{localization}, bezeichnet im GILT\index{GILT}-Paradigma die Anpassung eines Produkts an einen regionalen Markt. Softwarelokalisierung ist entsprechend die Anpassung der Benutzerschnittstelle\index{Benutzerschnittstelle}\index{UI|see {Benutzerschnittstelle}}\index{GUI|see {Benutzerschnittstelle}}\index{graphische Benutzerschnittstelle|see {Benutzerschnittstelle}} (englisch \textsc{user interface}, \textsc{UI}) eines Computerprogramms.
+
+\subsection{Locale}\label{locale}\index{Locale}
+Das Wort \textit{localization} leitet sich von englisch \textit{locale} ab, deutsch auch \textit{Gebietsschema}\index{Locale}\index{Gebietsschema|see {Locale}}. Der Terminus \textsc{Locale} bezeichnet das Einstellungsprofil eines Absatzmarkts. In einem solchen Einstellungsprofil wird marktabhängiger Content zusammengefasst. Für die Identifikation solcher Locales\index{Locale} greifen die einzelnen Entwicklungsumgebungen auf teilweise generische, teilweise proprietäre Nomenklaturen zurück. \iffalse Microsoft führt zwei Nomenklaturen für \textit{Locale-IDs}\index{Locale-ID}, die jeweils eine Sprache-Region-Kombination repräsentieren. Eine von ihnen ist hexadezimal notiert, die andere dezimal. Für Deutsch (Österreich) wären dies etwa die IDs \code{0c07} resp. \code{3079}. Bekannter noch ist die \textit{Language Tag}\index{language tag} genannte binomische Kennung für die Repräsentation von Sprache-Subsprache-Kombinationen in der Form \code{de-AT} (hier: Sprache Deutsch, Subsprache\index{Subsprache} österreichisches Deutsch), die von der IETF\index{Internet Engineering Task Force}\index{IETF|see {Internet Engineering Task Force}} im Jahr 1999 als BCP~47 veröffentlicht worden ist. In diesem Language Tag\index{language tag} ist der in Minuskeln geschriebene Teil (\textit{language designator}\index{language designator}) eine Sprachkennung\index{Sprachkennung} gem. ISO~639-1\index{ISO~639-1} und der in Majuskeln geschriebene Teil (\textit{region designator}\index{region designator}) eine Länderkennung\index{Länderkennung} gem. ISO~3166-1\index{ISO~3166-1}. \iffalse BCP~47 wurde in den Folgejahren um (wieder bindestrichseparierte) \textit{Subtags} erweitert, die im Lokalisierungskontext eine untergeordnete Rolle spielen. \fi Nur wenig später schuf das Unicode Consortium\index{Unicode Consortium} für das CLDR\index{Common Locale Data Repository}\index{CLDR|see {Common Locale Data Repository}} eine Kennung, die dort \textit{Locale Identifier}\index{locale identifier} heißt. Diese Kennung hat ebenfalls eine auf ISO~639-1\index{ISO~639-1} und ISO~3166-1\index{ISO~3166-1} basierende binomische Syntax, verwendet als Separator zwischen dem \textit{language designator} und dem \textit{region designator} aber einen Unterstrich und repräsentiert eine Sprache-Region-Kombination. Der Locale Identifier\index{locale identifier} \code{de\_AT} stünde also für die Sprache Deutsch und die Region Österreich.
+
+%Das Konzept hinter Sprache-Subsprache-Kombinationen ist ein etwas anderes als jenes hinter Sprache-Region-Kombinationen: https://unicode.org/reports/tr35/#Language_Tag_to_Locale_Identifier
+
+\fi
+
+\subsection{Zu lokalisierende Daten}\label{lokalisieren}
+\subsubsection{Manuelle Ersetzungen}
+%\paragraph{Verbale Informationen}
+
+Manuell zu lokalisierende verbale Informationen sind beim Produkt Software vor allem Ausgabestrings und Zugriffstasten\index{Zugriffstaste}. \iffalse 
+
+\footnote{Im Unterschied zu Hotkeys\index{Hotkey}, die global definiert werden können, müssen Access Keys\index{Access Key} auf einen Buchstaben zeigen, der im Namen der auszulösenden Aktion auch enthalten ist. Die Zuweisung erfolgt im String meist in Form eines vorangestellten Ampersands. So könnte der Access Key für den Menüpunkt \textsc{File} auf die Kombination \textsc{Alt~+~f} gelegt werden, in der Ressource ausgeschrieben \code{\&File}. In der deutschen Übersetzung des Strings \textsc{Datei} steht der Buchstabe F nicht zur Verfügung, sodass als Übersetzung etwa \code{\&Datei} geschrieben werden müsste, resultierend im Access Key \textsc{Alt~+d}.}
+
+\fi Diese Eingriffe übernimmt im GILT\index{GILT}-Paradigma der Translator\index{Translator} (mehr hierzu Abschnitt~\ref{T9N}). \iffalse 
+
+\paragraph{Nonverbale Informationen}
+\fi \index{nonverbale Information}Manuell zu lokalisierende nonverbale Informationen können zunächst Schriftauszeichnungen\index{Schriftauszeichnung}\label{Schriftauszeichnungen}\index{Schriftauszeichnung} sein. Das mag selbstverständlich klingen, ist es aber nicht, denn nach dem Prinzip der Trennung von Content und Format (\cite[567]{goldfarb_sgml_1990}) gehören Stile in die Präsentationsschicht\index{Präsentationsschicht}, sind also außerhalb der Reichweite des Translators definiert. Eine solche Trennung ist zweifellos gut gedacht, doch etwas zu kurz, beruht sie doch auf der irrigen Annahme, alle in einer Kultur üblichen typographischen Gestaltungsmittel~-- Laufweite, Kursivdruck, Unterstreichung, Versalierung usw.~-- seien in einer anderen Kultur oder gar in einem anderen Schriftsystem\index{Schriftsystem} in derselben Weise gebräuchlich oder auch nur vorhanden. Aus diesem Grund werden Schriftauszeichnungen\index{Schriftauszeichnung} zuweilen mit in die Ausgabestrings eingebettet und damit für die translatorische Bearbeitung zugänglich gemacht.
+
+Bei unglücklich internationalisierter Software müssen u.~U. auch Symbole\index{Symbol}, Farben\index{Farbe} und Schallereignisse\index{Schallereignis} manuell lokalisiert werden, nämlich immer dann, wenn diese nicht universal\index{Universalität} sind. Diese Aufgabe obliegt im GILT\index{GILT}-Paradigma dem Lokalisierungsingenieur\index{Lokalisierungsingenieur}\iffalse (siehe hierzu Abschnitt~\ref{Lokalisierungsingenieur})\fi; fehlt ein solcher, so erfolgt deren Erledigung kollaborativ, je nach Projekt unter Einbeziehung des Translators\index{Translator}, des Entwicklers und des Auftraggebers. Einen Eindruck über die Bandbreite kulturabhängiger Größen\index{Kultur} vermittelt \citet[17ff.]{heimgartner_interkulturelles_2017}.
+
+Dem Werkzeugcharakter von Software ist geschuldet, dass Benutzerschnittstellen\index{Benutzerschnittstelle}\index{User-Interface|see {Benutzerschnittstelle}} gesetzlich stärker geregelt sind als Druckmedien, besonders etwa dann, wenn Fragen der Arbeits-, Verkehrs-, Patienten- oder Datensicherheit berührt sind. Die Anpassung von Software an unterschiedliche rechtliche und korporative Erfordernisse geschieht i.~d.~R. ebenfalls kollaborativ.
+
+\subsubsection{Automatische Ersetzungen}\label{AutomatischeErsetzungen}
+Es fällt aber auch Content an, der automatisch lokalisiert werden kann. \iffalse Aus dem Betriebssystem oder von einem Drittgerät wie einem Server kommende Daten sind oft typisiert und können deswegen automatisch formatiert werden. Sofern nicht Unicode verwendet wird (etwa in eingebetteten Systemen) kann auch die Wahl der Zeichenkodierung\index{Zeichenkodierung}\index{Kodierung|see {Zeichenkodierung}} je nach Schriftsystem\index{Schriftsystem} automatisch erfolgen. \fi Die hierfür benötigten Daten findet das Programm in einer Bibliothek\index{Bibliothek|see{Software-Bibliothek}}\index{Software-Bibliothek}. Eine solche Bibliothek\index{Software-Bibliothek} mag die Lokalisierung u.~a. der folgenden Größen übernehmen:
+
+\begin{itemize}
+
+ \item wenn eine Single-Byte-Kodierung\index{Zeichenkodierung} verwendet wird: Wahl der Codepage\index{Codepage}\index{Zeichensatztabelle|see {Codepage}}
+ \item Sprachregeln\index{natürliche Sprache}
+
+ \begin{itemize}
+
+ \item Schreibrichtung\index{Schreibrichtung}
+ \item Sortier\index{Sortierung}\index{Alphabetisierung|see {Sortierung}}- und Silbentrennungsregeln\index{Silbentrennung}
+ \item Pluralregeln\index{Plural-Regeln} (mehr hierzu in Abschnitt~\ref{Numerusregeln})\label{plural}
+ \item Wahl der Wörterbücher für Rechtschreibprüfung\index{Rechtschreibprüfung}, Autovervollständigung\index{Autovervollständigung} und Autokorrektur\index{Autokorrektur}
+
+ \end{itemize}
+
+ \item Layout
+
+ \begin{itemize}
+ 
+ \item Tastaturbelegung\index{Tastaturbelegung}
+ \item Bedien-Gesten\index{Geste} (Bildschirmgesten, Raumgesten)\iffalse; siehe hierzu Behrens (2016:~52ff.)\fi 
+ \item bei logographischen Schriftarten\index{logographische Schriftart}: Eingabeschema\index{Eingabeschema}
+ \item im DTP\index{Desktop-Publishing}\index{DTP|see {Desktop-Publishing}}: Papierformate
+
+ \end{itemize}
+
+ \item Formatierungen\index{Formatierung}
+
+ \begin{itemize} 
+ 
+ \item Grund\index{Zahl}- und Ordnungszahlen\iffalse , hier insbesondere Tausender\index{Tausender-Separator}- und Dezimal-Separatoren\index{Dezimal-Separator}\fi 
+ \item Aufzählungszeichen
+ \item Telefonnummern
+ \item Zeitangaben
+ \item Datumsangaben
+ \item Preisangaben
+ \item Adressangaben
+
+ \end{itemize}
+
+ \item Kalenderfunktionen
+
+ \begin{itemize}
+
+ \item Default-Zeitzone
+ \item Sommerzeitregelung
+ \item Festlegung des ersten Tags der Woche
+ \item Wochenend- und Feiertagsregeln
+
+ \end{itemize}
+
+ \item Maßsysteme
+ 
+ \begin{itemize}
+ 
+ \item Währungseinheiten
+ \item Temperatureinheiten
+ \item Geschwindigkeitseinheiten
+ \item Gewichtseinheiten
+ \item Längeneinheiten
+ \item Raumeinheiten
+
+ \end{itemize}
+ 
+\end{itemize}
+
+\subsubsection{Hinzufügung und Unterdrückung von Content}
+\label{rechtsvorgaben}Der Vollständigkeit halber ist darauf hinzuweisen, dass Lokalisierung nicht zwangsläufig die Ersetzung von Content sein muss; je nach regionalen Vorschriften müssen besonders in stark regulierten Anwendungen wie Luftfahrt und Medizintechnik auch Pflichtinformationen bzw. "~features hinzutreten oder verbotener bzw. unüblicher Content unterdrückt bzw. aus dem Default genommen werden.
+
+\subsection{Organisation der Oberflächenstrings}\label{Datenorganisation}
+\subsubsection{Normalisierung}\label{Normalisierung}
+
+Komplexe Strings (Sätze oder Syntagmen\index{Syntagma}) werden mitunter in einfachere (Wörter oder Wortverbindungen) zerlegt, wodurch zunächst Redundanzen\index{Redundanz} entstehen, die in einem anschließenden, \textit{Konsolidierung} genannten Schritt durch Zusammenlegen von Datensätzen eliminiert werden können. \iffalse (Listings~\ref{ts0} und \ref{ts1}).
+
+\begin{lstlisting}[language=XML, caption={Stringbestand in einer Qt-Ressource vor der Normalisierung},captionpos=b, label=ts0]
+ <message>
+ <location filename="stringsource.cpp" line="14"/>
+ <source>Include a word if it matches any criterion.</source>
+ <translation type="unfinished"></translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="15"/>
+ <source>Include a word if it matches all criteria.</source>
+ <translation type="unfinished"></translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="16"/>
+ <source>Mark all</source>
+ <translation type="unfinished"></translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="17"/>
+ <source>Mark all errors</source>
+ <translation type="unfinished">Alle Fehler markieren</translation>
+ </message>
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=XML, caption={Stringbestand gem.~Listing~\ref{ts0} nach der Normalisierung},captionpos=b, label=ts1]
+ <message>
+ <location filename="stringsource.cpp" line="14"/>
+ <source>Include a word if it matches</source>
+ <translation type="unfinished"></translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="15"/>
+ <source>Mark</source>
+ <translation type="finished">Markieren</translation>
+ </message> 
+ <message>
+ <location filename="stringsource.cpp" line="16"/>
+ <source>all</source>
+ <translation type="finished">alles</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="17"/>
+ <source>any</source>
+ <translation type="unfinished"></translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="18"/>
+ <source>criterion</source>
+ <translation type="finished">Kriterium</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="19"/>
+ <source>criteria</source>
+ <translation type="unfinished">Kriterien</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="20"/>
+ <source>errors</source>
+ <translation type="finished">Fehler</translation>
+ </message>
+\end{lstlisting}
+
+\fi Die auf diese Weise entstehenden String-Fragmente können zur Laufzeit\index{Laufzeit} dann nach Bedarf zu Syntagmen\index{Syntagma} bzw. Sätzen verkettet (\textit{konkateniert}\index{Konkatenation}\index{Verkettung|see {Konkatenation}}) werden. Das hilft Speicherplatz sparen, die lexikalische Konsistenz\index{Konsistenz} verbessern, kombinatorische Explosion\index{kombinatorische Explosion} vermeiden und das Volumen für den anschließenden Arbeitsschritt (Translation\index{Translation}) senken. Eine mögliche Anwendung für die Normalisierung\index{Normalisierung} von Stringbeständen wäre eine \label{navi}Navigations-App, die eine praktisch unbegrenzte und vor allem nicht vorhersagbare Auswahl möglicher Anweisungssequenzen generieren kann, wohingegen die Anzahl möglicher Anweisungsbausteine~-- „links~/ rechts halten~/ abbiegen“ etc.~-- durchaus begrenzt ist. \iffalse Eine weitere Anwendung liegt dort vor, wo die einzelnen Textfragmente aus verteilten Quellen kommen oder in unterschiedlichen Steuerelementen\index{Steuerelement} untergebracht sind (Abbildung~\ref{thebat}).
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{thebat}
+\end{center}
+\caption{Aneinanderreihung zweier Steuerelemente zu einem Syntagma (Screenshot The~Bat! V.11.1)}
+\label{thebat}
+\end{figure}
+
+Das Problem dabei: Bei der Bewertung von Strings als redundant\index{Redundanz} wird deren Begriffsinhalt\index{Begriffsinhalt} und syntaktischer\index{Syntax} Kontext\index{Kontext} nicht immer ausreichend berücksichtigt. Ein aus linguistischer Sicht zu sorgloser Umgang mit den Daten mag in der häufigsten Ausgangssprache\index{Ausgangssprache} Englisch wegen ihres analytischen\index{analytischer Sprachbau} Baus und ihrer resultierenden Neigung zu Kasussynkretismen\index{Synkretismus} und Nullableitungen\index{Nullableitung} oft ungestraft bleiben, birgt in stärker synthetisch\index{synthetischer Sprachbau} aufgebauten Sprachen aber Risiken. Ein Problem ist dabei nicht einmal so sehr die Gefahr semantischer\index{Semantik} Verwechslungen durch Polysemie\index{Polysemie} in der Ausgangssprache\index{Ausgangssprache}~-- Entwicklungssumgebungen haben dafür schon ihre Disambiguierungsmechanismen.\footnote{Ein solcher Mechanismus wird in \cite{noauthor_writing_nodate}\index{Qt} vorgestellt.} Sehr wohl ein Problem ist aber die Sicherstellung syntaktischer\index{Syntax} Wohlgeformtheit\index{Wohlgeformtheit}. Kehren wir zur Erläuterung noch einmal zu Listing~\ref{ts1} zurück: Dieses zeigt u.~a. den String \code{Mark} und den String \code{all}. Gegeben sei nun ein Kontextmenü „Errors“ und ein Kontextmenü „Document“. Für beide Menüs können die genannten Strings zu \code{Mark all} konkateniert werden. Für die Zielsprache\index{Zielsprache} Deutsch nun würde für das Kontextmenü „Fehler“ die folgende Ausgabe erwartet:
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Erwartetes Verkettungsergebnis\index{Konkatenation} im Deutschen für das Kontextmenü „Fehler“},captionpos=b,label=lst:verkettungdocumentde]
+Alle markieren
+\end{lstlisting}
+
+Für das Kontextmenü „Dokument“ würde wie folgt erwartet:
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Erwartetes Verkettungsergebnis\index{Konkatenation} im Deutschen für das Kontextmenü „Dokument“},captionpos=b,label=lst:documentde]
+Alles markieren
+\end{lstlisting}
+
+Tatsächlich aber ergibt sich aus der aktuellen Anlage für beide Kontextmenüs wie folgt:
+
+\begin{lstlisting}[language=Python, stringstyle=\color{black},caption={Tatsächliches Verkettungsergebnis\index{Konkatenation} in beiden Menüs},captionpos=b,label=lst:markierenalles]
+Markieren alles
+\end{lstlisting}
+
+Gegeben sei ferner, dass aus dem Datenbestand Listing~\ref{ts1} der String \code{Include a word if it matches} mit den Strings \code{all} und \code{criteria} verkettet werden soll:
+
+\begin{lstlisting}[language=Python, captionpos=b, stringstyle=\color{black},caption={Verkettungsergebnis\index{Konkatenation} im Englischen}]
+Include a word if it matches all criteria
+\end{lstlisting} 
+
+Für die Übersetzungsrichtung Englisch-Deutsch ergibt sich im String \code{Include a word if it matches} das Problem der Übersetzbarkeit\index{Übersetzbarkeit}, weil im Deutschen das (hier unbekannte) Satzobjekt vor dem Satzprädikat stehen muss. \fi
+
+\subsubsection{Interpolation von Teilstrings}\label{Platzhalter}\index{Interpolation}
+Damit der Lokalisierer einen besseren Zugriff auf die Wortfolge\index{Wortfolge} in der Zielsprache\index{Zielsprache} bekommt, verzichten Entwickler zuweilen auf die Konkatenation\index{Konkatenation} von Strings und greifen zu einer alternativen Technik~-- der Interpolation\index{Interpolation} von Strings. Bei dieser Technik werden Strings in andere Strings „eingeschoben“. Die Stelle, an der dies passieren soll, wird im aufnehmenden String durch eine als Platzhalter\index{Platzhalter} dienende Variable\index{Variable} reserviert. Für die Notation solcher Platzhalter\index{Platzhalter} existieren in unterschiedlichen Sprachen\index{formale Sprache} unterschiedliche Konventionen. Oft ist es eine Indexzahl (z.~B. \code{\{0\}}) oder ein Variablenname (z.~B. \code{\%\{username\}}) oder ein \textit{format specifier}\index{format specifier}, also ein sprechender Buchstabe für den jeweiligen Datentyp\index{Datentyp} (z.~B. \code{\%s} für \textit{String}). Gemeinsam ist solchen Platzhalterausdrücken\index{Platzhalter}, dass sie durch Delimiter~-- geschweifte Klammern, Prozentzeichen, @-Zeichen, Ausrufezeichen oder eine Kombination daraus~-- ausgezeichnet sind. \iffalse Zur Illustration sei der Datenbestand von Listing~\ref{ts1} noch einmal aufgegriffen und leicht modifiziert:
+
+\begin{lstlisting}[language=XML, caption={Alternative Lösung für den Stringbestand Listing~\ref{ts1}, hier durch Interpolation\index{Interpolation} von Teilstrings},captionpos=b, label=ts2]
+ <message>
+ <location filename="stringsource.cpp" line="15"/>
+ <source>Include a word if it matches %{1} %{2}.</source>
+ <translation type="unfinished">Ein Wort aufnehmen, wenn es %{1} %{2} entspricht.</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="16"/>
+ <source>Mark %{1}</source>
+ <translation type="unfinished">%{1} markieren</translation>
+ </message> 
+ <message>
+ <location filename="stringsource.cpp" line="17"/>
+ <source>all</source>
+ <translation type="finished">alles</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="23"/>
+ <source>any</source>
+ <translation type="unfinished"></translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="24"/>
+ <source>criterion</source>
+ <translation type="finished">Kriterium</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="25"/>
+ <source>criteria</source>
+ <translation type="unfinished">Kriterien</translation>
+ </message>
+ <message>
+ <location filename="stringsource.cpp" line="20"/>
+ <source>errors</source>
+ <translation type="finished">Fehler</translation>
+ </message> 
+\end{lstlisting}
+
+Gegeben sein nun, dass im Platzhalter\index{Platzhalter} \code{\%\{1\}} der Wert\index{Wert} \code{all} gespeichert ist und im Platzhalter \code{\%\{2\}} der Wert \code{criteria}. Nach der Anlage von Listing~\ref{ts2} ergibt sich für den String \code{Mark~\%\{1\}} in deutschsprachigen Kontextmenüs „Fehler“ zunächst wie folgt:
+
+\begin{table}[h!]
+\begin{tabular}{lll}
+
+\hline 
+
+Rohstring & aufgelöster String (SOLL) & aufgelöster String (IST) \\
+
+\hline 
+
+\code{\%\{1\} markieren} & Alle markieren & alles markieren \\
+
+\hline
+
+\end{tabular}
+\caption{Quellstring und Ausgabeergebnis in der deutschen Übersetzung, Kontextmenü „Fehler“}
+\end{table}
+
+Für das Kontextmenü „Dokument“ ergibt sich wie folgt:
+
+\begin{table}[h!]
+\begin{tabular}{lll}
+
+\hline 
+
+Rohstring & aufgelöster String (SOLL) & aufgelöster String (IST) \\
+
+\hline 
+
+\code{\%\{1\} markieren} & Alles markieren & alles markieren \\
+
+\hline
+
+\end{tabular}
+\caption{Quellstring und Ausgabeergebnis in der deutschen Übersetzung, Kontextmenü „Dokument“}
+\end{table}
+
+Für den String \code{Include a word if it matches \%\{1\} \%\{2\}.} ergibt sich nach der Anlage in Listing~\ref{ts2} in der deutschen Übersetzung wie folgt:
+
+\FloatBarrier
+
+\begin{table}[!h]
+\begin{tabularx}{\textwidth}{p{31mm}p{37mm}p{37mm}}
+
+\hline 
+
+Rohstring & aufgelöster String (SOLL) & aufgelöster String (IST) \\
+
+\hline 
+
+\code{Ein Wort aufnehmen, wenn es \%\{1\} \%\{2\} entspricht.} & Ein Wort aufnehmen, wenn es allen Kriterien entspricht. & Ein Wort aufnehmen, wenn es alles Kriterien entspricht. \\
+
+\hline
+
+\end{tabularx}
+\caption{Quellstring und Ausgabeergebnis in der deutschen Übersetzung}
+\end{table}
+
+\FloatBarrier
+
+Wie die vorstehenden Beispiele zeigen, kann durch Interpolation\index{Interpolation} von Teilstrings eine korrekte Wortfolge sichergestellt werden, nicht jedoch die Herstellung von Kasus\index{Kasuskongruenz}-, Numerus\index{Numeruskongruenz}- und Genuskongruenz\index{Genuskongruenz}.\fi
+
+\subsubsection{Translation Scripting}\label{scripting}\index{Translation Scripting}
+
+Mit der Interpolation von Teilstrings bekommt der Translator Zugriff auf die Wortfolge, nicht jedoch auf die Genus-, Kasus- und Numeruskongruenz im Satz. Nach der Jahrtausendwende entstanden deswegen Überlegungen, wie man die Datenschicht\index{Datenschicht} befähigen kann, selbst Teile der logischen\index{Geschäftslogik} Verarbeitung zu übernehmen, namentlich dort, wo logische Beziehungen sprachspezifisch sind. Ein Beispiel ist \cite{illich_programmable_2003}, dort noch unter der Bezeichnung \textit{programmable UI translations}. Im Jahr 2008 schließlich lag für das KDE\index{KDE}~Framework~5 eine erste praxistaugliche, auf JavaScript basierende Architektur zum Skripten\index{Translation Scripting} von Übersetzungen vor.\footnote{Private Kommunikation mit Chusslove Illich ab dem 09.12.2013.} Ausführlich wird dieses Konzept in \cite[137ff.]{behrens_lokalisierbarkeit_2016} vorgestellt, dort unter der auf das KDE\index{KDE}~Framework~5 zurückgehenden Bezeichnung \textsc{Translation Scripting}, die auch hier verwendet werden soll. Beispiele für jüngere Scripting\index{Translation Scripting}-Lösungen sind Mozilla Fluent\index{Mozilla Fluent}\index{Fluent|see {Mozilla Fluent}} \iffalse (Listing~\ref{lst:fluentscript} und Abbildung~\ref{fluent_debug_gesamt})\fi und ICU MessageFormat\index{ICU MessageFormat}\index{MessageFormat|see {ICU MessageFormat}}.\iffalse
+
+begin{lstlisting}[language=Python, stringstyle=\color{black}, caption={Gescriptete Lösung für den Stringbestand Listing~\ref{ts2}, Kontextmenü „Errors“, hier in der FTL-Syntax von Mozilla},captionpos=b,label=lst:fluentscript]
+{
+ "number": "all",
+ "context": "errors"
+}
+
+line_15 = Ein Wort aufnehmen, wenn es { $number ->
+ [any] einem Kriterium
+ *[all] allen Kriterien
+ } entspricht.
+ 
+line_16 = { $context ->
+ [document] Alles
+ *[errors] Alle
+} markieren
+\end{lstlisting}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.5\textwidth]{fluent_debug_gesamt}
+\end{center}
+\caption{Wohlgeformte Ausgaben in einer Debug-Umgebung von Mozilla, oben für das Kontextmenü „Fehler“ (siehe~Skripting-Lösung Listing~\ref{lst:fluentscript}), unten für das Kontextmenü „Dokument“}
+\label{fluent_debug_gesamt}
+\end{figure}
+\fi
+
+\subsubsection{Numerusregeln}\label{Numerusregeln}
+
+Häufig sind in Platzhaltern\index{Platzhalter} Zahlen\index{Zahl} gespeichert\iffalse (Abbildung~\ref{n_nachrichten})\fi. Wo eine erst zur Laufzeit\index{Laufzeit} entstehende Zahl\index{Zahl} andere Konstitutenten im Satz regiert\index{Rektion}, ergeben sich Übersetzbarkeits-Probleme\index{Übersetzbarkeit}, da unterschiedliche Sprachen unterschiedlichen Rektionsregeln folgen. Im Gegensatz zur Technologie des Translation-Scripting\index{Translation Scripting}, die sich in der Breitenanwendung bis heute nicht so recht durchsetzen konnte, sind Mechanismen für die Abbildung des Rektionsverhaltens\index{Rektion} von Zahlen\index{Zahl}, meist unter Schlagworten wie \textit{pluralization}, \textit{plural rules} oder \textit{plural handling}\index{Pluralisierung|see {Plural-Regeln}}\index{Plural-Regeln}\index{Plural-Handling|see {Plural-Regeln}} diskutiert, in den gängigen Bibliotheken\index{Software-Bibliothek} schon seit längerem Standard. 
+
+%Wenn für ein automatisiertes \textit{Plural-Handling}\index{Plural-Regeln} der Weg über eine Bibliothek\index{Software-Bibliothek} genommen wird, so geschieht dies, weil unterschiedliche Sprachen unterschiedlich viele Numeri\index{Numerus} und unterschiedliche Rektionsmuster\index{Rektion} aufweisen, die mit einer einfachen bedingten Anweisung im Quelltext\index{Quelle|see {Quelltextdatei}}\index{Quelltextdatei} nicht zu regeln sind. 
+
+\iffalse \begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{n_nachrichten}
+\end{center}
+\caption{Dynamische Ausgabe mit Zahl ohne \textit{Plural Handling}}
+\label{n_nachrichten}
+\end{figure}	
+
+Systematisch kategorisiert findet man die in den jeweiligen Sprachen anzutreffenden Rektionsmuster\index{Rektion} im CLDR\index{Common Locale Data Repository} (siehe \cite{unicode-konsortium_language_nodate}). Hauptwerk des CLDR\index{Common Locale Data Repository} sind im LDML\index{Locale Data Markup Language}\index{LDML|see {Locale Data Markup Language}}-Format geschriebene Dateien mit \hyperref[locale]{Locale}\index{Locale}-Informationen, darunter eben auch solchen zum Rektionsverhalten\index{Rektion} von Zahlen\index{Zahl}. Für die Adressierung einzelner Rektionsmuster\index{Rektion} verwendet CLDR\index{Common Locale Data Repository}, wie in Listing~\ref{lst:ldml} gut zu erkennen ist, mnemonische Tags\index{Plural-Tag} (Attribut \code{count}). 
+
+\begin{lstlisting}[language=XML, stringstyle=\color{black}, caption={Numerusregeln\index{Numerusregel|see {Plural-Regeln}}\index{Plural-Regeln} in LDML\index{Locale Data Markup Language}-Notation für Russisch (Russian with an admixture of British English)},captionpos=b,label=lst:ldml]
+<pluralRules locales="ru uk">
+	<pluralRule count="one">v = 0 and i % 10 = 1 and i % 100 != 11 @integer 1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, ...</pluralRule>
+	<pluralRule count="few">v = 0 and i % 10 = 2..4 and i % 100 != 12..14 @integer 2~4, 22~24, 32~34, 42~44, 52~54, 62, 102, 1002, ...</pluralRule>
+	<pluralRule count="many">v = 0 and i % 10 = 0 or v = 0 and i % 10 = 5..9 or v = 0 and i % 100 = 11..14 @integer 0, 5~19, 100, 1000, 10000, 100000, 1000000, ...</pluralRule>
+	<pluralRule count="other"> @decimal 0.0~1.5, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, ...</pluralRule>
+</pluralRules>
+\end{lstlisting}
+
+Das Beispiel in Listing~\ref{lst:ldml} ist wie folgt zu lesen:
+
+\begin{itemize}
+
+ \item Der Tag \textit{one} steht für Zahlen, die auf der Ziffer~1 enden, nicht jedoch für die Zahl~11.
+ 
+ \item Der Tag \textit{few} steht für Zahlen, die auf 2, 3 oder 4 enden, nicht jedoch für 12, 13 und 14.
+ 
+ \item Der Tag \textit{many} steht für Zahlen, die auf 5, 6, 7, 8 oder 9 enden sowie für die Zahlen 11, 12, 13 und 14.
+
+ \item Der Tag \textit{other} steht für Werte mit Dezimalstellen (gleiches Rektionsverhalten wie \code{many}).
+
+\end{itemize}
+
+Abbildung~\ref{po-ru} wiederholt den String von Abbildung~\ref{n_nachrichten} mit \textit{Plural-Handling}\index{Plural-Regeln} in einer PO-Datei (\textit{portable object})\index{GNU gettext Portable Object (Dateiformat)} von GNU~gettext\index{GNU~gettext}. Wie man sieht, werden in PO die unterschiedlichen Rektionsszenarien\index{Rektion} in einem Array gespeichert.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{po-ru}
+\end{center}
+\caption{\textit{Plural Handling} für Russisch in einer gettext\index{GNU~gettext}-Ressource}
+\label{po-ru}
+\end{figure}	
+\index{Lokalisierung|)}
+
+\fi
+
+\section{Translation (T9N)}\label{T9N}
+
+\index{Translation|(}
+\index{T9N|see {Translation}}
+
+Der Terminus \textsc{Translation}, abgekürzt auch \textsc{T9N} für \textit{translation}, bezeichnet im GILT\index{GILT}-Paradigma den sprachmittlerischen Teil des Arbeitsschritts Lokalisierung\index{Lokalisierung}. 
+
+\subsection{Arbeitsumgebungen}\label{Arbeitsumgebungen}
+
+\index{Arbeitsumgebung|(}
+\index{Translation-Memory-System|(}
+\index{TMS|see {Translation-Memory-System}}
+\index{computergestützte Übersetzung|see {CAT-Tool}}
+\index{CAT-Tool|(}
+
+\subsubsection{TMS (Translation-Memory-Systeme)} Die der Textverarbeitungs\index{Textverarbeitung}-Tradition verpflichteten TMS verarbeiten ein Dokument i.~d.~R. bei jeder Iteration \textit{in toto}. Namensgebende Funktion eines TMS ist dessen Fähigkeit, sich Strings zu „merken“. Damit das TMS dies kann, muss es wertbasiert\index{Wert} arbeiten. (Zum Begriff des Werts siehe die Ausführungen in Abschnitt~\ref{value}.)
+
+\subsubsection{Non-TMS} Die aus der Welt des Software-Engineerings hervorgegangenen proprietären Ressourcen-Editoren\index{Ressourcen-Editor} setzen tendenziell auf eine inkrementelle Pflege des Datenbestands. Sie unterscheiden Oberflächenstrings nicht (wie TMS dies tun) nach bekannten und unbekannten, sondern nach erledigten und unerledigten. Hierfür müssen sie ein entsprechendes Veränderungsmanagement\index{Veränderungsmanagement} mitbringen. Ein solches Veränderungsmanagement wird sich praktischerweise nicht an Werten, sondern an Metadaten orientieren, etwa Schlüsseln oder Attributen. Da solche Non-TMS den Fokus eher aufs Vergessen denn aufs Merken legen, mag man in ihnen einen Gegenentwurf zum TMS sehen.\iffalse \footnote{In Qt\index{Qt}~TS (Beispiel Listing~\ref{ts2}) etwa werden Änderungen über ein Attribut\index{Attribut} ausgewiesen, an dem der Editor\index{Ressourcen-Editor} erkennt, ob ein String zum Übersetzen vorzulegen ist (Attribut\index{Attribut} \code{type}, Wert \code{finished} resp. \code{unfinished}). Eine nicht mehr ganz zeitgemäße, aber immer noch praktizierte Vorgehensweise besteht darin, dass neue Strings zunächst in eine Template-Datei\index{Template-Datei} geschrieben oder mit einem einfachen „Diff-Tool“ dorthin extrahiert werden, die dann übersetzt (im translatorischen Sinn) und anschließend in die Produktiv-Ressource\index{Resource-Datei} gemergt wird.}\fi
+
+Jedes der beiden Konzepte hat seine Berechtigung. Vorteil des Übersetzungsspeichers\index{Übersetzungsspeicher|see {Translation Memory}}\index{Translation Memory} ist, dass er projektübergreifend eingesetzt werden kann (eine Anforderung, auf die Softwareentwickler nicht unbedingt von selbst kommen) und überall dort, wo im Vorfeld der translatorischen Bearbeitung kein Veränderungsmanagement\index{Veränderungsmanagement} stattgefunden hat. Inkrementell arbeitende proprietäre Umgebungen bewähren sich dagegen besser im Umfeld einer kontinuierlichen Entwicklung\index{kontinuierliche Entwicklung} (eine Anforderung, an die zur Entstehung klassischer TMS noch nicht zu denken war). Unter Umständen bietet sich an, das eine zu tun, ohne das andere zu lassen, also inkrementell und mit TM\index{Translation Memory}\index{TM|see {Translation Memory}} zu arbeiten. Diese Vorgehensweise ist etwa möglich im Lokalisierungs-Tool Rigi (Abbildung~\ref{rigi_memoq}). Rigi selbst arbeitet ID-basiert, es gehört damit zur Klasse der Non-TMS. Aber es bietet auch Plugins für TMS wie Trados und memoQ. Rigi erlaubt damit eine Koexistenz beider Konzepte.
+
+Dass die genannten zwei Konzepte in der Datenorganisation unterschiedliche Wege gehen, soll nicht über bestehende Gemeinsamkeiten in der Datenverarbeitung hinwegtäuschen. Immer wird im Translationsschritt eine ausgangssprachliche\index{Ausgangssprache} Resource-Datei\index{Resource-Datei} sprachmittlerisch bearbeitet. Dies geschieht praktischerweise in einem vorgeparsten\index{Filter} Dokument, ganz gleich, ob mit oder ohne TM\index{Translation Memory} gearbeitet wird.
+
+\index{Arbeitsumgebung|)}
+\index{Translation-Memory-System|)}
+\index{CAT-Tool|)}
+
+\subsection{Parsen der Datei}\index{Filter}
+\subsubsection{Dateistruktur\index{Dateistruktur} definieren}
+\label{filter}
+
+Wie in Abschnitt~\ref{Arbeitsumgebungen} festgestellt, arbeitet ein TMS rein wertbasiert, also so, wie der mit ihm arbeitende Translator es auch tut. Schlüssel und andere Strukturdaten sind für die Datenorganisation in einem TMS überflüssig; für das menschliche Auge sind sie Rauschen.\footnote{Der für Matches >~100~\% verwendete ID-basierte Kontext in memoQ stellt eine über das Konzept von TMS hinausgehende Beziehung dar und ändert nichts an der Wertbasiertheit von TMS.} Entwickelte TMS\index{Translation-Memory-System}\index{CAT-Tool} haben Werkzeuge, mit denen sich Parser\index{Filter}~-- im vorliegenden Kontext wird meist von \textsc{Filtern} gesprochen~-- individuell herstellen und konfigurieren lassen. Der Filter\index{Filter} sorgt dafür, dass ausschließlich Translatables ausgewertet werden und im Übersetzungseditor\index{CAT-Tool} erscheinen, also Strukturdaten\index{Strukturdaten} ausgeblendet werden und bei der Berechnung der Match-Raten unberücksichtigt bleiben.
+
+%Für die Dateinamen haben die Entwicklungsumgebungen ihre eigenen Konventionen. In der Regel bestehen sie aus einer~/ enthalten eine Locale-Kennung. So kann das Programm bei Auswahl der Dialogsprache deren Kennung direkt an den Namen der aufzurufenden Resource-Datei bzw. des aufzurufenden Lokalisierungsordners durchreichen. 
+
+\iffalse \begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{memoq1}
+\end{center}
+\caption{Der in Listing~\ref{ts2} gezeigte Textausschnitt im Editor von memoQ; vorne ein Ausschnitt vom Filterassistenten\index{Filtereditor} mit der Definition der Dateistruktur in XPath\index{XPath}}
+\label{memoq1}
+\end{figure}\fi 
+
+Die schier unbegrenzt anmutende Vielfalt möglicher Resource-Formate mag auf den ersten Blick einschüchtern; tatsächlich aber ist das Spektrum der in solchen Dateien verwendeten Sprachen\index{formale Sprache} gar nicht so groß, und entsprechend gering die Anzahl der für die Formulierung von Filterregeln\index{Filter} infrage kommenden Methoden:
+
+\begin{enumerate}\label{Kompetenzen}
+
+ \item Feldtrennzeichen-strukturierte Dateien\index{feldtrennzeichen-strukturierte Datei} (CSV\index{CSV|see {feldtrennzeichen-strukturierte Datei}}\index{comma-separated values|see {feldtrennzeichen-strukturierte Datei}}, TSV\index{tab-separated values|see {feldtrennzeichen-strukturierte Datei}} etc.) werden je nach Tool graphisch \iffalse (Abbildung~\ref{csvmemoq})\fi oder mit regulären Ausdrücken\index{reguläre Ausdrücke}\index{Regex|see {reguläre Ausdrücke}} \iffalse (Abbildung~\ref{csvcatalyst})\fi definiert. \iffalse Grundangaben für multisprachige\index{multisprachige Ressource} Dateien sind a)~die Spalte mit dem Ausgangstext, b)~die Spalte mit dem Zieltext und c)~die Frage, ob die erste Zeile eine Spaltenüberschrift (also im Editor auszublenden) ist\fi 
+ \item Flache Key-Value-Dateien\index{Key-Value-Datei} (Properties\index{Java Properties (Dateiformat)}, Strings\index{Objective-C Strings (Dateiformat)} etc.) und Quelltextdateien\index{Quelltextdatei} (PHP\index{PHP (Dateiformat)}, JS\index{JS (Dateiformat)} etc.) werden sinnvollerweise mit regulären Ausdrücken\index{reguläre Ausdrücke} definiert.
+ \item XML\index{XML (Dateiformat)}-Dateien werden sinnvollerweise mit XPath\index{XPath} definiert.
+ \item JSON\index{JSON (Dateiformat)}-Dateien werden sinnvollerweise mit JSONPath\index{JSONPath} definiert.
+
+\end{enumerate}
+
+Es existieren auch Formate, die sich in den graphischen Dialogen von Filterassistenten\index{Filterassistent|see {Filtereditor}}\index{Filtereditor} nicht gut beschreiben lassen. Zu diesen Formaten gehören Plain-Text-Formate\index{Plain-Text-Format} wie PO\index{PO (Dateiformat)|see {GNU gettext Portable Object (Dateiformat)}}\index{GNU gettext Portable Object (Dateiformat)}\index{GNU~gettext} \iffalse (ist multisprachig\index{multisprachige Ressource} mehrzeilig)\fi oder RTF\index{RTF (Dateiformat)}\iffalse (ist durch seine Einfachheit maschinenunfreundlich)\fi, vor allem aber Binärformate wie DLL\index{DLL (Dateiformat)}\index{dynamic link library|see {DLL (Dateiformat)}} oder EXE\index{EXE (Dateiformat)}\index{Executable|see {EXE (Dateiformat)}}. Bei ihnen wird man auf werkseitig ausgelieferte Filter\index{Filter} zurückgreifen oder auf die Möglichkeit, Filter\index{Filter} als Plugin einzubinden.
+
+\iffalse \begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{csvcatalyst}
+\end{center}
+\caption{Regex-basierte Filterregel für CSV in Alchemy~Catalyst}
+\label{csvcatalyst}
+\end{figure}\fi
+
+\subsubsection{Eingebettete Strukturdaten definieren}\label{eingebettet}\index{Strukturdaten}
+In den Ausgabestring eingebettete Non-Translatables wie Platzhalter\index{Platzhalter} (s.~o.~Abschnitt~\ref{Platzhalter}) oder Auszeichnungs\index{Auszeichnung}-Tags können in entwickelten CAT-Tools\index{Translation-Memory-System}\index{CAT-Tool} maskiert\index{Maskierung (von Strukturdaten)} werden. Hierfür wird an den Filter\index{Filter} für die Dateistruktur \iffalse (Abbildung~\ref{memoq1})\fi ein weiterer für eingebettete Elemente angehängt\iffalse ( (\textsc{kaskadierender Filter}\index{kaskadierender Filter}, Abbildung~\ref{memoq3})\fi. Eine solche Maskierung\index{Maskierung} erhöht den Lesekomfort bei der Bearbeitung im CAT-Tool\index{Translation-Memory-System}\index{CAT-Tool} und mindert das Risiko der Verletzung von Strukturdaten\index{Strukturdaten}, die gerade bei XML\index{XML (Dateiformat)} recht ausladend sein können, ist aber natürlich nur sinnvoll, wenn solche Strukturdaten\index{Strukturdaten} tatsächlich nicht bearbeitet werden müssen.\footnote{URLs werden selten zu übersetzen sein, wohl aber dort, wo eine zielsprachliche Version einer Webseite mit eigener URL existiert. Zur Bearbeitungsbedürftigkeit von Schriftauszeichnungen\index{Schriftauszeichnung} siehe Abschnitt~\ref{Schriftauszeichnungen}.}
+
+\iffalse \begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{memoq3}
+\end{center}
+\caption{Wiederholung des in Abbildung~\ref{memoq1} gezeigten Ausschnitts nach der Maskierung\index{Maskierung} von Platzhaltern\index{Platzhalter}; vorne ein Screenshot vom Filterassistenten\index{Filtereditor} mit der Definition der Platzhalter\index{Platzhalter} mit Regex\index{reguläre Ausdrücke}}
+\label{memoq3}
+\end{figure}\fi
+
+\subsection{Graphische Visualisierung des Contents}
+
+Die persistente Datenrepräsentation in den Resource-Dateien\index{Resource-Datei} von Programmen liegt i.~d.~R. dekontextualisiert\index{Dekontextualisierung} (weil ohne syntaktischen\index{Syntax} und graphischen Kontext\index{Kontext}) vor. Dies macht Softwarelokalisierung inhaltlich wie sprachlich anfällig und ergonomisch aufwändig. Mit Technologien der \textit{visuellen Lokalisierung}\index{visuelle Lokalisierung} kann versucht werden, Strings während des Übersetzens in ihrer graphischen Umgebung zu rendern und so zu rekontextualisieren\index{Rekontextualisierung} (Abbildung~\ref{rigi_memoq}).
+
+%\FloatBarrier
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=1\textwidth]{figures/Behrens__Abb-1_rigi-memoq.png}
+\end{center}
+\caption{Oberflächenstrings im Editor von memoQ; vorne: graphische Preview in Rigi\index{Rigi} Viewer (Ausschnitt)}
+\label{rigi_memoq}
+\end{figure}
+%\FloatBarrier
+
+\iffalse \subsection{Zur Übersetzbarkeit von UI-Texten}\label{Übersetzbarkeit}\index{Übersetzbarkeit}
+
+Dass der Übersetzbarkeit von UI\index{Benutzerschnittstelle}-Strings schnell Grenzen gesetzt sind, wurde sicher schon aus den \hyperref[Datenorganisation]{Ausführungen Abschnitt~\ref{Datenorganisation}} deutlich. Auffällig ist, dass in verfügbaren Darstellungen zu GILT\index{GILT} auf eine Definition des Translations-Begriffs oft genug verzichtet wird. \cite[13]{fry_lisa_2003} definieren ihn nur implizit, \cite{schmitz_softwarelokalisierung_2000} oder \cite{reineke_einfuhrung_2005} tun nicht einmal dies. Fündig wird man beim Lokalisierungsanbieter Lionbridge Technologies. Dort wird der Terminus \textsc{Übersetzung} wie folgt definiert:
+
+\begin{displayquote}
+Vorgang, bei dem die Ausgangsversion von Software, Dokumentationen, Websites oder digitalen Inhalten in eine zielsprachige\index{Zielsprache} Version gebracht wird, indem die Wörter (sic!) von einer Sprache in die andere übertragen werden. (\cite{noauthor_ubersetzung_nodate})
+\end{displayquote}
+
+Ein solcher Translationsbegriff, der dem Translator\index{Translator} eine Auseinandersetzung mit dem Text\index{Text} nicht zubilligt, ist alles andere als die Entgleisung eines Einzelnen, sondern ergibt sich notwendig aus der Trennung der Konzepte Lokalisierung\index{Lokalisierung} und Translation. Dass Resource-Dateien\index{Resource-Datei} in manchen Entwicklungsumgebungen \hyperref[apple]{\textit{dictionaries}} genannt werden, lässt das Ausmaß der Verirrung schon erahnen. Für die eigentlich triviale Erkenntnis, dass Übersetzbarkeit\index{Übersetzbarkeit} erst dann gegeben ist, wenn die Wortgrenze überwunden werden kann (siehe \cite[10]{reis_grundlegung_1984} oder \cite[138f]{prunc_einfuhrung_2002}), ist im GILT\index{GILT}-Paradigma kaum noch Platz. Doch was ist bei Softwareoberflächen der Text\index{Text}?
+
+s.~hierzu auch Remkhe et al.~2017
+
+\paragraph{Begriff der Benutzerschnittstelle}\index{Benutzerschnittstelle}
+\label{BegriffderBenutzerschnittstelle}
+
+Eine Benutzerschnittstelle\index{Benutzerschnittstelle} (englisch \textsc{user interface}, \textsc{UI}) ist eine Einrichtung, über die der Mensch mit der Maschine interagiert. Eine solche Einrichtung kann Eingabegeräte, Ausgabegeräte oder Kombinationen aus beidem umfassen. Benutzerschnittstellen können mit dem Menschen visuell, akustisch, taktil und~/ oder neuronal interagieren. 
+
+%\subsubsection{Befehlszeilenschnittstelle (CLI)}\label{CLI}
+
+\label{CLI} Eine Befehlszeilenschnittstelle (\textsc{command-line interface}, \textsc{CLI}) kommuniziert ausschließlich über Grapheme (Buchstaben, Zahlen und mathematische Operatoren) und arbeitet zeilenweise von oben nach unten, also eindimensional. 
+
+Sie benötigen einen Interpreter, der gemachte Eingaben direkt auf dem Prozessor ausgeführt.
+
+In einer CLI teilen sich Mensch und Interpreter das Kommunikationsmedium, i.~d.~R. eine auf dem Englischen basierende Befehlszeilensprache. Befehlszeilen-Schnittstellen bzw. deren Konsolenanwendungen können deswegen nicht lokalisiert werden. Es war ebendiese Befehlszeilenbindung, die zur Haupthürde für die Verbreitung des Computers als PC wurde. Wollte der Computer in Heim- und Industrieanwendungen Fuß fassen, so musste er mit einer Schnittstelle aufwarten, die eine \textsc{fachexterne Kommunikation} (Göpferich~1995:~27) ermöglichte, also von Nichtinformatikern bedient werden konnte.
+
+% Backslash und Leerzeichen kodieren
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{cli}
+\end{center}
+\caption{Navigation zum Ordner \textbackslash Windows\textbackslash \: in einer CLI, hier: Eingabeaufforderung von MS~Windows~11}
+\label{cli}
+\end{figure}
+ 
+%\subsubsection{Graphische Benutzerschnittstelle (GUI)}
+
+\label{GUI}Die Anfang der siebziger Jahre von der Xerox Corporation vorgestellte graphische Benutzerschnittstelle (\textsc{graphical user interface}, \textsc{GUI}) ist zweidimensional. Sie verfügt über bildhafte (der analogen Welt nachempfundene) Steuerelemente (englisch \textsc{controls} oder \textsc{widgets}), die auf der Oberfläche nicht nur vertikal, sondern auch horizontal verteilt werden können. Zu diesen Steuerelementen gehören u.~a. Fenster, Menüs, Auswahllisten, Schaltflächen, Kontrollkästchen, Radiobuttons, Eingabe- und Textfelder und Drag-und-Drop-Controls. Mit ihnen übersetzen graphische Schnittstellen die Realität des Computers, aber auch textuelle Kohärenzbeziehungen in Metaphern des Büro- oder Werksalltags. Die Computermaus, als Zeigegerät schon seit den sechziger Jahren bekannt, aber in befehlszeilenbasierten Schnittstellen praktisch nutzlos, fand in graphischen Schnittstellen nun endlich eine sinnvolle Verwendung. Wichtiger aber war noch, dass die graphische Benutzerschnittstelle mit dem Menschen über andere Sprachen (namentlich natürliche Sprachen, Bildsprachen, später auch Gesten) kommunizieren konnte als mit der Maschine. Damit bot sich erstmals die Möglichkeit, Programme zu lokalisieren. Graphische Benutzerschnittstellen stellen wohl die mächtigste aller visuellen Schnittstellen dar, doch sind sie wegen ihrer hohen Ansprüche an die Hard- und Software nur begrenzt einsetzbar. Sie benötigen vollgraphische Displays und leistungsfähige Prozessoren und Hauptspeicher~-- Voraussetzungen, die in PCs i.~d.~R. zusammenkommen, nicht immer jedoch in eingebetteten Systemen, einem ungleich größeren Markt.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{gui}
+\end{center}
+\caption{Navigation zum Ordner \textbackslash Windows\textbackslash \: in einer GUI, hier: Windows Explorer}
+\label{gui}
+\end{figure}
+
+%\subsubsection{Zeichenorientierte Benutzerschnittstelle (TUI)}
+
+\label{TUI}Wo Ressourcenschonung Vorrang hat und dennoch eine fachexterne Kommunikation stattfinden soll, wird mitunter auf zeichenorientierte Benutzerschnittstellen (\textsc{text user interfaces}, \textsc{TUI}) ausgewichen. Wo eingebettete Systeme nur Konfiguration und Wartung kommunizieren müssen, werden auch Befehlszeilenbasierte Schnittstellen eingesetzt. TUI sind Schnittstellen, die nach dem Vorbild von GUI zweidimensional aufgebaut sind, aber ausschließlich Grapheme benutzen. Auch diese Schnittstellen, die sich nur in der graphischen Mächtigkeit von GUI unterscheiden, nicht jedoch in ihrer Funktionsweise, können lokalisiert werden. Das nachstehende Bild zeigt einen Scrennshot des Dateiverwaltungsprogramms Norton Commander; rechts unten sieht man den Mauscursor.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{tui}
+\end{center}
+\caption{Screenshot einer TUI, hier: Norton Commander; Bildquelle: https://winworldpc.com/product/norton-commander/5x}
+\label{tui}
+\end{figure}
+
+%\subsubsection{sprachgesteuerte Benutzerschnittstelle (VUI)}
+
+Auch die stimmliche Benutzerschnittstelle (\textsc{voice user interfaces}, \textsc{VUI}) greifen auf Textressourcen zurück.
+
+\subsubsection{Textstatus von Softwareoberflächen}\index{Text}
+Naturgemäß werden sich in älteren Textbegriffen\index{Text} Anforderungen finden, denen Softwareoberflächen nicht gerecht werden. Mit der von \cite[15f.]{glinz_textanalyse_1973} vorgeschlagenen Charakterisierung von Texten\index{Text} als \textit{Einweg-Kommunikation} wird Softwareoberflächen die Texteigenschaft\index{Text} abgesprochen, denn Softwareoberflächen sind dialogisch; will man an dem von \cite[56]{gopferich_textsorten_1995} (weiterführende Quellen ebenda) referierten Textkriterium\index{Text} der \textit{Abgeschlossenheit} festhalten, so sind Softwareoberflächen ebenfalls keine Texte\index{Text}, denn Softwareoberflächen sind dynamisch und speisen sich oft aus einer nicht vorhersagbaren Anzahl veränderlicher Datenquellen. Es existieren aber auch Textbegriffe\index{Text} wie jene von \cite[10]{reis_grundlegung_1984}, \cite[61]{gopferich_text_1998}, \cite[16, 25]{schmitt_was_1997} und \cite[101]{beste_softwarelokalisierung_2006}, die mit derlei harten Ausschlüssen zurückhaltender sind, was zum Anlass genommen werden soll, über einen möglichen Textstatus\index{Text} von Softwareoberflächen nachzudenken.
+
+Argumente ließen sich für beide Sichtweisen finden. Man muss nur die Softwareoberflächen von Industriemaschinen mit jenen von Computerspielen oder Lagerhaltungs-Programmen vergleichen, um zu verstehen, dass man es mit jeweils abgrenzbaren \textit{Sprach- und Textgestaltungsmustern} (Reiß~\& Vermeer 1984:~149) zu tun hat, also mit unterschiedlichen Textsorten\index{Textsorte}. Gleichzeitig gibt es aber auch Textgestaltungsmuster und Textfunktionen\index{Textfunktion}, die allen Softwareoberflächen gemein ist, und durch Softwareoberflächen sie sich gegen andere Texte, besonders gedruckte, abgrenzen.
+
+ 
+
+Als Außenhülle von Programmen sind Softwareoberflächen zunächst Teil von Betriebsmitteln. Softwareoberflächen sind damit Werkzeuge. Als solche weisen sie eine hohe Erwartungskonformität auf und mit ihr gemeinsame \textit{Sprach- und Textgestaltungsmuster} (\cite[149]{reis_grundlegung_1984}), was sie zu Textsorten\index{Textsorte}-Kandidaten macht. Layout\index{Layout} (graphisches Bedienkonzept\index{Bedienkonzept}), Bildsprache (Symbolsprache der Icons\index{Icon}) und Lexik\index{Lexik} (Nomenklatur der Menü- und Button-Bezeichnungen) sind in Softwareoberflächen stark konventionalisiert. Auch in der Syntax\index{Syntax} zeigen sich wiedererkennbare Muster. So zeichnen Softwareoberflächen sich aus durch~\ldots 
+
+\begin{enumerate}
+
+ \item einen hohen Anteil indikativischer Imperativ-Ersatz-Konstruktionen mit abstrahierten semantischen Rollen; Beispiele: „Abbrechen“, „Nicht vom nächsten Absatz trennen“,
+ \item einen hohen Anteil an Konstruktionen mit unpersönlichem Subjekt; Beispiel: „Es ist nicht ausreichend Speicher vorhanden“,
+ \item einen hohen Anteil an Passiv-Konstruktionen; Beispiel: „Dienst konnte nicht gestartet werden“,
+ \item eine hohe Toleranz gegenüber Kofferkonstruktionen und Implikationen\index{Implikation}; Beispiel: „Torrent löschen bestätigen“.
+
+\end{enumerate}
+
+Es fällt freilich auf, dass in Softwareoberflächen eine lineare Textprogression\index{Textprogression} mit den für sie charakteristischen verbalen Kohäsionsmitteln\index{Kohäsion} fehlt. Dies ist der Werkzeugeigenschaft von Softwareoberflächen geschuldet, die einer linearen Rezeption der Oberfläche entgegensteht und den Bezügen ihre eigene Prägung gibt. Verbale Kohäsionsmittel\index{Kohäsion} sind überall dort entbehrlich, wo das Medium dem Anwender folgt und nicht, wie in Druckmedien, umgekehrt, wo die Bezüge vom Anwender also selbst hergestellt werden. Mit Blick auf das in Abbildung~\ref{libreoffice} gezeigte Beispiel darf etwa vorausgesetzt werden, dass der Anwender die Schaltfläche „Einfügen“ betätigt, weil er zuvor etwas ins Clipboard genommen hat, also das Patiens\index{Patiens} der Handlung\index{Handlung} (das Einzufügende, im Deutschen das gedachte Akkusativobjekt) kennt. (Expliziert wird das Patiens\index{Patiens} dann doch noch, aber nicht verbal, sondern durch das Icon~\includegraphics[height=0.025\textwidth]{paste}, also eine bildliche Metapher. Eingefügt wird, was im Clipboard ist.) 
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.8\textwidth]{libreoffice}
+\end{center}
+\caption{„Einfügen“-Schaltflächen in LibreOffice~Writer V.7.5.6.2}
+\label{libreoffice}
+\end{figure}
+
+Die fehlenden verbalen Kohäsionsmittel werden in Softwareoberflächen übrigens teilweise graphisch substituiert. Im Beispiel Abbildung~\ref{libreoffice} ist es die Präpositionalbeziehung („Einfügen als~\ldots“) der drei Einfüge-Methoden („Stripped Hypertext Markup Language~\ldots“) zum übergeordneten Befehl, die mit Layout-Mitteln und namentlich der eingerückten Ausgabe unmittelbar unter dem Icon~\includegraphics[height=0.025\textwidth]{paste} hergestellt wird.
+
+Schließlich weisen Softwareoberflächen auch Besonderheiten auf, die weniger wesenhafter denn genetischer Natur sind:
+
+\begin{enumerate}
+
+ \item Die Textentstehung erfolgt i.~d.~R. asynchron und aus komplexen Quellen. Dies steht der Vorhersehbarkeit und \textit{Überschaubarkeit}\index{Überschaubarkeit} (\cite[9]{reis_grundlegung_1984}) des Textes\index{Text} im Wege, begrenzt übrigens auch dessen Verantwortbarkeit~-- ein Umstand, der nicht erst die translatorische Leistung, sondern bereits das UX-Writing\index{UX-Writing} trifft. So wird man Texte\index{Text} aus verteilten Quellen\index{verteilte Quellen} kaum nach einheitlichen Regeln internationalisieren können.
+
+ \item Der Text\index{Text} ist dynamisch und flüchtig. Er existiert nicht \textit{per se}, sondern entsteht durch seine Benutzung, also nach Abschluss der sprachmittlerischen Bearbeitung. Die persistente Datenrepräsentation in der Ressource\index{Resource-Datei} liegt meist dekontextualisiert\index{Dekontextualisierung} (ohne syntaktischen\index{Syntax} und graphischen Kontext\index{Kontext}) und \label{fragmentierung} fragmentiert\index{Fragmentierung} (normalisiert\index{Normalisierung}) vor. 
+ 
+ \item Nutzeraktionen sind Teil des Textes\index{Text}. Mit Blick auf die Zuweisung der von der Kommunikationswissenschaft tradierten Rollen Sender\index{Sender} und Empfänger\index{Empfänger} erfüllen Softwareoberflächen Merkmale der mündlichen Kommunikation insofern, als die Träger dieser Rollen ständig wechseln. Die Textfunktion\index{Textfunktion} gilt damit bidirektional~-- Mensch und Text\index{Text} interpretieren einander. Zur Texttypologie\index{Texttypologie}\index{Texttyp} s.~einführend Reiß~(1983) und Göpferich~(1995). 
+ 
+ \item Die Hardware\index{Hardware} gehört zum Kontext\index{Kontext}. Beispiele: Art, Anordnung und Verfügbarkeit von Steuerelementen\index{Steuerelement} hängen vom Eingabetyp\index{Eingabetyp} des Geräts (wird ein Touchscreen\index{Touchscreen} benutzt Dann können keine Shortcuts\index{Shortcut} genutzt werden ?) und von dessen Handhabung (wird das Gerät im Hoch- oder Querformat gehalten?) ab; die Hardware\index{Hardware} erzeugt dabei mitunter lexikalische Abhängigkeiten\index{Lexik} („klicken“ oder „tippen“?; muss ein Wort abgekürzt werden?).
+ 
+ \item Die Plattform\index{Plattform} gehört zum Kontext\index{Kontext}. Beispiel: Terminologie\index{Terminologie} in plattformübergreifenden Anwendungen (MS~Windows~\(\rightarrow \) „speichern“; Apple~\(\rightarrow\) „sichern“).
+
+\end{enumerate}
+
+Damit wurde sicher deutlich, wie stark formale\index{formale Sprache} und natürliche Sprache\index{natürliche Sprache} in Softwareoberflächen zusammenfließen. Ein Zugang zum \textit{Textganzen} (\cite[138f.]{prunc_einfuhrung_2002}) wird deswegen nur möglich sein, wenn Softwareoberflächen in ihrer Gesamtheit gesehen, also als Betriebsmittel und als Texte verstanden werden. 
+
+\subsubsection{Translationskompetenz}\index{Translationskompetenz}
+Mit dem Vorgenannten stellt sich die Zuständigkeitsfrage. Translatoren\index{Translator} fühlen sich für die formalsprachlichen\index{formale Sprache} Anteile der Lokalisierung\index{Lokalisierung} oft ebenso unzuständig wie Entwickler für die natürlichsprachlichen\index{natürliche Sprache} (siehe~Behrens~2016:~157ff) . \label{Lokalisierungsingenieur}\index{Lokalisierungsingenieur}Als Mittler zwischen den beiden Parteien werden in größeren Projekten deswegen Lokalisierungsingenieure\index{Lokalisierungsingenieur} eingesetzt, deren Bestimmung es ist, medienseitige Aufgaben der Sprachmittlung zu erledigen. Zu diesen können je nach Projekt etwa die folgenden Aufgaben gehören:
+
+\begin{itemize}
+
+ \item Lösen von Kodierungsproblemen\index{Zeichenkodierung}
+ \item Gewährleistung einer translationsgerechten\index{Übersetzungsgerechtheit} \hyperref[Datenorganisation]{Datenorganisation}
+ \item \hyperref[AnwendungsfallSoftware]{Internationalisierung}\index{Internationalisierung} der Software, ggf. Identifizieren noch \hyperref[hartkodiert]{hartkodierter}\index{Hartkodierung} Strings
+ \item Gewährleistung von \hyperref[rechtsvorgaben]{Konformität} der Software mit den Rechtsnormen der Zielkultur\index{Kultur}
+ \item Herstellung von \hyperref[filter]{Filtern}\index{Filter} für CAT-Werkzeuge\index{Translation-Memory-System}\index{CAT-Tool}
+ \item Erfassen der zu lokalisierenden Ressourcen\index{Resource-Datei} und Zusammenpacken des oder der \textit{Translation Kits}\index{Translation Kit}\footnote{Translation Kits (\textit{Lokalisierungs-Kits}) sind Pakete, die die Lokalisierungsdateien\index{Resource-Datei} und die für die Auftragserfüllung benötigten Begleitmaterialien (Analysen, Styleguides, TMs\index{Translation Memory}, Glossare, Filterdefinitionen\index{Filter}, ausführbare Dateien usw.) enthalten, also alles, was dem Translator\index{Translator} bei der Auftragserteilung übermittelt werden soll.}
+ \item Integration der lokalisierten Dateien, Bauen und Testen der Zielsoftware
+ \item Makeln zwischen den einzelnen Prozessbeteiligten etwa für die Qualitätssicherung\index{Qualitätssicherung}
+
+\end{itemize}
+
+% Manche dieser Aufgaben wird der Lokalisierungsingenieur\index{Lokalisierungsingenieur} selbst erledigen, andere durch Delegation an weitere Prozessteilnehmer. 
+
+\index{Translationskompetenz|(}Mit der Hinzuziehung von Lokalisierungsingenieuren\index{Lokalisierungsingenieur} glaubte man die fachliche\index{Fachlichkeit} Kluft zwischen Ingenieuren und „Linguisten“, als die Translatoren\index{Translator} oft verkannt werden, geschlossen zu haben; tatsächlich jedoch hat man mit ihr die Kluft zwischen dem Translator und dem Text vergrößert. Lokalisierungsingenieure nehmen dem Translator translatorische Kompetenzen ab~-- nach dem EMT\index{EMT}-Kompetenzmodell sind dies die Kompetenzen \textit{technology} und \textit{translation}~--, wodurch sich der Kommunikationsaufwand und die Fehleranfälligkeit im Gesamtprozess erhöhen.\footnote{Zum EMT-Kompetenzmodell siehe~\cite{noauthor_european_nodate}.} Möchten Translatoren\index{Translator} in der Softwarelokalisierung Zugang zum Text\index{Text} erhalten, so werden sie nicht umhinkönnen, Lese- und Schreibkompetenzen zu erwerben, die der beschriebenen Verschränkung natürlicher\index{natürliche Sprache} und formaler Sprache\index{formale Sprache} Rechnung tragen. Zu diesen Kompetenzen gehören insbesondere das in Abschnitt~\ref{Kompetenzen} genannte, für die Herstellung von Filtern\index{Filter} erforderliche Ausdrucksinventar sowie ein Wissen um die Funktionsweise von Auszeichnungs\index{Auszeichnungssprache}-, Skript\index{Skriptsprache}- und Programmiersprachen\index{Programmiersprache}. In der Softwarelokalisierung tätige Translatoren\index{Translator} sollten wissen, wie Zeichenkodierung\index{Zeichenkodierung}, Interpretation\index{Interpretation (eines Skripts)} und Übersetzen\index{Übersetzen (eines Programms)} (jeweils in der informationstechnischen Bedeutung) funktionieren. Die genannten Kompetenzen werden zum Lesen der Rohdateien\index{Resource-Datei}, zum Schreiben von Filtern\index{Filter} und für eine informierte Kommunikation mit dem Kunden benötigt. Kunden reagieren mitunter dankbar, wenn Translatoren\index{Translator} sich nicht hinter ihren sprachmittlerischen Fertigkeiten verbarrikadieren, sondern für den Text als Gesamtprodukt verantwortlich fühlen. 
+
+Mir ist bewusst, dass gerade in umfangreicheren Projekten die Übernahme von Engineering-Tätigkeiten durch den Translator aus strukturellen Gründen mitunter nicht möglich sein wird~-- durch eine bestehende Verteilung von Rollen, durch lange und~/ oder geteilte Lieferketten (siehe~Behrens 2016:~161) und durch starre Editierumgebungen\index{Ressourcen-Editor} im World Wide Web. Ein nicht minderes Hindernis ergibt sich jedoch aus einer unter Translatoren\index{Translator} zu beobachtenden Scheu vor Engineering\index{Lokalisierungsingenieur}-Tätigkeiten. \footnote{Dies gilt zumindest mit Erhebungsstand 2015; siehe hierzu Behrens (2016:~178).} Wenn in der translationsnahen Literatur gefordert wird, Übersetzer\index{Translator} sollten sich „auf ihre Aufgaben konzentrieren“ oder „tun, was sie gelernt haben“, so ist i.~d.~R. ein ausdrücklicher Ausschluss extralinguistischer Aufgaben aus dem Begriff der Translationskompetenz\index{Translationskompetenz} gemeint.\footnote{Siehe hierzu etwa \cite[31]{massion_translation_2005}} Dass in der Softwarelokalisierung man mit einem solchen Kompetenzbegriff über die Wortgrenze selten hinauskommt, haben die vorstehenden Abschnitte gezeigt. 
+
+Die Übersetzbarkeit von UI hat damit auch eine subjektive Seite.
+
+% Vom Selbstkonzept, mit ihm dem Begriff der Translationskompetenz, wird schließlich auch maßgeblich die Attraktivität von Berufstranslatoren für den Softwarelokalisierungs-Markt abhängen. weblate, CrowdIn etc.\footnote{Das Verständnis des Worts „Laie“ ergibt sich hier sowohl mit Blick auf den Berufsabschluss als auch auf die Integrität der erbrachten Leistung (siehe~hierzu die Ausführungen a.~a.~O. Seite~157ff.)}
+
+ Die Attraktivität erwerbsmäßig arbeitender Translatoren\index{Translator} für den Markt wird maßgeblich von deren Bereitschaft abhängen, eine integrierte Leistung zu erbringen, d.~h. sich nicht auf linguistische Zuarbeiten zu beschränken. Denn Letztere werden flexibler und kostengünstiger durch die Anwender-Community oder aus dem sozialen Umfeld der Entwicklung und in zunehmendem Maße auch durch Systeme der maschinellen Übersetzung erbracht\index{maschinelle Übersetzung}.\index{Translationskompetenz|)}
+
+% siehe~ Behrens~2016:~156
+
+\index{Translation|)}
+\index{Softwarelokalisierung|)}
+
+\section*{Danksagungen}
+
+Ich danke XTM International und namentlich Herrn Henk Boxma für die Bereitstellung des Rigi-Servers (Abbildung~\ref{rigi_memoq} auf S.~\pageref{rigi_memoq}).
+
+\fi
+
+%\printindex
+\printbibliography
+
+\end{document}
